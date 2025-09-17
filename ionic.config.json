@@ -1,0 +1,7 @@
+{
+  "name": "beseen-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
