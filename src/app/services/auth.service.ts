@@ -16,7 +16,7 @@ export class AuthService {
     return this.authState.asObservable();
   }
 
-  login(credentials: {email: string, pass: string}): Observable<any> {
+  login(credentials: {email: string, password: string}): Observable<any> {
     return this.apiService.post<{ accessToken: string, refreshToken: string }>(`${this.authEndpoint}/login`, credentials).pipe(
       tap(tokens => {
         localStorage.setItem('access_token', tokens.accessToken);
@@ -24,6 +24,7 @@ export class AuthService {
         this.authState.next(true);
       }),
       catchError(err => {
+        console.error('Erro de login:', err);
         this.authState.next(false);
         throw err;
       })

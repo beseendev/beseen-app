@@ -45,17 +45,12 @@ export class LoginPage {
 
     const { email, password } = this.loginForm.value;
 
-    this.authService.login({ email, pass: password }).subscribe({
+    this.authService.login({ email, password: password }).subscribe({
       next: () => {
         this.router.navigate(['/home']);
       },
-      error: async (err) => {
-        const toast = await this.toastController.create({
-          message: 'Login falhou. Verifique suas credenciais.',
-          duration: 3000,
-          color: 'danger'
-        });
-        toast.present();
+      error: (err) => {
+        console.error('Erro tratado no componente de login:', err);
       }
     });
   }

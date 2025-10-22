@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { ToastController } from '@ionic/angular/standalone';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<any>(null);
@@ -12,6 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
+  const toastController = inject(ToastController);
   const accessToken = authService.getAccessToken();
 
   if (accessToken) {
@@ -20,11 +22,22 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      if (
+        error.status === 401 &&
+        !req.url.includes('/auth/login') &&
+        !req.url.includes('/auth/refresh')
+      ) {
         return handle401Error(req, next, authService);
-      } else {
-        return throwError(() => error);
       }
+
+      const errorMessage = error.error?.message || 'Ocorreu um erro. Tente novamente.';
+      toastController.create({
+        message: errorMessage,
+        duration: 3000,
+        color: 'danger'
+      }).then(toast => toast.present());
+
+      return throwError(() => error);
     })
   );
 };
