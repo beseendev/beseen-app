@@ -9,6 +9,7 @@ import { ApiService } from './api.service';
 export class AuthService {
   private authState = new BehaviorSubject<boolean>(this.hasToken());
   private readonly authEndpoint = '/auth';
+  private readonly authSocial = '/auth/social'
 
   constructor(private apiService: ApiService) { }
 
@@ -25,6 +26,21 @@ export class AuthService {
       }),
       catchError(err => {
         console.error('Erro de login:', err);
+        this.authState.next(false);
+        throw err;
+      })
+    );
+  }
+
+  loginWithGoogle(idToken: string): Observable<any> {
+    return this.apiService.post<{ accessToken: string, refreshToken: string }>(`${this.authSocial}/google`, { idToken }).pipe(
+      tap(tokens => {
+        localStorage.setItem('access_token', tokens.accessToken);
+        localStorage.setItem('refresh_token', tokens.refreshToken);
+        this.authState.next(true);
+      }),
+      catchError(err => {
+        console.error('Erro de login com Google:', err);
         this.authState.next(false);
         throw err;
       })
