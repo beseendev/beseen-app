@@ -54,6 +54,19 @@ A `apiUrl` precisa ser ajustada dependendo de onde você está executando o apli
     ```
 *   **Para Produção:** A `apiUrl` em `src/environments/environment.prod.ts` deve ser a URL da sua API em produção.
 
+### Atenção ao Build para Emulador/Dispositivo
+
+Ao executar o aplicativo em um emulador ou dispositivo Android, é crucial garantir que a `apiUrl` correta para o ambiente de **desenvolvimento** seja utilizada.
+
+*   O comando `npm run build` (sem configurações adicionais) por padrão compila o aplicativo para **produção**, utilizando a `apiUrl` de `environment.prod.ts`.
+*   Para testar no emulador/dispositivo com a `apiUrl` de desenvolvimento (`environment.ts`), você tem duas opções:
+    1.  **Recomendado para Desenvolvimento:** Use o comando `ionic capacitor run android -l --external`. Este comando geralmente já faz o build para desenvolvimento e sincroniza automaticamente.
+    2.  **Build Explícito para Desenvolvimento:** Se você preferir usar `npm run build` e `npx cap sync`, certifique-se de compilar para o ambiente de desenvolvimento:
+        ```bash
+        npm run build -- --configuration=development
+        npx cap sync android
+        ```
+
 Certifique-se de que a `apiUrl` esteja configurada corretamente no arquivo de ambiente apropriado antes de compilar ou executar o projeto.
 
 ## 🏁 Como Executar o Projeto
