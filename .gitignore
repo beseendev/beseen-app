@@ -71,3 +71,8 @@ Thumbs.db
 
 # Gemini
 GEMINI.md
+
+# Capacitor
+/android
+/ios
+google-services.json

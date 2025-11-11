@@ -32,7 +32,7 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(idToken: string): Observable<any> {
+  loginWithFirebaseToken(idToken: string): Observable<any> {
     return this.apiService.post<{ accessToken: string, refreshToken: string }>(`${this.authSocial}/google`, { idToken }).pipe(
       tap(tokens => {
         localStorage.setItem('access_token', tokens.accessToken);

@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "android:setup": "copy firebase-config\\google-services.json android\\app\\google-services.json && (echo. && echo rgcfaIncludeGoogle = true) >> android\\variables.gradle && (echo. && echo include ':capacitor-firebase-authentication') >> android\\settings.gradle"
   },
   "private": true,
   "dependencies": {
@@ -17,10 +18,12 @@
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.0.0",
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@capacitor-firebase/authentication": "^6.3.1",
     "@capacitor/android": "6.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/core": "6.0.0",
@@ -28,6 +31,7 @@
     "@capacitor/keyboard": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",
     "@ionic/angular": "^8.0.0",
+    "firebase": "^11.10.0",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

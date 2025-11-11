@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, ToastController, IonText } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, ToastController, IonText, IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
-import { environment } from '../../environments/environment';
-
-declare var google: any;
+import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +24,11 @@ declare var google: any;
     IonLabel,
     IonInput,
     IonButton,
-    IonText
+    IonText,
+    IonIcon
   ]
 })
-export class LoginPage implements AfterViewInit {
+export class LoginPage {
   loginForm: FormGroup;
 
   constructor(
@@ -35,7 +36,8 @@ export class LoginPage implements AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private toastController: ToastController,
-    private zone: NgZone
+    private auth: Auth, // Injetar Auth do AngularFire
+    private navCtrl: NavController // Injetar NavController
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -43,28 +45,48 @@ export class LoginPage implements AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    google.accounts.id.initialize({
-      client_id: environment.googleClientId,
-      callback: (response: any) => {
-        this.zone.run(() => {
-          this.authService.loginWithGoogle(response.credential).subscribe({
-            next: () => {
-              this.router.navigate(['/home']);
-            },
-            error: (err) => {
-              console.error('Erro no login com Google:', err);
-              // Você pode adicionar um Toast de erro aqui se quiser
-            }
-          });
-        });
-      }
-    });
+  async signInWithGoogle() {
+    try {
+      await FirebaseAuthentication.signOut();
+      const result = await FirebaseAuthentication.signInWithGoogle();
+      if (result.credential) {
+        const credential = GoogleAuthProvider.credential(result.credential.idToken, result.credential.accessToken);
+        const userCredential = await signInWithCredential(this.auth, credential);
 
-    google.accounts.id.renderButton(
-      document.getElementById('google-btn'),
-      { theme: 'outline', size: 'large', width: '100%', shape: 'rectangular', text: 'signin_with', logo_alignment: 'left' }
-    );
+        const idToken = await userCredential.user.getIdToken(true);
+
+        // Enviar idToken para o backend através do AuthService
+        this.authService.loginWithFirebaseToken(idToken).subscribe({
+          next: () => {
+            this.navCtrl.navigateRoot('/home');
+          },
+          error: async (err) => {
+            console.error('Erro ao enviar token Firebase para o backend (detalhado):', JSON.stringify(err));
+            const toast = await this.toastController.create({
+              message: 'Erro ao fazer login com Google. Tente novamente.',
+              duration: 2000,
+              color: 'danger'
+            });
+            toast.present();
+          }
+        });
+      } else {
+        const toast = await this.toastController.create({
+          message: 'Login com Google cancelado ou falhou.',
+          duration: 2000,
+          color: 'warning'
+        });
+        toast.present();
+      }
+    } catch (error) {
+      console.error('Erro no login com Google (detalhado):', JSON.stringify(error));
+      const toast = await this.toastController.create({
+        message: 'Erro no login com Google. Verifique sua conexão.',
+        duration: 2000,
+        color: 'danger'
+      });
+      toast.present();
+    }
   }
 
   login() {
@@ -78,8 +100,14 @@ export class LoginPage implements AfterViewInit {
       next: () => {
         this.router.navigate(['/home']);
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Erro tratado no componente de login:', err);
+        const toast = await this.toastController.create({
+          message: 'Erro no login. Verifique suas credenciais.',
+          duration: 2000,
+          color: 'danger'
+        });
+        toast.present();
       }
     });
   }
