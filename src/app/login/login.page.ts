@@ -55,20 +55,9 @@ export class LoginPage {
 
         const idToken = await userCredential.user.getIdToken(true);
 
-        // Enviar idToken para o backend através do AuthService
         this.authService.loginWithFirebaseToken(idToken).subscribe({
-          next: () => {
-            this.navCtrl.navigateRoot('/home');
-          },
-          error: async (err) => {
-            console.error('Erro ao enviar token Firebase para o backend (detalhado):', JSON.stringify(err));
-            const toast = await this.toastController.create({
-              message: 'Erro ao fazer login com Google. Tente novamente.',
-              duration: 2000,
-              color: 'danger'
-            });
-            toast.present();
-          }
+          next: () => this.navCtrl.navigateRoot('/home'),
+          error: (err) => this.handleAuthError(err, 'google')
         });
       } else {
         const toast = await this.toastController.create({
@@ -79,10 +68,10 @@ export class LoginPage {
         toast.present();
       }
     } catch (error) {
-      console.error('Erro no login com Google (detalhado):', JSON.stringify(error));
+      console.error('Erro no plugin de login com Google:', JSON.stringify(error));
       const toast = await this.toastController.create({
-        message: 'Erro no login com Google. Verifique sua conexão.',
-        duration: 2000,
+        message: 'Erro ao iniciar o login com Google. Verifique sua conexão ou configuração.',
+        duration: 3000,
         color: 'danger'
       });
       toast.present();
@@ -97,18 +86,33 @@ export class LoginPage {
     const { email, password } = this.loginForm.value;
 
     this.authService.login({ email, password: password }).subscribe({
-      next: () => {
-        this.router.navigate(['/home']);
-      },
-      error: async (err) => {
-        console.error('Erro tratado no componente de login:', err);
-        const toast = await this.toastController.create({
-          message: 'Erro no login. Verifique suas credenciais.',
-          duration: 2000,
-          color: 'danger'
-        });
-        toast.present();
-      }
+      next: () => this.router.navigate(['/home']),
+      error: (err) => this.handleAuthError(err, 'email')
     });
+  }
+
+  private async handleAuthError(err: any, context: 'google' | 'email') {
+    console.error(`Erro na autenticação via ${context}:`, JSON.stringify(err));
+
+    let errorMessage: string;
+    const defaultGoogleError = 'Erro ao fazer login com Google. Tente novamente.';
+    const defaultEmailError = 'Erro no login. Verifique suas credenciais.';
+
+    if (err.status === 0) {
+      errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+    } else if (err.error && err.error.message) {
+      errorMessage = err.error.message;
+    } else if (typeof err.error === 'string') {
+      errorMessage = err.error;
+    } else {
+      errorMessage = context === 'google' ? defaultGoogleError : defaultEmailError;
+    }
+
+    const toast = await this.toastController.create({
+      message: errorMessage,
+      duration: 3000,
+      color: 'danger'
+    });
+    toast.present();
   }
 }
