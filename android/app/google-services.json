@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "304753853961",
+    "project_id": "beseen-app-android",
+    "storage_bucket": "beseen-app-android.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304753853961:android:20b1c242d5958802ae1ad8",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304753853961-8asuu2v10elk8mk4v0kacipk0025upf6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.ionic.starter",
+            "certificate_hash": "7829229ea3d44893d7162881911d31bb3a816701"
+          }
+        },
+        {
+          "client_id": "304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8ZmArYU6aP5MeAOzYus9qMZeVwTZ5Fmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
