@@ -1,5 +1,93 @@
-.error-message {
-  color: var(--ion-color-danger);
+/* Seu CSS Existente (manter este bloco) */
+.error-text {
+  color: var(--ion-color-warning); /* Amarelo de aviso pode ser bom para erro */
   font-size: 0.8em;
-  padding-left: 16px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: left; /* Alinha o erro à esquerda, como no input */
+  padding-left: 15px; /* Ajuste o padding para alinhar com o input */
+}
+
+/* O CSS do separador deve estar presente conforme a última versão */
+.divider-text {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 30px auto 30px auto;
+}
+
+.divider-text .line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--ion-color-light); /* Linha clara */
+  opacity: 0.5;
+}
+
+.divider-text .text {
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 0.9em;
+  color: var(--ion-color-light); /* Texto claro */
+}
+
+
+/* NOVO/AJUSTADO CSS PARA O DEGRADÊ E ELEMENTOS NO FUNDO ESCURO */
+.gradient-background {
+  /* Mantenha o degradê que você escolheu. Exemplo: */
+  --background: linear-gradient(135deg, #1A237E, #4A148C); /* Azul Escuro para Roxo Escuro */
+}
+
+/* Garante que todos os textos principais sejam claros no fundo escuro */
+.gradient-background h1,
+.gradient-background p {
+  color: var(--ion-color-light) !important;
+}
+
+/* Estilo para os ion-item (inputs) - Fundo semi-transparente e bordas */
+.gradient-background ion-item {
+  --background: rgba(255, 255, 255, 0.1); /* Fundo sutilmente transparente */
+  --border-radius: 8px; /* Bordas arredondadas */
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para profundidade */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borda sutil */
+  /* Remove a linha inferior padrão do ion-item */
+  --inner-border-width: 0 0 0 0 !important;
+  --border-width: 0 !important;
+}
+
+.gradient-background ion-input {
+  --color: white; /* Cor do texto digitado */
+  --placeholder-color: rgba(255, 255, 255, 0.7); /* Cor do placeholder */
+}
+
+.gradient-background ion-icon[slot="start"] {
+  color: white; /* Ícones dos inputs brancos */
+}
+
+/* Botão "Esqueceu sua senha?" em cor clara */
+.gradient-background ion-button[fill="clear"] {
+  color: var(--ion-color-light) !important;
+  font-size: 0.9em; /* Ajuste o tamanho da fonte se necessário */
+}
+
+/* Ícones Sociais (se precisar de um fundo ou borda, descomente e ajuste) */
+.gradient-background ion-icon[name^="logo-"] { /* Seleciona todos os ícones de logo */
+  color: var(--ion-color-light); /* Cor clara para os ícones */
+  /* Se quiser o fundo circular como na inspiração original: */
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  /* border-radius: 50%; */
+  /* padding: 8px; */
+}
+
+/* Estilo do Botão de Login com Gradiente (como na inspiração original) */
+.gradient-background ion-button[type="submit"] {
+  --background: linear-gradient(to right, #2a9df4, #ff8c00); /* Degradê azul e laranja */
+  --background-activated: linear-gradient(to right, #1f7fc7, #e67d00);
+  --border-radius: 10px;
+  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  height: 50px;
+  font-weight: bold;
+  font-size: 1.1em;
 }

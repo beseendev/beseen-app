@@ -1,5 +1,23 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  logOutOutline,
+  personCircleOutline,
+  settingsOutline,
+  homeOutline,
+  arrowBackOutline,
+  menuOutline,
+  closeOutline,
+  eyeOutline,
+  eyeOffOutline,
+  mailOutline,
+  lockClosedOutline,
+  personOutline,
+  logoGoogle,
+  logoFacebook,
+  logoTwitter
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +25,23 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
-  constructor() {}
+  constructor() {
+    addIcons({
+      logOutOutline,
+      personCircleOutline,
+      settingsOutline,
+      homeOutline,
+      arrowBackOutline,
+      menuOutline,
+      closeOutline,
+      eyeOutline,
+      eyeOffOutline,
+      mailOutline,
+      lockClosedOutline,
+      personOutline,
+      logoGoogle,
+      logoFacebook,
+      logoTwitter
+    });
+  }
 }

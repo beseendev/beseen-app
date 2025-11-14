@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, NavController } from '@ionic/angular/standalone'; // Adicionado NavController aqui
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, NavController } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
-import { Auth } from '@angular/fire/auth'; // Importado Auth
-import { FirebaseAuthentication } from '@capacitor-firebase/authentication'; // Importado FirebaseAuthentication
+import { Auth } from '@angular/fire/auth';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 @Component({
   selector: 'app-home',
@@ -26,20 +26,18 @@ export class HomePage {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private auth: Auth, // Injetado Auth
-    private navCtrl: NavController // Injetado NavController
+    private auth: Auth,
+    private navCtrl: NavController
   ) { }
 
-  async logout() { // Tornar o método assíncrono
+  async logout() {
     try {
-      await FirebaseAuthentication.signOut(); // Deslogar do Firebase via Capacitor
-      await this.auth.signOut(); // Deslogar do Firebase via AngularFire
+      await FirebaseAuthentication.signOut();
+      await this.auth.signOut();
     } catch (error) {
       console.error('Erro ao deslogar do Firebase:', error);
-      // Opcional: mostrar um toast de erro, mas o logout do app ainda deve prosseguir
     }
-    this.authService.logout(); // Limpar tokens locais
-    this.navCtrl.navigateRoot('/login'); // Navegar para a página de login
+    this.authService.logout();
+    this.navCtrl.navigateRoot('/login');
   }
 }
