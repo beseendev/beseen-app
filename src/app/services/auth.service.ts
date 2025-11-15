@@ -54,8 +54,7 @@ export class AuthService {
   }
 
   register(userData: any): Observable<any> {
-    // The endpoint for registration might be different, e.g., '/users' or '/register'
-    return this.apiService.post('/users', userData).pipe(
+    return this.apiService.post(`${this.authEndpoint}/register-user`, userData).pipe(
       catchError(err => {
         console.error('Erro de registro:', err);
         throw err;

@@ -51,13 +51,11 @@ export class SignupPage implements OnInit {
   }
 
   register() {
-    // Mark all fields as touched to display validation errors
     Object.values(this.signupForm.controls).forEach(control => {
       control.markAsTouched();
     });
 
     if (this.signupForm.invalid) {
-      // Also mark the form group itself as touched for password mismatch error
       this.signupForm.markAsTouched();
       return;
     }
