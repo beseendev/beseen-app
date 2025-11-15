@@ -1,8 +1,8 @@
 <ion-content class="ion-padding ion-text-center gradient-background">
 
   <div class="ion-padding-top">
-    <h1 class="ion-color-light ion-padding-top">GOAL GETTERS</h1>
-    <p class="ion-color-light">Unlock Your Potential. Score Big.</p>
+    <h1 class="ion-color-light ion-padding-top">BeSeen</h1>
+    <p class="ion-color-light">Desperte seu potencial</p>
   </div>
 
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="ion-margin-top">
@@ -11,7 +11,11 @@
       Email inválido.
     </div>
 
-    <ion-item class="ion-margin-bottom" color="none"> <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon> <ion-input type="password" formControlName="password" placeholder="Password" color="light"></ion-input> </ion-item>
+    <ion-item class="ion-margin-bottom" color="none">
+      <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
+      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Password" color="light"></ion-input>
+      <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="togglePasswordVisibility()"></ion-icon>
+    </ion-item>
     <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="ion-text-start ion-padding-start error-text">
       Senha obrigatória.
     </div>
@@ -27,16 +31,21 @@
 
   <div class="divider-text ion-margin-vertical ion-color-light">
     <span class="line"></span>
-    <span class="text">Or log in with</span>
+    <span class="text">Ou faça login com</span>
     <span class="line"></span>
   </div>
 
   <div class="ion-text-center ion-margin-top">
     <div class="ion-margin-top">
-      <ion-icon name="logo-facebook" color="primary" size="large" class="ion-margin-horizontal"></ion-icon>
-      <ion-icon name="logo-google" color="primary" size="large" class="ion-margin-horizontal" (click)="signInWithGoogle()"></ion-icon>
-      <ion-icon name="logo-twitter" color="primary" size="large" class="ion-margin-horizontal"></ion-icon>
+      <ion-icon name="logo-facebook" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
+      <ion-icon name="logo-google" size="large" class="ion-margin-horizontal" color="light" (click)="signInWithGoogle()"></ion-icon>
+      <ion-icon name="logo-twitter" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
     </div>
+  </div>
+
+  <div class="signup-prompt ion-margin-top" style="display: flex; align-items: center; justify-content: center;">
+    <span style="color: #989aa2;">Não tem uma conta? </span>
+    <ion-button fill="clear" routerLink="/signup" color="primary" style="font-weight: bold; text-transform: none; --padding-start: 4px; --padding-end: 4px;">Cadastre-se</ion-button>
   </div>
 
 </ion-content>

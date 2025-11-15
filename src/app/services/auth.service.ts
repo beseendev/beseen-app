@@ -53,6 +53,16 @@ export class AuthService {
     this.authState.next(false);
   }
 
+  register(userData: any): Observable<any> {
+    // The endpoint for registration might be different, e.g., '/users' or '/register'
+    return this.apiService.post('/users', userData).pipe(
+      catchError(err => {
+        console.error('Erro de registro:', err);
+        throw err;
+      })
+    );
+  }
+
   getAccessToken(): string | null {
     return localStorage.getItem('access_token');
   }

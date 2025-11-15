@@ -77,6 +77,11 @@
   font-size: 0.9em;
 }
 
+/* Ícones de redes sociais em BRANCO */
+.gradient-background ion-icon[name^="logo-"] {
+  color: var(--ion-color-light);
+}
+
 /* Botão de Login em VERDE */
 .gradient-background ion-button[type="submit"] {
   --background: var(--ion-color-primary);

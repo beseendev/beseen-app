@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
 import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
@@ -20,11 +20,13 @@ import { NavController } from '@ionic/angular';
     IonItem,
     IonInput,
     IonButton,
-    IonIcon
+    IonIcon,
+    RouterModule
   ]
 })
 export class LoginPage {
   loginForm: FormGroup;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +40,10 @@ export class LoginPage {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   async signInWithGoogle() {

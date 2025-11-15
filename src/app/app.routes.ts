@@ -16,4 +16,8 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'signup',
+    loadComponent: () => import('./signup/signup.page').then( m => m.SignupPage)
+  },
 ];
