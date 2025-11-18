@@ -6,7 +6,7 @@
   </div>
 
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="ion-margin-top">
-    <ion-item class="ion-margin-bottom" color="none"> <ion-icon name="person-outline" slot="start" color="light"></ion-icon> <ion-input type="email" formControlName="email" placeholder="Username or Email" color="light" autocomplete="off"></ion-input> </ion-item>
+    <ion-item class="ion-margin-bottom" color="none"> <ion-icon name="person-outline" slot="start" color="light"></ion-icon> <ion-input type="email" formControlName="email" placeholder="Email" color="light" autocomplete="off"></ion-input> </ion-item>
     <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="ion-text-start ion-padding-start error-text">
       Email inválido.
     </div>

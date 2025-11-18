@@ -88,7 +88,15 @@ export class LoginPage {
 
     this.authService.login({ email, password: password }).subscribe({
       next: () => this.router.navigate(['/home']),
-      error: (err) => this.handleAuthError(err, 'email')
+      error: (err) => {
+        if (err.isUserNotEnabled) {
+          this.router.navigate(['/account-confirmation'], {
+            state: { email: email }
+          });
+        } else {
+          this.handleAuthError(err, 'email');
+        }
+      }
     });
   }
 

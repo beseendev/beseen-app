@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { Router, RouterModule } from '@angular/router';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 
@@ -28,7 +28,7 @@ export class SignupPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private navCtrl: NavController
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -51,30 +51,18 @@ export class SignupPage implements OnInit {
   }
 
   register() {
-    Object.values(this.signupForm.controls).forEach(control => {
-      control.markAsTouched();
-    });
-
     if (this.signupForm.invalid) {
-      this.signupForm.markAsTouched();
+      this.signupForm.markAllAsTouched();
       return;
     }
 
-    const registrationData = {
-      firstName: this.signupForm.value.firstName,
-      lastName: this.signupForm.value.lastName,
-      email: this.signupForm.value.email,
-      password: this.signupForm.value.password,
-      role: this.signupForm.value.role
-    };
+    const { confirmPassword, ...registrationData } = this.signupForm.value;
 
     this.authService.register(registrationData).subscribe({
-      next: (response) => {
-        console.log('Registration successful', response);
-        this.navCtrl.navigateRoot('/login');
-      },
-      error: (error) => {
-        console.error('Registration failed', error);
+      next: () => {
+        this.router.navigate(['/account-confirmation'], {
+          state: { email: registrationData.email }
+        });
       }
     });
   }

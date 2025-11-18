@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
@@ -40,7 +40,11 @@ export class AuthService {
       }),
       catchError(err => {
         this.authState.next(false);
-        throw err;
+        if (err.status === 401 && err.error?.message === 'User is not enabled. Please confirm your email.') {
+          // Throw a custom error object for the component to catch and handle navigation
+          return throwError(() => ({ ...err, isUserNotEnabled: true }));
+        }
+        throw err; // Re-throw all other errors for the global interceptor to handle.
       })
     );
   }
@@ -69,11 +73,28 @@ export class AuthService {
 
   register(userData: any): Observable<any> {
     return this.apiService.post<any>(`${this.authEndpoint}/register-user`, userData).pipe(
-      tap(response => {
-        this.showToast(response.message || 'Registro realizado com sucesso!', 'success');
+      tap(() => {
+        this.showToast('Registro realizado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.', 'success');
       })
     );
   }
+
+  confirmAccountByCode(data: { email: string, code: string }): Observable<any> {
+    return this.apiService.post<any>(`${this.authEndpoint}/confirm-code`, data).pipe(
+      tap((response) => {
+        this.showToast(response.message || 'Conta confirmada com sucesso! Faça o login.', 'success');
+      })
+    );
+  }
+
+  resendConfirmationCode(data: { email: string }): Observable<any> {
+    return this.apiService.post<any>(`${this.authEndpoint}/resend-confirmation-code`, data).pipe(
+      tap((response) => {
+        this.showToast(response.message || 'Novo código enviado para seu e-mail.', 'success');
+      })
+    );
+  }
+
 
   sendPasswordResetCode(email: string): Observable<any> {
     return this.apiService.post<any>(`${this.authEndpoint}/send-confirmation-code-update-password`, { email }).pipe(

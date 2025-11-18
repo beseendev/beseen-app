@@ -29,7 +29,7 @@
 
     <ion-item class="ion-margin-bottom" color="none">
       <ion-icon name="mail-outline" slot="start" color="light"></ion-icon>
-      <ion-input type="email" formControlName="email" placeholder="Email" color="light"></ion-input>
+      <ion-input type="email" formControlName="email" placeholder="Email" color="light" autocomplete="off"></ion-input>
     </ion-item>
     <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="ion-text-start ion-padding-start error-text">
       <span *ngIf="signupForm.get('email')?.errors?.['required']">Email é obrigatório.</span>
@@ -38,7 +38,7 @@
 
     <ion-item class="ion-margin-bottom" color="none">
       <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
-      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Senha" color="light"></ion-input>
+      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Senha" color="light" autocomplete="new-password"></ion-input>
       <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="togglePasswordVisibility()"></ion-icon>
     </ion-item>
     <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="ion-text-start ion-padding-start error-text">
@@ -48,7 +48,7 @@
 
     <ion-item class="ion-margin-bottom" color="none">
       <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
-      <ion-input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirmar Senha" color="light"></ion-input>
+      <ion-input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirmar Senha" color="light" autocomplete="new-password"></ion-input>
       <ion-icon [name]="showConfirmPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="toggleConfirmPasswordVisibility()"></ion-icon>
     </ion-item>
     <div *ngIf="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched" class="ion-text-start ion-padding-start error-text">
