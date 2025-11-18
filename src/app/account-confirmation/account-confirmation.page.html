@@ -1,0 +1,43 @@
+<ion-content class="ion-padding ion-text-center gradient-background">
+
+  <div class="ion-padding-top">
+    <h1 class="ion-color-light ion-padding-top">Confirme sua Conta</h1>
+    <p class="ion-color-light">Um código de 6 dígitos foi enviado para o seu e-mail. Por favor, insira-o abaixo.</p>
+  </div>
+
+  <form [formGroup]="confirmationForm" (ngSubmit)="confirmCode()" class="ion-margin-top">
+    <ion-item class="ion-margin-bottom" color="none">
+      <ion-icon name="shield-checkmark-outline" slot="start" color="light"></ion-icon>
+      <ion-input
+        type="text"
+        formControlName="code"
+        placeholder="_ _ _ _ _ _"
+        color="light"
+        maxlength="6"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+      ></ion-input>
+    </ion-item>
+    <div *ngIf="confirmationForm.get('code')?.invalid && confirmationForm.get('code')?.touched" class="ion-text-start ion-padding-start error-text">
+      O código deve ter 6 dígitos numéricos.
+    </div>
+
+    <ion-button expand="block" type="submit" [disabled]="confirmationForm.invalid" color="primary" class="ion-margin-top">
+      CONFIRMAR
+    </ion-button>
+  </form>
+
+  <div class="ion-margin-top">
+    <ion-button fill="clear" color="light" (click)="resendCode()" [disabled]="isCooldownActive">
+      <span *ngIf="!isCooldownActive">Reenviar código</span>
+      <span *ngIf="isCooldownActive">Aguarde {{ cooldownSeconds }}s...</span>
+    </ion-button>
+  </div>
+
+  <div class="ion-margin-top">
+    <ion-button fill="clear" color="light" routerLink="/login">
+      Voltar para o Login
+    </ion-button>
+  </div>
+
+</ion-content>

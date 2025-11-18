@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon } from '@ionic/angular/standalone';
-import { AuthService } from '../services/auth.service';
+import { AuthService, User } from '../services/auth.service'; // Importar User
 import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { NavController } from '@ionic/angular';
+import { take } from 'rxjs/operators'; // Importar take
 
 @Component({
   selector: 'app-login',
@@ -57,7 +58,15 @@ export class LoginPage {
         const idToken = await userCredential.user.getIdToken(true);
 
         this.authService.loginWithFirebaseToken(idToken).subscribe({
-          next: () => this.navCtrl.navigateRoot('/home'),
+          next: () => {
+            this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
+              if (user && user.hasProfile) {
+                this.navCtrl.navigateRoot('/home');
+              } else {
+                this.navCtrl.navigateRoot('/create-profile');
+              }
+            });
+          },
           error: (err) => this.handleAuthError(err, 'google')
         });
       } else {
@@ -87,7 +96,15 @@ export class LoginPage {
     const { email, password } = this.loginForm.value;
 
     this.authService.login({ email, password: password }).subscribe({
-      next: () => this.router.navigate(['/home']),
+      next: () => {
+        this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
+          if (user && user.hasProfile) {
+            this.router.navigate(['/home']);
+          } else {
+            this.router.navigate(['/create-profile']);
+          }
+        });
+      },
       error: (err) => {
         if (err.isUserNotEnabled) {
           this.router.navigate(['/account-confirmation'], {

@@ -1,0 +1,21 @@
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService, User } from '../services/auth.service';
+import { map, take } from 'rxjs/operators';
+
+export const profileGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  return authService.currentUser.pipe(
+    take(1),
+    map((user: User | null) => {
+      if (user && user.hasProfile) {
+        return true;
+      } else if (user && !user.hasProfile) {
+        return router.createUrlTree(['/create-profile']);
+      }
+      return router.createUrlTree(['/login']);
+    })
+  );
+};

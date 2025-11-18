@@ -4,17 +4,46 @@ import { tap, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 
+export interface User {
+  id: string;
+  email: string;
+  hasProfile: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private authState = new BehaviorSubject<boolean>(this.hasToken());
+  private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  public currentUser: Observable<User | null> = this.currentUserSubject.asObservable();
   private readonly authEndpoint = '/auth';
   private readonly authSocial = '/auth/social';
 
   private toastController = inject(ToastController);
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {
+    if (this.hasToken()) {
+      this.getCurrentUser().subscribe({
+        next: (user) => {
+          this.currentUserSubject.next(user);
+          this.authState.next(true);
+        },
+        error: () => {
+          this.logout();
+        }
+      });
+    }
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.apiService.get<User>(`${this.authEndpoint}/me`).pipe(
+      catchError(err => {
+        console.error('Failed to fetch current user:', err);
+        return throwError(() => err);
+      })
+    );
+  }
 
   private async showToast(message: string, color: 'success' | 'danger' = 'success') {
     const toast = await this.toastController.create({
@@ -36,15 +65,20 @@ export class AuthService {
         localStorage.setItem('access_token', response.accessToken);
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
+        const user: User = {
+          id: response.userId.toString(),
+          email: response.userEmail,
+          hasProfile: response.hasProfile
+        };
+        this.currentUserSubject.next(user);
         this.showToast(response.message || 'Login bem-sucedido!', 'success');
       }),
       catchError(err => {
         this.authState.next(false);
         if (err.status === 401 && err.error?.message === 'User is not enabled. Please confirm your email.') {
-          // Throw a custom error object for the component to catch and handle navigation
           return throwError(() => ({ ...err, isUserNotEnabled: true }));
         }
-        throw err; // Re-throw all other errors for the global interceptor to handle.
+        return throwError(() => err);
       })
     );
   }
@@ -55,6 +89,12 @@ export class AuthService {
         localStorage.setItem('access_token', response.accessToken);
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
+        const user: User = {
+          id: response.userId.toString(),
+          email: response.userEmail,
+          hasProfile: response.hasProfile
+        };
+        this.currentUserSubject.next(user);
         this.showToast(response.message || 'Login com Google bem-sucedido!', 'success');
       }),
       catchError(err => {
@@ -68,6 +108,7 @@ export class AuthService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     this.authState.next(false);
+    this.currentUserSubject.next(null);
     this.showToast('Você foi desconectado.', 'success');
   }
 

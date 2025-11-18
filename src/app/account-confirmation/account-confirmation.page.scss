@@ -1,0 +1,79 @@
+.error-text {
+  color: var(--ion-color-warning);
+  font-size: 0.8em;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.divider-text {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 30px auto;
+}
+
+.divider-text .line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--ion-color-light);
+  opacity: 0.5;
+}
+
+.divider-text .text {
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 0.9em;
+  color: var(--ion-color-light);
+}
+
+.gradient-background {
+  --background: linear-gradient(135deg, #2c2c2c, #000000);
+}
+
+.gradient-background h1 {
+  color: var(--ion-color-tertiary) !important;
+  font-weight: bold;
+}
+
+.gradient-background p {
+  color: var(--ion-color-light) !important;
+}
+
+.gradient-background ion-item {
+  --background: rgba(255, 255, 255, 0.1);
+  --border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  --inner-border-width: 0 0 0 0 !important;
+  --border-width: 0 !important;
+}
+
+.gradient-background ion-input {
+  --color: var(--ion-color-light);
+  --placeholder-color: rgba(255, 255, 255, 0.7);
+}
+
+.gradient-background ion-icon[slot="start"] {
+  color: var(--ion-color-light);
+}
+
+.gradient-background ion-button[fill="clear"] {
+  color: var(--ion-color-light) !important;
+  font-size: 0.9em;
+}
+
+.gradient-background ion-button[type="submit"] {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 10px;
+  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  height: 50px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
