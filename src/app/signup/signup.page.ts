@@ -65,17 +65,16 @@ export class SignupPage implements OnInit {
       lastName: this.signupForm.value.lastName,
       email: this.signupForm.value.email,
       password: this.signupForm.value.password,
-      role: this.signupForm.value.role // Send the selected role
+      role: this.signupForm.value.role
     };
 
     this.authService.register(registrationData).subscribe({
       next: (response) => {
         console.log('Registration successful', response);
-        this.navCtrl.navigateRoot('/login'); // Redirect to login after successful registration
+        this.navCtrl.navigateRoot('/login');
       },
       error: (error) => {
         console.error('Registration failed', error);
-        // TODO: Show an alert or a toast message here
       }
     });
   }

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, NavController } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
 import { Auth } from '@angular/fire/auth';

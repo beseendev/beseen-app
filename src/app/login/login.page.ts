@@ -33,8 +33,8 @@ export class LoginPage {
     private authService: AuthService,
     private router: Router,
     private toastController: ToastController,
-    private auth: Auth, // Injetar Auth do AngularFire
-    private navCtrl: NavController // Injetar NavController
+    private auth: Auth,
+    private navCtrl: NavController
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

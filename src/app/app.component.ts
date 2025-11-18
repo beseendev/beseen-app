@@ -16,7 +16,7 @@ import {
   personOutline,
   logoGoogle,
   logoFacebook,
-  logoTwitter
+  logoTwitter, shieldCheckmarkOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -41,7 +41,8 @@ export class AppComponent {
       personOutline,
       logoGoogle,
       logoFacebook,
-      logoTwitter
+      logoTwitter,
+      shieldCheckmarkOutline
     });
   }
 }
