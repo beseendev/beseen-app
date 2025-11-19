@@ -33,7 +33,7 @@ import { of } from 'rxjs';
   standalone: true,
   imports: [
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
-    IonItem, IonInput, IonButton, IonIcon, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
+    IonItem, IonInput, IonButton, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
     IonDatetime, IonDatetimeButton, IonModal
   ]
 })
