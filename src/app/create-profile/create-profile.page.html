@@ -1,13 +1,82 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>create-profile</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding ion-text-center gradient-background">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">create-profile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="ion-padding-top">
+    <h1 class="ion-color-light ion-padding-top">Complete seu Perfil</h1>
+    <p class="ion-color-light">Preencha os campos abaixo para continuar.</p>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="submitForm()" class="ion-margin-top">
+
+    <!-- Role Selection -->
+    <div *ngIf="!isRoleFromToken">
+      <ion-segment formControlName="role" class="ion-margin-vertical">
+        <ion-segment-button value="JOGADOR">
+          <ion-label>JOGADOR</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="CLUBE">
+          <ion-label>CLUBE</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <div *ngIf="profileForm.get('role')?.invalid && profileForm.get('role')?.touched" class="error-text ion-text-start">
+        Selecione um tipo de conta.
+      </div>
+    </div>
+
+    <!-- Player Form Fields -->
+    <div *ngIf="profileForm.get('role')?.value === 'JOGADOR'">
+      <ion-item class="ion-margin-bottom" color="none">
+        <ion-textarea formControlName="bio" placeholder="Bio (fale sobre você)" [autoGrow]="true" maxlength="500"></ion-textarea>
+      </ion-item>
+
+      <ion-item class="ion-margin-bottom" color="none">
+        <ion-input formControlName="position" placeholder="Posição em campo" maxlength="100"></ion-input>
+      </ion-item>
+
+      <ion-item class="ion-margin-bottom" color="none">
+        <ion-input formControlName="height" placeholder="Altura (ex: 1,80m)" maxlength="20"></ion-input>
+      </ion-item>
+
+      <ion-item class="ion-margin-bottom" color="none">
+        <ion-input formControlName="weight" placeholder="Peso (ex: 75kg)" maxlength="20"></ion-input>
+      </ion-item>
+
+      <ion-item class="ion-margin-bottom" color="none">
+        <ion-textarea formControlName="careerHistory" placeholder="Histórico da carreira" [autoGrow]="true" maxlength="1000"></ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- Common Fields -->
+    <ion-item class="ion-margin-bottom" color="none">
+      <ion-input formControlName="documentNumber" placeholder="* CPF ou Documento de Identidade"></ion-input>
+    </ion-item>
+    <div *ngIf="profileForm.get('documentNumber')?.invalid && profileForm.get('documentNumber')?.touched" class="error-text ion-text-start">
+      Documento é obrigatório.
+    </div>
+
+    <ion-item class="ion-margin-bottom" color="none">
+      <ion-input formControlName="phoneNumber" placeholder="* Telefone com DDD" type="tel"></ion-input>
+    </ion-item>
+    <div *ngIf="profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched" class="error-text ion-text-start">
+      Telefone inválido.
+    </div>
+
+    <ion-item class="ion-margin-bottom" color="none">
+      <ion-label position="stacked">* Data de Nascimento</ion-label>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="datetime" formControlName="dateOfBirth" presentation="date" displayFormat="DD/MM/YYYY"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+    <div *ngIf="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched" class="error-text ion-text-start">
+      Data de nascimento é obrigatória.
+    </div>
+
+
+    <ion-button expand="block" type="submit" [disabled]="profileForm.invalid" color="primary" class="ion-margin-top">
+      SALVAR PERFIL
+    </ion-button>
+  </form>
+
 </ion-content>

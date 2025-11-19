@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
@@ -8,6 +9,16 @@ export interface User {
   id: string;
   email: string;
   hasProfile: boolean;
+}
+
+export interface JwtPayload {
+  sub: string; // Corresponds to user.getEmail()
+  userId: string;
+  name: string;
+  role: string;
+  clubName: string | null;
+  exp?: number; // Expiration time
+  iat?: number; // Issued at time
 }
 
 @Injectable({
@@ -37,9 +48,8 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User> {
-    return this.apiService.get<User>(`${this.authEndpoint}/me`).pipe(
+    return this.apiService.get<User>('/profile/me').pipe(
       catchError(err => {
-        console.error('Failed to fetch current user:', err);
         return throwError(() => err);
       })
     );
@@ -145,7 +155,7 @@ export class AuthService {
     );
   }
 
-  resetPassword(data: { email: string, code: string, newPassword: string }): Observable<any> {
+  resetPassword(data: { email: string, code: string, password: string }): Observable<any> {
     return this.apiService.post<any>(`${this.authEndpoint}/update-password`, data).pipe(
       tap((response) => {
         this.showToast(response.message || 'Senha redefinida com sucesso!', 'success');
@@ -155,6 +165,19 @@ export class AuthService {
 
   getAccessToken(): string | null {
     return localStorage.getItem('access_token');
+  }
+
+  getDecodedToken<T>(): T | null {
+    const token = this.getAccessToken();
+    if (token) {
+      try {
+        return jwtDecode<T>(token);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+        return null;
+      }
+    }
+    return null;
   }
 
   getRefreshToken(): string | null {

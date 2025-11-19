@@ -5,10 +5,11 @@ import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 
+// This validator now correctly checks for a 'password' control.
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-  const newPassword = control.get('newPassword')?.value;
+  const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
-  return newPassword === confirmPassword ? null : { passwordMismatch: true };
+  return password === confirmPassword ? null : { passwordMismatch: true };
 }
 
 @Component({
@@ -36,10 +37,11 @@ export class ForgotPasswordPage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
+    // The form control is now correctly named 'password'.
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       code: [''],
-      newPassword: [''],
+      password: [''],
       confirmPassword: ['']
     });
   }
@@ -56,7 +58,8 @@ export class ForgotPasswordPage implements OnInit {
     this.authService.sendPasswordResetCode(email).subscribe(() => {
       this.codeSent = true;
       this.forgotPasswordForm.get('code')?.setValidators([Validators.required]);
-      this.forgotPasswordForm.get('newPassword')?.setValidators([Validators.required, Validators.minLength(6)]);
+      // Validator is now set on the correct 'password' control.
+      this.forgotPasswordForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
       this.forgotPasswordForm.get('confirmPassword')?.setValidators([Validators.required]);
       this.forgotPasswordForm.setValidators(passwordMatchValidator);
       this.forgotPasswordForm.updateValueAndValidity();
@@ -68,9 +71,10 @@ export class ForgotPasswordPage implements OnInit {
       this.forgotPasswordForm.markAllAsTouched();
       return;
     }
-    const { email, code, newPassword } = this.forgotPasswordForm.value;
+    // Destructuring now works because the form group has a 'password' property.
+    const { email, code, password } = this.forgotPasswordForm.value;
 
-    this.authService.resetPassword({ email, code, newPassword }).subscribe(() => {
+    this.authService.resetPassword({ email, code, password }).subscribe(() => {
       this.router.navigate(['/login']);
     });
   }
