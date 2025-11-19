@@ -5,6 +5,15 @@
     <p class="ion-color-light">Preencha os campos abaixo para continuar.</p>
   </div>
 
+  <!-- Profile Image Uploader -->
+  <div class="profile-image-container ion-margin-vertical" (click)="selectProfileImage()">
+    <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="profile-image" />
+    <div *ngIf="!profileImageUrl" class="profile-image-placeholder">
+      <ion-icon name="camera-outline" size="large"></ion-icon>
+      <p>Adicionar Foto</p>
+    </div>
+  </div>
+
   <form [formGroup]="profileForm" (ngSubmit)="submitForm()" class="ion-margin-top">
 
     <!-- Role Selection -->
@@ -74,8 +83,9 @@
     </div>
 
 
-    <ion-button expand="block" type="submit" [disabled]="profileForm.invalid" color="primary" class="ion-margin-top">
-      SALVAR PERFIL
+    <ion-button expand="block" type="submit" [disabled]="profileForm.invalid || isLoading" color="primary" class="ion-margin-top">
+      <span *ngIf="!isLoading">SALVAR PERFIL</span>
+      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
     </ion-button>
   </form>
 

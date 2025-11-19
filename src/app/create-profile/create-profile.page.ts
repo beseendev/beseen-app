@@ -16,15 +16,19 @@ import {
   IonTextarea,
   IonDatetime,
   IonDatetimeButton,
-  IonModal
+  IonModal,
+  IonSpinner,
+  ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline } from 'ionicons/icons';
+import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
-import { ProfileService } from '../services/profile.service';
+import { FileType, ProfileService } from '../services/profile.service';
 import { Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, of } from 'rxjs';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-create-profile',
@@ -32,23 +36,28 @@ import { of } from 'rxjs';
   styleUrls: ['./create-profile.page.scss'],
   standalone: true,
   imports: [
-    IonContent, CommonModule, FormsModule, ReactiveFormsModule,
-    IonItem, IonInput, IonButton, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
-    IonDatetime, IonDatetimeButton, IonModal
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, ReactiveFormsModule,
+    IonItem, IonInput, IonButton, IonIcon, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
+    IonDatetime, IonDatetimeButton, IonModal, IonSpinner
   ]
 })
 export class CreateProfilePage implements OnInit {
   profileForm!: FormGroup;
   userRole: string | null = null;
   isRoleFromToken = false;
+  isLoading = false;
+
+  profileImageUrl: string | null = null;
+  private selectedImageFile: File | null = null;
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private toastController = inject(ToastController);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline });
+    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline });
   }
 
   ngOnInit() {
@@ -67,11 +76,33 @@ export class CreateProfilePage implements OnInit {
       documentNumber: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(15)]],
       dateOfBirth: [null, [Validators.required]],
-      role: [this.userRole, [Validators.required]]
+      role: [this.userRole || 'JOGADOR', [Validators.required]]
     });
 
     if (this.isRoleFromToken) {
       this.profileForm.get('role')?.disable();
+    }
+  }
+
+  async selectProfileImage() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true, // Simple crop/zoom
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Photos
+      });
+
+      if (image.webPath) {
+        this.profileImageUrl = image.webPath;
+        // Convert URI to Blob and then to File
+        const response = await fetch(image.webPath);
+        const blob = await response.blob();
+        this.selectedImageFile = new File([blob], `profile_${new Date().getTime()}.${image.format}`, { type: blob.type });
+      }
+    } catch (error) {
+      console.error('Error selecting image', error);
+      this.showToast('Não foi possível selecionar a imagem.', 'danger');
     }
   }
 
@@ -81,28 +112,64 @@ export class CreateProfilePage implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     const formValue = this.profileForm.getRawValue();
     const formattedDate = this.formatDate(formValue.dateOfBirth);
-
-    const requestData = {
-      ...formValue,
-      dateOfBirth: formattedDate
-    };
+    const requestData = { ...formValue, dateOfBirth: formattedDate };
 
     this.profileService.createPlayerProfile(requestData).pipe(
+      switchMap(() => {
+        if (this.selectedImageFile) {
+          return this.handleImageUpload(this.selectedImageFile);
+        }
+        // If no image, complete the flow successfully
+        return of({ allDone: true });
+      }),
+      finalize(() => this.isLoading = false),
       catchError(err => {
-        // Error is already handled by the service's toast, but we prevent it from crashing the app
-        console.error(err);
-        return of(null);
+        console.error('An error occurred in the profile creation/upload flow', err);
+        this.showToast('Ocorreu um erro ao salvar o perfil.', 'danger');
+        return EMPTY;
       })
-    ).subscribe(response => {
-      if (response) {
-        // On success, force a refresh of the user's state and navigate to home
+    ).subscribe(result => {
+      if (result) {
+        // On full success, force a refresh of the user's state and navigate to home
         this.authService.getCurrentUser().subscribe(() => {
           this.router.navigate(['/home']);
         });
       }
     });
+  }
+
+  private handleImageUpload(file: File) {
+    const uploadRequest = {
+      fileName: file.name,
+      contentType: file.type,
+      category: FileType.PROFILE_IMAGE,
+      size: file.size
+    };
+
+    return this.profileService.getPresignedUrl(uploadRequest).pipe(
+      switchMap(uploadResponse => {
+        // Step 2: Upload to S3
+        return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
+          // We only care about the final event
+          tap(event => {
+            if (event.type === HttpEventType.Response) {
+              if (event.status !== 200) {
+                throw new Error('S3 upload failed');
+              }
+            }
+          }),
+          // Filter for the final response event
+          switchMap(event => event.type === HttpEventType.Response ? of(true) : EMPTY)
+        );
+      }),
+      switchMap(() => {
+        // Step 3: Notify backend
+        return this.profileService.notifyUploadComplete();
+      })
+    );
   }
 
   private formatDate(dateString: string): string {
@@ -112,5 +179,15 @@ export class CreateProfilePage implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' = 'success') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 3000,
+      color: color,
+      position: 'top'
+    });
+    toast.present();
   }
 }

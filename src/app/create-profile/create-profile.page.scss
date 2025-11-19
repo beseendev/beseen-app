@@ -20,6 +20,47 @@
   color: var(--ion-color-light) !important;
 }
 
+// Profile Image Uploader Styles
+.profile-image-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--ion-color-primary);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-placeholder {
+  text-align: center;
+  color: var(--ion-color-light);
+  opacity: 0.8;
+}
+
+.profile-image-placeholder ion-icon {
+  font-size: 3em;
+}
+
+.profile-image-placeholder p {
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+
+
+// Form Styles
 .gradient-background ion-item,
 .gradient-background ion-datetime-button {
   --background: rgba(255, 255, 255, 0.1);

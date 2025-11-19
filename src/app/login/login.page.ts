@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon } from '@ionic/angular/standalone';
-import { AuthService, User } from '../services/auth.service'; // Importar User
+import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { AuthService, User } from '../services/auth.service';
 import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { NavController } from '@ionic/angular';
-import { take } from 'rxjs/operators'; // Importar take
+import { take, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -22,12 +22,15 @@ import { take } from 'rxjs/operators'; // Importar take
     IonInput,
     IonButton,
     IonIcon,
-    RouterModule
+    RouterModule,
+    IonSpinner
   ]
 })
 export class LoginPage {
   loginForm: FormGroup;
   showPassword = false;
+  isLoading = false;
+  isGoogleLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -48,16 +51,19 @@ export class LoginPage {
   }
 
   async signInWithGoogle() {
+    this.isGoogleLoading = true;
     try {
-      await FirebaseAuthentication.signOut();
+      await FirebaseAuthentication.signOut().catch(() => {}); // Ignore sign out errors
       const result = await FirebaseAuthentication.signInWithGoogle();
+
       if (result.credential) {
         const credential = GoogleAuthProvider.credential(result.credential.idToken, result.credential.accessToken);
         const userCredential = await signInWithCredential(this.auth, credential);
-
         const idToken = await userCredential.user.getIdToken(true);
 
-        this.authService.loginWithFirebaseToken(idToken).subscribe({
+        this.authService.loginWithFirebaseToken(idToken).pipe(
+          finalize(() => this.isGoogleLoading = false)
+        ).subscribe({
           next: () => {
             this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
               if (user && user.hasProfile) {
@@ -70,6 +76,7 @@ export class LoginPage {
           error: (err) => this.handleAuthError(err, 'google')
         });
       } else {
+        this.isGoogleLoading = false;
         const toast = await this.toastController.create({
           message: 'Login com Google cancelado ou falhou.',
           duration: 2000,
@@ -78,6 +85,7 @@ export class LoginPage {
         toast.present();
       }
     } catch (error) {
+      this.isGoogleLoading = false;
       console.error('Erro no plugin de login com Google:', JSON.stringify(error));
       const toast = await this.toastController.create({
         message: 'Erro ao iniciar o login com Google. Verifique sua conexão ou configuração.',
@@ -92,10 +100,12 @@ export class LoginPage {
     if (this.loginForm.invalid) {
       return;
     }
-
+    this.isLoading = true;
     const { email, password } = this.loginForm.value;
 
-    this.authService.login({ email, password: password }).subscribe({
+    this.authService.login({ email, password: password }).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
       next: () => {
         this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
           if (user && user.hasProfile) {

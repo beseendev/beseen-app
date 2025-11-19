@@ -20,8 +20,9 @@
       Senha obrigatória.
     </div>
 
-    <ion-button expand="block" type="submit" [disabled]="loginForm.invalid" color="primary" class="ion-margin-top">
-      LOGIN
+    <ion-button expand="block" type="submit" [disabled]="loginForm.invalid || isLoading" color="primary" class="ion-margin-top">
+      <span *ngIf="!isLoading">LOGIN</span>
+      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
     </ion-button>
   </form>
 
@@ -38,7 +39,8 @@
   <div class="ion-text-center ion-margin-top">
     <div class="ion-margin-top">
       <ion-icon name="logo-facebook" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
-      <ion-icon name="logo-google" size="large" class="ion-margin-horizontal" color="light" (click)="signInWithGoogle()"></ion-icon>
+      <ion-spinner *ngIf="isGoogleLoading" name="crescent" color="light" class="ion-margin-horizontal" style="width: 32px; height: 32px;"></ion-spinner>
+      <ion-icon *ngIf="!isGoogleLoading" name="logo-google" size="large" class="ion-margin-horizontal" color="light" (click)="signInWithGoogle()"></ion-icon>
       <ion-icon name="logo-twitter" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
     </div>
   </div>

@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { finalize, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-account-confirmation',
@@ -25,6 +27,9 @@ export class AccountConfirmationPage implements OnInit, OnDestroy {
   isCooldownActive = false;
   cooldownSeconds = 60;
   private cooldownTimer: any;
+
+  isConfirming = false;
+  isResending = false;
 
   constructor(
     private fb: FormBuilder,
@@ -52,7 +57,6 @@ export class AccountConfirmationPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Clear interval when the component is destroyed to prevent memory leaks
     if (this.cooldownTimer) {
       clearInterval(this.cooldownTimer);
     }
@@ -63,31 +67,49 @@ export class AccountConfirmationPage implements OnInit, OnDestroy {
       this.confirmationForm.markAllAsTouched();
       return;
     }
+    this.isConfirming = true;
     const code = this.confirmationForm.get('code')?.value;
-    this.authService.confirmAccountByCode({ email: this.userEmail, code: code }).subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
+
+    this.authService.confirmAccountByCode({ email: this.userEmail, code: code }).pipe(
+      finalize(() => this.isConfirming = false),
+      catchError(err => {
+        console.error('Confirmation error:', err);
+        return of(null);
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response) {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
 
   resendCode() {
-    if (this.isCooldownActive) {
-      return; // Do nothing if cooldown is active
+    if (this.isCooldownActive || this.isResending) {
+      return;
     }
+    this.isResending = true;
 
-    this.authService.resendConfirmationCode({ email: this.userEmail }).subscribe(() => {
-      // Start cooldown on successful API call
-      this.isCooldownActive = true;
-      this.cooldownSeconds = 60; // Reset timer
+    this.authService.resendConfirmationCode({ email: this.userEmail }).pipe(
+      finalize(() => this.isResending = false),
+      catchError(err => {
+        console.error('Resend code error:', err);
+        return of(null);
+      })
+    ).subscribe((response) => {
+      if (response) {
+        this.isCooldownActive = true;
+        this.cooldownSeconds = 60;
 
-      this.cooldownTimer = setInterval(() => {
-        this.cooldownSeconds--;
-        if (this.cooldownSeconds <= 0) {
-          clearInterval(this.cooldownTimer);
-          this.isCooldownActive = false;
-        }
-      }, 1000);
+        this.cooldownTimer = setInterval(() => {
+          this.cooldownSeconds--;
+          if (this.cooldownSeconds <= 0) {
+            clearInterval(this.cooldownTimer);
+            this.isCooldownActive = false;
+          }
+        }, 1000);
+      }
     });
   }
 }

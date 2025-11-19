@@ -70,8 +70,9 @@
       <span *ngIf="signupForm.get('role')?.errors?.['required']">Selecione um tipo de conta.</span>
     </div>
 
-    <ion-button expand="block" type="submit" [disabled]="signupForm.invalid" color="primary" class="ion-margin-top">
-      CADASTRAR
+    <ion-button expand="block" type="submit" [disabled]="signupForm.invalid || isLoading" color="primary" class="ion-margin-top">
+      <span *ngIf="!isLoading">CADASTRAR</span>
+      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
     </ion-button>
   </form>
 

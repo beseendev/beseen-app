@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonSpinner } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 // Custom validator to check if passwords match
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -24,6 +27,7 @@ export class SignupPage implements OnInit {
   signupForm!: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -56,13 +60,23 @@ export class SignupPage implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     const { confirmPassword, ...registrationData } = this.signupForm.value;
 
-    this.authService.register(registrationData).subscribe({
-      next: () => {
-        this.router.navigate(['/account-confirmation'], {
-          state: { email: registrationData.email }
-        });
+    this.authService.register(registrationData).pipe(
+      finalize(() => this.isLoading = false),
+      catchError(err => {
+        // Error is handled by global interceptor/toast, just log it
+        console.error('Registration error:', err);
+        return of(null); // Prevent crash
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response) {
+          this.router.navigate(['/account-confirmation'], {
+            state: { email: registrationData.email }
+          });
+        }
       }
     });
   }

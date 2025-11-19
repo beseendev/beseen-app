@@ -22,15 +22,17 @@
       O código deve ter 6 dígitos numéricos.
     </div>
 
-    <ion-button expand="block" type="submit" [disabled]="confirmationForm.invalid" color="primary" class="ion-margin-top">
-      CONFIRMAR
+    <ion-button expand="block" type="submit" [disabled]="confirmationForm.invalid || isConfirming" color="primary" class="ion-margin-top">
+      <span *ngIf="!isConfirming">CONFIRMAR</span>
+      <ion-spinner *ngIf="isConfirming" name="crescent"></ion-spinner>
     </ion-button>
   </form>
 
   <div class="ion-margin-top">
-    <ion-button fill="clear" color="light" (click)="resendCode()" [disabled]="isCooldownActive">
-      <span *ngIf="!isCooldownActive">Reenviar código</span>
-      <span *ngIf="isCooldownActive">Aguarde {{ cooldownSeconds }}s...</span>
+    <ion-button fill="clear" color="light" (click)="resendCode()" [disabled]="isCooldownActive || isResending">
+      <ion-spinner *ngIf="isResending" name="crescent"></ion-spinner>
+      <span *ngIf="!isResending && !isCooldownActive">Reenviar código</span>
+      <span *ngIf="!isResending && isCooldownActive">Aguarde {{ cooldownSeconds }}s...</span>
     </ion-button>
   </div>
 
