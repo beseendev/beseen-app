@@ -3,9 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonItem,
   IonInput,
   IonButton,
@@ -36,7 +33,7 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
   styleUrls: ['./create-profile.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, ReactiveFormsModule,
+    IonContent, CommonModule, FormsModule, ReactiveFormsModule,
     IonItem, IonInput, IonButton, IonIcon, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
     IonDatetime, IonDatetimeButton, IonModal, IonSpinner
   ]
@@ -120,25 +117,27 @@ export class CreateProfilePage implements OnInit {
     this.profileService.createPlayerProfile(requestData).pipe(
       switchMap(() => {
         if (this.selectedImageFile) {
-          return this.handleImageUpload(this.selectedImageFile);
+          return this.handleImageUpload(this.selectedImageFile).pipe(
+            catchError(uploadErr => {
+              console.error('Image upload failed, but profile was created.', uploadErr);
+              this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'danger');
+              return of(null);
+            })
+          );
         }
-        // If no image, complete the flow successfully
-        return of({ allDone: true });
+        return of(null);
       }),
-      finalize(() => this.isLoading = false),
-      catchError(err => {
-        console.error('An error occurred in the profile creation/upload flow', err);
-        this.showToast('Ocorreu um erro ao salvar o perfil.', 'danger');
-        return EMPTY;
-      })
-    ).subscribe(result => {
-      if (result) {
-        // On full success, force a refresh of the user's state and navigate to home
+      tap(() => {
         this.authService.getCurrentUser().subscribe(() => {
           this.router.navigate(['/home']);
         });
-      }
-    });
+      }),
+      finalize(() => this.isLoading = false),
+      catchError(err => {
+        console.error('An error occurred in the profile creation flow', err);
+        return EMPTY;
+      })
+    ).subscribe();
   }
 
   private handleImageUpload(file: File) {
@@ -151,9 +150,7 @@ export class CreateProfilePage implements OnInit {
 
     return this.profileService.getPresignedUrl(uploadRequest).pipe(
       switchMap(uploadResponse => {
-        // Step 2: Upload to S3
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
-          // We only care about the final event
           tap(event => {
             if (event.type === HttpEventType.Response) {
               if (event.status !== 200) {
@@ -161,7 +158,6 @@ export class CreateProfilePage implements OnInit {
               }
             }
           }),
-          // Filter for the final response event
           switchMap(event => event.type === HttpEventType.Response ? of(true) : EMPTY)
         );
       }),

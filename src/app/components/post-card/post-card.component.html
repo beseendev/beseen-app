@@ -1,0 +1,31 @@
+<ion-card class="post-card">
+  <ion-item lines="none" class="post-header">
+    <ion-avatar slot="start">
+      <img [src]="post.user.avatarUrl" />
+    </ion-avatar>
+    <ion-label class="user-name">{{ post.user.name }}</ion-label>
+  </ion-item>
+
+  <img [src]="post.mediaUrl" class="post-image" />
+
+  <div class="actions">
+    <ion-button fill="clear" (click)="toggleLike()">
+      <ion-icon slot="icon-only" [name]="post.isLiked ? 'heart' : 'heart-outline'" [color]="post.isLiked ? 'danger' : 'light'"></ion-icon>
+    </ion-button>
+    <ion-button fill="clear">
+      <ion-icon slot="icon-only" name="chatbubble-outline" color="light"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="likes-count">
+    <ion-label>{{ post.likes }} likes</ion-label>
+  </div>
+
+  <div class="caption">
+    <ion-label><b>{{ post.user.name }}</b> {{ post.caption }}</ion-label>
+  </div>
+
+  <div class="comments-link">
+    <ion-label>View all {{ post.comments }} comments</ion-label>
+  </div>
+</ion-card>

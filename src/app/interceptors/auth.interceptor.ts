@@ -4,6 +4,7 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { ToastController } from '@ionic/angular/standalone';
+import { environment } from '../../environments/environment';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<any>(null);
@@ -16,7 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const toastController = inject(ToastController);
   const accessToken = authService.getAccessToken();
 
-  if (accessToken) {
+  if (accessToken && req.url.startsWith(environment.apiUrl)) {
     req = addToken(req, accessToken);
   }
 

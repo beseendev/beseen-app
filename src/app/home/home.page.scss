@@ -1,0 +1,63 @@
+.gradient-background {
+  --background: linear-gradient(135deg, #2c2c2c, #000000);
+}
+
+// Original home.page.scss styles (with modifications)
+ion-toolbar {
+  --background: transparent; // Changed from var(--ion-color-light)
+  padding: 0 10px;
+}
+
+ion-icon {
+  color: var(--ion-color-light); // Set icon color to light
+}
+
+h1 {
+  color: var(--ion-color-tertiary) !important;
+  font-weight: bold;
+}
+
+p {
+  color: var(--ion-color-light) !important;
+}
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--ion-color-primary);
+  padding: 2px;
+}
+
+ion-buttons[slot="end"] ion-button {
+  font-size: 24px;
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+
+  ion-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+
+    ion-icon {
+      font-size: 26px;
+      color: var(--ion-color-light); // Changed from medium-shade
+    }
+  }
+
+  .post-button {
+    background: var(--ion-color-primary-tint);
+    border-radius: 18px;
+    width: 70px;
+    height: 40px;
+
+    ion-icon {
+      color: var(--ion-color-primary-contrast); // Changed from primary
+      font-size: 28px;
+    }
+  }
+}

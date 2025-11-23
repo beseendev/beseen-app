@@ -55,18 +55,15 @@ export class ProfileService {
     );
   }
 
-  // Step 1: Get pre-signed URL from your backend
   getPresignedUrl(data: UploadRequest): Observable<UploadResponse> {
     return this.apiService.post<UploadResponse>(`${this.profileEndpoint}/upload-image`, data);
   }
 
-  // Step 2: Upload the actual file to S3 using the pre-signed URL
   uploadImageToS3(url: string, file: Blob, contentType: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': contentType });
     return this.httpClient.put(url, file, { headers, reportProgress: true, observe: 'events' });
   }
 
-  // Step 3: Notify your backend that the upload is complete
   notifyUploadComplete(): Observable<any> {
     return this.apiService.put<any>(`${this.profileEndpoint}/send-files`, {});
   }

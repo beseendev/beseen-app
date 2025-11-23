@@ -1,7 +1,22 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Home</ion-title>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-avatar class="profile-avatar">
+          <ion-spinner *ngIf="isLoading"></ion-spinner>
+          <img *ngIf="!isLoading && userProfile?.urlPefil" [src]="userProfile?.urlPefil" alt="User Profile Picture" />
+          <ion-icon *ngIf="!isLoading && !userProfile?.urlPefil" name="person-circle-outline" size="large"></ion-icon>
+        </ion-avatar>
+      </ion-button>
+    </ion-buttons>
+
     <ion-buttons slot="end">
+      <ion-button (click)="onHeartClick()">
+        <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onMessagesClick()">
+        <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="logout()">
         <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
       </ion-button>
@@ -9,7 +24,32 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h1>Bem-vindo!</h1>
-  <p>VocÃª estÃ¡ autenticado.</p>
+<ion-content class="ion-padding gradient-background" [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="posts$ | async as posts">
+    <app-post-card *ngFor="let post of posts; trackBy: trackById" [post]="post"></app-post-card>
+  </div>
+
+  <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <div class="footer-buttons">
+      <ion-button (click)="onHomeClick()" fill="clear">
+        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onPostClick()" fill="clear" class="post-button">
+        <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onSearchClick()" fill="clear">
+        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

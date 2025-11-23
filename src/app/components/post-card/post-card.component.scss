@@ -1,0 +1,57 @@
+.post-card {
+  background: transparent;
+  box-shadow: none;
+  margin: 0 0 20px 0;
+  color: var(--ion-color-light);
+
+  .post-header {
+    --background: transparent;
+    padding-bottom: 10px;
+
+    .user-name {
+      font-weight: bold;
+    }
+  }
+
+  .post-image {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+  }
+
+  .actions {
+    display: flex;
+    padding: 4px 0;
+
+    ion-button {
+      --padding-start: 0;
+      --padding-end: 12px;
+      ion-icon {
+        font-size: 28px;
+      }
+    }
+  }
+
+  .likes-count, .caption, .comments-link {
+    padding: 0 8px;
+    ion-label {
+      font-size: 14px;
+      white-space: normal;
+    }
+  }
+
+  .likes-count {
+    font-weight: bold;
+  }
+
+  .caption {
+    padding-top: 4px;
+  }
+
+  .comments-link {
+    padding-top: 4px;
+    ion-label {
+      color: var(--ion-color-medium);
+    }
+  }
+}
