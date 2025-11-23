@@ -125,9 +125,29 @@
     <!-- User Posts Section -->
     <div class="user-posts-section">
       <h2>Posts de {{ profile.fullName }}</h2>
-      <ion-grid>
+
+      <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)" mode="md">
+        <ion-segment-button value="images">
+          <ion-icon name="image-outline"></ion-icon>
+          <ion-label>Imagens</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="videos">
+          <ion-icon name="videocam-outline"></ion-icon>
+          <ion-label>Vídeos</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-grid *ngIf="selectedSegment === 'images'">
         <ion-row>
-          <ion-col size="6" *ngFor="let post of (userPosts$ | async); trackBy: trackById">
+          <ion-col size="6" *ngFor="let post of (filteredUserPosts$ | async); trackBy: trackById">
+            <app-post-card [post]="post"></app-post-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid *ngIf="selectedSegment === 'videos'">
+        <ion-row>
+          <ion-col size="6" *ngFor="let post of (filteredUserPosts$ | async); trackBy: trackById">
             <app-post-card [post]="post"></app-post-card>
           </ion-col>
         </ion-row>

@@ -1,0 +1,110 @@
+/* Add gradient background definition */
+.gradient-background {
+  --background: linear-gradient(135deg, #2c2c2c, #000000);
+}
+
+/* Ensure the Ionic page container itself has a solid background from the start */
+ion-page {
+  --ion-background-color: transparent; /* Allow gradient to show through */
+  background: transparent; /* Fallback */
+}
+
+ion-header {
+  --background: transparent; /* Allow gradient to show through */
+  background: transparent; /* Fallback */
+  color: var(--ion-color-light); /* Header text color for dark background */
+  ion-toolbar {
+    --background: transparent; /* Toolbar background transparent */
+    color: var(--ion-color-light); // Dark text for header
+  }
+  ion-title {
+    color: var(--ion-color-light); // Dark title
+  }
+  ion-button {
+    color: var(--ion-color-primary); // Primary color for buttons (e.g., back button)
+  }
+}
+
+ion-content {
+  --background: transparent; /* Allow gradient to show through */
+  background: transparent; /* Fallback */
+  color: var(--ion-color-light); /* Content text color for dark background */
+  /* Removed aggressive positioning and z-index from here */
+
+
+  .media-upload-container {
+    margin-bottom: 20px;
+    ion-button {
+      margin-bottom: 15px;
+      --background: var(--ion-color-primary); // Green/Yellow button
+      --color: var(--ion-color-light); // White text
+      ion-icon {
+        margin-right: 5px;
+      }
+    }
+
+    .media-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      img, video {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        object-fit: contain;
+        margin-bottom: 10px;
+        border: 1px solid var(--ion-color-medium);
+      }
+      ion-text {
+        font-size: 0.8em;
+        color: var(--ion-color-light); /* Adjusted for dark background */
+      }
+    }
+
+    .media-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px; /* Same height as media-preview */
+      border: 2px dashed var(--ion-color-medium);
+      border-radius: 8px;
+      margin-top: 20px;
+      ion-icon {
+        font-size: 3em;
+        color: var(--ion-color-medium);
+        margin-bottom: 10px;
+      }
+      ion-text {
+        color: var(--ion-color-light); /* Adjusted for dark background */
+        font-size: 0.9em;
+      }
+    }
+  }
+
+  .caption-item {
+    --background: var(--ion-color-dark); /* Dark background for item */
+    --border-radius: 8px;
+    margin-top: 15px;
+    ion-textarea {
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      color: var(--ion-color-light); /* Light text for dark background */
+    }
+    ion-label {
+      color: var(--ion-color-light); /* Light label for dark background */
+    }
+  }
+
+  ion-text[color="danger"] {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: var(--ion-color-danger); /* Ensure danger text is visible */
+  }
+}

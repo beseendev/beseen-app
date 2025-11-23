@@ -46,7 +46,7 @@ export class HomePage {
   private postService = inject(PostService);
 
   constructor() {
-    this.posts$ = this.postService.posts$;
+    this.posts$ = this.postService.homePosts$; // Changed from posts$
     addIcons({
       footballOutline,
       chatbubbleEllipsesOutline,
@@ -72,19 +72,19 @@ export class HomePage {
     });
 
     // Load initial posts only if the posts array is empty
-    if (this.postService.shouldLoadInitialPosts()) {
-      this.postService.loadPosts().subscribe();
+    if (this.postService.shouldLoadInitialHomePosts()) { // Changed from shouldLoadInitialPosts
+      this.postService.loadHomePosts().subscribe(); // Changed from loadPosts
     }
   }
 
   loadMorePosts(event: any) {
-    this.postService.loadPosts().subscribe(() => {
+    this.postService.loadHomePosts().subscribe(() => { // Changed from loadPosts
       event.target.complete();
     });
   }
 
   refreshPosts(event: any) {
-    this.postService.refreshPosts().subscribe(() => {
+    this.postService.refreshHomePosts().subscribe(() => { // Changed from refreshPosts
       event.target.complete();
     });
   }
@@ -106,8 +106,8 @@ export class HomePage {
     this.content.scrollToTop(500);
   }
 
-  onPostClick() {
-    console.log('Post (camera) icon clicked');
+  goToCreatePost() {
+    this.router.navigateByUrl('/create-post');
   }
 
   onSearchClick() {

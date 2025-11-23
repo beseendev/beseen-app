@@ -1,15 +1,14 @@
 <ion-card class="post-card">
   <ion-item lines="none" class="post-header">
     <ion-avatar slot="start">
-      <img [src]="post.user.avatarUrl" />
+      <img [src]="post.user.urlPerfil" />
     </ion-avatar>
-    <ion-label class="user-name">{{ post.user.name }}</ion-label>
+    <ion-label class="user-name">{{ post.user.username }}</ion-label>
   </ion-item>
 
   <div class="media-container">
-    <img *ngIf="post.mediaType === 'image'" [src]="post.mediaUrl" class="post-image" />
-    <video *ngIf="post.mediaType === 'video'" [src]="post.mediaUrl" class="post-video" controls autoplay muted loop playsinline></video>
-  </div>
+    <img *ngIf="post.mediaType === FileType.IMAGE" [src]="post.mediaUrl" class="post-image" />
+    <video *ngIf="post.mediaType === FileType.VIDEO" [src]="post.mediaUrl" class="post-video" controls loop></video>  </div>
 
   <div class="actions">
     <ion-button fill="clear" (click)="toggleLike()">
@@ -21,14 +20,14 @@
   </div>
 
   <div class="likes-count">
-    <ion-label>{{ post.likes }} likes</ion-label>
+    <ion-label>{{ post.likesCount }} likes</ion-label>
   </div>
 
   <div class="caption">
-    <ion-label><b>{{ post.user.name }}</b> {{ post.caption }}</ion-label>
+    <ion-label><b>{{ post.user.username }}</b> {{ post.caption }}</ion-label>
   </div>
 
   <div class="comments-link">
-    <ion-label>View all {{ post.comments }} comments</ion-label>
+    <ion-label>View all {{ post.commentsCount }} comments</ion-label>
   </div>
 </ion-card>

@@ -70,6 +70,36 @@ ion-title {
     padding-left: 10px; // Align with grid padding
   }
 
+  ion-segment {
+    margin: 20px 0;
+    --background: var(--ion-color-dark); /* Black background for the segment */
+    border-radius: 8px; /* Slightly rounded corners */
+    overflow: hidden;
+    color: var(--ion-color-primary); /* Default green color for all text/icons */
+
+    ion-segment-button {
+      --color: var(--ion-color-primary); /* Green for all (inactive/active) text/icons */
+      --color-checked: var(--ion-color-primary); /* Still green when checked */
+      --background: var(--ion-color-dark); /* Ensure buttons have dark background */
+      --background-checked: var(--ion-color-dark); /* Ensure buttons have dark background even when checked */
+      --indicator-color: transparent; /* No default indicator line */
+      border-bottom: 2px solid transparent; /* Custom indicator */
+      transition: border-bottom 0.2s ease-in-out; /* Only animate the border */
+
+      &.segment-button-checked {
+        border-bottom: 2px solid var(--ion-color-primary); /* Active indicator: green line */
+      }
+
+      ion-label {
+        font-weight: bold;
+        font-size: 0.9em;
+      }
+      ion-icon {
+        font-size: 1.2em;
+      }
+    }
+  }
+
   ion-grid {
     padding: 0; // Remove default grid padding if needed
   }

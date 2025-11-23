@@ -1,0 +1,42 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Criar Post</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="submitPost()" [disabled]="!selectedMedia || !caption">Postar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding gradient-background" [fullscreen]="true">
+  <div class="media-upload-container">
+    <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,video/*" style="display: none;">
+    <ion-button expand="block" (click)="fileInput.click()">
+      <ion-icon slot="start" name="image-outline"></ion-icon>
+      Selecionar Imagem ou Vídeo
+    </ion-button>
+
+    <div *ngIf="selectedMedia" class="media-preview">
+      <img *ngIf="selectedMedia.type.startsWith('image')" [src]="selectedMediaUrl" alt="Selected Image">
+      <video *ngIf="selectedMedia.type.startsWith('video')" [src]="selectedMediaUrl" controls></video>
+      <ion-text>Nome do Arquivo: {{ selectedMedia.name }} ({{ selectedMedia.type }})</ion-text>
+    </div>
+
+    <div *ngIf="!selectedMedia" class="media-placeholder">
+      <ion-icon name="image-outline"></ion-icon>
+      <ion-text>Nenhum arquivo selecionado</ion-text>
+    </div>
+    <ion-text color="danger" *ngIf="fileError">
+      <p>{{ fileError }}</p>
+    </ion-text>
+  </div>
+
+  <ion-item class="caption-item">
+    <ion-textarea label="Legenda" labelPlacement="stacked" placeholder="Escreva uma legenda..." [(ngModel)]="caption" [autoGrow]="true" maxlength="2200"></ion-textarea>
+  </ion-item>
+
+</ion-content>

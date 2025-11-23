@@ -4,6 +4,7 @@ import { IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem } from '@ioni
 import { Post } from '../../models/post.model';
 import { addIcons } from 'ionicons';
 import { football, footballOutline, chatbubbleOutline } from 'ionicons/icons';
+import { FileType } from '../../models/upload.model'; // Added FileType import
 
 @Component({
   selector: 'app-post-card',
@@ -14,6 +15,7 @@ import { football, footballOutline, chatbubbleOutline } from 'ionicons/icons';
 })
 export class PostCardComponent {
   @Input() post!: Post;
+  public FileType = FileType; // Expose FileType to the template
 
   constructor() {
     addIcons({ football, footballOutline, chatbubbleOutline });
@@ -21,6 +23,6 @@ export class PostCardComponent {
 
   toggleLike() {
     this.post.isLiked = !this.post.isLiked;
-    this.post.isLiked ? this.post.likes++ : this.post.likes--;
+    this.post.isLiked ? this.post.likesCount++ : this.post.likesCount--;
   }
 }

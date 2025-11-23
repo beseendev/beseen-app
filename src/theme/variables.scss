@@ -79,4 +79,8 @@
   --ion-color-light-contrast-rgb: 0,0,0;
   --ion-color-light-shade: #e0e0e0;
   --ion-color-light-tint: #ffffff;
+
+  /** step colors (not defined, causing potential issues) **/
+  --ion-color-step-50: #f2f2f2;   /* Very light gray for backgrounds, similar to what was tested */
+  --ion-color-step-100: #ffffff;  /* White for main content background */
 }
