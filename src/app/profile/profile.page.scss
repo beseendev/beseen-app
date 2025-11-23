@@ -61,48 +61,6 @@ ion-title {
   }
 }
 
-.profile-info-grid {
-  background: transparent; // Keep outer grid transparent
-  border-radius: 0;
-  padding: 0 10px; // Add some side padding for the grid
-  margin-bottom: 20px;
-
-  ion-row {
-    margin-bottom: 0; // Remove space between rows if ion-col has padding
-  }
-
-  ion-col {
-    padding: 0; // Remove default col padding
-  }
-
-  .info-item {
-    --background: transparent; // No background for items
-    --border-radius: 0;
-    margin: 0;
-    --padding-start: 0; // No internal padding as the ion-col handles it
-    --inner-padding-end: 0;
-    --min-height: auto; // Let content define height
-    display: flex; // Use flex for alignment
-    align-items: center; // Vertically align content
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); // Subtle separator
-    padding-left: 5px; // Padding for the content inside item
-    padding-right: 5px;
-
-    ion-note {
-      font-size: 1.1em; // Slightly larger for prominence
-      font-weight: 500; // Medium boldness
-      color: var(--ion-color-light); // Main text color
-      text-align: start; // Align to start;
-      flex-grow: 1; // Take available space
-      padding-top: 10px; // Padding inside the item
-      padding-bottom: 10px;
-    }
-    // Remove border for the last item in each col for better appearance
-    &:last-of-type {
-        border-bottom: none;
-    }
-  }
-}
 
 .user-posts-section {
   h2 {
@@ -134,4 +92,100 @@ ion-title {
 // Ensure the content is visible under the header
 ion-content {
   --padding-top: 56px; /* Default Ionic header height */
+}
+
+/* New Profile Info Section Styles */
+.profile-details-card {
+  background: var(--ion-color-step-50, #f2f2f2); /* Light background for the card */
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  overflow: hidden;
+
+  ion-list {
+    background: transparent; /* Ensure list background is clear */
+    padding: 0;
+  }
+
+  ion-item {
+    --background: var(--ion-color-step-50, #f2f2f2); /* Item background */
+    --padding-start: 15px;
+    --padding-end: 15px;
+    --inner-padding-end: 15px;
+    --min-height: 50px; /* Adjust item height */
+    color: var(--ion-color-dark); /* Dark text for items */
+
+    ion-icon {
+      color: var(--ion-color-primary); /* Use primary color for icons (green/yellow) */
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+
+    ion-label {
+      h3 {
+        font-weight: bold;
+        color: var(--ion-color-dark); /* Darker title */
+        margin-bottom: 2px;
+        font-size: 0.9em;
+      }
+      ion-text {
+        font-size: 1em;
+        color: var(--ion-color-dark); /* Darker text for values */
+      }
+    }
+  }
+
+  ion-card {
+    margin: 15px; /* Margin around bio/career cards */
+    border-radius: 10px;
+    box-shadow: none; /* Remove default card shadow as container has one */
+    background: var(--ion-color-light); /* White background for these cards */
+
+    ion-card-header {
+      padding-bottom: 0;
+    }
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: var(--ion-color-dark); /* Dark title */
+
+      ion-icon {
+        margin-right: 8px;
+        color: var(--ion-color-primary); /* Accent color for icons */
+      }
+    }
+    ion-card-content {
+      padding-top: 5px;
+      ion-text {
+        font-size: 0.95em;
+        line-height: 1.5;
+        color: var(--ion-color-dark); /* Darker color for text */
+      }
+    }
+  }
+  
+  // New styles for the info rows within the card
+  ion-grid {
+    padding: 0; // Remove default grid padding
+  }
+  .info-row {
+    display: flex;
+    ion-col {
+      display: flex;
+      justify-content: center; // Center items horizontally within their column
+      align-items: center; // Center items vertically
+      padding: 0 5px; // Add some horizontal padding to the columns
+    }
+    ion-item {
+      width: 100%; // Make ion-item take full width of the col
+      --background: transparent; // Ensure transparent background
+      --padding-start: 0; // Remove item default padding
+      --inner-padding-end: 0;
+    }
+    ion-label {
+      white-space: normal; // Allow text to wrap
+    }
+  }
 }

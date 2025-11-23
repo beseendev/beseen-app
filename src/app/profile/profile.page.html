@@ -39,58 +39,84 @@
     </div>
 
     <!-- Profile Info Section -->
-    <ion-grid class="profile-info-grid">
-      <!-- Role and Date of Birth -->
-      <ion-row>
-        <ion-col size="6" *ngIf="profile.role">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.role }}</ion-note>
-          </ion-item>
-        </ion-col>
-        <ion-col size="6" *ngIf="profile.dateOfBirth">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.dateOfBirth }}</ion-note>
-          </ion-item>
-        </ion-col>
-      </ion-row>
+    <div class="profile-details-card">
+      <ion-list lines="none">
+        <ion-grid>
+          <ion-row class="info-row">
+            <ion-col size="6" *ngIf="profile.role">
+              <ion-item lines="none">
+                <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Função</h3>
+                  <ion-text color="medium">{{ profile.role }}</ion-text>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6" *ngIf="profile.dateOfBirth">
+              <ion-item lines="none">
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Data de Nascimento</h3>
+                  <ion-text color="medium">{{ profile.dateOfBirth }}</ion-text>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
 
-      <!-- Position, Height, Weight -->
-      <ion-row>
-        <ion-col size="4" *ngIf="profile.position">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.position }}</ion-note>
-          </ion-item>
-        </ion-col>
-        <ion-col size="4" *ngIf="profile.height">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.height }}</ion-note>
-          </ion-item>
-        </ion-col>
-        <ion-col size="4" *ngIf="profile.weight">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.weight }}</ion-note>
-          </ion-item>
-        </ion-col>
-      </ion-row>
+          <ion-row class="info-row">
+            <ion-col size="4" *ngIf="profile.position">
+              <ion-item lines="none">
+                <ion-icon name="body-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Posição</h3>
+                  <ion-text color="medium">{{ profile.position }}</ion-text>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4" *ngIf="profile.height">
+              <ion-item lines="none">
+                <ion-icon name="resize-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Altura</h3>
+                  <ion-text color="medium">{{ profile.height }} m</ion-text>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4" *ngIf="profile.weight">
+              <ion-item lines="none">
+                <ion-icon name="scale-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>Peso</h3>
+                  <ion-text color="medium">{{ profile.weight }} kg</ion-text>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
 
-      <!-- Bio -->
-      <ion-row *ngIf="profile.bio">
-        <ion-col size="12">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.bio }}</ion-note>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      
-      <!-- Career History -->
-      <ion-row *ngIf="profile.careerHistory">
-        <ion-col size="12">
-          <ion-item lines="none" class="info-item">
-            <ion-note>{{ profile.careerHistory }}</ion-note>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+      <ion-card class="bio-card" *ngIf="profile.bio">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="information-circle-outline"></ion-icon> Sobre Mim
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-text color="medium">{{ profile.bio }}</ion-text>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="career-card" *ngIf="profile.careerHistory">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="time-outline"></ion-icon> Histórico de Carreira
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-text color="medium">{{ profile.careerHistory }}</ion-text>
+        </ion-card-content>
+      </ion-card>
+    </div>
 
     <ion-refresher slot="fixed" (ionRefresh)="refreshUserPosts($event)">
       <ion-refresher-content></ion-refresher-content>

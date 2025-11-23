@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonTitle, IonLabel, IonNote, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonTitle, IonLabel, IonNote, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, settingsOutline, personAddOutline, chatbubbleOutline, personCircleOutline } from 'ionicons/icons';
+import { arrowBackOutline, settingsOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
@@ -21,6 +21,7 @@ import { AuthService } from '../services/auth.service';
   imports: [
     CommonModule,
     IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonTitle, IonLabel, IonNote, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem,
+    IonList, IonText, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     PostCardComponent
   ],
 })
@@ -41,7 +42,7 @@ export class ProfilePage implements OnInit {
   private userPostsHasMore = true;
 
   constructor() {
-    addIcons({ arrowBackOutline, settingsOutline, personAddOutline, chatbubbleOutline, personCircleOutline });
+    addIcons({ arrowBackOutline, settingsOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline });
   }
 
   ngOnInit() {
