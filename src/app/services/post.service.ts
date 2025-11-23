@@ -86,17 +86,23 @@ export class PostService {
       return EMPTY;
     }
 
-    const endpoint = this.homeNextCursor ? `/posts?cursor=${this.homeNextCursor}&limit=${limit}` : `/posts?limit=${limit}`;
-    const mockResponse = this.getMockPostsHome();
-    return of(mockResponse).pipe(
+    let params = new HttpParams().set('limit', limit.toString());
+    if (this.homeNextCursor) {
+      params = params.set('cursor', this.homeNextCursor);
+    }
+
+    return this.apiService.get<PostPageResponseDto>(`/posts`, { params }).pipe(
+      map(response => {
+        const mappedPosts = response.posts.map(postDto => this.mapPostResponseToPost(postDto));
+        return { posts: mappedPosts, nextCursor: response.nextCursor };
+      }),
       tap(response => {
-        if (response && response.posts) {
-          const currentPosts = this.homePosts.getValue();
-          this.homePosts.next([...currentPosts, ...response.posts]);
-          this.homeNextCursor = response.nextCursor;
-          this.homeHasMorePosts = !!response.nextCursor;
-        }
-      })
+        const currentPosts = this.homePosts.getValue();
+        this.homePosts.next([...currentPosts, ...response.posts]); // response.posts are already mapped
+        this.homeNextCursor = response.nextCursor;
+        this.homeHasMorePosts = !!response.nextCursor;
+      }),
+      map(response => ({ posts: response.posts, nextCursor: response.nextCursor })) // Return mapped posts
     );
   }
 
@@ -109,39 +115,4 @@ export class PostService {
 
   shouldLoadInitialHomePosts(): boolean {
     return this.homePosts.getValue().length === 0;
-  }
-
-  private getMockPostsHome(): { posts: Post[], nextCursor: string | null } {
-    const currentCount = this.homePosts.getValue().length;
-    if (currentCount > 20) {
-      return { posts: [], nextCursor: null };
-    }
-
-    const posts: Post[] = [];
-    for (let i = 1; i <= 10; i++) {
-      const id = currentCount + i;
-      const mediaType = id % 3 === 0 ? FileType.VIDEO : FileType.IMAGE;
-      const mediaUrl = mediaType === FileType.IMAGE
-        ? `https://picsum.photos/600/800?random=${id}`
-        : `https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`;
-
-      posts.push({
-        id: `post${id}`,
-        user: {
-          id: String(id),
-          username: `User ${id}`,
-          urlPerfil: `https://i.pravatar.cc/150?u=user${id}`
-        },
-        mediaUrl: mediaUrl,
-        mediaType: mediaType,
-        caption: `This is post number ${id}. What a great piece of media!`,
-        likesCount: Math.floor(Math.random() * 1000),
-        commentsCount: Math.floor(Math.random() * 100),
-        isLiked: Math.random() > 0.5,
-        createdAt: new Date().toISOString()
-      });
-    }
-
-    return { posts, nextCursor: `cursor${currentCount + 10}` };
-  }
-}
+  }}
