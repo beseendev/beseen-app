@@ -5,7 +5,6 @@
     <p class="ion-color-light">Preencha os campos abaixo para continuar.</p>
   </div>
 
-  <!-- Profile Image Uploader -->
   <div class="profile-image-container ion-margin-vertical" (click)="selectProfileImage()">
     <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="profile-image" />
     <div *ngIf="!profileImageUrl" class="profile-image-placeholder">
@@ -16,7 +15,6 @@
 
   <form [formGroup]="profileForm" (ngSubmit)="submitForm()" class="ion-margin-top">
 
-    <!-- Role Selection -->
     <div *ngIf="!isRoleFromToken">
       <ion-segment formControlName="role" class="ion-margin-vertical">
         <ion-segment-button value="JOGADOR">
@@ -31,7 +29,6 @@
       </div>
     </div>
 
-    <!-- Player Form Fields -->
     <div *ngIf="profileForm.get('role')?.value === 'JOGADOR'">
       <ion-item class="ion-margin-bottom" color="none">
         <ion-textarea formControlName="bio" placeholder="Bio (fale sobre você)" [autoGrow]="true" maxlength="500"></ion-textarea>
@@ -54,7 +51,6 @@
       </ion-item>
     </div>
 
-    <!-- Common Fields -->
     <ion-item class="ion-margin-bottom" color="none">
       <ion-input formControlName="documentNumber" placeholder="* CPF ou Documento de Identidade"></ion-input>
     </ion-item>

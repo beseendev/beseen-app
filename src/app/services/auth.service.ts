@@ -12,13 +12,13 @@ export interface User {
 }
 
 export interface JwtPayload {
-  sub: string; // Corresponds to user.getEmail()
+  sub: string;
   userId: string;
   name: string;
   role: string;
   clubName: string | null;
-  exp?: number; // Expiration time
-  iat?: number; // Issued at time
+  exp?: number;
+  iat?: number;
 }
 
 @Injectable({

@@ -1,15 +1,13 @@
 export interface Profile {
   id: string;
-  name: string; // From user.name
+  name: string;
   fullName: string;
-  urlPerfil?: string; // Profile image URL
+  urlPerfil?: string;
   role: 'JOGADOR' | 'CLUBE';
-  dateOfBirth?: string; // YYYY-MM-DD format
+  dateOfBirth?: string;
   bio?: string;
-  position?: string; // Player specific
-  height?: string; // Player specific
-  weight?: string; // Player specific
-  careerHistory?: string; // Player specific
-  // Add other properties that might be returned by the backend, like follower counts, etc.
-  // For now, let's assume these are sufficient.
+  position?: string;
+  height?: string;
+  weight?: string;
+  careerHistory?: string;
 }

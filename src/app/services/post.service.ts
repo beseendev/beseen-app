@@ -6,16 +6,15 @@ import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
 import { FileType } from '../models/upload.model';
 
-// Backend DTOs (as per your provided structure)
-interface PostPageResponseDto { // Renamed to avoid conflict with method return
+interface PostPageResponseDto {
   posts: PostResponseDto[];
   nextCursor: string | null;
 }
 
-interface PostResponseDto { // Renamed to avoid conflict with method return
-  id: number; // Backend Long maps to TypeScript number
-  user: { // Assuming this is UserResponse from your backend
-    id: number; // Assuming UserResponse has an ID
+interface PostResponseDto {
+  id: number;
+  user: {
+    id: number;
     username: string;
     urlPerfil?: string;
   };
@@ -25,7 +24,7 @@ interface PostResponseDto { // Renamed to avoid conflict with method return
   likesCount: number;
   commentsCount: number;
   isLiked: boolean;
-  createdAt: string; // LocalDateTime maps to string
+  createdAt: string;
 }
 
 @Injectable({
@@ -35,26 +34,20 @@ export class PostService {
   private apiService = inject(ApiService);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
-  // userPosts$ is now observed by filteredUserPosts$ in profile.page.ts
   private userPostsNextCursor: string | null = null;
   private userPostsHasMore = true;
 
   constructor() { }
 
-  /**
-   * Maps a backend PostResponse DTO to the frontend Post model.
-   * @param postResponse The backend PostResponse object.
-   * @returns The frontend Post model.
-   */
   private mapPostResponseToPost(postResponse: PostResponseDto): Post {
     const user: UserInfo = {
-      id: String(postResponse.user.id), // Ensure user ID is string
+      id: String(postResponse.user.id),
       username: postResponse.user.username,
       urlPerfil: postResponse.user.urlPerfil
     };
 
     return {
-      id: String(postResponse.id), // Convert backend Long to string
+      id: String(postResponse.id),
       user: user,
       mediaUrl: postResponse.mediaUrl,
       mediaType: postResponse.mediaType,
@@ -66,17 +59,10 @@ export class PostService {
     };
   }
 
-  /**
-   * Fetches posts for the authenticated user from the backend.
-   * This is intended for the profile page.
-   * @param limit The maximum number of posts to retrieve.
-   * @param cursor An optional cursor for pagination.
-   * @returns An Observable of PostPageResponse from the backend.
-   */
   getPostsForAuthenticatedUser(limit: number, cursor?: string): Observable<{ posts: Post[], nextCursor: string | null }> {
     let params = new HttpParams().set('limit', limit.toString());
     if (cursor) {
-      params = params.set('nextCursor', cursor); // Assuming backend uses 'nextCursor' for its pagination
+      params = params.set('nextCursor', cursor);
     }
 
     return this.apiService.get<PostPageResponseDto>(`/posts/my-posts`, { params }).pipe(
@@ -85,29 +71,22 @@ export class PostService {
         return { posts: mappedPosts, nextCursor: response.nextCursor };
       }),
       tap(response => {
-        // Here you could potentially log or debug the raw response if needed
-        // console.log('Mapped API response for user posts:', response);
       })
     );
   }
 
-  // --- Methods for the Home Page (keeping mock for now as per previous instruction) ---
-
-  // Original posts subject for home page (if any)
   private homePosts = new BehaviorSubject<Post[]>([]);
-  homePosts$ = this.homePosts.asObservable(); // Renamed to avoid confusion with userPostsSubject
+  homePosts$ = this.homePosts.asObservable();
 
   private homeNextCursor: string | null = null;
   private homeHasMorePosts = true;
 
-  loadHomePosts(limit: number = 10): Observable<any> { // Corrected method name
+  loadHomePosts(limit: number = 10): Observable<any> {
     if (!this.homeHasMorePosts) {
       return EMPTY;
     }
 
     const endpoint = this.homeNextCursor ? `/posts?cursor=${this.homeNextCursor}&limit=${limit}` : `/posts?limit=${limit}`;
-
-    // This is a mocked response for the home page. Replace with actual API call later.
     const mockResponse = this.getMockPostsHome();
     return of(mockResponse).pipe(
       tap(response => {
@@ -121,11 +100,11 @@ export class PostService {
     );
   }
 
-  refreshHomePosts(limit: number = 10): Observable<any> { // Corrected method name
+  refreshHomePosts(limit: number = 10): Observable<any> {
     this.homePosts.next([]);
     this.homeNextCursor = null;
     this.homeHasMorePosts = true;
-    return this.loadHomePosts(limit); // Call loadHomePosts here
+    return this.loadHomePosts(limit);
   }
 
   shouldLoadInitialHomePosts(): boolean {
@@ -133,19 +112,18 @@ export class PostService {
   }
 
   private getMockPostsHome(): { posts: Post[], nextCursor: string | null } {
-    // Create a few mock posts for UI development
     const currentCount = this.homePosts.getValue().length;
-    if (currentCount > 20) { // Stop mocking after 20 posts
+    if (currentCount > 20) {
       return { posts: [], nextCursor: null };
     }
 
     const posts: Post[] = [];
     for (let i = 1; i <= 10; i++) {
       const id = currentCount + i;
-      const mediaType = id % 3 === 0 ? FileType.VIDEO : FileType.IMAGE; // Use FileType enum
+      const mediaType = id % 3 === 0 ? FileType.VIDEO : FileType.IMAGE;
       const mediaUrl = mediaType === FileType.IMAGE
         ? `https://picsum.photos/600/800?random=${id}`
-        : `https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`; // Sample video
+        : `https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`;
 
       posts.push({
         id: `post${id}`,

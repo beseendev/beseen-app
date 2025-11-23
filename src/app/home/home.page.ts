@@ -46,7 +46,7 @@ export class HomePage {
   private postService = inject(PostService);
 
   constructor() {
-    this.posts$ = this.postService.homePosts$; // Changed from posts$
+    this.posts$ = this.postService.homePosts$;
     addIcons({
       footballOutline,
       chatbubbleEllipsesOutline,
@@ -71,20 +71,19 @@ export class HomePage {
       },
     });
 
-    // Load initial posts only if the posts array is empty
-    if (this.postService.shouldLoadInitialHomePosts()) { // Changed from shouldLoadInitialPosts
-      this.postService.loadHomePosts().subscribe(); // Changed from loadPosts
+    if (this.postService.shouldLoadInitialHomePosts()) {
+      this.postService.loadHomePosts().subscribe();
     }
   }
 
   loadMorePosts(event: any) {
-    this.postService.loadHomePosts().subscribe(() => { // Changed from loadPosts
+    this.postService.loadHomePosts().subscribe(() => {
       event.target.complete();
     });
   }
 
   refreshPosts(event: any) {
-    this.postService.refreshHomePosts().subscribe(() => { // Changed from refreshPosts
+    this.postService.refreshHomePosts().subscribe(() => {
       event.target.complete();
     });
   }

@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.beseen.com.br', // URL da sua API de produÃ§Ã£o
+  apiUrl: 'https://api.beseen.com.br',
   googleClientId: '519718200969-u4evpl00k57u3pc0fe2t05hj312nr1s6.apps.googleusercontent.com',
   firebase: {
     apiKey: "AIzaSyDkXld2ipHGKWMa6TCzyfq_UsBatpw4i9w",

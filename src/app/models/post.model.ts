@@ -1,19 +1,19 @@
-import { FileType } from './upload.model'; // Import FileType enum
+import { FileType } from './upload.model';
 
-export interface UserInfo { // Consistent with backend UserResponse/ProfilePlayerDTO
-  id: string; // Assuming user ID is also a string on frontend
+export interface UserInfo {
+  id: string;
   username: string;
-  urlPerfil?: string; // Optional profile picture URL
+  urlPerfil?: string;
 }
 
 export interface Post {
-  id: string; // Convert Long from backend to string for frontend
-  user: UserInfo; // Use the new UserInfo interface
+  id: string;
+  user: UserInfo;
   mediaUrl: string;
-  mediaType: FileType; // Use the imported FileType enum
+  mediaType: FileType;
   caption: string;
-  likesCount: number; // Match backend naming for clarity
-  commentsCount: number; // Match backend naming for clarity
+  likesCount: number;
+  commentsCount: number;
   isLiked: boolean;
-  createdAt: string; // Add createdAt from backend (LocalDateTime usually maps to string)
+  createdAt: string;
 }

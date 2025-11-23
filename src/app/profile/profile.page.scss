@@ -1,6 +1,6 @@
 .gradient-background {
   --background: linear-gradient(135deg, #2c2c2c, #000000);
-  --padding-top: 56px; /* Adjust for header height */
+  --padding-top: 56px;
 }
 
 ion-toolbar {
@@ -24,12 +24,12 @@ ion-title {
     height: 80px;
     margin-right: 15px;
     border: 3px solid var(--ion-color-primary);
-    min-width: 80px; // Ensure it doesn't shrink
-    min-height: 80px; // Ensure it doesn't shrink
-    display: flex; /* Added for centering */
-    justify-content: center; /* Added for centering */
-    align-items: center; /* Added for centering */
-    
+    min-width: 80px;
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     img {
       border-radius: 50%;
       object-fit: cover;
@@ -38,7 +38,7 @@ ion-title {
     }
 
     ion-icon {
-      font-size: 80px; /* Increased to fill avatar circle */
+      font-size: 80px;
       color: var(--ion-color-medium);
     }
   }
@@ -56,7 +56,7 @@ ion-title {
   margin-bottom: 20px;
 
   ion-button {
-    text-transform: none; // Prevent uppercase
+    text-transform: none;
     font-weight: bold;
   }
 }
@@ -67,27 +67,27 @@ ion-title {
     color: var(--ion-color-light);
     font-weight: bold;
     margin-bottom: 15px;
-    padding-left: 10px; // Align with grid padding
+    padding-left: 10px;
   }
 
   ion-segment {
     margin: 20px 0;
-    --background: var(--ion-color-dark); /* Black background for the segment */
-    border-radius: 8px; /* Slightly rounded corners */
+    --background: var(--ion-color-dark);
+    border-radius: 8px;
     overflow: hidden;
-    color: var(--ion-color-primary); /* Default green color for all text/icons */
+    color: var(--ion-color-primary);
 
     ion-segment-button {
-      --color: var(--ion-color-primary); /* Green for all (inactive/active) text/icons */
-      --color-checked: var(--ion-color-primary); /* Still green when checked */
-      --background: var(--ion-color-dark); /* Ensure buttons have dark background */
-      --background-checked: var(--ion-color-dark); /* Ensure buttons have dark background even when checked */
-      --indicator-color: transparent; /* No default indicator line */
-      border-bottom: 2px solid transparent; /* Custom indicator */
-      transition: border-bottom 0.2s ease-in-out; /* Only animate the border */
+      --color: var(--ion-color-primary);
+      --color-checked: var(--ion-color-primary);
+      --background: var(--ion-color-dark);
+      --background-checked: var(--ion-color-dark);
+      --indicator-color: transparent;
+      border-bottom: 2px solid transparent;
+      transition: border-bottom 0.2s ease-in-out;
 
       &.segment-button-checked {
-        border-bottom: 2px solid var(--ion-color-primary); /* Active indicator: green line */
+        border-bottom: 2px solid var(--ion-color-primary);
       }
 
       ion-label {
@@ -101,52 +101,50 @@ ion-title {
   }
 
   ion-grid {
-    padding: 0; // Remove default grid padding if needed
+    padding: 0;
   }
 
   ion-col {
-    padding: 2px; // Add a small gap between cards
+    padding: 2px;
   }
 
   app-post-card {
     .post-card {
-      margin: 0; // Remove default ion-card margin
-      border-radius: 0; // Remove rounded corners for a grid effect
+      margin: 0;
+      border-radius: 0;
     }
     .post-image {
-        border-radius: 0; // Remove rounded corners for the image itself
+        border-radius: 0;
     }
   }
 }
 
-// Ensure the content is visible under the header
 ion-content {
-  --padding-top: 56px; /* Default Ionic header height */
+  --padding-top: 56px;
 }
 
-/* New Profile Info Section Styles */
 .profile-details-card {
-  background: var(--ion-color-step-50, #f2f2f2); /* Light background for the card */
+  background: var(--ion-color-step-50, #f2f2f2);
   border-radius: 10px;
   margin: 20px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 
   ion-list {
-    background: transparent; /* Ensure list background is clear */
+    background: transparent;
     padding: 0;
   }
 
   ion-item {
-    --background: var(--ion-color-step-50, #f2f2f2); /* Item background */
+    --background: var(--ion-color-step-50, #f2f2f2);
     --padding-start: 15px;
     --padding-end: 15px;
     --inner-padding-end: 15px;
-    --min-height: 50px; /* Adjust item height */
-    color: var(--ion-color-dark); /* Dark text for items */
+    --min-height: 50px;
+    color: var(--ion-color-dark);
 
     ion-icon {
-      color: var(--ion-color-primary); /* Use primary color for icons (green/yellow) */
+      color: var(--ion-color-primary);
       font-size: 1.5em;
       margin-right: 10px;
     }
@@ -154,22 +152,22 @@ ion-content {
     ion-label {
       h3 {
         font-weight: bold;
-        color: var(--ion-color-dark); /* Darker title */
+        color: var(--ion-color-dark);
         margin-bottom: 2px;
         font-size: 0.9em;
       }
       ion-text {
         font-size: 1em;
-        color: var(--ion-color-dark); /* Darker text for values */
+        color: var(--ion-color-dark);
       }
     }
   }
 
   ion-card {
-    margin: 15px; /* Margin around bio/career cards */
+    margin: 15px;
     border-radius: 10px;
-    box-shadow: none; /* Remove default card shadow as container has one */
-    background: var(--ion-color-light); /* White background for these cards */
+    box-shadow: none;
+    background: var(--ion-color-light);
 
     ion-card-header {
       padding-bottom: 0;
@@ -179,11 +177,11 @@ ion-content {
       align-items: center;
       font-size: 1.1em;
       font-weight: bold;
-      color: var(--ion-color-dark); /* Dark title */
+      color: var(--ion-color-dark);
 
       ion-icon {
         margin-right: 8px;
-        color: var(--ion-color-primary); /* Accent color for icons */
+        color: var(--ion-color-primary);
       }
     }
     ion-card-content {
@@ -191,31 +189,30 @@ ion-content {
       ion-text {
         font-size: 0.95em;
         line-height: 1.5;
-        color: var(--ion-color-dark); /* Darker color for text */
+        color: var(--ion-color-dark);
       }
     }
   }
-  
-  // New styles for the info rows within the card
+
   ion-grid {
-    padding: 0; // Remove default grid padding
+    padding: 0;
   }
   .info-row {
     display: flex;
     ion-col {
       display: flex;
-      justify-content: center; // Center items horizontally within their column
-      align-items: center; // Center items vertically
-      padding: 0 5px; // Add some horizontal padding to the columns
+      justify-content: center;
+      align-items: center;
+      padding: 0 5px;
     }
     ion-item {
-      width: 100%; // Make ion-item take full width of the col
-      --background: transparent; // Ensure transparent background
-      --padding-start: 0; // Remove item default padding
+      width: 100%;
+      --background: transparent;
+      --padding-start: 0;
       --inner-padding-end: 0;
     }
     ion-label {
-      white-space: normal; // Allow text to wrap
+      white-space: normal;
     }
   }
 }

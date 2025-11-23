@@ -9,7 +9,6 @@ import { finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-// Custom validator to check if passwords match
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
@@ -42,7 +41,7 @@ export class SignupPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
-      role: ['JOGADOR', Validators.required] // Default to JOGADOR, required
+      role: ['JOGADOR', Validators.required]
     }, { validators: passwordMatchValidator });
   }
 
@@ -66,9 +65,8 @@ export class SignupPage implements OnInit {
     this.authService.register(registrationData).pipe(
       finalize(() => this.isLoading = false),
       catchError(err => {
-        // Error is handled by global interceptor/toast, just log it
         console.error('Registration error:', err);
-        return of(null); // Prevent crash
+        return of(null);
       })
     ).subscribe({
       next: (response) => {

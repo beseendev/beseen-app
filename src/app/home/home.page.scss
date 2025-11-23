@@ -2,14 +2,13 @@
   --background: linear-gradient(135deg, #2c2c2c, #000000);
 }
 
-// Original home.page.scss styles (with modifications)
 ion-toolbar {
-  --background: transparent; // Changed from var(--ion-color-light)
+  --background: transparent;
   padding: 0 10px;
 }
 
 ion-icon {
-  color: var(--ion-color-light); // Set icon color to light
+  color: var(--ion-color-light);
 }
 
 h1 {
@@ -45,7 +44,7 @@ ion-buttons[slot="end"] ion-button {
 
     ion-icon {
       font-size: 26px;
-      color: var(--ion-color-light); // Changed from medium-shade
+      color: var(--ion-color-light);
     }
   }
 
@@ -56,7 +55,7 @@ ion-buttons[slot="end"] ion-button {
     height: 40px;
 
     ion-icon {
-      color: var(--ion-color-primary-contrast); // Changed from primary
+      color: var(--ion-color-primary-contrast);
       font-size: 28px;
     }
   }

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
-import { profileGuard } from './guards/profile-guard'; // Importar o novo guard
+import { profileGuard } from './guards/profile-guard';
 
 export const routes: Routes = [
   {
@@ -10,11 +10,11 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./home/home.page').then(m => m.HomePage),
-    canActivate: [authGuard, profileGuard] // Adicionar o profileGuard aqui
+    canActivate: [authGuard, profileGuard]
   },
   {
     path: '',
-    redirectTo: 'home', // Redirecionar para home para que os guards sejam aplicados
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
@@ -32,7 +32,7 @@ export const routes: Routes = [
   {
     path: 'create-profile',
     loadComponent: () => import('./create-profile/create-profile.page').then(m => m.CreateProfilePage),
-    canActivate: [authGuard] // Proteger a rota de criação de perfil
+    canActivate: [authGuard]
   },
   {
     path: 'profile',

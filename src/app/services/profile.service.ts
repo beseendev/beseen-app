@@ -6,7 +6,6 @@ import { ToastController } from '@ionic/angular/standalone';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Profile } from '../models/profile.model';
 
-// Matches the backend DTO
 export interface ProfilePlayerCreationRequest {
   bio?: string;
   position?: string;
@@ -15,17 +14,15 @@ export interface ProfilePlayerCreationRequest {
   careerHistory?: string;
   documentNumber: string;
   phoneNumber: string;
-  dateOfBirth: string; // Format dd/MM/yyyy
+  dateOfBirth: string;
   role: string;
 }
 
-// Matches the backend enum
 export enum FileType {
   PROFILE_IMAGE = 'PROFILE_IMAGE',
   COVER_IMAGE = 'COVER_IMAGE'
 }
 
-// Matches the backend DTO
 export interface UploadRequest {
   fileName: string;
   contentType: string;
@@ -33,7 +30,6 @@ export interface UploadRequest {
   size: number;
 }
 
-// Matches the backend DTO
 export interface UploadResponse {
   uploadUrl: string;
   fileId: number;

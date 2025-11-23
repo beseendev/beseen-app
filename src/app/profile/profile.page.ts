@@ -22,10 +22,10 @@ import { AuthService } from '../services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // Added FormsModule
+    FormsModule,
     IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonTitle, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem,
     IonList, IonText, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
-    IonSegment, IonSegmentButton, // Added IonSegment and IonSegmentButton
+    IonSegment, IonSegmentButton,
     PostCardComponent
   ],
 })
@@ -33,8 +33,8 @@ export class ProfilePage implements OnInit {
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
-  selectedSegment: 'images' | 'videos' = 'images'; // Added selectedSegment
-  private readonly DEFAULT_POST_LIMIT = 10; // Define a default limit
+  selectedSegment: 'images' | 'videos' = 'images';
+  private readonly DEFAULT_POST_LIMIT = 10;
 
   private profileService = inject(ProfileService);
   private postService = inject(PostService);
@@ -44,7 +44,7 @@ export class ProfilePage implements OnInit {
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
   filteredUserPosts$: Observable<Post[]>;
-  private userPostsCurrentCursor: string | undefined; // Renamed to clarify it's the current cursor
+  private userPostsCurrentCursor: string | undefined;
   private userPostsHasMore = true;
 
   constructor() {
@@ -67,22 +67,17 @@ export class ProfilePage implements OnInit {
     this.activatedRoute.paramMap.pipe(
       switchMap(params => {
         this.profileId = params.get('userId');
-
-        // Determine if it's "my" profile
-        // In a real app, you'd get the current user's ID from AuthService
-        // and compare it with this.profileId
-        return this.authService.getCurrentUser().pipe( // Changed from getCurrentUserId()
-          filter(user => !!user), // Ensure user is not null
-          map(user => user.id), // Extract user ID
+        return this.authService.getCurrentUser().pipe(
+          filter(user => !!user),
+          map(user => user.id),
           tap(currentUserId => {
             this.isMyProfile = !this.profileId || this.profileId === currentUserId;
           }),
-          switchMap(() => this.profileService.getProfile(this.profileId ?? undefined)) // Fixed passing null
+          switchMap(() => this.profileService.getProfile(this.profileId ?? undefined))
         );
       }),
       tap(profile => {
         this.profile = profile;
-        // Optionally set profileId if it was "me" and we got the actual ID
         if (!this.profileId && profile) {
           this.profileId = profile.id;
         }
@@ -93,8 +88,6 @@ export class ProfilePage implements OnInit {
 
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
-    // The filteredUserPosts$ observable already handles this reactivity.
-    // No need to explicitly reload posts here, as the filter will re-apply.
   }
 
   goBack() {
@@ -103,17 +96,14 @@ export class ProfilePage implements OnInit {
 
   goToSettings() {
     console.log('Go to settings');
-    // Implement navigation to settings page
   }
 
   followUser() {
     console.log('Follow user', this.profile?.name);
-    // Implement follow logic
   }
 
   startChat() {
     console.log('Start chat with', this.profile?.name);
-    // Implement chat initiation logic
   }
 
   async loadMoreUserPosts(event: any) {
@@ -142,12 +132,11 @@ export class ProfilePage implements OnInit {
   }
 
   private async resetAndLoadUserPosts() {
-    this.userPostsSubject.next([]); // Clear current posts
+    this.userPostsSubject.next([]);
     this.userPostsCurrentCursor = undefined;
     this.userPostsHasMore = true;
 
     if (this.profileId) {
-      // Fetch initial posts using the new service method
       this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor).subscribe({
         next: response => {
           this.userPostsSubject.next(response.posts);

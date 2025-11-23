@@ -1,6 +1,3 @@
-/* CSS com Tema Futebol - Versão Fundo Escuro */
-
-/* Estilos de erro e separador (mantidos) */
 .error-text {
   color: var(--ion-color-warning);
   font-size: 0.8em;
@@ -33,25 +30,19 @@
   color: var(--ion-color-light);
 }
 
-/* --- NOVO DESIGN --- */
-
-/* Fundo escuro e neutro */
 .gradient-background {
   --background: linear-gradient(135deg, #2c2c2c, #000000);
 }
 
-/* Título principal em DOURADO */
 .gradient-background h1 {
   color: var(--ion-color-tertiary) !important;
   font-weight: bold;
 }
 
-/* Subtítulo e outros textos em BRANCO */
 .gradient-background p {
   color: var(--ion-color-light) !important;
 }
 
-/* Estilo dos inputs com fundo semi-transparente (mantido) */
 .gradient-background ion-item {
   --background: rgba(255, 255, 255, 0.1);
   --border-radius: 8px;
@@ -71,22 +62,19 @@
   color: var(--ion-color-light);
 }
 
-/* Botão "Esqueceu sua senha?" em BRANCO */
 .gradient-background ion-button[fill="clear"] {
   color: var(--ion-color-light) !important;
   font-size: 0.9em;
 }
 
-/* Ícones de redes sociais em BRANCO */
 .gradient-background ion-icon[name^="logo-"] {
   color: var(--ion-color-light);
 }
 
-/* Botão de Login em VERDE */
 .gradient-background ion-button[type="submit"] {
   --background: var(--ion-color-primary);
   --background-activated: var(--ion-color-primary-shade);
-  --color: var(--ion-color-primary-contrast); /* Texto do botão branco */
+  --color: var(--ion-color-primary-contrast);
   --border-radius: 10px;
   --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   height: 50px;

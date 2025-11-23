@@ -15,7 +15,7 @@ import { UploadPostService } from '../services/upload-post.service';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonText, IonItem // Existing Ionic modules
+    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonText, IonItem
   ]
 })
 export class CreatePostPage implements OnInit {
@@ -25,9 +25,9 @@ export class CreatePostPage implements OnInit {
   fileError: string | null = null;
 
   private router = inject(Router);
-  private uploadPostService = inject(UploadPostService); // Injected new service
-  private loadingCtrl = inject(LoadingController); // Injected LoadingController
-  private toastCtrl = inject(ToastController); // Injected ToastController
+  private uploadPostService = inject(UploadPostService);
+  private loadingCtrl = inject(LoadingController);
+  private toastCtrl = inject(ToastController);
 
   constructor() {
     addIcons({ arrowBackOutline, imageOutline });
@@ -41,11 +41,11 @@ export class CreatePostPage implements OnInit {
   }
 
   onFileSelected(event: Event) {
-    this.fileError = null; // Reset error
+    this.fileError = null;
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      const maxFileSize = 100 * 1024 * 1024; // 100 MB
+      const maxFileSize = 100 * 1024 * 1024;
 
       if (file.size > maxFileSize) {
         this.fileError = 'O arquivo excede o tamanho máximo de 100MB.';
@@ -81,7 +81,7 @@ export class CreatePostPage implements OnInit {
 
     const loading = await this.loadingCtrl.create({
       message: 'Criando post...',
-      duration: 0 // Will be dismissed manually
+      duration: 0
     });
     await loading.present();
 
@@ -95,7 +95,7 @@ export class CreatePostPage implements OnInit {
         });
         await toast.present();
         console.log('Post created:', post);
-        this.router.navigateByUrl('/home'); // Navigate back to home or profile
+        this.router.navigateByUrl('/home');
       },
       error: async (err) => {
         await loading.dismiss();
