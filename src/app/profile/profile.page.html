@@ -1,0 +1,118 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <ion-title>{{ profile?.name || 'Perfil' }}</ion-title>
+    </ion-buttons>
+
+    <ion-buttons slot="end" *ngIf="isMyProfile">
+      <ion-button (click)="goToSettings()">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding gradient-background" [fullscreen]="true">
+  <div *ngIf="profile">
+    <!-- Profile Header Section -->
+    <div class="profile-header">
+      <ion-avatar class="profile-avatar">
+        <img *ngIf="profile.urlPerfil" [src]="profile.urlPerfil" />
+        <ion-icon *ngIf="!profile.urlPerfil" name="person-circle-outline"></ion-icon>
+      </ion-avatar>
+      <ion-label class="profile-name">{{ profile.fullName }}</ion-label>
+    </div>
+
+    <!-- Conditional Action Buttons -->
+    <div class="action-buttons" *ngIf="!isMyProfile">
+      <ion-button expand="block" color="primary" (click)="followUser()">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        Seguir
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="secondary" (click)="startChat()">
+        <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+        Chat
+      </ion-button>
+    </div>
+
+    <!-- Profile Info Section -->
+    <ion-grid class="profile-info-grid">
+      <!-- Role and Date of Birth -->
+      <ion-row>
+        <ion-col size="6" *ngIf="profile.role">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.role }}</ion-note>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6" *ngIf="profile.dateOfBirth">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.dateOfBirth }}</ion-note>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- Position, Height, Weight -->
+      <ion-row>
+        <ion-col size="4" *ngIf="profile.position">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.position }}</ion-note>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" *ngIf="profile.height">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.height }}</ion-note>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" *ngIf="profile.weight">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.weight }}</ion-note>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <!-- Bio -->
+      <ion-row *ngIf="profile.bio">
+        <ion-col size="12">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.bio }}</ion-note>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      
+      <!-- Career History -->
+      <ion-row *ngIf="profile.careerHistory">
+        <ion-col size="12">
+          <ion-item lines="none" class="info-item">
+            <ion-note>{{ profile.careerHistory }}</ion-note>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-refresher slot="fixed" (ionRefresh)="refreshUserPosts($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- User Posts Section -->
+    <div class="user-posts-section">
+      <h2>Posts de {{ profile.fullName }}</h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" *ngFor="let post of (userPosts$ | async); trackBy: trackById">
+            <app-post-card [post]="post"></app-post-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-infinite-scroll (ionInfinite)="loadMoreUserPosts($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais posts..."></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+  </div>
+  <div *ngIf="!profile">
+    <p>Carregando perfil...</p>
+  </div>
+</ion-content>

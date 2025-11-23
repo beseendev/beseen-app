@@ -1,0 +1,137 @@
+.gradient-background {
+  --background: linear-gradient(135deg, #2c2c2c, #000000);
+  --padding-top: 56px; /* Adjust for header height */
+}
+
+ion-toolbar {
+  --background: transparent;
+  color: var(--ion-color-light);
+}
+
+ion-title {
+  padding-inline: 0;
+  font-weight: bold;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin-right: 15px;
+    border: 3px solid var(--ion-color-primary);
+    min-width: 80px; // Ensure it doesn't shrink
+    min-height: 80px; // Ensure it doesn't shrink
+    display: flex; /* Added for centering */
+    justify-content: center; /* Added for centering */
+    align-items: center; /* Added for centering */
+    
+    img {
+      border-radius: 50%;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+
+    ion-icon {
+      font-size: 80px; /* Increased to fill avatar circle */
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .profile-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--ion-color-light);
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  ion-button {
+    text-transform: none; // Prevent uppercase
+    font-weight: bold;
+  }
+}
+
+.profile-info-grid {
+  background: transparent; // Keep outer grid transparent
+  border-radius: 0;
+  padding: 0 10px; // Add some side padding for the grid
+  margin-bottom: 20px;
+
+  ion-row {
+    margin-bottom: 0; // Remove space between rows if ion-col has padding
+  }
+
+  ion-col {
+    padding: 0; // Remove default col padding
+  }
+
+  .info-item {
+    --background: transparent; // No background for items
+    --border-radius: 0;
+    margin: 0;
+    --padding-start: 0; // No internal padding as the ion-col handles it
+    --inner-padding-end: 0;
+    --min-height: auto; // Let content define height
+    display: flex; // Use flex for alignment
+    align-items: center; // Vertically align content
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); // Subtle separator
+    padding-left: 5px; // Padding for the content inside item
+    padding-right: 5px;
+
+    ion-note {
+      font-size: 1.1em; // Slightly larger for prominence
+      font-weight: 500; // Medium boldness
+      color: var(--ion-color-light); // Main text color
+      text-align: start; // Align to start;
+      flex-grow: 1; // Take available space
+      padding-top: 10px; // Padding inside the item
+      padding-bottom: 10px;
+    }
+    // Remove border for the last item in each col for better appearance
+    &:last-of-type {
+        border-bottom: none;
+    }
+  }
+}
+
+.user-posts-section {
+  h2 {
+    color: var(--ion-color-light);
+    font-weight: bold;
+    margin-bottom: 15px;
+    padding-left: 10px; // Align with grid padding
+  }
+
+  ion-grid {
+    padding: 0; // Remove default grid padding if needed
+  }
+
+  ion-col {
+    padding: 2px; // Add a small gap between cards
+  }
+
+  app-post-card {
+    .post-card {
+      margin: 0; // Remove default ion-card margin
+      border-radius: 0; // Remove rounded corners for a grid effect
+    }
+    .post-image {
+        border-radius: 0; // Remove rounded corners for the image itself
+    }
+  }
+}
+
+// Ensure the content is visible under the header
+ion-content {
+  --padding-top: 56px; /* Default Ionic header height */
+}
