@@ -4,6 +4,7 @@ import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Profile } from '../models/profile.model';
 
 // Matches the backend DTO
 export interface ProfilePlayerCreationRequest {
@@ -53,6 +54,11 @@ export class ProfileService {
         this.showToast(response.message || 'Perfil salvo com sucesso!', 'success');
       })
     );
+  }
+
+  getProfile(userId?: string): Observable<Profile> {
+    const endpoint = userId ? `${this.profileEndpoint}/${userId}` : `${this.profileEndpoint}/me/full-profile`;
+    return this.apiService.get<Profile>(endpoint);
   }
 
   getPresignedUrl(data: UploadRequest): Observable<UploadResponse> {

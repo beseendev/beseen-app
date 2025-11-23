@@ -34,4 +34,14 @@ export const routes: Routes = [
     loadComponent: () => import('./create-profile/create-profile.page').then(m => m.CreateProfilePage),
     canActivate: [authGuard] // Proteger a rota de criação de perfil
   },
+  {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'profile/:userId',
+    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
+    canActivate: [authGuard]
+  },
 ];

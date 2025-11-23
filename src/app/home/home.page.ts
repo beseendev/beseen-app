@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ViewChild } from '@angular/core';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { heartOutline, chatbubbleEllipsesOutline, homeOutline, cameraOutline, searchOutline, personCircleOutline, logOutOutline } from 'ionicons/icons';
+import { footballOutline, chatbubbleEllipsesOutline, homeOutline, cameraOutline, searchOutline, personCircleOutline, logOutOutline } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
@@ -48,7 +48,7 @@ export class HomePage {
   constructor() {
     this.posts$ = this.postService.posts$;
     addIcons({
-      heartOutline,
+      footballOutline,
       chatbubbleEllipsesOutline,
       homeOutline,
       cameraOutline,
@@ -112,6 +112,11 @@ export class HomePage {
 
   onSearchClick() {
     console.log('Search icon clicked');
+  }
+
+  goToProfile() {
+    console.log('Navigating to profile...');
+    this.router.navigateByUrl('/profile');
   }
 
   trackById(index: number, post: Post): string {

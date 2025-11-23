@@ -49,6 +49,16 @@ export class PostService {
     return this.posts.getValue().length === 0;
   }
 
+  getPostsByUserId(userId: string, cursor?: string): Observable<{ posts: Post[]; nextCursor: string | null }> {
+    // This is a mocked response. Replace with actual API call:
+    // const endpoint = cursor ? `/posts/user/${userId}?cursor=${cursor}` : `/posts/user/${userId}`;
+    // return this.apiService.get<{ posts: Post[], nextCursor: string | null }>(endpoint);
+
+    // Mock implementation for demonstration
+    const mockPosts = this.getMockPostsForUser(userId, cursor);
+    return of(mockPosts);
+  }
+
   private getMockPosts(): { posts: Post[], nextCursor: string | null } {
     // Create a few mock posts for UI development
     const currentCount = this.posts.getValue().length;
@@ -59,15 +69,20 @@ export class PostService {
     const posts: Post[] = [];
     for (let i = 1; i <= 10; i++) {
       const id = currentCount + i;
+      const mediaType = id % 3 === 0 ? 'video' : 'image';
+      const mediaUrl = mediaType === 'image'
+        ? `https://picsum.photos/600/800?random=${id}`
+        : `https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`; // Sample video
+
       posts.push({
         id: `post${id}`,
         user: {
           name: `User ${id}`,
           avatarUrl: `https://i.pravatar.cc/150?u=user${id}`
         },
-        mediaUrl: `https://picsum.photos/600/800?random=${id}`,
-        mediaType: 'image',
-        caption: `This is post number ${id}. What a great picture!`,
+        mediaUrl: mediaUrl,
+        mediaType: mediaType,
+        caption: `This is post number ${id}. What a great piece of media!`,
         likes: Math.floor(Math.random() * 1000),
         comments: Math.floor(Math.random() * 100),
         isLiked: Math.random() > 0.5,
@@ -76,4 +91,36 @@ export class PostService {
 
     return { posts, nextCursor: `cursor${currentCount + 10}` };
   }
+
+  private getMockPostsForUser(userId: string, cursor?: string): { posts: Post[], nextCursor: string | null } {
+    const userPosts: Post[] = [];
+    const startId = cursor ? parseInt(cursor.replace('cursor', '')) : 1;
+    const count = 10; // Number of posts per page
+
+    for (let i = 0; i < count; i++) {
+      const id = startId + i;
+      const mediaType = id % 3 === 0 ? 'video' : 'image';
+      const mediaUrl = mediaType === 'image'
+        ? `https://picsum.photos/600/800?random=${userId}-${id}`
+        : `https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4`; // Sample video
+
+      userPosts.push({
+        id: `user${userId}-post${id}`,
+        user: {
+          name: `User ${userId}`,
+          avatarUrl: `https://i.pravatar.cc/150?u=user${userId}`
+        },
+        mediaUrl: mediaUrl,
+        mediaType: mediaType,
+        caption: `This is post number ${id} from user ${userId}.`,
+        likes: Math.floor(Math.random() * 500),
+        comments: Math.floor(Math.random() * 50),
+        isLiked: Math.random() > 0.5,
+      });
+    }
+
+    const nextCursor = (startId + count <= 30) ? `cursor${startId + count}` : null; // Limit total mock posts for a user
+    return { posts: userPosts, nextCursor: nextCursor };
+  }
 }
+

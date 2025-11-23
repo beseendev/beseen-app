@@ -6,11 +6,14 @@
     <ion-label class="user-name">{{ post.user.name }}</ion-label>
   </ion-item>
 
-  <img [src]="post.mediaUrl" class="post-image" />
+  <div class="media-container">
+    <img *ngIf="post.mediaType === 'image'" [src]="post.mediaUrl" class="post-image" />
+    <video *ngIf="post.mediaType === 'video'" [src]="post.mediaUrl" class="post-video" controls autoplay muted loop playsinline></video>
+  </div>
 
   <div class="actions">
     <ion-button fill="clear" (click)="toggleLike()">
-      <ion-icon slot="icon-only" [name]="post.isLiked ? 'heart' : 'heart-outline'" [color]="post.isLiked ? 'danger' : 'light'"></ion-icon>
+      <ion-icon slot="icon-only" [name]="post.isLiked ? 'football' : 'football-outline'" [color]="post.isLiked ? 'primary' : 'light'"></ion-icon>
     </ion-button>
     <ion-button fill="clear">
       <ion-icon slot="icon-only" name="chatbubble-outline" color="light"></ion-icon>

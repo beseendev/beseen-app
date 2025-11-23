@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem } from '@ionic/angular/standalone';
 import { Post } from '../../models/post.model';
 import { addIcons } from 'ionicons';
-import { heart, heartOutline, chatbubbleOutline } from 'ionicons/icons';
+import { football, footballOutline, chatbubbleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-post-card',
@@ -16,7 +16,7 @@ export class PostCardComponent {
   @Input() post!: Post;
 
   constructor() {
-    addIcons({ heart, heartOutline, chatbubbleOutline });
+    addIcons({ football, footballOutline, chatbubbleOutline });
   }
 
   toggleLike() {

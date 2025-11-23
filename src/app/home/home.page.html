@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button>
+      <ion-button (click)="goToProfile()">
         <ion-avatar class="profile-avatar">
           <ion-spinner *ngIf="isLoading"></ion-spinner>
           <img *ngIf="!isLoading && userProfile?.urlPefil" [src]="userProfile?.urlPefil" alt="User Profile Picture" />
@@ -12,7 +12,7 @@
 
     <ion-buttons slot="end">
       <ion-button (click)="onHeartClick()">
-        <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="football-outline"></ion-icon>
       </ion-button>
       <ion-button (click)="onMessagesClick()">
         <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
