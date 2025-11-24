@@ -102,7 +102,7 @@ export class PostService {
         this.homeNextCursor = response.nextCursor;
         this.homeHasMorePosts = !!response.nextCursor;
       }),
-      map(response => ({ posts: response.posts, nextCursor: response.nextCursor })) // Return mapped posts
+      map(response => ({ posts: response.posts, nextCursor: response.nextCursor }))
     );
   }
 
@@ -115,4 +115,58 @@ export class PostService {
 
   shouldLoadInitialHomePosts(): boolean {
     return this.homePosts.getValue().length === 0;
-  }}
+  }
+
+  likePost(postId: string): Observable<void> {
+    return this.apiService.post<void>(`/posts/${postId}/like`, {}).pipe(
+      tap(() => {
+        const postToUpdate = this.findPostInSubjects(postId);
+        if (postToUpdate) {
+          this.updatePostInSubjects(postId, true, postToUpdate.likesCount + 1);
+        }
+      })
+    );
+  }
+
+  unlikePost(postId: string): Observable<void> {
+    return this.apiService.delete<void>(`/posts/${postId}/like`).pipe(
+      tap(() => {
+        const postToUpdate = this.findPostInSubjects(postId);
+        if (postToUpdate && postToUpdate.likesCount > 0) {
+          this.updatePostInSubjects(postId, false, postToUpdate.likesCount - 1);
+        }
+      })
+    );
+  }
+
+  /**
+   * Updates a post's like status and count in both home and user post BehaviorSubjects.
+   * @param postId The ID of the post to update.
+   * @param newLikedStatus The new isLiked status.
+   * @param newLikesCount The new likesCount.
+   */
+  private updatePostInSubjects(postId: string, newLikedStatus: boolean, newLikesCount: number) {
+    const updateSubject = (subject: BehaviorSubject<Post[]>) => {
+      const currentPosts = subject.getValue();
+      const updatedPosts = currentPosts.map(post =>
+        post.id === postId ? { ...post, isLiked: newLikedStatus, likesCount: newLikesCount } : post
+      );
+      subject.next(updatedPosts);
+    };
+
+    updateSubject(this.homePosts);
+    // If the post is also in userPostsSubject (profile page), update it there too
+    updateSubject(this.userPostsSubject);
+  }
+
+  /**
+   * Helper to find a post by ID across both BehaviorSubjects.
+   */
+  private findPostInSubjects(postId: string): Post | undefined {
+    let post = this.homePosts.getValue().find(p => p.id === postId);
+    if (!post) {
+      post = this.userPostsSubject.getValue().find(p => p.id === postId);
+    }
+    return post;
+  }
+}
