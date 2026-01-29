@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -8,14 +8,14 @@ import {
   IonButton,
   IonIcon,
   IonLabel,
-  IonSegment,
-  IonSegmentButton,
   IonTextarea,
   IonDatetime,
   IonDatetimeButton,
   IonModal,
   IonSpinner,
-  ToastController
+  ToastController,
+  IonSegment,
+  IonSegmentButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline } from 'ionicons/icons';
@@ -23,9 +23,9 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { FileType, ProfileService } from '../services/profile.service';
 import { Router } from '@angular/router';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../models/profile.model';
 
 @Component({
   selector: 'app-create-profile',
@@ -34,18 +34,18 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
   standalone: true,
   imports: [
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
-    IonItem, IonInput, IonButton, IonIcon, IonLabel, IonSegment, IonSegmentButton, IonTextarea,
-    IonDatetime, IonDatetimeButton, IonModal, IonSpinner
+    IonItem, IonInput, IonButton, IonIcon, IonLabel, IonTextarea,
+    IonDatetime, IonDatetimeButton, IonModal, IonSpinner, IonSegment, IonSegmentButton
   ]
 })
-export class CreateProfilePage implements OnInit {
+export class CreateProfilePage implements OnInit, OnDestroy {
   profileForm!: FormGroup;
-  userRole: string | null = null;
   isRoleFromToken = false;
   isLoading = false;
 
   profileImageUrl: string | null = null;
   private selectedImageFile: File | null = null;
+  private roleChangesSub!: Subscription;
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -58,26 +58,63 @@ export class CreateProfilePage implements OnInit {
   }
 
   ngOnInit() {
+    this.initializeForm();
+    this.listenToRoleChanges();
+  }
+
+  ngOnDestroy() {
+    if (this.roleChangesSub) {
+      this.roleChangesSub.unsubscribe();
+    }
+  }
+
+  private initializeForm(): void {
+    let roleFromToken: string | null = null;
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     if (decodedToken && decodedToken.role) {
-      this.userRole = decodedToken.role;
+      roleFromToken = decodedToken.role;
       this.isRoleFromToken = true;
     }
 
     this.profileForm = this.fb.group({
-      bio: ['', [Validators.maxLength(500)]],
-      position: ['', [Validators.maxLength(100)]],
-      height: ['', [Validators.maxLength(20)]],
-      weight: ['', [Validators.maxLength(20)]],
-      careerHistory: ['', [Validators.maxLength(1000)]],
       documentNumber: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(15)]],
       dateOfBirth: [null, [Validators.required]],
-      role: [this.userRole || 'JOGADOR', [Validators.required]]
+      role: [roleFromToken, [Validators.required]]
     });
 
     if (this.isRoleFromToken) {
       this.profileForm.get('role')?.disable();
+      this.updateFormFields(roleFromToken);
+    }
+  }
+
+  private listenToRoleChanges(): void {
+    this.roleChangesSub = this.profileForm.get('role')!.valueChanges.subscribe(role => {
+      this.updateFormFields(role);
+    });
+  }
+
+  private updateFormFields(role: string | null): void {
+    // Remove all specific controls first
+    this.profileForm.removeControl('bio');
+    this.profileForm.removeControl('position');
+    this.profileForm.removeControl('height');
+    this.profileForm.removeControl('weight');
+    this.profileForm.removeControl('careerHistory');
+    this.profileForm.removeControl('clubName');
+    this.profileForm.removeControl('areaOfExpertise');
+
+    if (role === 'JOGADOR') {
+      this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
+      this.profileForm.addControl('position', this.fb.control('', [Validators.maxLength(100)]));
+      this.profileForm.addControl('height', this.fb.control('', [Validators.maxLength(20)]));
+      this.profileForm.addControl('weight', this.fb.control('', [Validators.maxLength(20)]));
+      this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
+    } else if (role === 'CLUBE') {
+      this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
+      this.profileForm.addControl('clubName', this.fb.control('', [Validators.maxLength(255)]));
+      this.profileForm.addControl('areaOfExpertise', this.fb.control('', [Validators.maxLength(255)]));
     }
   }
 
@@ -85,14 +122,13 @@ export class CreateProfilePage implements OnInit {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
-        allowEditing: true, // Simple crop/zoom
+        allowEditing: true,
         resultType: CameraResultType.Uri,
         source: CameraSource.Photos
       });
 
       if (image.webPath) {
         this.profileImageUrl = image.webPath;
-        // Convert URI to Blob and then to File
         const response = await fetch(image.webPath);
         const blob = await response.blob();
         this.selectedImageFile = new File([blob], `profile_${new Date().getTime()}.${image.format}`, { type: blob.type });
@@ -104,8 +140,14 @@ export class CreateProfilePage implements OnInit {
   }
 
   submitForm() {
+    if (!this.selectedImageFile) {
+      this.showToast('Por favor, adicione uma imagem de perfil.', 'danger');
+      return;
+    }
+
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
+      this.showToast('Por favor, preencha todos os campos obrigatórios.', 'danger');
       return;
     }
 
@@ -114,21 +156,14 @@ export class CreateProfilePage implements OnInit {
     const formattedDate = this.formatDate(formValue.dateOfBirth);
     const requestData = { ...formValue, dateOfBirth: formattedDate };
 
-    this.profileService.createPlayerProfile(requestData).pipe(
-      switchMap(() => {
-        if (this.selectedImageFile) {
-          return this.handleImageUpload(this.selectedImageFile).pipe(
-            catchError(uploadErr => {
-              console.error('Image upload failed, but profile was created.', uploadErr);
-              this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'danger');
-              return of(null);
-            })
-          );
-        }
-        return of(null);
-      }),
+    const profileCreation$ = formValue.role === 'JOGADOR'
+      ? this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest)
+      : this.profileService.createScoutProfile(requestData as ProfileScoutCreationRequest);
+
+    profileCreation$.pipe(
+      switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
       tap(() => {
-        this.authService.getCurrentUser().subscribe(() => {
+        this.authService.refreshCurrentUser().subscribe(() => {
           this.router.navigate(['/home']);
         });
       }),
@@ -140,7 +175,7 @@ export class CreateProfilePage implements OnInit {
     ).subscribe();
   }
 
-  private handleImageUpload(file: File) {
+ private handleImageUpload(file: File) {
     const uploadRequest = {
       fileName: file.name,
       contentType: file.type,
@@ -151,19 +186,21 @@ export class CreateProfilePage implements OnInit {
     return this.profileService.getPresignedUrl(uploadRequest).pipe(
       switchMap(uploadResponse => {
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
-          tap(event => {
-            if (event.type === HttpEventType.Response) {
-              if (event.status !== 200) {
-                throw new Error('S3 upload failed');
-              }
-            }
-          }),
-          switchMap(event => event.type === HttpEventType.Response ? of(true) : EMPTY)
+          catchError(uploadErr => {
+            console.error('Image upload failed, but profile was created.', uploadErr);
+            this.showToast('Perfil salvo, mas o upload da imagem falhou. Tente novamente em seu perfil.', 'warning');
+            return of(null);
+          })
         );
       }),
       switchMap(() => {
-        // Step 3: Notify backend
-        return this.profileService.notifyUploadComplete();
+        return this.profileService.notifyUploadComplete().pipe(
+           catchError(notifyErr => {
+            console.error('Notifying backend failed.', notifyErr);
+            this.showToast('Não foi possível finalizar o upload da imagem.', 'danger');
+            return of(null);
+          })
+        );
       })
     );
   }
@@ -177,7 +214,7 @@ export class CreateProfilePage implements OnInit {
     return `${day}/${month}/${year}`;
   }
 
-  private async showToast(message: string, color: 'success' | 'danger' = 'success') {
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const toast = await this.toastController.create({
       message: message,
       duration: 3000,

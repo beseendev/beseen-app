@@ -35,11 +35,8 @@ export class AuthService {
 
   constructor(private apiService: ApiService) {
     if (this.hasToken()) {
+      // Automatically fetch user data if a token exists
       this.getCurrentUser().subscribe({
-        next: (user) => {
-          this.currentUserSubject.next(user);
-          this.authState.next(true);
-        },
         error: () => {
           this.logout();
         }
@@ -49,10 +46,19 @@ export class AuthService {
 
   getCurrentUser(): Observable<User> {
     return this.apiService.get<User>('/profile/me').pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+        this.authState.next(true);
+      }),
       catchError(err => {
+        this.logout(); // Logout on error to clear invalid state
         return throwError(() => err);
       })
     );
+  }
+
+  refreshCurrentUser(): Observable<User> {
+    return this.getCurrentUser();
   }
 
   private async showToast(message: string, color: 'success' | 'danger' = 'success') {

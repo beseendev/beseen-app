@@ -1,12 +1,19 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goToProfile()">
-        <ion-avatar class="profile-avatar">
-          <ion-spinner *ngIf="isLoading"></ion-spinner>
-          <img *ngIf="!isLoading && userProfile?.urlPefil" [src]="userProfile?.urlPefil" alt="User Profile Picture" />
-          <ion-icon *ngIf="!isLoading && !userProfile?.urlPefil" name="person-circle-outline" size="large"></ion-icon>
-        </ion-avatar>
+      <ion-button (click)="onHeaderAvatarClick()">
+        <ion-spinner *ngIf="isLoading"></ion-spinner>
+
+        <ng-container *ngIf="!isLoading && userProfile">
+          <!-- Always show avatar -->
+          <ion-avatar class="profile-avatar">
+            <img *ngIf="userProfile.urlPerfil" [src]="userProfile.urlPerfil" alt="User Profile Picture" />
+            <ion-icon *ngIf="!userProfile.urlPerfil" name="person-circle-outline" size="large"></ion-icon>
+          </ion-avatar>
+        </ng-container>
+
+        <!-- Fallback if profile fails to load -->
+        <ion-icon *ngIf="!isLoading && !userProfile" name="person-circle-outline" size="large"></ion-icon>
       </ion-button>
     </ion-buttons>
 
@@ -44,7 +51,7 @@
       <ion-button (click)="onHomeClick()" fill="clear">
         <ion-icon slot="icon-only" name="home-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="goToCreatePost()" fill="clear" class="post-button">
+      <ion-button (click)="goToCreatePost()" fill="clear" class="post-button" *ngIf="userRole !== 'CLUBE'">
         <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
       </ion-button>
       <ion-button (click)="onSearchClick()" fill="clear">

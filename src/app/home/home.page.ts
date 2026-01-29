@@ -3,7 +3,7 @@ import { Component, inject, ViewChild } from '@angular/core';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { footballOutline, chatbubbleEllipsesOutline, homeOutline, cameraOutline, searchOutline, personCircleOutline, logOutOutline } from 'ionicons/icons';
-import { AuthService } from '../services/auth.service';
+import {AuthService, JwtPayload} from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
 import { PostService } from '../services/post.service';
@@ -39,6 +39,7 @@ export class HomePage {
   userProfile: any | null = null;
   isLoading = true;
   posts$: Observable<Post[]>;
+  userRole: string | null = null;
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
@@ -47,6 +48,7 @@ export class HomePage {
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
+    this.extractRoleFromToken();
     addIcons({
       footballOutline,
       chatbubbleEllipsesOutline,
@@ -54,14 +56,25 @@ export class HomePage {
       cameraOutline,
       searchOutline,
       personCircleOutline,
-      logOutOutline,
+      logOutOutline
     });
+  }
+
+  private extractRoleFromToken() {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    if (decodedToken && decodedToken.role) {
+      this.userRole = decodedToken.role;
+    }
   }
 
   ionViewWillEnter(): void {
     // Load user profile
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
+        if (profile && profile.urlPefil) {
+          profile.urlPerfil = profile.urlPefil;
+          delete profile.urlPefil;
+        }
         this.userProfile = profile;
         this.isLoading = false;
       },
@@ -113,9 +126,14 @@ export class HomePage {
     console.log('Search icon clicked');
   }
 
-  goToProfile() {
-    console.log('Navigating to profile...');
-    this.router.navigateByUrl('/profile');
+  onHeaderAvatarClick() {
+    if (!this.userRole) return;
+
+    if (this.userRole === 'JOGADOR') {
+      this.router.navigateByUrl('/profile');
+    } else if (this.userRole === 'CLUBE') {
+      console.log('CLUBE user clicked avatar, but cannot access profile.');
+    }
   }
 
   trackById(index: number, post: Post): string {

@@ -4,25 +4,13 @@ import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Profile } from '../models/profile.model';
-
-export interface ProfilePlayerCreationRequest {
-  bio?: string;
-  position?: string;
-  height?: string;
-  weight?: string;
-  careerHistory?: string;
-  documentNumber: string;
-  phoneNumber: string;
-  dateOfBirth: string;
-  role: string;
-}
+import { Profile, ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../models/profile.model';
 
 export enum FileType {
   PROFILE_IMAGE = 'PROFILE_IMAGE',
   COVER_IMAGE = 'COVER_IMAGE'
 }
-
+//... (rest of the file is the same)
 export interface UploadRequest {
   fileName: string;
   contentType: string;
@@ -47,7 +35,15 @@ export class ProfileService {
   createPlayerProfile(data: ProfilePlayerCreationRequest): Observable<any> {
     return this.apiService.post<any>(`${this.profileEndpoint}/create-player`, data).pipe(
       tap(response => {
-        this.showToast(response.message || 'Perfil salvo com sucesso!', 'success');
+        this.showToast(response.message || 'Perfil de jogador salvo com sucesso!', 'success');
+      })
+    );
+  }
+
+  createScoutProfile(data: ProfileScoutCreationRequest): Observable<any> {
+    return this.apiService.post<any>(`${this.profileEndpoint}/create-scout`, data).pipe(
+      tap(response => {
+        this.showToast(response.message || 'Perfil de clube salvo com sucesso!', 'success');
       })
     );
   }
@@ -80,3 +76,4 @@ export class ProfileService {
     toast.present();
   }
 }
+
