@@ -60,3 +60,44 @@ ion-buttons[slot="end"] ion-button {
     }
   }
 }
+
+ion-menu {
+  --background: #1a1a1a;
+  --ion-background-color: #1a1a1a;
+
+  ion-toolbar, ion-content {
+    --background: #1a1a1a;
+    --color: white;
+  }
+
+  ion-item {
+    --background: transparent;
+    --color: white;
+    --border-color: #333;
+  }
+
+  ion-searchbar {
+    --background: #333;
+    --color: white;
+  }
+}
+
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--ion-color-primary);
+  padding: 2px;
+}
+ion-menu::part(backdrop) {
+  display: none;
+}
+
+.menu-content-open {
+  opacity: 1 !important;
+}
+
+#main-content {
+  background: transparent !important;
+  --background: transparent !important;
+}
