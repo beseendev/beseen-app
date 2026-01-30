@@ -69,7 +69,9 @@ export class LoginPage {
               if (user && user.hasProfile) {
                 this.navCtrl.navigateRoot('/home');
               } else {
-                this.navCtrl.navigateRoot('/create-profile');
+                this.navCtrl.navigateRoot('/create-profile', {
+                  queryParams: { idToken, loginMethod: 'instagram' }
+                });
               }
             });
           },

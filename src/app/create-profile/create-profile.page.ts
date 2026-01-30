@@ -26,6 +26,7 @@ import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../models/profile.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-create-profile',
@@ -47,11 +48,15 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   private selectedImageFile: File | null = null;
   private roleChangesSub!: Subscription;
 
+  idToken: string | null = null;
+  loginMethod: string | null = null;
+
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private router = inject(Router);
   private toastController = inject(ToastController);
+  private route = inject(ActivatedRoute);
 
   constructor() {
     addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline });
@@ -60,6 +65,11 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeForm();
     this.listenToRoleChanges();
+
+    this.route.queryParams.subscribe(params => {
+      this.idToken = params['idToken'] || null;
+      this.loginMethod = params['loginMethod'] || null;
+    });
   }
 
   ngOnDestroy() {
@@ -162,14 +172,21 @@ export class CreateProfilePage implements OnInit, OnDestroy {
 
     profileCreation$.pipe(
       switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
+      switchMap(() => this.authService.refreshCurrentUser()),
+      switchMap(() => {
+        if (this.loginMethod === 'instagram' && this.idToken) {
+          return this.authService.loginWithFirebaseToken(this.idToken);
+        } else {
+          return of(null);
+        }
+      }),
       tap(() => {
-        this.authService.refreshCurrentUser().subscribe(() => {
-          this.router.navigate(['/home']);
-        });
+        this.router.navigate(['/home']);
       }),
       finalize(() => this.isLoading = false),
       catchError(err => {
         console.error('An error occurred in the profile creation flow', err);
+        this.showToast('Erro ao criar o perfil ou fazer login novamente.', 'danger');
         return EMPTY;
       })
     ).subscribe();
