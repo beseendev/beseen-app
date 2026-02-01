@@ -7,7 +7,7 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
-  ViewChild
+  ViewChild, ElementRef
 } from '@angular/core';
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
@@ -36,8 +36,8 @@ import {ProfileResponse} from "../models/profile.model";
 })
 export class PerfilSearchComponent implements OnInit, OnDestroy, OnChanges {
   @Output() selectProfile = new EventEmitter<ProfileResponse>();
-  @Input() isOpen = false; // Adicione esta linha para controlar quando o menu está aberto
-  @ViewChild('searchBarRef') searchBarRef!: IonSearchbar;
+  @Input() isOpen = false;
+  @ViewChild('searchBarRef', { read: ElementRef }) searchBarRef!: ElementRef;
 
   results: ProfileResponse[] = [];
   private query$ = new Subject<string>();
@@ -62,9 +62,8 @@ export class PerfilSearchComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Quando o menu fecha, limpa os resultados
     if (changes['isOpen'] && !changes['isOpen'].currentValue) {
-      this.clearResults();
+      this.clearSearch();
     }
   }
 
@@ -118,16 +117,13 @@ export class PerfilSearchComponent implements OnInit, OnDestroy, OnChanges {
   onInput(ev: any) {
     const q = (ev?.detail?.value ?? '').toString().trim();
     this.query$.next(q);
-
-    // Se o campo estiver vazio, limpa os resultados
     if (q === '') {
-      this.clearResults();
+      this.clearSearch();
     }
   }
 
-  // Método para limpar quando o usuário clica no X da searchbar
   onClear() {
-    this.clearResults();
+    this.clearSearch();
     this.currentQuery = '';
   }
 
@@ -137,15 +133,30 @@ export class PerfilSearchComponent implements OnInit, OnDestroy, OnChanges {
 
   pick(user: ProfileResponse) {
     this.selectProfile.emit(user);
-    this.clearResults(); // Limpa resultados ao selecionar
+    this.clearSearch();
     this.currentQuery = '';
   }
 
-  // Novo método para limpar resultados
   clearResults() {
     this.results = [];
     this.page = 0;
     this.hasMore = true;
+  }
+
+  clearSearch() {
+    this.clearResults();
+    this.currentQuery = '';
+
+    if (this.searchBarRef && this.searchBarRef.nativeElement) {
+      const input = this.searchBarRef.nativeElement.querySelector('input');
+      if (input) {
+        input.value = '';
+
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('ionChange', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
   }
 
   getDisplayName(user: ProfileResponse): string {
