@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+/* Forçar tema escuro apenas para este componente */
+:host-context(.dark-theme),
+:host-context(body.dark),
+:host-context(.ion-palette-dark) {
+  /* Sobrescrever variáveis CSS do Ionic para este componente */
+  --ion-text-color: white;
+  --ion-text-color-rgb: 255, 255, 255;
+  --ion-item-color: white;
+  --ion-item-color-rgb: 255, 255, 255;
+  --ion-border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Forçar estilos mesmo sem contexto de tema */
+.search-results {
+  max-height: 300px;
+  overflow: auto;
+  background-color: rgba(96, 96, 96, 0.5);
+  border-radius: 8px;
+  margin-top: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Seletor profundo para forçar estilos nos filhos do Shadow DOM */
+:host ::ng-deep {
+  /* Forçar cores nos items */
+  ion-item {
+    --background: transparent !important;
+    --border-color: rgba(255, 255, 255, 0.3) !important;
+    --color: white !important;
+    --ion-item-color: white !important;
+    --padding-start: 8px !important;
+  }
+
+  /* Forçar cor no label */
+  ion-label {
+    color: white !important;
+  }
+
+  ion-label h2 {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+
+  /* Avatar */
+  ion-avatar {
+    background-color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2px !important;
+  }
+
+  ion-avatar img {
+    object-fit: cover !important;
+    border-radius: 50% !important;
+  }
+
+  /* Ícone do avatar */
+  ion-avatar ion-icon {
+    color: #666 !important;
+    font-size: 24px !important;
+  }
+
+  /* Searchbar */
+  ion-searchbar {
+    --background: rgba(255, 255, 255, 0.1) !important;
+    --color: white !important;
+    --placeholder-color: rgba(255, 255, 255, 0.7) !important;
+    --icon-color: white !important;
+    --clear-button-color: white !important;
+    --border-radius: 8px !important;
+  }
+
+  /* Spinner */
+  ion-spinner {
+    color: white !important;
+    margin: 16px auto !important;
+    display: block !important;
+  }
+
+  /* Infinite scroll */
+  ion-infinite-scroll {
+    background-color: transparent !important;
+  }
+}
+
+/* Estilos diretos (menos recomendado, mas funciona) */
+.dark-theme ion-item,
+.dark-theme ion-label,
+.dark-theme ion-label h2 {
+  color: white !important;
+}
+/* No perfil-search.component.scss, adicione: */
+.search-results:empty {
+  display: none;
+}
+

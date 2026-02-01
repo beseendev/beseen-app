@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonMenu, IonTitle, IonSearchbar, IonList, IonItem, IonLabel, MenuController } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonMenu, IonTitle, IonList, IonItem, IonLabel, MenuController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { footballOutline, chatbubbleEllipsesOutline, homeOutline, cameraOutline, searchOutline, personCircleOutline, logOutOutline, closeOutline } from 'ionicons/icons';
 import {AuthService, JwtPayload} from '../services/auth.service';
@@ -10,6 +10,7 @@ import { PostService } from '../services/post.service';
 import { Post } from '../models/post.model';
 import { Observable } from 'rxjs';
 import { PostCardComponent } from '../components/post-card/post-card.component';
+import { PerfilSearchComponent } from '../perfil-search/perfil-search.component';
 
 @Component({
   selector: 'app-home',
@@ -34,10 +35,10 @@ import { PostCardComponent } from '../components/post-card/post-card.component';
     IonInfiniteScrollContent,
     IonMenu,
     IonTitle,
-    IonSearchbar,
     IonList,
     IonItem,
     IonLabel,
+    PerfilSearchComponent,
   ],
 })
 export class HomePage {
@@ -46,6 +47,7 @@ export class HomePage {
   isLoading = true;
   posts$: Observable<Post[]>;
   userRole: string | null = null;
+  isMessagesMenuOpen = false;
 
   contacts = [
     {
@@ -112,6 +114,14 @@ export class HomePage {
     }
   }
 
+  onMenuOpen() {
+    this.isMessagesMenuOpen = true;
+  }
+
+  onMenuClose() {
+    this.isMessagesMenuOpen = false;
+  }
+
   loadMorePosts(event: any) {
     this.postService.loadHomePosts().subscribe(() => {
       event.target.complete();
@@ -165,7 +175,6 @@ export class HomePage {
 
   selectContact(contact: any) {
     console.log('Selected contact:', contact);
-    // Aqui você pode adicionar a lógica para abrir a conversa com o contato
     this.menuController.close('messagesMenu');
   }
 

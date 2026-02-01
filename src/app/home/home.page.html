@@ -32,7 +32,8 @@
 </ion-header>
 
 <!-- Sidebar Menu for Messages -->
-<ion-menu side="end" menuId="messagesMenu" contentId="main-content">
+<ion-menu side="end" menuId="messagesMenu" contentId="main-content" (ionWillOpen)="onMenuOpen()"
+          (ionWillClose)="onMenuClose()">
   <ion-header>
     <ion-toolbar>
       <ion-title>Mensagens</ion-title>
@@ -45,7 +46,7 @@
   </ion-header>
 
   <ion-content>
-    <ion-searchbar placeholder="Pesquisar..." debounce="500"></ion-searchbar>
+    <app-perfil-search (selectProfile)="selectContact($event)" [isOpen]="isMessagesMenuOpen"></app-perfil-search>
 
     <ion-list>
       <ion-item *ngFor="let contact of contacts" (click)="selectContact(contact)">

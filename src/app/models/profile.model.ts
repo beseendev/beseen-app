@@ -35,3 +35,22 @@ export interface ProfileScoutCreationRequest {
   dateOfBirth: string;
   role: 'CLUBE';
 }
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface ProfileResponse {
+  id: number;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  urlProfileImage?: string;
+}

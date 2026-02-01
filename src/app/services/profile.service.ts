@@ -1,16 +1,21 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Profile, ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../models/profile.model';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import {
+  PageResponse,
+  Profile,
+  ProfilePlayerCreationRequest, ProfileResponse,
+  ProfileScoutCreationRequest
+} from '../models/profile.model';
 
 export enum FileType {
   PROFILE_IMAGE = 'PROFILE_IMAGE',
   COVER_IMAGE = 'COVER_IMAGE'
 }
-//... (rest of the file is the same)
+
 export interface UploadRequest {
   fileName: string;
   contentType: string;
@@ -75,5 +80,18 @@ export class ProfileService {
     });
     toast.present();
   }
-}
 
+  searchProfiles(query: string, page: number = 0, size: number = 20): Observable<ProfileResponse[]> {
+    let params = new HttpParams()
+      .set('filter', query)
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.apiService.get<PageResponse<ProfileResponse>>(
+      `${this.profileEndpoint}/search`,
+      { params }
+    ).pipe(
+      map(response => response.content)
+    );
+  }
+}
