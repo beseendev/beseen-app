@@ -194,16 +194,22 @@ export class AuthService {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
       this.logout();
-      return of();
+      return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.apiService.post<{ accessToken: string }>(`${this.authEndpoint}/refresh`, { refreshToken }).pipe(
+    return this.apiService.post<{ accessToken: string, refreshToken: string }>(
+      `${this.authEndpoint}/refresh-token`,
+      { refreshToken }
+    ).pipe(
       tap(tokens => {
         localStorage.setItem('access_token', tokens.accessToken);
+        if (tokens.refreshToken) {
+          localStorage.setItem('refresh_token', tokens.refreshToken);
+        }
       }),
       catchError(err => {
         this.logout();
-        throw err;
+        return throwError(() => err);
       })
     );
   }

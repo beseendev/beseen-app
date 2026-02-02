@@ -61,10 +61,10 @@ const handle401Error = (
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
-      switchMap((token: any) => {
+      switchMap((response: any) => {
         isRefreshing = false;
-        refreshTokenSubject.next(token.accessToken);
-        return next(addToken(req, token.accessToken));
+        refreshTokenSubject.next(response.accessToken);
+        return next(addToken(req, response.accessToken));
       }),
       catchError((err) => {
         isRefreshing = false;
@@ -76,8 +76,8 @@ const handle401Error = (
     return refreshTokenSubject.pipe(
       filter(token => token != null),
       take(1),
-      switchMap(jwt => {
-        return next(addToken(req, jwt));
+      switchMap(token => {
+        return next(addToken(req, token));
       })
     );
   }

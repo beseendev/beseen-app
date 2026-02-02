@@ -1,16 +1,18 @@
+// home.page.ts
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonMenu, IonTitle, IonList, IonItem, IonLabel, MenuController } from '@ionic/angular/standalone';
+import { Component, inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { IonHeader, IonBadge, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonAvatar, IonFooter, IonSpinner, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonMenu, IonTitle, IonList, IonItem, IonLabel, MenuController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { footballOutline, chatbubbleEllipsesOutline, homeOutline, cameraOutline, searchOutline, personCircleOutline, logOutOutline, closeOutline } from 'ionicons/icons';
-import {AuthService, JwtPayload} from '../services/auth.service';
+import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
 import { PostService } from '../services/post.service';
 import { Post } from '../models/post.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { PerfilSearchComponent } from '../perfil-search/perfil-search.component';
+import { ChatService, Contact } from '../services/chat.service'; // Import do ChatService
 
 @Component({
   selector: 'app-home',
@@ -39,9 +41,10 @@ import { PerfilSearchComponent } from '../perfil-search/perfil-search.component'
     IonItem,
     IonLabel,
     PerfilSearchComponent,
+    IonBadge
   ],
 })
-export class HomePage {
+export class HomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content!: IonContent;
   userProfile: any | null = null;
   isLoading = true;
@@ -49,26 +52,18 @@ export class HomePage {
   userRole: string | null = null;
   isMessagesMenuOpen = false;
 
-  contacts = [
-    {
-      name: 'João Silva',
-      photo: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Maria Santos',
-      photo: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Pedro Costa',
-      photo: 'https://via.placeholder.com/150',
-    },
-  ];
+  contacts: Contact[] = [];
+  contactsLoading = false;
+  contactsHasMore = true;
+
+  private contactsSubscription!: Subscription;
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
   private router = inject(Router);
   private postService = inject(PostService);
   private menuController = inject(MenuController);
+  private chatService = inject(ChatService);
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
@@ -82,6 +77,14 @@ export class HomePage {
       personCircleOutline,
       logOutOutline,
       closeOutline
+    });
+  }
+
+  ngOnInit(): void {
+    this.contactsSubscription = this.chatService.contactsState$.subscribe(state => {
+      this.contacts = state.items;
+      this.contactsLoading = state.isLoading;
+      this.contactsHasMore = state.hasMore;
     });
   }
 
@@ -116,10 +119,31 @@ export class HomePage {
 
   onMenuOpen() {
     this.isMessagesMenuOpen = true;
+    this.loadContacts();
   }
 
   onMenuClose() {
     this.isMessagesMenuOpen = false;
+  }
+
+  loadContacts(): void {
+    this.chatService.loadContacts().subscribe();
+  }
+
+  loadMoreContacts(event: any): void {
+    if (this.contactsLoading || !this.contactsHasMore) {
+      event.target.complete();
+      return;
+    }
+
+    this.chatService.loadMoreContacts().subscribe({
+      next: () => {
+        event.target.complete();
+      },
+      error: () => {
+        event.target.complete();
+      }
+    });
   }
 
   loadMorePosts(event: any) {
@@ -175,10 +199,26 @@ export class HomePage {
 
   selectContact(contact: any) {
     console.log('Selected contact:', contact);
+
+    if (contact.id && contact.fullName) {
+      this.router.navigate(['/chat', contact.id], {
+        state: { contact }
+      });
+    } else {
+      console.log('Contato do perfil search:', contact);
+    }
+
     this.menuController.close('messagesMenu');
   }
 
   trackById(index: number, post: Post): string {
     return post.id;
+  }
+
+  ngOnDestroy(): void {
+    if (this.contactsSubscription) {
+      this.contactsSubscription.unsubscribe();
+    }
+    this.chatService.resetContacts();
   }
 }
