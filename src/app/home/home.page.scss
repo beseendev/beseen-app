@@ -1,140 +1,41 @@
-.gradient-background {
-  --background: linear-gradient(135deg, #2c2c2c, #000000);
-}
-
-ion-toolbar {
-  --background: transparent;
-  padding: 0 10px;
-}
-
-ion-icon {
-  color: var(--ion-color-light);
-}
-
-h1 {
-  color: var(--ion-color-tertiary) !important;
-  font-weight: bold;
-}
-
-p {
-  color: var(--ion-color-light) !important;
-}
-
-.profile-avatar {
-  width: 42px;
-  height: 42px;
-  border: 2px solid var(--ion-color-primary);
-  padding: 2px;
-}
-
-ion-buttons[slot="end"] ion-button {
-  font-size: 24px;
-}
-
-.footer-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-
-  ion-button {
-    --padding-start: 12px;
-    --padding-end: 12px;
-
-    ion-icon {
-      font-size: 26px;
-      color: var(--ion-color-light);
-    }
-  }
-
-  .post-button {
-    background: var(--ion-color-primary-tint);
-    border-radius: 18px;
-    width: 70px;
-    height: 40px;
-
-    ion-icon {
-      color: var(--ion-color-primary-contrast);
-      font-size: 28px;
-    }
-  }
-}
-
-ion-menu {
-  --background: #1a1a1a;
-  --ion-background-color: #1a1a1a;
-
-  ion-toolbar, ion-content {
-    --background: #1a1a1a;
-    --color: white;
-  }
-
-  ion-item {
-    --background: transparent;
-    --color: white;
-    --border-color: #333;
-  }
-
-  ion-searchbar {
-    --background: #333;
-    --color: white;
-  }
-}
-
-
-.profile-avatar {
-  width: 42px;
-  height: 42px;
-  border: 2px solid var(--ion-color-primary);
-  padding: 2px;
-}
-ion-menu::part(backdrop) {
-  display: none;
-}
-
-.menu-content-open {
-  opacity: 1 !important;
-}
-
-#main-content {
-  background: transparent !important;
-  --background: transparent !important;
-}
-
-.last-message {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 4px;
-  margin-bottom: 0;
-}
-
-.unread-badge {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 10px;
-  margin-top: 4px;
-}
-
-.loading-contacts {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-
-  ion-spinner {
-    margin-bottom: 12px;
-    --color: var(--ion-color-primary);
-  }
-
-  p {
-    color: #888;
-    font-size: 14px;
-    margin: 0;
-  }
-}
-
-ion-infinite-scroll {
-  margin: 16px 0;
-}
+:host{--bg:var(--be-color-bg);--card:var(--be-color-surface-2);--line:var(--be-color-line);--text:var(--be-color-text-1);--muted:var(--be-color-text-3)}
+.arena-content{--background:var(--bg)}
+.arena-shell{width:100%;max-width:460px;margin:0 auto;padding:28px 24px 40px;color:var(--text)}
+.section{margin-top:24px}
+.hero-topline{display:flex;justify-content:space-between;align-items:center}
+.arena-hero p{margin:0;color:var(--be-color-brand-500);font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.chat-inbox-btn{position:relative;--color:var(--be-color-text-2);overflow:visible}
+.chat-inbox-btn::part(native){overflow:visible}
+.chat-inbox-btn ion-badge{position:absolute;top:2px;right:2px;transform:translate(32%,-32%);z-index:2}
+.player-profile-card,.surface{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(2,6,23,.26)}
+.player-profile-card{padding:16px}
+.player-profile-head,.player-profile-id,.player-profile-actions,.video-meta,.talent-id,.footer-buttons{display:flex;align-items:center}
+.player-profile-head,.video-meta{justify-content:space-between}
+.player-profile-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--be-color-surface-1);border:1px solid rgba(var(--ion-color-primary-rgb),.24)}
+.player-profile-avatar img,.avatar-shell img{width:100%;height:100%;object-fit:cover}
+.player-profile-avatar ion-icon,.avatar-shell ion-icon{font-size:2rem;color:var(--be-color-text-2)}
+.player-profile-copy{display:flex;flex-direction:column}
+.player-profile-id p,.summary-copy p,.video-meta p,.meta-line,.empty-cta{color:var(--muted)}
+.player-profile-label{display:block;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
+.player-profile-id strong,.summary-copy strong,.video-meta h3{margin:0;color:var(--text)}
+.player-profile-id p,.summary-copy p,.video-meta p{margin:0;font-size:.82rem}
+.profile-link{padding:0;border:0;background:transparent;text-align:left}
+.player-edit-btn,.chat-cta{--color:var(--be-color-brand-500);--border-color:rgba(var(--ion-color-primary-rgb),.45);text-transform:none;font-weight:600}
+.player-logout-btn{--color:var(--be-color-danger);text-transform:none;font-weight:600}
+.my-plays-summary{padding:14px;display:flex;justify-content:space-between;align-items:center}
+.status-tag{padding:3px 10px;border-radius:999px;background:var(--be-color-surface-1);color:var(--be-color-text-2);font-size:.72rem;font-weight:600;border:1px solid rgba(148,163,184,.12)}
+.arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px}
+.tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}
+.tab-btn.active{color:var(--text);background:rgba(var(--ion-color-primary-rgb),.16)}
+.featured,.showcase-card{padding:16px}
+.video-meta{margin-bottom:12px}
+.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24)}
+.talent-video{width:100%;display:block}
+.media-frame{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#000}
+.talent-video{height:100%;object-fit:cover}
+.interest-badge{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;background:rgba(var(--ion-color-primary-rgb),.16);border:1px solid rgba(var(--ion-color-primary-rgb),.24);color:#dcfce7;font-size:.68rem;font-weight:700}
+.meta-line{margin:0;font-size:.82rem}
+.showcase-description{margin:12px 0 0;line-height:1.5;color:#e2e8f0;font-size:.9rem}
+.arena-footer ion-toolbar{--background:rgba(7,22,39,.82);--border-width:0;padding:8px 14px}
+.footer-buttons{display:flex;justify-content:center;align-items:center}
+.post-fab{width:54px;height:54px;--border-radius:999px;--background:var(--be-color-brand-500);--color:#052e16}

@@ -1,83 +1,158 @@
-.error-text {
-  color: var(--ion-color-warning);
-  font-size: 0.8em;
-  margin-top: -10px;
-  margin-bottom: 15px;
-  text-align: left;
-  padding-left: 15px;
+.signup-screen {
+  --background: var(--be-color-bg);
+  font-family: var(--ion-font-family);
 }
 
-.divider-text {
-  display: flex;
-  align-items: center;
-  text-align: center;
+.signup-container {
+  min-height: 100%;
   width: 100%;
-  max-width: 400px;
-  margin: 30px auto;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.divider-text .line {
-  flex-grow: 1;
-  height: 1px;
-  background-color: var(--ion-color-light);
-  opacity: 0.5;
+.brand-wrap {
+  text-align: left;
+  margin-bottom: 36px;
 }
 
-.divider-text .text {
-  padding: 0 10px;
-  white-space: nowrap;
-  font-size: 0.9em;
-  color: var(--ion-color-light);
+.brand-title {
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 8vw, 3rem);
 }
 
-.gradient-background {
-  --background: linear-gradient(135deg, #2c2c2c, #000000);
+.brand-be {
+  color: var(--be-color-text-1);
 }
 
-.gradient-background h1 {
-  color: var(--ion-color-tertiary) !important;
-  font-weight: bold;
+.brand-seen {
+  color: var(--be-color-brand-500);
 }
 
-.gradient-background p {
-  color: var(--ion-color-light) !important;
+.brand-tagline {
+  margin: 12px 0 0;
+  font-size: clamp(0.9rem, 3.2vw, 1rem);
+  letter-spacing: 0.01em;
 }
 
-.gradient-background ion-item {
-  --background: rgba(255, 255, 255, 0.1);
-  --border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  --inner-border-width: 0 0 0 0 !important;
-  --border-width: 0 !important;
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.gradient-background ion-input {
-  --color: var(--ion-color-light);
-  --placeholder-color: rgba(255, 255, 255, 0.7);
+.input-field {
+  --background: var(--be-color-surface-2);
+  --border-radius: var(--be-radius-md);
+  --inner-border-width: 0;
+  --border-width: 0;
+  --min-height: 56px;
+  border: 1px solid var(--be-color-line);
+  box-shadow: var(--be-shadow-card);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
 }
 
-.gradient-background ion-icon[slot="start"] {
-  color: var(--ion-color-light);
+.input-field ion-input {
+  --color: var(--be-color-text-1);
+  --placeholder-color: var(--be-color-text-3);
+  font-size: 0.98rem;
 }
 
-.gradient-background ion-button[fill="clear"] {
-  color: var(--ion-color-light) !important;
-  font-size: 0.9em;
+.input-field ion-icon {
+  color: var(--be-color-text-2);
+  font-size: 1.1rem;
 }
 
-.gradient-background ion-icon[name^="logo-"] {
-  color: var(--ion-color-light);
+.input-field:focus-within {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.6);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.14), 0 12px 28px rgba(2, 6, 23, 0.42);
+  background-color: var(--be-color-surface-1);
 }
 
-.gradient-background ion-button[type="submit"] {
-  --background: var(--ion-color-primary);
-  --background-activated: var(--ion-color-primary-shade);
-  --color: var(--ion-color-primary-contrast);
-  --border-radius: 10px;
-  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  height: 50px;
-  font-weight: bold;
-  font-size: 1.1em;
+.password-toggle {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--be-color-text-1);
+}
+
+.error-text {
+  color: var(--be-color-danger);
+  font-size: 0.8rem;
+  margin-top: -10px;
+  margin-bottom: -4px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.role-segment {
+  margin-top: 4px;
+  --background: var(--be-color-surface-1);
+  border: 1px solid var(--be-color-line);
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.role-segment ion-segment-button {
+  --color: var(--be-color-text-3);
+  --color-checked: var(--be-color-text-1);
+  --indicator-color: var(--be-color-brand-500);
+  min-height: 48px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.signup-button-primary {
+  margin-top: 4px;
+  height: 56px;
+  --border-radius: 14px;
+  --background: var(--be-color-brand-500);
+  --background-hover: var(--be-color-brand-600);
+  --background-activated: var(--be-color-brand-700);
+  --color: var(--be-color-text-1);
+  --box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 1rem;
+}
+
+.login-prompt {
+  margin-top: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.login-text {
+  color: var(--be-color-text-3);
+  font-size: 0.9rem;
+}
+
+.login-link {
+  --color: var(--be-color-brand-500);
+  --color-hover: var(--be-color-brand-600);
+  --color-activated: var(--be-color-brand-700);
+  text-transform: none;
+  font-weight: 600;
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+@media (max-width: 360px) {
+  .signup-container {
+    padding: 18px;
+  }
+
+  .brand-wrap {
+    margin-bottom: 28px;
+  }
 }

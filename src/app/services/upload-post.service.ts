@@ -1,13 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpEventType } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpEventType } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap, filter } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FileType, UploadRequest, UploadResponse } from '../models/upload.model';
 import { PostCreationRequest } from '../models/post-creation.model';
 import { StatusFile, FileStatusUpdateRequest } from '../models/file-status.model';
 import { Post } from '../models/post.model';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,6 @@ import { AuthService } from './auth.service';
 export class UploadPostService {
   private baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
-  private authService = inject(AuthService);
 
   constructor() { }
 
@@ -48,7 +46,8 @@ export class UploadPostService {
             error: err => console.error(`Failed to update file ${currentFileId} status to ERROR:`, err)
           });
         }
-        return throwError(() => new Error('Falha ao enviar e criar o post.'));
+        const apiMessage = this.extractApiErrorMessage(error);
+        return throwError(() => new Error(apiMessage || 'Falha ao enviar e criar o post.'));
       })
     );
   }
@@ -81,5 +80,18 @@ export class UploadPostService {
   private updateBackendFileStatus(fileId: number, status: StatusFile): Observable<void> { // fileId is number
     const requestBody: FileStatusUpdateRequest = { status };
     return this.http.put<void>(`${this.baseUrl}/posts/${fileId}/status`, requestBody);
+  }
+
+  private extractApiErrorMessage(error: unknown): string | null {
+    if (error instanceof HttpErrorResponse) {
+      const body = error.error;
+      if (typeof body === 'string' && body.trim()) {
+        return body;
+      }
+      if (body && typeof body.message === 'string' && body.message.trim()) {
+        return body.message;
+      }
+    }
+    return null;
   }
 }

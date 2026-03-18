@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, imageOutline } from 'ionicons/icons';
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonText, IonItem, LoadingController, ToastController } from '@ionic/angular/standalone';
+import { arrowBackOutline, closeOutline, footballOutline, imageOutline, starOutline } from 'ionicons/icons';
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
 
 @Component({
@@ -15,14 +15,16 @@ import { UploadPostService } from '../services/upload-post.service';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonText, IonItem
+    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter
   ]
 })
 export class CreatePostPage implements OnInit {
+  @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
   selectedMedia: File | null = null;
   selectedMediaUrl: string | null = null;
   caption: string = '';
   fileError: string | null = null;
+  isSubmitting = false;
 
   private router = inject(Router);
   private uploadPostService = inject(UploadPostService);
@@ -30,7 +32,7 @@ export class CreatePostPage implements OnInit {
   private toastCtrl = inject(ToastController);
 
   constructor() {
-    addIcons({ arrowBackOutline, imageOutline });
+    addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline });
   }
 
   ngOnInit() {
@@ -49,15 +51,13 @@ export class CreatePostPage implements OnInit {
 
       if (file.size > maxFileSize) {
         this.fileError = 'O arquivo excede o tamanho máximo de 100MB.';
-        this.selectedMedia = null;
-        this.selectedMediaUrl = null;
+        this.removeSelectedMedia();
         return;
       }
 
       if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
         this.fileError = 'Por favor, selecione um arquivo de imagem ou vídeo.';
-        this.selectedMedia = null;
-        this.selectedMediaUrl = null;
+        this.removeSelectedMedia();
         return;
       }
 
@@ -68,17 +68,28 @@ export class CreatePostPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.selectedMedia = null;
-      this.selectedMediaUrl = null;
+      this.removeSelectedMedia(false);
+    }
+  }
+
+  removeSelectedMedia(clearError = true) {
+    this.selectedMedia = null;
+    this.selectedMediaUrl = null;
+    if (this.fileInput?.nativeElement) {
+      this.fileInput.nativeElement.value = '';
+    }
+    if (clearError) {
+      this.fileError = null;
     }
   }
 
   async submitPost() {
-    if (!this.selectedMedia || !this.caption) {
-      this.fileError = 'Selecione uma imagem/vídeo e adicione uma legenda.';
+    if (!this.selectedMedia) {
+      this.fileError = 'Selecione uma imagem ou vídeo para publicar.';
       return;
     }
 
+    this.isSubmitting = true;
     const loading = await this.loadingCtrl.create({
       message: 'Criando post...',
       duration: 0
@@ -88,6 +99,7 @@ export class CreatePostPage implements OnInit {
     this.uploadPostService.uploadAndCreatePost(this.selectedMedia, this.caption).subscribe({
       next: async (post) => {
         await loading.dismiss();
+        this.isSubmitting = false;
         const toast = await this.toastCtrl.create({
           message: 'Post criado com sucesso!',
           duration: 2000,
@@ -99,6 +111,7 @@ export class CreatePostPage implements OnInit {
       },
       error: async (err) => {
         await loading.dismiss();
+        this.isSubmitting = false;
         const toast = await this.toastCtrl.create({
           message: `Erro ao criar post: ${err.message || 'Tente novamente.'}`,
           duration: 3000,

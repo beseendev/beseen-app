@@ -1,53 +1,68 @@
-<ion-content class="ion-padding ion-text-center gradient-background">
-
-  <div class="ion-padding-top">
-    <h1 class="ion-color-light ion-padding-top">BeSeen</h1>
-    <p class="ion-color-light">Desperte seu potencial</p>
-  </div>
-
-  <form [formGroup]="loginForm" (ngSubmit)="login()" class="ion-margin-top">
-    <ion-item class="ion-margin-bottom" color="none"> <ion-icon name="person-outline" slot="start" color="light"></ion-icon> <ion-input type="email" formControlName="email" placeholder="Email" color="light" autocomplete="off"></ion-input> </ion-item>
-    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="ion-text-start ion-padding-start error-text">
-      Email inválido.
+<ion-content class="login-screen">
+  <div class="login-container">
+    <div class="brand-wrap">
+      <h1 class="brand-title be-heading">
+        <span class="brand-be">Be</span>
+        <span #brandSeenWrap class="brand-seen-wrap">
+          <canvas #stadiumLightsCanvas class="brand-lights-canvas" aria-hidden="true"></canvas>
+          <span class="brand-seen">Seen</span>
+        </span>
+      </h1>
+      <p class="brand-tagline be-subheading">Sua vitrine no esporte</p>
     </div>
 
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
-      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Password" color="light" autocomplete="current-password"></ion-input>
-      <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="togglePasswordVisibility()"></ion-icon>
-    </ion-item>
-    <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="ion-text-start ion-padding-start error-text">
-      Senha obrigatória.
-    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-input type="email" formControlName="email" placeholder="Email" autocomplete="off"></ion-input>
+      </ion-item>
+      <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-text">
+        Informe seu e-mail
+      </div>
 
-    <ion-button expand="block" type="submit" [disabled]="loginForm.invalid || isLoading" color="primary" class="ion-margin-top">
-      <span *ngIf="!isLoading">LOGIN</span>
-      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Senha" autocomplete="current-password"></ion-input>
+        <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" class="password-toggle" (click)="togglePasswordVisibility()"></ion-icon>
+      </ion-item>
+      <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-text">
+        Senha obrigatória
+      </div>
+
+      <ion-button expand="block" type="submit" [disabled]="loginForm.invalid || isLoading" class="login-button">
+        <span *ngIf="!isLoading">LOGIN</span>
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      </ion-button>
+    </form>
+
+    <ion-button fill="clear" class="forgot-button" routerLink="/forgot-password">
+      ESQUECEU A SENHA?
     </ion-button>
-  </form>
 
-  <ion-button fill="clear" color="light" class="ion-no-padding ion-margin-top" routerLink="/forgot-password">
-    ESQUECEU SUA SENHA?
-  </ion-button>
+    <div class="divider-text">
+      <span class="line"></span>
+      <span class="text">Ou faça login com</span>
+      <span class="line"></span>
+    </div>
 
-  <div class="divider-text ion-margin-vertical ion-color-light">
-    <span class="line"></span>
-    <span class="text">Ou faça login com</span>
-    <span class="line"></span>
-  </div>
+    <div class="social-actions">
+      <button type="button" class="social-btn" aria-label="Facebook">
+        <ion-icon name="logo-facebook"></ion-icon>
+      </button>
 
-  <div class="ion-text-center ion-margin-top">
-    <div class="ion-margin-top">
-      <ion-icon name="logo-facebook" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
-      <ion-spinner *ngIf="isGoogleLoading" name="crescent" color="light" class="ion-margin-horizontal" style="width: 32px; height: 32px;"></ion-spinner>
-      <ion-icon *ngIf="!isGoogleLoading" name="logo-google" size="large" class="ion-margin-horizontal" color="light" (click)="signInWithGoogle()"></ion-icon>
-      <ion-icon name="logo-twitter" size="large" class="ion-margin-horizontal" color="light"></ion-icon>
+      <button type="button" class="social-btn social-btn-google" aria-label="Google" [disabled]="isGoogleLoading" (click)="signInWithGoogle()">
+        <ion-spinner *ngIf="isGoogleLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
+      </button>
+
+      <button type="button" class="social-btn" aria-label="Twitter">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </button>
+    </div>
+
+    <div class="signup-prompt">
+      <span class="signup-text">Não tem uma conta?</span>
+      <ion-button fill="clear" routerLink="/signup" class="signup-button">Cadastre-se</ion-button>
     </div>
   </div>
-
-  <div class="signup-prompt ion-margin-top" style="display: flex; align-items: center; justify-content: center;">
-    <span style="color: #989aa2;">Não tem uma conta? </span>
-    <ion-button fill="clear" routerLink="/signup" color="primary" style="font-weight: bold; text-transform: none; --padding-start: 4px; --padding-end: 4px;">Cadastre-se</ion-button>
-  </div>
-
 </ion-content>

@@ -21,10 +21,10 @@
         <ion-segment-button value="JOGADOR">
           <ion-label>SOU JOGADOR</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="CLUBE">
-          <ion-label>SOU CLUBE</ion-label>
-        </ion-segment-button>
       </ion-segment>
+      <ion-button expand="block" fill="outline" type="button" (click)="goToScoutProfile()">
+        SOU OLHEIRO
+      </ion-button>
       <div *ngIf="profileForm.get('role')?.hasError('required') && profileForm.get('role')?.touched" class="error-text ion-text-start">
         Selecione um tipo de perfil.
       </div>
@@ -46,19 +46,6 @@
       </ion-item>
       <ion-item class="ion-margin-bottom" color="none">
         <ion-textarea formControlName="careerHistory" placeholder="Histórico da carreira" [autoGrow]="true" maxlength="1000"></ion-textarea>
-      </ion-item>
-    </div>
-
-    <!-- Scout Fields -->
-    <div *ngIf="profileForm.get('role')?.value === 'CLUBE'">
-      <ion-item class="ion-margin-bottom" color="none">
-        <ion-textarea formControlName="bio" placeholder="Bio (fale sobre o clube ou você)" [autoGrow]="true" maxlength="500"></ion-textarea>
-      </ion-item>
-      <ion-item class="ion-margin-bottom" color="none">
-        <ion-input formControlName="clubName" placeholder="Nome do Clube" maxlength="255"></ion-input>
-      </ion-item>
-      <ion-item class="ion-margin-bottom" color="none">
-        <ion-input formControlName="areaOfExpertise" placeholder="Área de atuação (ex: Categorias de Base)" maxlength="255"></ion-input>
       </ion-item>
     </div>
 

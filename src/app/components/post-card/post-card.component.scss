@@ -16,17 +16,17 @@
 
   .media-container {
     background: var(--ion-color-dark);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
+    display: block;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
     overflow: hidden;
 
     img, video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 8px;
+      display: block;
     }
   }
 

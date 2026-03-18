@@ -63,7 +63,11 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initializeForm();
+    const shouldContinue = this.initializeForm();
+    if (!shouldContinue) {
+      return;
+    }
+
     this.listenToRoleChanges();
 
     this.route.queryParams.subscribe(params => {
@@ -78,12 +82,17 @@ export class CreateProfilePage implements OnInit, OnDestroy {
     }
   }
 
-  private initializeForm(): void {
+  private initializeForm(): boolean {
     let roleFromToken: string | null = null;
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     if (decodedToken && decodedToken.role) {
       roleFromToken = decodedToken.role;
       this.isRoleFromToken = true;
+    }
+
+    if (roleFromToken === 'CLUBE') {
+      this.router.navigate(['/scout-profile']);
+      return false;
     }
 
     this.profileForm = this.fb.group({
@@ -97,10 +106,17 @@ export class CreateProfilePage implements OnInit, OnDestroy {
       this.profileForm.get('role')?.disable();
       this.updateFormFields(roleFromToken);
     }
+
+    return true;
   }
 
   private listenToRoleChanges(): void {
     this.roleChangesSub = this.profileForm.get('role')!.valueChanges.subscribe(role => {
+      if (role === 'CLUBE') {
+        this.router.navigate(['/scout-profile']);
+        return;
+      }
+
       this.updateFormFields(role);
     });
   }
@@ -112,8 +128,6 @@ export class CreateProfilePage implements OnInit, OnDestroy {
     this.profileForm.removeControl('height');
     this.profileForm.removeControl('weight');
     this.profileForm.removeControl('careerHistory');
-    this.profileForm.removeControl('clubName');
-    this.profileForm.removeControl('areaOfExpertise');
 
     if (role === 'JOGADOR') {
       this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
@@ -121,11 +135,11 @@ export class CreateProfilePage implements OnInit, OnDestroy {
       this.profileForm.addControl('height', this.fb.control('', [Validators.maxLength(20)]));
       this.profileForm.addControl('weight', this.fb.control('', [Validators.maxLength(20)]));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
-    } else if (role === 'CLUBE') {
-      this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
-      this.profileForm.addControl('clubName', this.fb.control('', [Validators.maxLength(255)]));
-      this.profileForm.addControl('areaOfExpertise', this.fb.control('', [Validators.maxLength(255)]));
     }
+  }
+
+  goToScoutProfile(): void {
+    this.router.navigate(['/scout-profile']);
   }
 
   async selectProfileImage() {

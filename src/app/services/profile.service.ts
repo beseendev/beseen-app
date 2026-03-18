@@ -48,7 +48,7 @@ export class ProfileService {
   createScoutProfile(data: ProfileScoutCreationRequest): Observable<any> {
     return this.apiService.post<any>(`${this.profileEndpoint}/create-scout`, data).pipe(
       tap(response => {
-        this.showToast(response.message || 'Perfil de clube salvo com sucesso!', 'success');
+        this.showToast(response.message || 'Perfil de olheiro salvo com sucesso!', 'success');
       })
     );
   }

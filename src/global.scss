@@ -36,7 +36,364 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 //@import '@ionic/angular/css/palettes/dark.system.css';
 
-// Force unselected segment button text to be white
-ion-segment-button:not(.segment-button-checked) {
-  --color: white !important;
+html,
+body,
+ion-app {
+  background: var(--be-color-bg);
+  color: var(--be-color-text-1);
+  font-family: var(--ion-font-family);
+}
+
+ion-content::part(background) {
+  background: var(--be-color-bg);
+}
+
+ion-button {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  --border-radius: var(--be-radius-md);
+}
+
+ion-button::part(native) {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+ion-badge {
+  border-radius: var(--be-radius-pill);
+  font-weight: 700;
+}
+
+ion-segment {
+  border-radius: var(--be-radius-md);
+}
+
+ion-segment-button {
+  min-height: 42px;
+  font-weight: 700;
+}
+
+.be-surface {
+  background: var(--be-color-surface-2);
+  border: 1px solid var(--be-color-line);
+  border-radius: var(--be-radius-lg);
+  box-shadow: var(--be-shadow-card);
+}
+
+.be-eyebrow {
+  margin: 0;
+  color: var(--be-color-brand-500);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.be-heading {
+  margin: 0;
+  color: var(--be-color-text-1);
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.be-subheading {
+  margin: 0;
+  color: var(--be-color-text-3);
+}
+
+.be-field {
+  --background: var(--be-color-surface-2);
+  --border-radius: var(--be-radius-md);
+  --inner-border-width: 0;
+  --highlight-height: 0;
+  border: 1px solid var(--be-color-line);
+  border-radius: var(--be-radius-md);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+}
+
+.be-field:focus-within {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.65);
+  box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.16);
+}
+
+.be-stack-md {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.be-stack-lg {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.be-fade-in {
+  animation: beFadeIn 220ms ease;
+}
+
+.be-skeleton-card {
+  gap: 10px;
+}
+
+.be-skeleton-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--be-radius-md);
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.24), rgba(148, 163, 184, 0.14));
+  background-size: 200% 100%;
+  animation: beShimmer 1.25s linear infinite;
+}
+
+.be-skeleton-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.24), rgba(148, 163, 184, 0.14));
+  background-size: 200% 100%;
+  animation: beShimmer 1.25s linear infinite;
+}
+
+.be-skeleton-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@keyframes beFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes beShimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+ion-button::part(native):focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+.tab-btn:focus-visible,
+.profile-link:focus-visible,
+.thread-row:focus-visible {
+  outline: 2px solid rgba(var(--ion-color-primary-rgb), 0.9);
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container {
+    max-width: 860px !important;
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+  }
+
+  .arena-shell .video-stack,
+  .scout-home-container .video-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .arena-shell .featured {
+    max-width: 620px;
+  }
+
+  .profile-card-head,
+  .player-profile-head {
+    align-items: center !important;
+  }
+
+  .player-profile-actions,
+  .profile-card-actions {
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .showcase-card,
+  .video-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .showcase-card .showcase-body,
+  .video-card .showcase-body {
+    margin-top: auto;
+  }
+
+  .arena-shell .tab-btn,
+  .scout-home-container .tab-btn {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .arena-shell .status-tag,
+  .scout-home-container .status-tag {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container {
+    max-width: 1040px !important;
+  }
+
+  .create-post-container {
+    max-width: 1000px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 20px;
+    align-items: start;
+    justify-content: stretch !important;
+  }
+
+  .create-post-container .upload-card {
+    margin: 0;
+  }
+
+  .create-post-container .caption-card,
+  .create-post-container .file-error {
+    grid-column: 2;
+  }
+}
+
+@media (min-width: 834px) and (max-width: 1199px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container {
+    max-width: 940px !important;
+    padding-top: 24px !important;
+    padding-bottom: 36px !important;
+  }
+
+  .arena-shell .section,
+  .scout-home-container .section,
+  .player-profile-container .section-card {
+    margin-top: 20px !important;
+  }
+
+  .arena-shell .arena-tabs,
+  .scout-home-container .arena-tabs {
+    margin: 16px 0 !important;
+  }
+}
+
+@media (min-width: 1366px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container {
+    max-width: 1240px !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+
+  .arena-shell .video-stack,
+  .scout-home-container .video-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  .create-post-container {
+    max-width: 1180px !important;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr) !important;
+    gap: 24px !important;
+  }
+
+  .arena-shell .section,
+  .scout-home-container .section,
+  .player-profile-container .section-card {
+    margin-top: 22px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-topline,
+  .profile-card-head,
+  .player-profile-head {
+    gap: 10px !important;
+  }
+
+  .player-profile-actions,
+  .profile-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chat-inbox-btn {
+    margin-right: 4px;
+  }
+}
+
+@media (max-width: 390px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container,
+  .create-post-container {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .arena-shell .arena-tabs .tab-btn,
+  .scout-home-container .arena-tabs .tab-btn {
+    min-height: 42px;
+    font-size: 0.84rem;
+  }
+
+  .arena-shell .player-profile-card,
+  .scout-home-container .profile-card {
+    padding: 14px;
+  }
+
+  .arena-shell .showcase-description,
+  .scout-home-container .showcase-description {
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+}
+
+@media (min-width: 391px) and (max-width: 430px) {
+  .arena-shell,
+  .scout-home-container,
+  .player-profile-container,
+  .create-post-container {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
+
+@media (min-width: 820px) and (max-width: 900px) {
+  .player-profile-head,
+  .profile-card-head {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  .player-profile-actions,
+  .profile-card-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.arena-footer ion-toolbar,
+.publish-footer ion-toolbar {
+  padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
 }

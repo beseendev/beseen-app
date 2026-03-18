@@ -49,4 +49,12 @@ export const routes: Routes = [
     loadComponent: () => import('./create-post/create-post.page').then(m => m.CreatePostPage),
     canActivate: [authGuard]
   },
+  {
+    path: 'scout-profile',
+    loadComponent: () => import('./scout-profile/scout-profile.page').then(m => m.ScoutProfilePage)
+  },
+  {
+    path: 'scout-home',
+    loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage)
+  },
 ];

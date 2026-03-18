@@ -1,84 +1,86 @@
-<ion-content class="ion-padding ion-text-center gradient-background">
+<ion-content class="signup-screen">
+  <div class="signup-container">
+    <div class="brand-wrap">
+      <h1 class="brand-title be-heading">
+        <span class="brand-be">Be</span>
+        <span class="brand-seen">Seen</span>
+      </h1>
+      <p class="brand-tagline be-subheading">Crie sua conta de jogador</p>
+    </div>
 
-  <div class="ion-padding-top">
-    <h1 class="ion-text-color-light ion-padding-top">CRIE SUA CONTA</h1>
-    <p class="ion-text-color-light">Comece sua jornada.</p>
+    <form [formGroup]="signupForm" (ngSubmit)="register()" class="signup-form">
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        <ion-input type="text" formControlName="firstName" placeholder="Nome"></ion-input>
+      </ion-item>
+      <div *ngIf="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('firstName')?.errors?.['required']">Nome é obrigatório.</span>
+        <span *ngIf="signupForm.get('firstName')?.errors?.['minlength']">Nome deve ter no mínimo 2 caracteres.</span>
+        <span *ngIf="signupForm.get('firstName')?.errors?.['maxlength']">Nome deve ter no máximo 100 caracteres.</span>
+      </div>
+
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        <ion-input type="text" formControlName="lastName" placeholder="Sobrenome"></ion-input>
+      </ion-item>
+      <div *ngIf="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('lastName')?.errors?.['required']">Sobrenome é obrigatório.</span>
+        <span *ngIf="signupForm.get('lastName')?.errors?.['minlength']">Sobrenome deve ter no mínimo 2 caracteres.</span>
+        <span *ngIf="signupForm.get('lastName')?.errors?.['maxlength']">Sobrenome deve ter no máximo 100 caracteres.</span>
+      </div>
+
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-input type="email" formControlName="email" placeholder="Email" autocomplete="off"></ion-input>
+      </ion-item>
+      <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('email')?.errors?.['required']">Email é obrigatório.</span>
+        <span *ngIf="signupForm.get('email')?.errors?.['email']">Email inválido.</span>
+      </div>
+
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Senha" autocomplete="new-password"></ion-input>
+        <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" class="password-toggle" (click)="togglePasswordVisibility()"></ion-icon>
+      </ion-item>
+      <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('password')?.errors?.['required']">Senha é obrigatória.</span>
+        <span *ngIf="signupForm.get('password')?.errors?.['minlength']">Senha deve ter no mínimo 6 caracteres.</span>
+      </div>
+
+      <ion-item class="input-field be-field" color="none">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirmar Senha" autocomplete="new-password"></ion-input>
+        <ion-icon [name]="showConfirmPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" class="password-toggle" (click)="toggleConfirmPasswordVisibility()"></ion-icon>
+      </ion-item>
+      <div *ngIf="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('confirmPassword')?.errors?.['required']">Confirmação de senha é obrigatória.</span>
+      </div>
+      <div *ngIf="signupForm.errors?.['passwordMismatch'] && signupForm.get('confirmPassword')?.touched" class="error-text">
+        Senhas não conferem.
+      </div>
+
+      <ion-segment [value]="signupForm.get('role')?.value" (ionChange)="signupForm.get('role')?.setValue($event.detail.value)" class="role-segment">
+        <ion-segment-button value="JOGADOR">
+          <ion-label>JOGADOR</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="CLUBE">
+          <ion-label>OLHEIRO</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <div *ngIf="signupForm.get('role')?.invalid && signupForm.get('role')?.touched" class="error-text">
+        <span *ngIf="signupForm.get('role')?.errors?.['required']">Selecione um tipo de conta.</span>
+      </div>
+
+      <ion-button expand="block" type="submit" [disabled]="signupForm.invalid || isLoading" class="signup-button-primary">
+        <span *ngIf="!isLoading">CADASTRAR</span>
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      </ion-button>
+    </form>
+
+    <div class="login-prompt">
+      <span class="login-text">Já tem uma conta?</span>
+      <ion-button fill="clear" routerLink="/login" class="login-link">Login</ion-button>
+    </div>
   </div>
-
-  <form [formGroup]="signupForm" (ngSubmit)="register()" class="ion-margin-top">
-
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="person-circle-outline" slot="start" color="light"></ion-icon>
-      <ion-input type="text" formControlName="firstName" placeholder="Nome" color="light"></ion-input>
-    </ion-item>
-    <div *ngIf="signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('firstName')?.errors?.['required']">Nome é obrigatório.</span>
-      <span *ngIf="signupForm.get('firstName')?.errors?.['minlength']">Nome deve ter no mínimo 2 caracteres.</span>
-      <span *ngIf="signupForm.get('firstName')?.errors?.['maxlength']">Nome deve ter no máximo 100 caracteres.</span>
-    </div>
-
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="person-circle-outline" slot="start" color="light"></ion-icon>
-      <ion-input type="text" formControlName="lastName" placeholder="Sobrenome" color="light"></ion-input>
-    </ion-item>
-    <div *ngIf="signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('lastName')?.errors?.['required']">Sobrenome é obrigatório.</span>
-      <span *ngIf="signupForm.get('lastName')?.errors?.['minlength']">Sobrenome deve ter no mínimo 2 caracteres.</span>
-      <span *ngIf="signupForm.get('lastName')?.errors?.['maxlength']">Sobrenome deve ter no máximo 100 caracteres.</span>
-    </div>
-
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="mail-outline" slot="start" color="light"></ion-icon>
-      <ion-input type="email" formControlName="email" placeholder="Email" color="light" autocomplete="off"></ion-input>
-    </ion-item>
-    <div *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('email')?.errors?.['required']">Email é obrigatório.</span>
-      <span *ngIf="signupForm.get('email')?.errors?.['email']">Email inválido.</span>
-    </div>
-
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
-      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Senha" color="light" autocomplete="new-password"></ion-input>
-      <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="togglePasswordVisibility()"></ion-icon>
-    </ion-item>
-    <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('password')?.errors?.['required']">Senha é obrigatória.</span>
-      <span *ngIf="signupForm.get('password')?.errors?.['minlength']">Senha deve ter no mínimo 6 caracteres.</span>
-    </div>
-
-    <ion-item class="ion-margin-bottom" color="none">
-      <ion-icon name="lock-closed-outline" slot="start" color="light"></ion-icon>
-      <ion-input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirmar Senha" color="light" autocomplete="new-password"></ion-input>
-      <ion-icon [name]="showConfirmPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" color="light" (click)="toggleConfirmPasswordVisibility()"></ion-icon>
-    </ion-item>
-    <div *ngIf="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('confirmPassword')?.errors?.['required']">Confirmação de senha é obrigatória.</span>
-    </div>
-    <div *ngIf="signupForm.errors?.['passwordMismatch'] && signupForm.get('confirmPassword')?.touched" class="ion-text-start ion-padding-start error-text">
-      Senhas não conferem.
-    </div>
-
-    <ion-segment [value]="signupForm.get('role')?.value" (ionChange)="signupForm.get('role')?.setValue($event.detail.value)" class="ion-margin-vertical">
-      <ion-segment-button value="JOGADOR">
-        <ion-label>JOGADOR</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="CLUBE">
-        <ion-label>CLUBE</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-    <div *ngIf="signupForm.get('role')?.invalid && signupForm.get('role')?.touched" class="ion-text-start ion-padding-start error-text">
-      <span *ngIf="signupForm.get('role')?.errors?.['required']">Selecione um tipo de conta.</span>
-    </div>
-
-    <ion-button expand="block" type="submit" [disabled]="signupForm.invalid || isLoading" color="primary" class="ion-margin-top">
-      <span *ngIf="!isLoading">CADASTRAR</span>
-      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-    </ion-button>
-  </form>
-
-  <div class="ion-margin-top" style="display: flex; align-items: center; justify-content: center;">
-    <span style="color: #989aa2;">Já tem uma conta? </span>
-    <ion-button fill="clear" routerLink="/login" color="primary" style="font-weight: bold; text-transform: none; --padding-start: 4px; --padding-end: 4px;">Login</ion-button>
-  </div>
-
 </ion-content>

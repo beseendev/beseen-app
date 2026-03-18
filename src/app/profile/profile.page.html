@@ -1,130 +1,229 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
+<ion-content [fullscreen]="true" class="player-profile-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshUserPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="player-profile-container" *ngIf="profile; else loadingState">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
-      <ion-title>{{ profile?.name || 'Perfil' }}</ion-title>
-    </ion-buttons>
-
-    <ion-buttons slot="end" *ngIf="isMyProfile">
-      <ion-button (click)="goToSettings()">
-        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding gradient-background" [fullscreen]="true">
-  <div *ngIf="profile">
-    <!-- Profile Header Section -->
-    <div class="profile-header">
-      <ion-avatar class="profile-avatar">
-        <img *ngIf="profile.urlPerfil" [src]="profile.urlPerfil" />
-        <ion-icon *ngIf="!profile.urlPerfil" name="person-circle-outline"></ion-icon>
-      </ion-avatar>
-      <ion-label class="profile-name">{{ profile.fullName }}</ion-label>
+      <span class="top-bar-title">Perfil do Jogador</span>
     </div>
 
-    <!-- Conditional Action Buttons -->
-    <div class="action-buttons" *ngIf="!isMyProfile">
-      <ion-button expand="block" color="primary" (click)="followUser()">
-        <ion-icon slot="start" name="person-add-outline"></ion-icon>
-        Seguir
-      </ion-button>
-      <ion-button expand="block" fill="outline" color="secondary" (click)="startChat()">
-        <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
-        Chat
-      </ion-button>
+    <div class="page-intro">
+      <h1 class="page-title">{{ profile.fullName || profile.name || 'Meu perfil' }}</h1>
+      <p class="page-subtitle">{{ getDisplayRole(profile.role) }}</p>
     </div>
 
-    <!-- Profile Info Section -->
-    <div class="profile-details-card">
+    <section class="section-card profile-card">
+      <div class="profile-card-head">
+        <div class="profile-identity">
+          <ion-avatar class="profile-avatar">
+            <img *ngIf="profile.urlPerfil" [src]="profile.urlPerfil" alt="Foto do perfil" />
+            <ion-icon *ngIf="!profile.urlPerfil" name="person-circle-outline"></ion-icon>
+          </ion-avatar>
+
+          <div class="profile-copy">
+            <span>Perfil do jogador</span>
+            <strong>{{ profile.fullName || profile.name }}</strong>
+            <p>{{ getDisplayRole(profile.role) }}</p>
+          </div>
+        </div>
+
+        <div class="profile-actions" *ngIf="isMyProfile">
+          <ng-container *ngIf="!isEditing; else editActions">
+            <ion-button fill="outline" class="profile-action-btn" (click)="startEditing()">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar perfil
+            </ion-button>
+          </ng-container>
+
+          <ng-template #editActions>
+            <ion-button fill="outline" class="profile-action-btn save-btn" (click)="saveProfileEdits()">
+              <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+              Salvar
+            </ion-button>
+            <ion-button fill="clear" class="profile-action-btn cancel-btn" (click)="cancelEditing()">
+              <ion-icon slot="start" name="close-outline"></ion-icon>
+              Cancelar
+            </ion-button>
+          </ng-template>
+        </div>
+
+        <div class="profile-actions" *ngIf="!isMyProfile">
+          <ion-button expand="block" class="profile-action-btn" (click)="followUser()">
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            Seguir
+          </ion-button>
+          <ion-button expand="block" fill="clear" class="profile-action-btn secondary-action" (click)="startChat()">
+            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+            Chat
+          </ion-button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <h2>Informacoes</h2>
+        <p>Dados principais do jogador. A edicao salva apenas no dispositivo neste MVP.</p>
+      </div>
+
       <ion-list lines="none">
-        <ion-grid>
-          <ion-row class="info-row">
-            <ion-col size="6" *ngIf="profile.role">
-              <ion-item lines="none">
-                <ion-icon name="briefcase-outline" slot="start"></ion-icon>
-                <ion-label>
-                  <h3>Função</h3>
-                  <ion-text color="medium">{{ profile.role }}</ion-text>
-                </ion-label>
-              </ion-item>
-            </ion-col>
-            <ion-col size="6" *ngIf="profile.dateOfBirth">
-              <ion-item lines="none">
-                <ion-icon name="calendar-outline" slot="start"></ion-icon>
-                <ion-label>
-                  <h3>Data de Nascimento</h3>
-                  <ion-text color="medium">{{ profile.dateOfBirth }}</ion-text>
-                </ion-label>
-              </ion-item>
-            </ion-col>
-          </ion-row>
+        <ion-item *ngIf="isEditing">
+          <ion-input
+            label="Nome completo"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.fullName"
+            placeholder="Nome completo">
+          </ion-input>
+        </ion-item>
 
-          <ion-row class="info-row">
-            <ion-col size="4" *ngIf="profile.position">
-              <ion-item lines="none">
-                <ion-icon name="body-outline" slot="start"></ion-icon>
-                <ion-label>
-                  <h3>Posição</h3>
-                  <ion-text color="medium">{{ profile.position }}</ion-text>
-                </ion-label>
+        <ion-item>
+          <ion-icon slot="start" name="briefcase-outline"></ion-icon>
+          <ion-label>
+            <h3>Funcao</h3>
+            <p>{{ getDisplayRole(profile.role) }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="profile.dateOfBirth">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          <ion-label>
+            <h3>Data de nascimento</h3>
+            <p>{{ profile.dateOfBirth }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="isEditing; else readPosition">
+          <ion-icon slot="start" name="body-outline"></ion-icon>
+          <ion-input
+            label="Posicao"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.position"
+            placeholder="Ex: Atacante">
+          </ion-input>
+        </ion-item>
+        <ng-template #readPosition>
+          <ion-item *ngIf="profile.position">
+            <ion-icon slot="start" name="body-outline"></ion-icon>
+            <ion-label>
+              <h3>Posicao</h3>
+              <p>{{ profile.position }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <ion-grid class="metrics-grid">
+          <ion-row>
+            <ion-col size="6">
+              <ion-item *ngIf="isEditing; else readHeight">
+                <ion-icon slot="start" name="resize-outline"></ion-icon>
+                <ion-input
+                  label="Altura"
+                  labelPlacement="stacked"
+                  [(ngModel)]="draftProfile.height"
+                  placeholder="Ex: 1,80">
+                </ion-input>
               </ion-item>
+              <ng-template #readHeight>
+                <ion-item *ngIf="profile.height">
+                  <ion-icon slot="start" name="resize-outline"></ion-icon>
+                  <ion-label>
+                    <h3>Altura</h3>
+                    <p>{{ profile.height }}</p>
+                  </ion-label>
+                </ion-item>
+              </ng-template>
             </ion-col>
-            <ion-col size="4" *ngIf="profile.height">
-              <ion-item lines="none">
-                <ion-icon name="resize-outline" slot="start"></ion-icon>
-                <ion-label>
-                  <h3>Altura</h3>
-                  <ion-text color="medium">{{ profile.height }} m</ion-text>
-                </ion-label>
+
+            <ion-col size="6">
+              <ion-item *ngIf="isEditing; else readWeight">
+                <ion-icon slot="start" name="scale-outline"></ion-icon>
+                <ion-input
+                  label="Peso"
+                  labelPlacement="stacked"
+                  [(ngModel)]="draftProfile.weight"
+                  placeholder="Ex: 75">
+                </ion-input>
               </ion-item>
-            </ion-col>
-            <ion-col size="4" *ngIf="profile.weight">
-              <ion-item lines="none">
-                <ion-icon name="scale-outline" slot="start"></ion-icon>
-                <ion-label>
-                  <h3>Peso</h3>
-                  <ion-text color="medium">{{ profile.weight }} kg</ion-text>
-                </ion-label>
-              </ion-item>
+              <ng-template #readWeight>
+                <ion-item *ngIf="profile.weight">
+                  <ion-icon slot="start" name="scale-outline"></ion-icon>
+                  <ion-label>
+                    <h3>Peso</h3>
+                    <p>{{ profile.weight }}</p>
+                  </ion-label>
+                </ion-item>
+              </ng-template>
             </ion-col>
           </ion-row>
         </ion-grid>
       </ion-list>
+    </section>
 
-      <ion-card class="bio-card" *ngIf="profile.bio">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="information-circle-outline"></ion-icon> Sobre Mim
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-text color="medium">{{ profile.bio }}</ion-text>
-        </ion-card-content>
-      </ion-card>
+    <section class="section-card" *ngIf="isEditing || profile.bio">
+      <div class="section-header">
+        <h2>Sobre</h2>
+        <p>Resumo rapido para apresentar o atleta.</p>
+      </div>
 
-      <ion-card class="career-card" *ngIf="profile.careerHistory">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="time-outline"></ion-icon> Histórico de Carreira
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-text color="medium">{{ profile.careerHistory }}</ion-text>
-        </ion-card-content>
-      </ion-card>
-    </div>
+      <ion-list lines="none">
+        <ion-item *ngIf="isEditing; else readBio">
+          <ion-textarea
+            label="Sobre mim"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.bio"
+            [autoGrow]="true"
+            placeholder="Conte um pouco sobre voce">
+          </ion-textarea>
+        </ion-item>
+        <ng-template #readBio>
+          <div class="text-card">
+            <div class="text-card-title">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>Sobre mim</span>
+            </div>
+            <ion-text>{{ profile.bio }}</ion-text>
+          </div>
+        </ng-template>
+      </ion-list>
+    </section>
 
-    <ion-refresher slot="fixed" (ionRefresh)="refreshUserPosts($event)">
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+    <section class="section-card" *ngIf="isEditing || profile.careerHistory">
+      <div class="section-header">
+        <h2>Historico</h2>
+        <p>Trajetoria esportiva e clubes por onde voce passou.</p>
+      </div>
 
-    <!-- User Posts Section -->
-    <div class="user-posts-section">
-      <h2>Posts de {{ profile.fullName }}</h2>
+      <ion-list lines="none">
+        <ion-item *ngIf="isEditing; else readCareer">
+          <ion-textarea
+            label="Historico de carreira"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.careerHistory"
+            [autoGrow]="true"
+            placeholder="Descreva sua carreira">
+          </ion-textarea>
+        </ion-item>
+        <ng-template #readCareer>
+          <div class="text-card">
+            <div class="text-card-title">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Historico de carreira</span>
+            </div>
+            <ion-text>{{ profile.careerHistory }}</ion-text>
+          </div>
+        </ng-template>
+      </ion-list>
+    </section>
+
+    <section class="section-card posts-section">
+      <div class="section-header posts-header">
+        <h2>Conteudo</h2>
+        <p>Os mesmos posts continuam visiveis aqui, separados por tipo.</p>
+      </div>
 
       <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)" mode="md">
         <ion-segment-button value="images">
@@ -133,19 +232,11 @@
         </ion-segment-button>
         <ion-segment-button value="videos">
           <ion-icon name="videocam-outline"></ion-icon>
-          <ion-label>Vídeos</ion-label>
+          <ion-label>Videos</ion-label>
         </ion-segment-button>
       </ion-segment>
 
-      <ion-grid *ngIf="selectedSegment === 'images'">
-        <ion-row>
-          <ion-col size="6" *ngFor="let post of (filteredUserPosts$ | async); trackBy: trackById">
-            <app-post-card [post]="post"></app-post-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
-      <ion-grid *ngIf="selectedSegment === 'videos'">
+      <ion-grid>
         <ion-row>
           <ion-col size="6" *ngFor="let post of (filteredUserPosts$ | async); trackBy: trackById">
             <app-post-card [post]="post"></app-post-card>
@@ -156,9 +247,12 @@
       <ion-infinite-scroll (ionInfinite)="loadMoreUserPosts($event)">
         <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais posts..."></ion-infinite-scroll-content>
       </ion-infinite-scroll>
+    </section>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-state">
+      <p>Carregando perfil...</p>
     </div>
-  </div>
-  <div *ngIf="!profile">
-    <p>Carregando perfil...</p>
-  </div>
+  </ng-template>
 </ion-content>
