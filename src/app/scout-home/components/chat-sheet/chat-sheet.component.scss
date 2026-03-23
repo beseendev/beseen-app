@@ -1,0 +1,146 @@
+.chat-sheet-content {
+  --background: var(--be-color-bg);
+  font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+}
+
+.sheet-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 12px 14px 14px;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.athlete-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-shell {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--be-color-surface-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar-shell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-shell ion-icon {
+  color: var(--be-color-text-2);
+  font-size: 1.8rem;
+}
+
+.athlete-head strong {
+  display: block;
+  color: var(--be-color-text-1);
+  font-size: 0.96rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  margin-top: 4px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--be-color-surface-1);
+  color: var(--be-color-text-2);
+  font-size: 0.72rem;
+}
+
+.status-badge.liberado {
+  background: rgba(34, 197, 94, 0.16);
+  color: var(--be-color-text-success-soft);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accept-btn {
+  --color: var(--be-color-brand-500);
+  text-transform: none;
+  font-size: 0.8rem;
+}
+
+.close-btn {
+  --color: var(--be-color-text-2);
+}
+
+.sheet-body {
+  flex: 1;
+  min-height: 220px;
+  max-height: 54vh;
+  overflow-y: auto;
+  padding: 4px 2px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-chat {
+  color: var(--be-color-text-3);
+  font-size: 0.84rem;
+  line-height: 1.4;
+  padding: 10px 4px;
+}
+
+.chat-bubble {
+  align-self: flex-start;
+  max-width: 88%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--be-color-surface-1);
+  color: var(--be-color-text-2);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.chat-bubble.own {
+  align-self: flex-end;
+  background: rgba(34, 197, 94, 0.16);
+}
+
+.sheet-footer {
+  padding-top: 8px;
+}
+
+.sheet-footer.waiting {
+  color: var(--be-color-text-3);
+  font-size: 0.82rem;
+}
+
+.chat-input {
+  --background: var(--be-color-surface-1);
+  --border-radius: 14px;
+  --inner-border-width: 0;
+  --border-width: 0;
+  --padding-start: 10px;
+  --padding-end: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.chat-input ion-input {
+  --color: var(--be-color-text-1);
+  --placeholder-color: var(--be-color-text-3);
+}
+
+.chat-input ion-button {
+  --color: var(--be-color-brand-500);
+}

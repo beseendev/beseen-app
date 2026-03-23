@@ -1,0 +1,21 @@
+<section class="profile-drawer">
+  <header class="profile-head">
+    <ion-avatar class="drawer-avatar">
+      <img *ngIf="avatarUrl" [src]="avatarUrl" [alt]="displayName" (error)="onAvatarError()" />
+      <ion-icon *ngIf="!avatarUrl" name="person-circle-outline"></ion-icon>
+    </ion-avatar>
+
+    <h2>{{ displayName }}</h2>
+    <p>{{ displayPosition }}</p>
+    <div class="about">
+      <h3>Sobre mim</h3>
+      <p>{{ displayAbout }}</p>
+    </div>
+  </header>
+
+  <div class="actions">
+    <ion-button fill="clear" (click)="onMyVideos()" aria-label="Abrir meus vídeos">Meus vídeos</ion-button>
+    <ion-button fill="clear" (click)="onEditProfile()" aria-label="Editar perfil">Editar perfil</ion-button>
+    <ion-button fill="clear" color="medium" (click)="onSignOut()" aria-label="Sair da conta">Sair</ion-button>
+  </div>
+</section>

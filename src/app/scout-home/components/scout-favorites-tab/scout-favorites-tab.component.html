@@ -1,0 +1,68 @@
+<section class="content-section section">
+  <div class="section-heading">
+    <p class="eyebrow">Favoritos</p>
+    <h2>Videos dos atletas favoritos</h2>
+  </div>
+
+  <div class="empty-state" *ngIf="cards.length === 0">
+    Favorite atletas na vitrine para ver aqui somente os videos deles.
+  </div>
+
+  <div class="video-list" *ngIf="cards.length > 0">
+    <article class="video-card surface showcase-card" *ngFor="let card of cards; trackBy: trackByCard">
+      <div class="video-meta">
+        <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(card)">
+          <div class="avatar-shell">
+            <img *ngIf="card.athleteAvatarUrl" [src]="card.athleteAvatarUrl" [alt]="card.athleteName">
+            <ion-icon *ngIf="!card.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+          </div>
+          <div>
+            <h3>{{ card.athleteName }}</h3>
+            <p>{{ card.caption }}</p>
+          </div>
+        </button>
+
+        <ion-button
+          fill="clear"
+          class="favorite-btn"
+          (click)="toggleFavorite(card)"
+          [attr.aria-label]="'Desfavoritar ' + card.athleteName">
+          <ion-icon name="heart"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="media-frame showcase-media">
+        <video [src]="card.mediaUrl" controls preload="metadata" playsinline class="talent-video"></video>
+      </div>
+
+      <div class="showcase-body">
+        <p class="meta-line">{{ card.modalidade }} • {{ card.localidade }}</p>
+        <p class="showcase-description">{{ card.destaque }}</p>
+      </div>
+
+      <div class="chat-state-panel">
+        <ng-container [ngSwitch]="getStatus(card)">
+          <div *ngSwitchCase="'BLOQUEADO'" class="state-block">
+            <ion-button expand="block" (click)="invite(card)" [attr.aria-label]="'Convidar ' + card.athleteName + ' para conversar'">
+              Convidar para conversar
+            </ion-button>
+          </div>
+
+          <div *ngSwitchCase="'AGUARDANDO_CONFIRMACAO'" class="state-block">
+            <p class="status-text">Convite enviado • aguardando confirmacao</p>
+            <ion-button expand="block" fill="outline" (click)="openSheet(card)" [attr.aria-label]="'Ver convite de ' + card.athleteName">
+              Ver convite
+            </ion-button>
+          </div>
+
+          <div *ngSwitchCase="'LIBERADO'" class="state-block">
+            <span class="status-chip">Chat liberado</span>
+            <ion-button expand="block" fill="outline" (click)="openSheet(card)" [attr.aria-label]="'Abrir chat com ' + card.athleteName">
+              Abrir chat
+            </ion-button>
+          </div>
+        </ng-container>
+      </div>
+    </article>
+  </div>
+</section>

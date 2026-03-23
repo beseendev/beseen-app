@@ -1,0 +1,36 @@
+<ion-content class="chat-inbox-content">
+  <div class="chat-inbox-shell">
+    <div class="chat-inbox-header">
+      <div>
+        <p>Mensagens</p>
+        <h2>Conversas com atletas</h2>
+      </div>
+
+      <ion-button fill="clear" (click)="close()" aria-label="Fechar central de chats">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="empty-state" *ngIf="threads.length === 0">
+      Nenhuma conversa iniciada ainda.
+    </div>
+
+    <div class="thread-list" *ngIf="threads.length > 0">
+      <button type="button" class="thread-row" *ngFor="let thread of threads; trackBy: trackByThread" (click)="openThread(thread)">
+        <div class="avatar-shell">
+          <img *ngIf="thread.athleteAvatarUrl" [src]="thread.athleteAvatarUrl" [alt]="thread.athleteName">
+          <ion-icon *ngIf="!thread.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+        </div>
+
+        <div class="thread-copy">
+          <strong>{{ thread.athleteName }}</strong>
+          <p>{{ thread.messages[thread.messages.length - 1]?.text || 'Convite enviado' }}</p>
+        </div>
+
+        <span class="thread-status" [class.open]="thread.status === 'LIBERADO'">
+          {{ thread.status === 'LIBERADO' ? 'Ativo' : 'Pendente' }}
+        </span>
+      </button>
+    </div>
+  </div>
+</ion-content>

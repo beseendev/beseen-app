@@ -1,0 +1,63 @@
+<ion-content class="player-chat-sheet-content">
+  <div class="sheet-shell">
+    <div class="sheet-header">
+      <div class="counterparty-head">
+        <div class="avatar-shell">
+          <img *ngIf="scoutAvatarUrl" [src]="scoutAvatarUrl" [alt]="scoutName">
+          <ion-icon *ngIf="!scoutAvatarUrl" name="person-circle-outline"></ion-icon>
+        </div>
+
+        <div>
+          <strong>{{ scoutName }}</strong>
+          <span class="status-badge" [class.liberado]="thread.status === 'LIBERADO'">{{ statusLabel }}</span>
+        </div>
+      </div>
+
+      <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="sheet-body" #messagesViewport>
+      <div class="empty-chat" *ngIf="thread.messages.length === 0">
+        Nenhum convite ativo para este olheiro.
+      </div>
+
+      <div
+        class="chat-bubble"
+        *ngFor="let message of thread.messages"
+        [class.own]="message.sender === 'PLAYER'">
+        {{ message.text }}
+      </div>
+    </div>
+
+    <div class="sheet-footer waiting" *ngIf="thread.status === 'CONVITE_RECEBIDO'">
+      <p>O olheiro demonstrou interesse no seu perfil.</p>
+      <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite e abrir chat">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Aceitar e abrir chat
+      </ion-button>
+    </div>
+
+    <div class="sheet-footer waiting" *ngIf="thread.status === 'SEM_CONVITE'">
+      Aguardando um convite para iniciar a conversa.
+    </div>
+
+    <div class="sheet-footer" *ngIf="thread.status === 'LIBERADO'">
+      <ion-item lines="none" class="chat-input">
+        <ion-input
+          [(ngModel)]="draftMessage"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="Digite sua mensagem">
+        </ion-input>
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="sendMessage()"
+          aria-label="Enviar mensagem">
+          <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>

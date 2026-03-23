@@ -1,0 +1,149 @@
+<ion-content [fullscreen]="true" class="scout-home-content">
+  <div class="scout-home-container">
+    <div class="hero-block">
+      <div class="hero-topline">
+        <p class="eyebrow">Ambiente do Olheiro</p>
+        <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
+          <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
+          <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
+        </ion-button>
+      </div>
+      <h1>Talentos em destaque</h1>
+      <p class="hero-copy">Explore atletas, analise perfis e favorite quem merece acompanhamento.</p>
+    </div>
+
+    <section class="profile-card section surface">
+      <div class="profile-card-head" *ngIf="!isLoadingContent; else scoutProfileSkeleton">
+        <div class="profile-card-id">
+          <div class="avatar-shell profile-avatar">
+            <img *ngIf="scoutProfile?.fotoPerfilUrl" [src]="scoutProfile?.fotoPerfilUrl" alt="Perfil do olheiro">
+            <ion-icon *ngIf="!scoutProfile?.fotoPerfilUrl" name="person-circle-outline"></ion-icon>
+          </div>
+          <div class="profile-copy">
+            <span class="summary-label">Perfil do olheiro</span>
+            <strong>{{ scoutProfile?.nomeCompleto || 'Complete seu perfil' }}</strong>
+            <p>
+              {{ scoutProfile?.tipoOlheiro || 'Tipo nao informado' }}
+              <span *ngIf="scoutProfile?.cidade || scoutProfile?.estado">
+                • {{ scoutProfile?.cidade || 'Cidade' }}{{ scoutProfile?.estado ? ', ' + scoutProfile?.estado : '' }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="profile-card-actions">
+          <ion-button fill="clear" class="edit-profile-btn" (click)="editScoutProfile()" aria-label="Editar perfil do olheiro">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            Editar perfil
+          </ion-button>
+
+          <ion-button fill="clear" class="logout-btn" (click)="logout()" aria-label="Sair da conta">
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
+            Sair
+          </ion-button>
+        </div>
+      </div>
+
+      <ng-template #scoutProfileSkeleton>
+        <div class="profile-card-head">
+          <div class="profile-card-id">
+            <div class="be-skeleton-avatar"></div>
+            <div class="be-skeleton-copy">
+              <ion-skeleton-text animated style="width: 90px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 170px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 120px;"></ion-skeleton-text>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </section>
+
+    <nav class="arena-tabs section" aria-label="Conteúdo do olheiro">
+      <button type="button" class="tab-btn" [class.active]="selectedTab === 'vitrine'" (click)="setActiveTab('vitrine')">
+        Videos na vitrine
+      </button>
+      <button type="button" class="tab-btn" [class.active]="selectedTab === 'favoritos'" (click)="setActiveTab('favoritos')">
+        Favoritos
+      </button>
+    </nav>
+
+    <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
+      <div class="section-heading">
+        <p class="eyebrow">Vitrine</p>
+        <h2>Todos os videos</h2>
+      </div>
+
+      <div class="video-list">
+        <article class="video-card surface be-fade-in" *ngFor="let card of allVideoCards; trackBy: trackByVideoCard">
+          <div class="video-meta">
+            <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(card)">
+              <div class="avatar-shell">
+                <img *ngIf="card.athleteAvatarUrl" [src]="card.athleteAvatarUrl" [alt]="card.athleteName">
+                <ion-icon *ngIf="!card.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+              </div>
+              <div>
+                <h3>{{ card.athleteName }}</h3>
+                <p>{{ card.caption }}</p>
+              </div>
+            </button>
+
+            <ion-button
+              fill="clear"
+              class="favorite-btn"
+              (click)="toggleFavoriteFromCard(card)"
+              [attr.aria-label]="'Favoritar ' + card.athleteName">
+              <ion-icon [name]="card.favorito ? 'heart' : 'heart-outline'"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="media-frame showcase-media">
+            <video [src]="card.mediaUrl" controls preload="metadata" playsinline class="talent-video"></video>
+          </div>
+
+          <div class="showcase-body">
+            <p class="meta-line">{{ card.modalidade }} • {{ card.localidade }}</p>
+            <p class="showcase-description">{{ card.destaque }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <ng-template #scoutVitrineSkeleton>
+      <section class="content-section section" *ngIf="selectedTab === 'vitrine'">
+        <div class="section-heading">
+          <p class="eyebrow">Vitrine</p>
+          <h2>Todos os videos</h2>
+        </div>
+        <div class="video-list">
+          <article class="video-card surface be-skeleton-card" *ngFor="let _ of [1,2,3]">
+            <ion-skeleton-text animated style="width: 60%; height: 16px;"></ion-skeleton-text>
+            <div class="be-skeleton-media"></div>
+            <ion-skeleton-text animated style="width: 75%; height: 14px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 90%; height: 14px;"></ion-skeleton-text>
+          </article>
+        </div>
+      </section>
+    </ng-template>
+
+    <app-scout-favorites-tab
+      *ngIf="selectedTab === 'favoritos' && !isLoadingContent"
+      [cards]="favoriteVideoCards"
+      (favoriteToggled)="toggleFavoriteFromCard($event)">
+    </app-scout-favorites-tab>
+
+    <section class="content-section section" *ngIf="selectedTab === 'favoritos' && isLoadingContent">
+      <div class="section-heading">
+        <p class="eyebrow">Favoritos</p>
+        <h2>Videos dos atletas favoritos</h2>
+      </div>
+      <div class="video-list">
+        <article class="video-card surface be-skeleton-card" *ngFor="let _ of [1,2]">
+          <ion-skeleton-text animated style="width: 60%; height: 16px;"></ion-skeleton-text>
+          <div class="be-skeleton-media"></div>
+          <ion-skeleton-text animated style="width: 72%; height: 14px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 88%; height: 14px;"></ion-skeleton-text>
+        </article>
+      </div>
+    </section>
+  </div>
+</ion-content>

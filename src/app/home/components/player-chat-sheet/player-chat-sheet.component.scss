@@ -1,0 +1,148 @@
+:host {
+  display: block;
+}
+
+.player-chat-sheet-content {
+  --background: var(--be-color-bg);
+}
+
+.sheet-shell {
+  min-height: 100%;
+  padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--be-color-bg-elevated) 0%, var(--be-color-bg) 100%);
+  color: var(--be-color-text-1);
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.counterparty-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-shell {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--be-color-surface-2);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-shell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-shell ion-icon {
+  font-size: 2rem;
+  color: var(--be-color-text-2);
+}
+
+.counterparty-head strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--be-color-text-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.status-badge.liberado {
+  background: rgba(34, 197, 94, 0.14);
+  color: #86efac;
+}
+
+.close-btn {
+  --color: var(--be-color-text-2);
+}
+
+.sheet-body {
+  max-height: 46vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.empty-chat {
+  padding: 18px 14px;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.9);
+  color: var(--be-color-text-3);
+  text-align: center;
+}
+
+.chat-bubble {
+  max-width: 86%;
+  padding: 11px 12px;
+  border-radius: 14px 14px 14px 6px;
+  background: rgba(30, 41, 59, 0.96);
+  color: var(--be-color-text-2);
+}
+
+.chat-bubble.own {
+  align-self: flex-end;
+  border-radius: 14px 14px 6px 14px;
+  background: rgba(34, 197, 94, 0.16);
+  color: var(--be-color-text-success-soft);
+}
+
+.sheet-footer {
+  margin-top: 14px;
+}
+
+.sheet-footer.waiting {
+  padding-top: 4px;
+  color: var(--be-color-text-2);
+}
+
+.sheet-footer.waiting p {
+  margin: 0 0 10px;
+  color: var(--be-color-text-3);
+}
+
+.sheet-footer ion-button {
+  --background: var(--be-color-brand-500);
+  --color: #052e16;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.chat-input {
+  --background: var(--be-color-surface-2);
+  --border-radius: 14px;
+  --inner-border-width: 0;
+  --padding-start: 12px;
+  --padding-end: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.chat-input ion-input {
+  --color: var(--be-color-text-1);
+  --placeholder-color: var(--be-color-text-3);
+}
+
+.chat-input ion-button {
+  --background: transparent;
+  --color: var(--be-color-brand-500);
+}

@@ -1,0 +1,184 @@
+:host {
+  display: block;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.content-section {
+  margin-bottom: 24px;
+}
+
+.section-heading {
+  margin-bottom: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--be-color-brand-500);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: 1.05rem;
+}
+
+.empty-state {
+  background: var(--be-color-surface-1);
+  border: 1px dashed rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  color: var(--be-color-text-3);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.surface,
+.video-card {
+  background: var(--be-color-surface-2);
+  border: 1px solid var(--be-color-line);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--be-shadow-card);
+}
+
+.video-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.talent-id {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.avatar-shell {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--be-color-surface-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.24);
+}
+
+.avatar-shell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-shell ion-icon {
+  color: var(--be-color-text-2);
+  font-size: 2rem;
+}
+
+.talent-id h3 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: 0.96rem;
+}
+
+.talent-id p {
+  margin: 0;
+  color: var(--be-color-text-3);
+  font-size: 0.82rem;
+}
+
+.favorite-btn {
+  --color: var(--be-color-brand-500);
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+}
+
+.favorite-btn ion-icon {
+  font-size: 1.45rem;
+}
+
+.showcase-body {
+  padding-top: 14px;
+}
+
+.meta-line {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--be-color-text-3);
+}
+
+.showcase-description {
+  margin: 12px 0 0;
+  color: var(--be-color-text-2);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.media-frame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--be-color-media-bg);
+}
+
+.talent-video,
+.media-frame video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  background: var(--be-color-media-bg);
+  object-fit: cover;
+}
+
+.chat-state-panel {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.status-text {
+  margin: 0 0 10px;
+  color: var(--be-color-text-3);
+  font-size: 0.82rem;
+}
+
+.status-chip {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--be-color-text-success-soft);
+  font-size: 0.76rem;
+}
+
+.state-block ion-button {
+  margin: 0;
+}
