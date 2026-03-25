@@ -16,24 +16,12 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
 
       const decodedToken = authService.getDecodedToken<JwtPayload>();
       const userRole = decodedToken?.role;
-      const userIdFromToken = decodedToken?.userId;
 
-      if (state.url.includes('/create-post') && userRole === 'CLUBE') {
+      if (state.url.startsWith('/create-post') && userRole === 'CLUBE') {
         return router.createUrlTree(['/home']);
-      }
-
-      // Protection for /profile and /profile/:userId
-      if (state.url.includes('/profile')) {
-        const routeUserId = route.paramMap.get('userId');
-        const accessingOwnProfile = !routeUserId || (routeUserId === userIdFromToken);
-
-        if (accessingOwnProfile && userRole === 'CLUBE') {
-          return router.createUrlTree(['/home']);
-        }
       }
 
       return true;
     })
   );
 };
-

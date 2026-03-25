@@ -62,13 +62,13 @@ function optionalUrlValidator(): ValidatorFn {
 }
 
 @Component({
-  selector: 'app-scout-profile',
-  templateUrl: './scout-profile.page.html',
-  styleUrls: ['./scout-profile.page.scss'],
+  selector: 'app-create-profile-scout',
+  templateUrl: './create-profile-scout.page.html',
+  styleUrls: ['./create-profile-scout.page.scss'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, IonicModule]
 })
-export class ScoutProfilePage implements OnInit {
+export class CreateProfileScoutPage implements OnInit {
   @ViewChild('photoInput') photoInput?: ElementRef<HTMLInputElement>;
 
   profileForm: FormGroup;

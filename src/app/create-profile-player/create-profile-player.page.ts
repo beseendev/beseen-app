@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonContent,
@@ -15,10 +15,12 @@ import {
   IonSpinner,
   ToastController,
   IonSegment,
-  IonSegmentButton
+  IonSegmentButton,
+  IonList,
+  IonNote
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline } from 'ionicons/icons';
+import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { FileType, ProfileService } from '../services/profile.service';
 import { Router } from '@angular/router';
@@ -29,17 +31,18 @@ import { ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../mo
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-create-profile',
-  templateUrl: './create-profile.page.html',
-  styleUrls: ['./create-profile.page.scss'],
+  selector: 'app-create-profile-player',
+  templateUrl: './create-profile-player.page.html',
+  styleUrls: ['./create-profile-player.page.scss'],
   standalone: true,
   imports: [
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
     IonItem, IonInput, IonButton, IonIcon, IonLabel, IonTextarea,
-    IonDatetime, IonDatetimeButton, IonModal, IonSpinner, IonSegment, IonSegmentButton
+    IonDatetime, IonDatetimeButton, IonModal, IonSpinner,
+    IonList, IonNote
   ]
 })
-export class CreateProfilePage implements OnInit, OnDestroy {
+export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   profileForm!: FormGroup;
   isRoleFromToken = false;
   isLoading = false;
@@ -57,9 +60,10 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   private router = inject(Router);
   private toastController = inject(ToastController);
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline });
+    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline });
   }
 
   ngOnInit() {
@@ -73,6 +77,10 @@ export class CreateProfilePage implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       this.idToken = params['idToken'] || null;
       this.loginMethod = params['loginMethod'] || null;
+      const role = params['role'] || null;
+      if (role && this.profileForm) {
+        this.profileForm.get('role')?.setValue(role);
+      }
     });
   }
 
@@ -90,8 +98,12 @@ export class CreateProfilePage implements OnInit, OnDestroy {
       this.isRoleFromToken = true;
     }
 
-    if (roleFromToken === 'CLUBE') {
-      this.router.navigate(['/scout-profile']);
+    // Role can also come from query params (passed from selection screen)
+    const roleFromParams = this.route.snapshot.queryParams['role'];
+    const finalRole = roleFromToken || roleFromParams || null;
+
+    if (finalRole === 'CLUBE' && !this.router.url.includes('create-profile-scout')) {
+      this.router.navigate(['/create-profile-scout'], { queryParams: this.route.snapshot.queryParams });
       return false;
     }
 
@@ -99,12 +111,15 @@ export class CreateProfilePage implements OnInit, OnDestroy {
       documentNumber: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(15)]],
       dateOfBirth: [null, [Validators.required]],
-      role: [roleFromToken, [Validators.required]]
+      role: [finalRole, [Validators.required]]
     });
+
+    if (finalRole) {
+      this.updateFormFields(finalRole);
+    }
 
     if (this.isRoleFromToken) {
       this.profileForm.get('role')?.disable();
-      this.updateFormFields(roleFromToken);
     }
 
     return true;
@@ -113,7 +128,7 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   private listenToRoleChanges(): void {
     this.roleChangesSub = this.profileForm.get('role')!.valueChanges.subscribe(role => {
       if (role === 'CLUBE') {
-        this.router.navigate(['/scout-profile']);
+        this.router.navigate(['/create-profile-scout'], { queryParams: this.route.snapshot.queryParams });
         return;
       }
 
@@ -139,7 +154,11 @@ export class CreateProfilePage implements OnInit, OnDestroy {
   }
 
   goToScoutProfile(): void {
-    this.router.navigate(['/scout-profile']);
+    this.router.navigate(['/create-profile-scout'], { queryParams: this.route.snapshot.queryParams });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   async selectProfileImage() {

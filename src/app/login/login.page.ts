@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
-import { AuthService, User } from '../services/auth.service';
+import { AuthService, User, JwtPayload } from '../services/auth.service';
 import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { NavController } from '@ionic/angular';
@@ -68,7 +68,7 @@ export class LoginPage implements AfterViewInit {
   async signInWithGoogle() {
     this.isGoogleLoading = true;
     try {
-      await FirebaseAuthentication.signOut().catch(() => {}); // Ignore sign out errors
+      await FirebaseAuthentication.signOut().catch(() => {});
       const result = await FirebaseAuthentication.signInWithGoogle();
 
       if (result.credential) {
@@ -84,9 +84,7 @@ export class LoginPage implements AfterViewInit {
               if (user && user.hasProfile) {
                 this.navCtrl.navigateRoot('/home');
               } else {
-                const decodedToken = this.authService.getDecodedToken<{ role?: string }>();
-                const targetRoute = decodedToken?.role === 'CLUBE' ? '/scout-profile' : '/create-profile';
-                this.navCtrl.navigateRoot(targetRoute, {
+                this.navCtrl.navigateRoot('/profile-selection', {
                   queryParams: { idToken, loginMethod: 'instagram' }
                 });
               }
@@ -96,22 +94,12 @@ export class LoginPage implements AfterViewInit {
         });
       } else {
         this.isGoogleLoading = false;
-        const toast = await this.toastController.create({
-          message: 'Login com Google cancelado ou falhou.',
-          duration: 2000,
-          color: 'warning'
-        });
-        toast.present();
+        this.showToast('Login com Google cancelado ou falhou.', 'warning');
       }
     } catch (error) {
       this.isGoogleLoading = false;
-      console.error('Erro no plugin de login com Google:', JSON.stringify(error));
-      const toast = await this.toastController.create({
-        message: 'Erro ao iniciar o login com Google. Verifique sua conexão ou configuração.',
-        duration: 3000,
-        color: 'danger'
-      });
-      toast.present();
+      console.error('Erro no plugin de login com Google:', error);
+      this.showToast('Erro ao iniciar o login com Google.', 'danger');
     }
   }
 
@@ -122,13 +110,13 @@ export class LoginPage implements AfterViewInit {
     this.isLoading = true;
     const { email, password } = this.loginForm.value;
 
-    this.authService.login({ email, password: password }).pipe(
+    this.authService.login({ email, password }).pipe(
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: () => {
         this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
           if (user && user.hasProfile) {
-            this.router.navigate(['/home']);
+            this.navCtrl.navigateRoot('/home');
           } else {
             this.navigateToProfileSetup();
           }
@@ -136,9 +124,7 @@ export class LoginPage implements AfterViewInit {
       },
       error: (err) => {
         if (err.isUserNotEnabled) {
-          this.router.navigate(['/account-confirmation'], {
-            state: { email: email }
-          });
+          this.router.navigate(['/account-confirmation'], { state: { email } });
         } else {
           this.handleAuthError(err, 'email');
         }
@@ -146,43 +132,33 @@ export class LoginPage implements AfterViewInit {
     });
   }
 
-  private async handleAuthError(err: any, context: 'google' | 'email') {
-    console.error(`Erro na autenticação via ${context}:`, JSON.stringify(err));
+  private navigateToProfileSetup(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const role = decodedToken?.role;
 
-    let errorMessage: string;
-    const defaultGoogleError = 'Erro ao fazer login com Google. Tente novamente.';
-    const defaultEmailError = 'Erro no login. Verifique suas credenciais.';
-
-    if (err.status === 0) {
-      errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
-    } else if (err.error && err.error.message) {
-      errorMessage = err.error.message;
-    } else if (typeof err.error === 'string') {
-      errorMessage = err.error;
+    if (role === 'CLUBE') {
+      this.navCtrl.navigateRoot('/create-profile-scout');
+    } else if (role === 'JOGADOR') {
+      this.navCtrl.navigateRoot('/create-profile-player');
     } else {
-      errorMessage = context === 'google' ? defaultGoogleError : defaultEmailError;
+      this.navCtrl.navigateRoot('/profile-selection');
     }
+  }
 
-    const toast = await this.toastController.create({
-      message: errorMessage,
-      duration: 3000,
-      color: 'danger'
-    });
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning') {
+    const toast = await this.toastController.create({ message, duration: 3000, color });
     toast.present();
   }
 
-  private navigateToProfileSetup(): void {
-    const decodedToken = this.authService.getDecodedToken<{ role?: string }>();
-    const targetRoute = decodedToken?.role === 'CLUBE' ? '/scout-profile' : '/create-profile';
-    this.router.navigate([targetRoute]);
+  private async handleAuthError(err: any, context: 'google' | 'email') {
+    let errorMessage = err.error?.message || err.error || 'Erro na autenticação.';
+    this.showToast(errorMessage, 'danger');
   }
 
   private renderStadiumLights(): void {
     const canvas = this.stadiumLightsCanvas?.nativeElement;
     const seenWrap = this.brandSeenWrap?.nativeElement;
-    if (!canvas) {
-      return;
-    }
+    if (!canvas) return;
 
     const seenWidth = seenWrap?.getBoundingClientRect().width ?? 0;
     const targetWidth = Math.max(60.021, seenWidth * 0.514425);
@@ -192,18 +168,14 @@ export class LoginPage implements AfterViewInit {
 
     const cssWidth = canvas.clientWidth;
     const cssHeight = canvas.clientHeight;
-    if (!cssWidth || !cssHeight) {
-      return;
-    }
+    if (!cssWidth || !cssHeight) return;
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.floor(cssWidth * dpr);
     canvas.height = Math.floor(cssHeight * dpr);
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      return;
-    }
+    if (!ctx) return;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cssWidth, cssHeight);
@@ -226,74 +198,32 @@ export class LoginPage implements AfterViewInit {
     });
   }
 
-  private drawLightGroup(
-    ctx: CanvasRenderingContext2D,
-    centerX: number,
-    centerY: number,
-    angle: number,
-    radius: number,
-    spacing: number
-  ): void {
+  private drawLightGroup(ctx: any, centerX: number, centerY: number, angle: number, radius: number, spacing: number): void {
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.rotate(angle);
-
     for (let i = -1; i <= 1; i++) {
       this.drawPremiumLight(ctx, i * spacing, 0, radius);
     }
-
     ctx.restore();
   }
 
-  private drawPremiumLight(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    radius: number
-  ): void {
+  private drawPremiumLight(ctx: any, x: number, y: number, radius: number): void {
     const glowRadius = radius * 3.2;
     const greenGlow = ctx.createRadialGradient(x, y, radius * 0.2, x, y, glowRadius);
     greenGlow.addColorStop(0, 'rgba(34, 197, 94, 0.24)');
-    greenGlow.addColorStop(0.52, 'rgba(34, 197, 94, 0.12)');
     greenGlow.addColorStop(1, 'rgba(34, 197, 94, 0)');
     ctx.fillStyle = greenGlow;
     ctx.beginPath();
     ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.save();
-    ctx.filter = 'blur(1.4px)';
-    const softHalo = ctx.createRadialGradient(x, y, radius * 0.3, x, y, radius * 1.5);
-    softHalo.addColorStop(0, 'rgba(255, 255, 255, 0.42)');
-    softHalo.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = softHalo;
-    ctx.beginPath();
-    ctx.arc(x, y, radius * 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    const coreGradient = ctx.createRadialGradient(
-      x - (radius * 0.25),
-      y - (radius * 0.28),
-      radius * 0.2,
-      x,
-      y,
-      radius
-    );
+    const coreGradient = ctx.createRadialGradient(x - (radius * 0.25), y - (radius * 0.28), radius * 0.2, x, y, radius);
     coreGradient.addColorStop(0, '#FDFEFE');
-    coreGradient.addColorStop(0.58, '#F1F5F9');
     coreGradient.addColorStop(1, '#CBD5E1');
     ctx.fillStyle = coreGradient;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    const depthShadow = ctx.createRadialGradient(x, y + (radius * 1.35), radius * 0.25, x, y + (radius * 1.35), radius * 1.35);
-    depthShadow.addColorStop(0, 'rgba(15, 23, 42, 0.22)');
-    depthShadow.addColorStop(1, 'rgba(15, 23, 42, 0)');
-    ctx.fillStyle = depthShadow;
-    ctx.beginPath();
-    ctx.ellipse(x, y + (radius * 1.35), radius * 1.2, radius * 0.7, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 }

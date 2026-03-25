@@ -1,0 +1,35 @@
+<ion-content [fullscreen]="true" class="profile-selection-content">
+  <div class="profile-selection-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Complete seu Perfil</span>
+    </div>
+
+    <div class="page-intro">
+      <h1 class="page-title">Complete seu Perfil</h1>
+      <p class="page-subtitle">Preencha os campos abaixo para continuar.</p>
+    </div>
+
+    <form [formGroup]="profileForm" class="profile-form">
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Tipo de Perfil</h2>
+          <p>Selecione como você deseja atuar na plataforma.</p>
+        </div>
+        <ion-segment formControlName="role" class="ion-margin-vertical">
+          <ion-segment-button value="JOGADOR">
+            <ion-label>JOGADOR</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="CLUBE">
+            <ion-label>OLHEIRO</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+        <div *ngIf="profileForm.get('role')?.hasError('required') && profileForm.get('role')?.touched" class="error-text">
+          Selecione um tipo de perfil.
+        </div>
+      </section>
+    </form>
+  </div>
+</ion-content>

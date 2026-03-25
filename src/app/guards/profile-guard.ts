@@ -10,14 +10,19 @@ export const profileGuard: CanActivateFn = (route, state) => {
   return authService.currentUser.pipe(
     take(1),
     map((user: User | null) => {
-      if (user && user.hasProfile) {
-        return true;
-      } else if (user && !user.hasProfile) {
-        const decodedToken = authService.getDecodedToken<JwtPayload>();
-        const profileSetupRoute = decodedToken?.role === 'CLUBE' ? '/scout-profile' : '/create-profile';
-        return router.createUrlTree([profileSetupRoute]);
+      if (!user) return true;
+      if (user.hasProfile) return true;
+
+      const decodedToken = authService.getDecodedToken<JwtPayload>();
+      const role = decodedToken?.role;
+
+      if (role === 'CLUBE') {
+        return router.createUrlTree(['/create-profile-scout']);
+      } else if (role === 'JOGADOR') {
+        return router.createUrlTree(['/create-profile-player']);
+      } else {
+        return router.createUrlTree(['/profile-selection']);
       }
-      return router.createUrlTree(['/login']);
     })
   );
 };
