@@ -1,3 +1,5 @@
+import { ScoutAgeCategory, ScoutPosition, ScoutTypeOption } from './scout-profile.model';
+
 export interface Profile {
   id: string;
   name: string;
@@ -15,25 +17,40 @@ export interface Profile {
 }
 
 export interface ProfilePlayerCreationRequest {
+  role: 'JOGADOR';
+  documentNumber: string;
+  phoneNumber: string;
+  dateOfBirth: string;
   bio?: string;
   position?: string;
   height?: string;
   weight?: string;
   careerHistory?: string;
-  documentNumber: string;
-  phoneNumber: string;
-  dateOfBirth: string;
-  role: 'JOGADOR';
 }
 
 export interface ProfileScoutCreationRequest {
-  bio?: string;
-  areaOfExpertise?: string;
-  clubName?: string;
-  documentNumber: string;
-  phoneNumber: string;
-  dateOfBirth: string;
   role: 'CLUBE';
+  documentNumber: string;
+  dateOfBirth: string;
+  fotoPerfilUrl?: string | null;
+  tipoOlheiro: ScoutTypeOption;
+  tipoOlheiroOutroTexto?: string | null;
+  organizacaoOuClube?: string | null;
+  cargoOuFuncao?: string | null;
+  telefoneWhatsapp: string;
+  cidade: string;
+  estado: string;
+  pais: string;
+  modalidade: string;
+  categoriasIdadeAlvo: ScoutAgeCategory[];
+  posicoesInteresse: ScoutPosition[];
+  regiaoAtuacaoTexto: string;
+  documentoVerificado: boolean;
+  documentoUploadId?: string | null;
+  linkReferencia?: string | null;
+  aceitouTermos: boolean;
+  sobreMim: string;
+  oQueBuscaNoBeSeen?: string | null;
 }
 
 export interface PageResponse<T> {

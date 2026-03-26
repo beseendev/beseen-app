@@ -1,11 +1,11 @@
 export interface ScoutProfile {
-  nomeCompleto: string;
+  documentNumber: string;
   fotoPerfilUrl?: string | null;
   tipoOlheiro: ScoutTypeOption;
   tipoOlheiroOutroTexto?: string | null;
   organizacaoOuClube?: string | null;
   cargoOuFuncao?: string | null;
-  email: string;
+  dateOfBirth: string;
   telefoneWhatsapp: string;
   cidade: string;
   estado: string;
@@ -59,12 +59,6 @@ export const SCOUT_TYPE_OPTIONS: ScoutTypeOption[] = [
   'Scout independente',
   'Academia',
   'Outro'
-];
-
-export const SCOUT_LANGUAGE_OPTIONS: Array<{ value: ScoutLanguageOption; label: string }> = [
-  { value: 'pt', label: 'Portugues' },
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Espanol' }
 ];
 
 export const SCOUT_MODALITY_OPTIONS: ScoutSportOption[] = [

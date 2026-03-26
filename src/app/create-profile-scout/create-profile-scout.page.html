@@ -37,10 +37,10 @@
 
         <div class="input-group-container">
           <ion-item class="input-field" color="none">
-            <ion-icon name="person-outline" slot="start"></ion-icon>
-            <ion-input label="Nome completo" labelPlacement="stacked" placeholder="Ex: Rafael Lima" formControlName="nomeCompleto"></ion-input>
+            <ion-icon name="id-card-outline" slot="start"></ion-icon>
+            <ion-input label="CPF ou Identidade" labelPlacement="stacked" placeholder="000.000.000-00" [value]="cpfDisplayValue" (ionInput)="onCPFInput($event)" maxlength="14" formControlName="documentNumber"></ion-input>
           </ion-item>
-          <div class="error-text" *ngIf="hasError('nomeCompleto', 'required')">Informe o nome completo.</div>
+          <div class="error-text" *ngIf="hasError('documentNumber', 'required')">Informe o documento.</div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="briefcase-outline" slot="start"></ion-icon>
@@ -73,14 +73,22 @@
         </div>
 
         <div class="input-group-container">
-          <ion-item class="input-field" color="none">
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
-            <ion-input label="Email" labelPlacement="stacked" placeholder="voce@exemplo.com" type="email" formControlName="email"></ion-input>
+          <ion-item class="input-field datetime-item" color="none">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <div class="datetime-wrapper">
+              <span class="label-placeholder">Data de Nascimento</span>
+              <ion-datetime-button datetime="datetime-scout"></ion-datetime-button>
+            </div>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="datetime-scout" formControlName="dateOfBirth" presentation="date"></ion-datetime>
+              </ng-template>
+            </ion-modal>
           </ion-item>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-            <ion-input label="WhatsApp" labelPlacement="stacked" placeholder="(48) 99999-9999" [value]="phoneDisplayValue" (ionInput)="onPhoneInput($event)"></ion-input>
+            <ion-input label="WhatsApp" labelPlacement="stacked" placeholder="(48) 99999-9999" type="tel" [value]="phoneDisplayValue" (ionInput)="onPhoneInput($event)" maxlength="15"></ion-input>
           </ion-item>
 
           <ion-item class="input-field" color="none">
@@ -133,7 +141,7 @@
             </ion-select>
           </ion-item>
           <div class="chip-list" *ngIf="selectedPosicoes.length > 0">
-            <ion-chip *ngFor="let posicao of selectedPosicoes" color="tertiary"><ion-label>{{ posicao }}</ion-label></ion-chip>
+            <ion-chip *ngFor="let posicao of selectedPosicoes" color="success"><ion-label>{{ posicao }}</ion-label></ion-chip>
           </div>
 
           <ion-item class="input-field" color="none">

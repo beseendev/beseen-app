@@ -11,7 +11,8 @@ import {
 } from '@angular/forms';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { take, switchMap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -19,7 +20,9 @@ import {
   cloudUploadOutline,
   checkmarkCircleOutline,
   personCircleOutline,
-  linkOutline
+  linkOutline,
+  idCardOutline,
+  calendarOutline
 } from 'ionicons/icons';
 import {
   BR_STATE_OPTIONS,
@@ -34,6 +37,8 @@ import {
 } from '../models/scout-profile.model';
 import { ScoutProfileService } from '../services/scout-profile.service';
 import { AuthService, User } from '../services/auth.service';
+import { FileType, ProfileService } from '../services/profile.service';
+import { ProfileScoutCreationRequest } from '../models/profile.model';
 
 function arrayRequiredValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -75,6 +80,8 @@ export class CreateProfileScoutPage implements OnInit {
   saveAttempted = false;
   isSaving = false;
   phoneDisplayValue = '';
+  cpfDisplayValue = '';
+  private selectedImageFile: File | null = null;
 
   readonly typeOptions = SCOUT_TYPE_OPTIONS;
   readonly modalityOptions = SCOUT_MODALITY_OPTIONS;
@@ -84,6 +91,7 @@ export class CreateProfileScoutPage implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly scoutProfileService = inject(ScoutProfileService);
+  private readonly profileService = inject(ProfileService);
   private readonly authService = inject(AuthService);
   private readonly toastController = inject(ToastController);
   private readonly alertController = inject(AlertController);
@@ -97,17 +105,19 @@ export class CreateProfileScoutPage implements OnInit {
       cloudUploadOutline,
       checkmarkCircleOutline,
       personCircleOutline,
-      linkOutline
+      linkOutline,
+      idCardOutline,
+      calendarOutline
     });
 
     this.profileForm = this.fb.group({
-      nomeCompleto: ['', [Validators.required, Validators.minLength(3)]],
+      documentNumber: ['', [Validators.required, Validators.minLength(11)]],
       fotoPerfilUrl: ['', [optionalUrlValidator()]],
       tipoOlheiro: ['', [Validators.required]],
       tipoOlheiroOutroTexto: [''],
       organizacaoOuClube: [''],
       cargoOuFuncao: [''],
-      email: ['', [Validators.required, Validators.email]],
+      dateOfBirth: [null, [Validators.required]],
       telefoneWhatsapp: ['', [Validators.required, Validators.minLength(10)]],
       cidade: ['', [Validators.required]],
       estado: ['', [Validators.required]],
@@ -132,10 +142,9 @@ export class CreateProfileScoutPage implements OnInit {
     if (savedProfile) {
       this.profileForm.patchValue(savedProfile);
       this.phoneDisplayValue = this.formatPhoneBR(savedProfile.telefoneWhatsapp ?? '');
+      this.cpfDisplayValue = this.formatCPF(savedProfile.documentNumber ?? '');
       return;
     }
-
-    this.prefillEmailFromLoggedUser();
   }
 
   get isTipoOutroSelected(): boolean {
@@ -164,20 +173,18 @@ export class CreateProfileScoutPage implements OnInit {
 
   formatPhoneBR(digits: string): string {
     const cleaned = this.onlyDigits(digits).slice(0, 11);
-
-    if (cleaned.length <= 2) {
-      return cleaned ? `(${cleaned}` : '';
-    }
-
-    if (cleaned.length <= 6) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
-    }
-
-    if (cleaned.length <= 10) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-    }
-
+    if (cleaned.length <= 2) return cleaned ? `(${cleaned}` : '';
+    if (cleaned.length <= 6) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
+    if (cleaned.length <= 10) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
     return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+  }
+
+  formatCPF(digits: string): string {
+    const cleaned = this.onlyDigits(digits).slice(0, 11);
+    if (cleaned.length <= 3) return cleaned;
+    if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
+    if (cleaned.length <= 9) return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
+    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
   }
 
   isValidUrl(url: string): boolean {
@@ -185,15 +192,22 @@ export class CreateProfileScoutPage implements OnInit {
     return /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(normalizedUrl) || normalizedUrl.startsWith('data:image/');
   }
 
-  onPhoneInput(event: Event): void {
-    const target = event.target as { value?: string | number | null } | null;
-    const rawValue = target?.value?.toString() ?? '';
+  onPhoneInput(event: any): void {
+    const rawValue = event.target.value || '';
     const digits = this.onlyDigits(rawValue).slice(0, 11);
 
     this.phoneDisplayValue = this.formatPhoneBR(digits);
-    this.profileForm.get('telefoneWhatsapp')?.setValue(digits);
-    this.profileForm.get('telefoneWhatsapp')?.markAsDirty();
-    this.profileForm.get('telefoneWhatsapp')?.updateValueAndValidity();
+    this.profileForm.get('telefoneWhatsapp')?.setValue(digits, { emitEvent: false });
+    event.target.value = this.phoneDisplayValue;
+  }
+
+  onCPFInput(event: any): void {
+    const rawValue = event.target.value || '';
+    const digits = this.onlyDigits(rawValue).slice(0, 11);
+
+    this.cpfDisplayValue = this.formatCPF(digits);
+    this.profileForm.get('documentNumber')?.setValue(digits, { emitEvent: false });
+    event.target.value = this.cpfDisplayValue;
   }
 
   markAsTouched(controlName: string): void {
@@ -215,6 +229,8 @@ export class CreateProfileScoutPage implements OnInit {
       return;
     }
 
+    this.selectedImageFile = file;
+
     const reader = new FileReader();
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : '';
@@ -233,6 +249,35 @@ export class CreateProfileScoutPage implements OnInit {
     await alert.present();
   }
 
+  private handleImageUpload(file: File) {
+    const uploadRequest = {
+      fileName: file.name,
+      contentType: file.type,
+      category: FileType.PROFILE_IMAGE,
+      size: file.size
+    };
+
+    return this.profileService.getPresignedUrl(uploadRequest).pipe(
+      switchMap(uploadResponse => {
+        return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
+          catchError(uploadErr => {
+            console.error('Image upload failed, but profile was created.', uploadErr);
+            this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'warning');
+            return of(null);
+          })
+        );
+      }),
+      switchMap(() => {
+        return this.profileService.notifyUploadComplete().pipe(
+           catchError(notifyErr => {
+            console.error('Notifying backend failed.', notifyErr);
+            return of(null);
+          })
+        );
+      })
+    );
+  }
+
   async saveProfile(): Promise<void> {
     this.saveAttempted = true;
 
@@ -245,19 +290,19 @@ export class CreateProfileScoutPage implements OnInit {
 
     try {
       const formValue = this.profileForm.getRawValue();
-      const profile: ScoutProfile = {
-        nomeCompleto: formValue.nomeCompleto.trim(),
+      const profile: ProfileScoutCreationRequest = {
+        role: 'CLUBE',
+        documentNumber: formValue.documentNumber.trim(),
+        dateOfBirth: formValue.dateOfBirth,
         fotoPerfilUrl: this.normalizeOptionalValue(formValue.fotoPerfilUrl),
         tipoOlheiro: formValue.tipoOlheiro as ScoutTypeOption,
         tipoOlheiroOutroTexto: this.normalizeOptionalValue(formValue.tipoOlheiroOutroTexto),
         organizacaoOuClube: this.normalizeOptionalValue(formValue.organizacaoOuClube),
         cargoOuFuncao: this.normalizeOptionalValue(formValue.cargoOuFuncao),
-        email: formValue.email.trim(),
         telefoneWhatsapp: this.onlyDigits(formValue.telefoneWhatsapp),
         cidade: formValue.cidade.trim(),
         estado: formValue.estado,
         pais: formValue.pais.trim(),
-        idioma: null,
         modalidade: formValue.modalidade,
         categoriasIdadeAlvo: formValue.categoriasIdadeAlvo,
         posicoesInteresse: formValue.posicoesInteresse,
@@ -270,18 +315,38 @@ export class CreateProfileScoutPage implements OnInit {
         oQueBuscaNoBeSeen: this.normalizeOptionalValue(formValue.oQueBuscaNoBeSeen)
       };
 
-      await this.scoutProfileService.saveProfile(profile);
+      this.profileService.createScoutProfile(profile).pipe(
+        switchMap(() => {
+          if (this.selectedImageFile) {
+            return this.handleImageUpload(this.selectedImageFile);
+          }
+          return of(null);
+        }),
+        switchMap(() => this.authService.refreshCurrentUser()),
+        catchError(err => {
+          console.error('Erro ao criar o perfil de olheiro', err);
+          this.showToast('Erro ao salvar o perfil.', 'danger');
+          throw err;
+        })
+      ).subscribe({
+        next: async () => {
 
-      const toast = await this.toastController.create({
-        message: 'Perfil salvo',
-        duration: 2000,
-        color: 'success',
-        position: 'top'
+          const toast = await this.toastController.create({
+            message: 'Perfil de olheiro salvo com sucesso!',
+            duration: 2000,
+            color: 'success',
+            position: 'top'
+          });
+
+          await toast.present();
+          await this.router.navigate(['/scout-home']);
+        },
+        complete: () => {
+          this.isSaving = false;
+        }
       });
-
-      await toast.present();
-      await this.router.navigate(['/scout-home']);
-    } finally {
+    } catch (error) {
+      console.error('Error preparing scout profile save', error);
       this.isSaving = false;
     }
   }
@@ -298,10 +363,6 @@ export class CreateProfileScoutPage implements OnInit {
     }
 
     return errorKey ? !!control.errors?.[errorKey] : control.invalid;
-  }
-
-  trackByValue(_: number, value: string): string {
-    return value;
   }
 
   goBack(): void {
@@ -324,13 +385,14 @@ export class CreateProfileScoutPage implements OnInit {
     });
   }
 
-  private prefillEmailFromLoggedUser(): void {
-    this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
-      const emailControl = this.profileForm.get('email');
-      if (user?.email && emailControl && !emailControl.value) {
-        emailControl.setValue(user.email);
-      }
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 3000,
+      color: color,
+      position: 'top'
     });
+    toast.present();
   }
 
   private normalizeOptionalValue(value: string | null | undefined): string | null {

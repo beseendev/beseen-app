@@ -80,18 +80,4 @@ export class ProfileService {
     });
     toast.present();
   }
-
-  searchProfiles(query: string, page: number = 0, size: number = 20): Observable<ProfileResponse[]> {
-    let params = new HttpParams()
-      .set('filter', query)
-      .set('page', page.toString())
-      .set('size', size.toString());
-
-    return this.apiService.get<PageResponse<ProfileResponse>>(
-      `${this.profileEndpoint}/search`,
-      { params }
-    ).pipe(
-      map(response => response.content)
-    );
-  }
 }

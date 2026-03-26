@@ -56,19 +56,26 @@
 
           <ion-item class="input-field" color="none">
             <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
-            <ion-input
+            <ion-select
               formControlName="position"
-              placeholder="Posição (Ex: Atacante, Meio-campo)"
-              maxlength="100">
-            </ion-input>
+              placeholder="Selecione sua posição"
+              interface="action-sheet"
+              labelPlacement="stacked">
+              <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
+            </ion-select>
           </ion-item>
+          <div *ngIf="profileForm.get('position')?.invalid && profileForm.get('position')?.touched" class="error-text">
+            Posição é obrigatória.
+          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="resize-outline" slot="start"></ion-icon>
             <ion-input
               formControlName="height"
-              placeholder="Altura (Ex: 1,80m)"
-              maxlength="20">
+              placeholder="Altura (Ex: 1.80)"
+              inputmode="decimal"
+              (ionInput)="onNumericInput($event, 'height')"
+              maxlength="10">
             </ion-input>
           </ion-item>
 
@@ -76,8 +83,10 @@
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
             <ion-input
               formControlName="weight"
-              placeholder="Peso (Ex: 75kg)"
-              maxlength="20">
+              placeholder="Peso (Ex: 75.5)"
+              inputmode="decimal"
+              (ionInput)="onNumericInput($event, 'weight')"
+              maxlength="10">
             </ion-input>
           </ion-item>
 
@@ -107,11 +116,14 @@
             <ion-icon name="id-card-outline" slot="start"></ion-icon>
             <ion-input
               formControlName="documentNumber"
-              placeholder="CPF ou Identidade">
+              placeholder="CPF ou Identidade"
+              [value]="cpfDisplayValue"
+              (ionInput)="onCPFInput($event)"
+              maxlength="14">
             </ion-input>
           </ion-item>
           <div *ngIf="profileForm.get('documentNumber')?.invalid && profileForm.get('documentNumber')?.touched" class="error-text">
-            Documento é obrigatório.
+            Documento inválido.
           </div>
 
           <ion-item class="input-field" color="none">
@@ -119,7 +131,10 @@
             <ion-input
               formControlName="phoneNumber"
               placeholder="Telefone (00) 00000-0000"
-              type="tel">
+              type="tel"
+              [value]="phoneDisplayValue"
+              (ionInput)="onPhoneInput($event)"
+              maxlength="15">
             </ion-input>
           </ion-item>
 

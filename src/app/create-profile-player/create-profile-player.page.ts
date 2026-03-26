@@ -13,6 +13,8 @@ import {
   IonDatetimeButton,
   IonModal,
   IonSpinner,
+  IonSelect,
+  IonSelectOption,
   ToastController,
   IonSegment,
   IonSegmentButton,
@@ -20,15 +22,16 @@ import {
   IonNote
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline } from 'ionicons/icons';
+import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { FileType, ProfileService } from '../services/profile.service';
 import { Router } from '@angular/router';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ProfilePlayerCreationRequest, ProfileScoutCreationRequest } from '../models/profile.model';
+import { ProfilePlayerCreationRequest } from '../models/profile.model';
 import { ActivatedRoute } from '@angular/router';
+import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
 
 @Component({
   selector: 'app-create-profile-player',
@@ -39,6 +42,7 @@ import { ActivatedRoute } from '@angular/router';
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
     IonItem, IonInput, IonButton, IonIcon, IonTextarea,
     IonDatetime, IonDatetimeButton, IonModal, IonSpinner,
+    IonSelect, IonSelectOption,
     IonNote
   ]
 })
@@ -54,6 +58,11 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   idToken: string | null = null;
   loginMethod: string | null = null;
 
+  phoneDisplayValue = '';
+  cpfDisplayValue = '';
+
+  readonly positionOptions = SCOUT_POSITION_OPTIONS;
+
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
@@ -63,7 +72,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private location = inject(Location);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline });
+    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline });
   }
 
   ngOnInit() {
@@ -107,8 +116,8 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     }
 
     this.profileForm = this.fb.group({
-      documentNumber: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(15)]],
+      documentNumber: ['', [Validators.required, Validators.minLength(11)]],
+      phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
       dateOfBirth: [null, [Validators.required]],
       role: [finalRole, [Validators.required]]
     });
@@ -138,11 +147,53 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private updateFormFields(role: string | null): void {
     if (role === 'JOGADOR') {
       this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
-      this.profileForm.addControl('position', this.fb.control('', [Validators.maxLength(100)]));
-      this.profileForm.addControl('height', this.fb.control('', [Validators.maxLength(20)]));
-      this.profileForm.addControl('weight', this.fb.control('', [Validators.maxLength(20)]));
+      this.profileForm.addControl('position', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('height', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('weight', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
+  }
+
+  onPhoneInput(event: any) {
+    const rawValue = event.target.value || '';
+    const digits = this.onlyDigits(rawValue).slice(0, 11);
+    this.phoneDisplayValue = this.formatPhoneBR(digits);
+    this.profileForm.get('phoneNumber')?.setValue(digits, { emitEvent: false });
+  }
+
+  onCPFInput(event: any) {
+    const rawValue = event.target.value || '';
+    const digits = this.onlyDigits(rawValue).slice(0, 11);
+    this.cpfDisplayValue = this.formatCPF(digits);
+    this.profileForm.get('documentNumber')?.setValue(digits, { emitEvent: false });
+  }
+
+  onNumericInput(event: any, controlName: string) {
+    const rawValue = event.target.value || '';
+    const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const parts = cleaned.split('.');
+    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
+
+    this.profileForm.get(controlName)?.setValue(finalValue, { emitEvent: false });
+    event.target.value = finalValue;
+  }
+
+  private onlyDigits(input: string): string {
+    return (input ?? '').replace(/\D+/g, '');
+  }
+
+  private formatPhoneBR(digits: string): string {
+    if (digits.length <= 2) return digits ? `(${digits}` : '';
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
+  private formatCPF(digits: string): string {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
   }
 
   goBack(): void {
@@ -178,7 +229,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
 
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
-      this.showToast('Por favor, preencha todos os campos obrigatórios.', 'danger');
+      this.showToast('Por favor, preencha todos os campos obrigatórios corretamente.', 'danger');
       return;
     }
 
@@ -187,9 +238,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     const formattedDate = this.formatDate(formValue.dateOfBirth);
     const requestData = { ...formValue, dateOfBirth: formattedDate };
 
-    const profileCreation$ = formValue.role === 'JOGADOR'
-      ? this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest)
-      : this.profileService.createScoutProfile(requestData as ProfileScoutCreationRequest);
+    const profileCreation$ = this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest);
 
     profileCreation$.pipe(
       switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
@@ -206,8 +255,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       }),
       finalize(() => this.isLoading = false),
       catchError(err => {
-        console.error('An error occurred in the profile creation flow', err);
-        this.showToast('Erro ao criar o perfil ou fazer login novamente.', 'danger');
+        this.showToast('Erro ao criar o perfil.', 'danger');
         return EMPTY;
       })
     ).subscribe();
@@ -225,8 +273,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       switchMap(uploadResponse => {
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
           catchError(uploadErr => {
-            console.error('Image upload failed, but profile was created.', uploadErr);
-            this.showToast('Perfil salvo, mas o upload da imagem falhou. Tente novamente em seu perfil.', 'warning');
+            this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'warning');
             return of(null);
           })
         );
@@ -235,7 +282,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
         return this.profileService.notifyUploadComplete().pipe(
            catchError(notifyErr => {
             console.error('Notifying backend failed.', notifyErr);
-            this.showToast('Não foi possível finalizar o upload da imagem.', 'danger');
             return of(null);
           })
         );

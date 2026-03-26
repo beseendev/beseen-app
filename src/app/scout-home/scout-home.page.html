@@ -21,7 +21,7 @@
           </div>
           <div class="profile-copy">
             <span class="summary-label">Perfil do olheiro</span>
-            <strong>{{ scoutProfile?.nomeCompleto || 'Complete seu perfil' }}</strong>
+            <strong>{{ userName }}</strong>
             <p>
               {{ scoutProfile?.tipoOlheiro || 'Tipo nao informado' }}
               <span *ngIf="scoutProfile?.cidade || scoutProfile?.estado">

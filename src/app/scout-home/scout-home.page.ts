@@ -19,7 +19,7 @@ import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
 import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
-import { AuthService } from '../services/auth.service';
+import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ScoutFavoritesService } from '../services/scout-favorites.service';
 import { ScoutProfileService } from '../services/scout-profile.service';
@@ -51,6 +51,11 @@ export class ScoutHomePage implements OnInit {
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
+
+  get userName(): string {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.name || 'Clube';
+  }
 
   private readonly favoritesService = inject(ScoutFavoritesService);
   private readonly postService = inject(PostService);

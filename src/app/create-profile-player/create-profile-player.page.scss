@@ -100,11 +100,17 @@
 }
 
 .input-field ion-input,
-.input-field ion-textarea {
-  --color: var(--be-color-text-1);
+.input-field ion-textarea,
+.input-field ion-select {
+  --color: #ffffff !important;
+  color: #ffffff !important;
   --placeholder-color: var(--be-color-text-3);
   --placeholder-opacity: 1;
   font-size: 0.95rem;
+}
+
+.input-field ion-select::part(text) {
+  color: #ffffff !important;
 }
 
 /* Avatar Preview Area */

@@ -28,14 +28,4 @@ export class ScoutProfileService {
       return null;
     }
   }
-
-  async saveProfile(profile: ScoutProfile): Promise<void> {
-    this.cachedProfile = profile;
-    localStorage.setItem(this.storageKey, JSON.stringify(profile));
-  }
-
-  async clearProfile(): Promise<void> {
-    this.cachedProfile = null;
-    localStorage.removeItem(this.storageKey);
-  }
 }
