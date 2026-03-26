@@ -87,7 +87,7 @@ export class LoginPage implements AfterViewInit {
                 if (role === 'CLUBE') {
                   this.navCtrl.navigateRoot('/scout-home');
                 } else if (role === 'JOGADOR') {
-                  this.navCtrl.navigateRoot('/home');
+                  this.navCtrl.navigateRoot('/player-home');
                 }
               } else {
                 this.navCtrl.navigateRoot('/profile-selection', {
@@ -127,7 +127,7 @@ export class LoginPage implements AfterViewInit {
             if (role === 'CLUBE') {
               this.navCtrl.navigateRoot('/scout-home');
             } else if (role === 'JOGADOR') {
-              this.navCtrl.navigateRoot('/home');
+              this.navCtrl.navigateRoot('/player-home');
             }
 
           } else {

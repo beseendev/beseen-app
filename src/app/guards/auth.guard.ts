@@ -18,7 +18,7 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
       const userRole = decodedToken?.role;
 
       if (state.url.startsWith('/create-post') && userRole === 'CLUBE') {
-        return router.createUrlTree(['/home']);
+        return router.createUrlTree(['/scout-home']);
       }
 
       return true;

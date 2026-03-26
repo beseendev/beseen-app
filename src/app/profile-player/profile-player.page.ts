@@ -17,20 +17,36 @@ import { AuthService } from '../services/auth.service';
 import { catchError, of } from 'rxjs';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
+  selector: 'app-profile-player',
+  templateUrl: './profile-player.page.html',
+  styleUrls: ['./profile-player.page.scss'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem,
-    IonList, IonText,
-    IonSegment, IonSegmentButton, IonInput, IonTextarea,
+    IonButton,
+    IonIcon,
+    IonContent,
+    IonAvatar,
+    IonLabel,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonRefresher,
+    IonRefresherContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    IonItem,
+    IonList,
+    IonText,
+    IonSegment,
+    IonSegmentButton,
+    IonInput,
+    IonTextarea,
     PostCardComponent
   ],
 })
-export class ProfilePage implements OnInit {
+export class ProfilePlayerPage implements OnInit {
   private readonly LOCAL_PROFILE_STORAGE_KEY = 'beseen-player-profile-overrides';
   profileId: string | null = null;
   profile: Profile | null = null;
@@ -99,7 +115,7 @@ export class ProfilePage implements OnInit {
   }
 
   goBack() {
-    this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/player-home');
   }
 
   goToSettings() {

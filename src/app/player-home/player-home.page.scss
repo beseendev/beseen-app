@@ -39,3 +39,20 @@
 .arena-footer ion-toolbar{--background:rgba(7,22,39,.82);--border-width:0;padding:8px 14px}
 .footer-buttons{display:flex;justify-content:center;align-items:center}
 .post-fab{width:54px;height:54px;--border-radius:999px;--background:var(--be-color-brand-500);--color:#052e16}
+/* Espaçamento entre o card de resumo (my-plays-summary) e a lista de vídeos */
+.video-stack {
+  margin-top: 16px; /* Espaço após o card "2 publicações" */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espaçamento vertical entre cada card de post */
+}
+
+/* Garante que o card de resumo também tenha um afastamento do topo */
+.my-plays-summary {
+  margin-bottom: 8px;
+}
+
+/* Ajuste opcional para as outras abas que usam showcase-card */
+.showcase-card {
+  margin-bottom: 8px; /* Margem de segurança inferior */
+}

@@ -251,7 +251,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
         }
       }),
       tap(() => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/player-home']);
       }),
       finalize(() => this.isLoading = false),
       catchError(err => {

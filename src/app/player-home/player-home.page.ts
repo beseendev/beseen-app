@@ -82,9 +82,9 @@ interface PlayerShowcaseVideo {
 }
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  selector: 'app-player-home',
+  templateUrl: './player-home.page.html',
+  styleUrls: ['./player-home.page.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -112,7 +112,7 @@ interface PlayerShowcaseVideo {
     ProfileDrawerComponent
   ],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class PlayerHomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content!: IonContent;
 
   userProfile: any | null = null;
@@ -278,12 +278,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   onDrawerMyVideos(): void {
     this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile');
+    this.router.navigateByUrl('/profile-player');
   }
 
   onDrawerEditProfile(): void {
     this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile');
+    this.router.navigateByUrl('/profile-player');
   }
 
   onDrawerSignOut(): void {
@@ -293,7 +293,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   editPlayerProfile(): void {
-    this.router.navigateByUrl('/profile');
+    this.router.navigateByUrl('/profile-player');
   }
 
   logout(): void {
@@ -376,11 +376,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   openAthleteProfile(video: PlayerShowcaseVideo): void {
     if (video.isMine) {
-      this.router.navigateByUrl('/profile');
+      this.router.navigateByUrl('/profile-player');
       return;
     }
 
-    this.router.navigate(['/profile', video.athleteId]);
+    this.router.navigate(['/profile-player', video.athleteId]);
   }
 
   async openChatInbox(): Promise<void> {

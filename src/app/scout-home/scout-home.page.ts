@@ -152,7 +152,7 @@ export class ScoutHomePage implements OnInit {
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
-    this.router.navigate(['/profile', card.athleteId]);
+    this.router.navigate(['/profile-player', card.athleteId]);
   }
 
   async openChatInbox(): Promise<void> {

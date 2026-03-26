@@ -87,7 +87,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
-    this.router.navigate(['/profile', card.athleteId]);
+    this.router.navigate(['/profile-player', card.athleteId]);
   }
 
   trackByCard(_: number, card: FavoriteAthleteVideoCard): string {

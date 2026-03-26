@@ -39,7 +39,7 @@ export class CreatePostPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/player-home');
   }
 
   onFileSelected(event: Event) {
@@ -107,7 +107,7 @@ export class CreatePostPage implements OnInit {
         });
         await toast.present();
         console.log('Post created:', post);
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/player-home');
       },
       error: async (err) => {
         await loading.dismiss();

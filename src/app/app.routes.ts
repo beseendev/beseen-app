@@ -8,13 +8,13 @@ export const routes: Routes = [
     loadComponent: () => import('./login/login.page').then(m => m.LoginPage)
   },
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then(m => m.HomePage),
+    path: 'player-home',
+    loadComponent: () => import('./player-home/player-home.page').then(m => m.PlayerHomePage),
     canActivate: [authGuard, profileGuard]
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'player-home',
     pathMatch: 'full'
   },
   {
@@ -40,13 +40,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'profile',
-    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
+    path: 'profile-player',
+    loadComponent: () => import('./profile-player/profile-player.page').then(m => m.ProfilePlayerPage),
     canActivate: [authGuard]
   },
   {
-    path: 'profile/:userId',
-    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
+    path: 'profile-player/:userId',
+    loadComponent: () => import('./profile-player/profile-player.page').then(m => m.ProfilePlayerPage),
     canActivate: [authGuard]
   },
   {
