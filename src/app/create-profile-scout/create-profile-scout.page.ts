@@ -39,6 +39,7 @@ import { ScoutProfileService } from '../services/scout-profile.service';
 import { AuthService, User } from '../services/auth.service';
 import { FileType, ProfileService } from '../services/profile.service';
 import { ProfileScoutCreationRequest } from '../models/profile.model';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 function arrayRequiredValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -97,6 +98,7 @@ export class CreateProfileScoutPage implements OnInit {
   private readonly alertController = inject(AlertController);
   private readonly location = inject(Location);
   private readonly router = inject(Router);
+  profileImageUrl: string | null = null;
 
   constructor() {
     addIcons({
@@ -210,33 +212,29 @@ export class CreateProfileScoutPage implements OnInit {
     event.target.value = this.cpfDisplayValue;
   }
 
-  markAsTouched(controlName: string): void {
-    this.profileForm.get(controlName)?.markAsTouched();
-  }
-
   triggerPhotoSelection(): void {
     this.photoInput?.nativeElement.click();
   }
 
-  onPhotoSelected(event: Event): void {
-    const input = event.target as HTMLInputElement | null;
-    const file = input?.files?.[0];
-    if (!file) {
-      return;
+  async selectProfileImage() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Photos
+      });
+
+      if (image.webPath) {
+        this.profileImageUrl = image.webPath;
+        const response = await fetch(image.webPath);
+        const blob = await response.blob();
+        this.selectedImageFile = new File([blob], `profile_${new Date().getTime()}.${image.format}`, { type: blob.type });
+      }
+    } catch (error) {
+      console.error('Error selecting image', error);
+      this.showToast('Não foi possível selecionar a imagem.', 'danger');
     }
-
-    if (!file.type.startsWith('image/')) {
-      return;
-    }
-
-    this.selectedImageFile = file;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      this.profileForm.get('fotoPerfilUrl')?.setValue(result);
-    };
-    reader.readAsDataURL(file);
   }
 
   async showDocumentUploadInfo(): Promise<void> {
@@ -290,10 +288,11 @@ export class CreateProfileScoutPage implements OnInit {
 
     try {
       const formValue = this.profileForm.getRawValue();
+      const formattedDate = this.formatDate(formValue.dateOfBirth);
       const profile: ProfileScoutCreationRequest = {
         role: 'CLUBE',
         documentNumber: formValue.documentNumber.trim(),
-        dateOfBirth: formValue.dateOfBirth,
+        dateOfBirth: formattedDate,
         fotoPerfilUrl: this.normalizeOptionalValue(formValue.fotoPerfilUrl),
         tipoOlheiro: formValue.tipoOlheiro as ScoutTypeOption,
         tipoOlheiroOutroTexto: this.normalizeOptionalValue(formValue.tipoOlheiroOutroTexto),
@@ -315,6 +314,12 @@ export class CreateProfileScoutPage implements OnInit {
         oQueBuscaNoBeSeen: this.normalizeOptionalValue(formValue.oQueBuscaNoBeSeen)
       };
 
+      if (!this.selectedImageFile) {
+        this.showToast('Por favor, adicione uma imagem de perfil.', 'danger');
+        this.isSaving = false;
+        return;
+      }
+
       this.profileService.createScoutProfile(profile).pipe(
         switchMap(() => {
           if (this.selectedImageFile) {
@@ -326,6 +331,7 @@ export class CreateProfileScoutPage implements OnInit {
         catchError(err => {
           console.error('Erro ao criar o perfil de olheiro', err);
           this.showToast('Erro ao salvar o perfil.', 'danger');
+          this.isSaving = false;
           throw err;
         })
       ).subscribe({
@@ -402,5 +408,14 @@ export class CreateProfileScoutPage implements OnInit {
 
   private getControlValueLength(controlName: string): number {
     return ((this.profileForm.get(controlName)?.value ?? '') as string).length;
+  }
+
+  private formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 }

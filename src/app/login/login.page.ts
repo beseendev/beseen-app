@@ -81,8 +81,14 @@ export class LoginPage implements AfterViewInit {
         ).subscribe({
           next: () => {
             this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
+              const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+              const role = decodedToken?.role;
               if (user && user.hasProfile) {
-                this.navCtrl.navigateRoot('/home');
+                if (role === 'CLUBE') {
+                  this.navCtrl.navigateRoot('/scout-home');
+                } else if (role === 'JOGADOR') {
+                  this.navCtrl.navigateRoot('/home');
+                }
               } else {
                 this.navCtrl.navigateRoot('/profile-selection', {
                   queryParams: { idToken, loginMethod: 'instagram' }
@@ -115,10 +121,17 @@ export class LoginPage implements AfterViewInit {
     ).subscribe({
       next: () => {
         this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
+          const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+          const role = decodedToken?.role;
           if (user && user.hasProfile) {
-            this.navCtrl.navigateRoot('/home');
+            if (role === 'CLUBE') {
+              this.navCtrl.navigateRoot('/scout-home');
+            } else if (role === 'JOGADOR') {
+              this.navCtrl.navigateRoot('/home');
+            }
+
           } else {
-            this.navigateToProfileSetup();
+            this.navigateToProfileSetup(role);
           }
         });
       },
@@ -132,10 +145,7 @@ export class LoginPage implements AfterViewInit {
     });
   }
 
-  private navigateToProfileSetup(): void {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    const role = decodedToken?.role;
-
+  private navigateToProfileSetup(role: string | undefined): void {
     if (role === 'CLUBE') {
       this.navCtrl.navigateRoot('/create-profile-scout');
     } else if (role === 'JOGADOR') {

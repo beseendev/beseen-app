@@ -19,18 +19,15 @@
           <p>Como voce quer ser reconhecido dentro da plataforma.</p>
         </div>
 
-        <div class="avatar-row-container">
-          <div class="avatar-preview" (click)="triggerPhotoSelection()">
-            <img *ngIf="profileForm.get('fotoPerfilUrl')?.value && isValidUrl(profileForm.get('fotoPerfilUrl')?.value)"
-                 [src]="profileForm.get('fotoPerfilUrl')?.value" alt="Foto do perfil">
-            <ion-icon *ngIf="!profileForm.get('fotoPerfilUrl')?.value || !isValidUrl(profileForm.get('fotoPerfilUrl')?.value)"
-                      name="person-circle-outline"></ion-icon>
+        <div class="avatar-panel">
+          <div class="avatar-preview" (click)="selectProfileImage()">
+            <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Foto do perfil">
+            <ion-icon *ngIf="!profileImageUrl" name="person-circle-outline"></ion-icon>
           </div>
           <div class="avatar-actions">
-            <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)">
-            <ion-button fill="outline" size="small" (click)="triggerPhotoSelection()" type="button" class="be-btn-outline">
+            <ion-button fill="outline" size="small" (click)="selectProfileImage()" type="button">
               <ion-icon slot="start" name="camera-outline"></ion-icon>
-              Selecionar imagem
+              {{ profileImageUrl ? 'Alterar imagem' : 'Selecionar imagem' }}
             </ion-button>
           </div>
         </div>
