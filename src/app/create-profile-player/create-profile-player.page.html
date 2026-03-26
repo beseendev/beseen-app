@@ -13,7 +13,7 @@
     </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="submitForm()" class="profile-form">
-      
+
       <section class="section-card">
         <div class="section-header">
           <h2>Foto de Perfil</h2>
@@ -34,21 +34,19 @@
         </div>
       </section>
 
-      <!-- Player Specific Fields -->
       <section class="section-card" *ngIf="profileForm.get('role')?.value === 'JOGADOR'">
         <div class="section-header">
           <h2>Dados de Atleta</h2>
           <p>Informações específicas sobre sua atuação em campo.</p>
         </div>
 
-        <ion-list lines="none">
-          <ion-item>
-            <ion-textarea 
-              label="Bio" 
-              labelPlacement="stacked" 
-              formControlName="bio" 
-              placeholder="Fale um pouco sobre você e sua trajetória" 
-              [autoGrow]="true" 
+        <div class="input-group-container">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-textarea
+              formControlName="bio"
+              placeholder="Bio: Fale sobre sua trajetória"
+              [autoGrow]="true"
               maxlength="500">
             </ion-textarea>
           </ion-item>
@@ -56,88 +54,79 @@
             <ion-note>{{ profileForm.get('bio')?.value?.length }}/500</ion-note>
           </div>
 
-          <ion-item>
-            <ion-input 
-              label="Posição" 
-              labelPlacement="stacked" 
-              formControlName="position" 
-              placeholder="Ex: Atacante, Meio-campo" 
+          <ion-item class="input-field" color="none">
+            <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="position"
+              placeholder="Posição (Ex: Atacante, Meio-campo)"
               maxlength="100">
             </ion-input>
           </ion-item>
 
-          <ion-item>
-            <ion-input 
-              label="Altura" 
-              labelPlacement="stacked" 
-              formControlName="height" 
-              placeholder="Ex: 1,80m" 
+          <ion-item class="input-field" color="none">
+            <ion-icon name="resize-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="height"
+              placeholder="Altura (Ex: 1,80m)"
               maxlength="20">
             </ion-input>
           </ion-item>
 
-          <ion-item>
-            <ion-input 
-              label="Peso" 
-              labelPlacement="stacked" 
-              formControlName="weight" 
-              placeholder="Ex: 75kg" 
+          <ion-item class="input-field" color="none">
+            <ion-icon name="barbell-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="weight"
+              placeholder="Peso (Ex: 75kg)"
               maxlength="20">
             </ion-input>
           </ion-item>
 
-          <ion-item>
-            <ion-textarea 
-              label="Histórico da carreira" 
-              labelPlacement="stacked" 
-              formControlName="careerHistory" 
-              placeholder="Clubes por onde passou, títulos, etc." 
-              [autoGrow]="true" 
+          <ion-item class="input-field" color="none">
+            <ion-icon name="list-outline" slot="start"></ion-icon>
+            <ion-textarea
+              formControlName="careerHistory"
+              placeholder="Histórico: Clubes, títulos, etc."
+              [autoGrow]="true"
               maxlength="1000">
             </ion-textarea>
           </ion-item>
           <div class="counter-row" *ngIf="profileForm.get('careerHistory')?.value">
             <ion-note>{{ profileForm.get('careerHistory')?.value?.length }}/1000</ion-note>
           </div>
-        </ion-list>
+        </div>
       </section>
 
-      <!-- Common Fields -->
-      <section class="section-card" *ngIf="profileForm.get('role')?.value">
+      <section class="section-card">
         <div class="section-header">
           <h2>Informações Básicas</h2>
-          <p>Dados obrigatórios para validação do perfil.</p>
+          <p>Dados obrigatórios para validação.</p>
         </div>
 
-        <ion-list lines="none">
-          <ion-item>
-            <ion-input 
-              label="CPF ou Identidade" 
-              labelPlacement="stacked" 
-              formControlName="documentNumber" 
-              placeholder="Número do documento">
+        <div class="input-group-container">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="id-card-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="documentNumber"
+              placeholder="CPF ou Identidade">
             </ion-input>
           </ion-item>
           <div *ngIf="profileForm.get('documentNumber')?.invalid && profileForm.get('documentNumber')?.touched" class="error-text">
             Documento é obrigatório.
           </div>
 
-          <ion-item>
-            <ion-input 
-              label="Telefone com DDD" 
-              labelPlacement="stacked" 
-              formControlName="phoneNumber" 
-              placeholder="(00) 00000-0000" 
+          <ion-item class="input-field" color="none">
+            <ion-icon name="call-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="phoneNumber"
+              placeholder="Telefone (00) 00000-0000"
               type="tel">
             </ion-input>
           </ion-item>
-          <div *ngIf="profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched" class="error-text">
-            Telefone inválido.
-          </div>
 
-          <ion-item class="datetime-item">
-            <ion-label position="stacked">Data de Nascimento</ion-label>
-            <div class="datetime-button-container">
+          <ion-item class="input-field datetime-item" color="none">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <div class="datetime-wrapper">
+              <span class="label-placeholder">Data de Nascimento</span>
               <ion-datetime-button datetime="datetime-player"></ion-datetime-button>
             </div>
             <ion-modal [keepContentsMounted]="true">
@@ -146,10 +135,7 @@
               </ng-template>
             </ion-modal>
           </ion-item>
-          <div *ngIf="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched" class="error-text">
-            Data de nascimento é obrigatória.
-          </div>
-        </ion-list>
+        </div>
       </section>
 
       <ion-button expand="block" type="submit" [disabled]="profileForm.invalid || isLoading" class="save-button">

@@ -12,311 +12,186 @@
     </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
-      <section class="section-card">
-      <div class="section-header">
-        <h2>Identificacao</h2>
-        <p>Como voce quer ser reconhecido dentro da plataforma.</p>
-      </div>
-
-      <div class="avatar-panel">
-        <div class="avatar-preview">
-          <img *ngIf="profileForm.get('fotoPerfilUrl')?.value && isValidUrl(profileForm.get('fotoPerfilUrl')?.value)" [src]="profileForm.get('fotoPerfilUrl')?.value" alt="Foto do perfil">
-          <ion-icon *ngIf="!profileForm.get('fotoPerfilUrl')?.value || !isValidUrl(profileForm.get('fotoPerfilUrl')?.value)" name="person-circle-outline"></ion-icon>
-        </div>
-        <div class="avatar-actions">
-          <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)">
-          <ion-button fill="outline" size="small" (click)="triggerPhotoSelection()" type="button">
-            <ion-icon slot="start" name="camera-outline"></ion-icon>
-            Selecionar imagem
-          </ion-button>
-        </div>
-      </div>
-
-      <ion-list lines="none">
-        <ion-item>
-          <ion-input
-            label="Nome completo"
-            labelPlacement="stacked"
-            placeholder="Ex: Rafael Lima"
-            formControlName="nomeCompleto">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('nomeCompleto', 'required')">Informe o nome completo.</div>
-        <div class="error-text" *ngIf="hasError('nomeCompleto', 'minlength')">O nome deve ter pelo menos 3 caracteres.</div>
-
-        <ion-item>
-          <ion-select
-            label="Tipo de olheiro"
-            labelPlacement="stacked"
-            placeholder="Selecione"
-            interface="action-sheet"
-            formControlName="tipoOlheiro">
-            <ion-select-option *ngFor="let option of typeOptions; trackBy: trackByValue" [value]="option">
-              {{ option }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('tipoOlheiro', 'required')">Selecione um tipo de olheiro.</div>
-
-        <ion-item *ngIf="isTipoOutroSelected">
-          <ion-input
-            label="Descreva o tipo"
-            labelPlacement="stacked"
-            placeholder="Minimo de 3 caracteres"
-            formControlName="tipoOlheiroOutroTexto">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('tipoOlheiroOutroTexto', 'required')">Descreva o tipo de olheiro.</div>
-        <div class="error-text" *ngIf="hasError('tipoOlheiroOutroTexto', 'minlength')">Use pelo menos 3 caracteres.</div>
-
-        <ion-item>
-          <ion-input
-            label="Organizacao ou clube"
-            labelPlacement="stacked"
-            placeholder="Opcional"
-            formControlName="organizacaoOuClube">
-          </ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-input
-            label="Cargo ou funcao"
-            labelPlacement="stacked"
-            placeholder="Opcional"
-            formControlName="cargoOuFuncao">
-          </ion-input>
-        </ion-item>
-      </ion-list>
-    </section>
 
       <section class="section-card">
-      <div class="section-header">
-        <h2>Contato</h2>
-        <p>Dados basicos para retorno e comunicacao.</p>
-      </div>
-
-      <ion-list lines="none">
-        <ion-item>
-          <ion-input
-            label="Email"
-            labelPlacement="stacked"
-            placeholder="voce@exemplo.com"
-            type="email"
-            formControlName="email">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('email', 'required')">Informe o email.</div>
-        <div class="error-text" *ngIf="hasError('email', 'email')">Informe um email valido.</div>
-
-        <ion-item>
-          <ion-input
-            label="WhatsApp"
-            labelPlacement="stacked"
-            placeholder="(48) 99999-9999"
-            inputmode="tel"
-            [value]="phoneDisplayValue"
-            (ionInput)="onPhoneInput($event)"
-            (ionBlur)="markAsTouched('telefoneWhatsapp')">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('telefoneWhatsapp', 'required')">Informe o telefone.</div>
-        <div class="error-text" *ngIf="hasError('telefoneWhatsapp', 'minlength')">Use pelo menos 10 digitos.</div>
-
-        <ion-item>
-          <ion-input
-            label="Cidade"
-            labelPlacement="stacked"
-            placeholder="Ex: Florianopolis"
-            formControlName="cidade">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('cidade', 'required')">Informe a cidade.</div>
-
-        <ion-item>
-          <ion-select
-            label="Estado"
-            labelPlacement="stacked"
-            placeholder="Selecione"
-            interface="action-sheet"
-            formControlName="estado">
-            <ion-select-option *ngFor="let estado of stateOptions; trackBy: trackByValue" [value]="estado">
-              {{ estado }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('estado', 'required')">Selecione o estado.</div>
-
-        <ion-item>
-          <ion-input
-            label="Pais"
-            labelPlacement="stacked"
-            placeholder="Brasil"
-            formControlName="pais">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('pais', 'required')">Informe o pais.</div>
-
-      </ion-list>
-    </section>
-
-      <section class="section-card">
-      <div class="section-header">
-        <h2>Preferencias</h2>
-        <p>Defina exatamente o perfil de atleta que voce quer encontrar.</p>
-      </div>
-
-      <ion-list lines="none">
-        <ion-item>
-          <ion-select
-            label="Modalidade"
-            labelPlacement="stacked"
-            placeholder="Selecione"
-            interface="action-sheet"
-            formControlName="modalidade">
-            <ion-select-option *ngFor="let option of modalityOptions; trackBy: trackByValue" [value]="option">
-              {{ option }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('modalidade', 'required')">Selecione a modalidade.</div>
-
-        <ion-item>
-          <ion-select
-            label="Categorias de idade alvo"
-            labelPlacement="stacked"
-            placeholder="Selecione uma ou mais"
-            interface="alert"
-            [multiple]="true"
-            formControlName="categoriasIdadeAlvo">
-            <ion-select-option *ngFor="let option of ageCategoryOptions; trackBy: trackByValue" [value]="option">
-              {{ option }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div class="chip-list" *ngIf="selectedCategorias.length > 0">
-          <ion-chip *ngFor="let categoria of selectedCategorias; trackBy: trackByValue" color="success">
-            <ion-label>{{ categoria }}</ion-label>
-          </ion-chip>
+        <div class="section-header">
+          <h2>Identificacao</h2>
+          <p>Como voce quer ser reconhecido dentro da plataforma.</p>
         </div>
-        <div class="error-text" *ngIf="hasError('categoriasIdadeAlvo', 'requiredArray')">Selecione ao menos uma categoria.</div>
 
-        <ion-item>
-          <ion-select
-            label="Posicoes de interesse"
-            labelPlacement="stacked"
-            placeholder="Selecione uma ou mais"
-            interface="alert"
-            [multiple]="true"
-            formControlName="posicoesInteresse">
-            <ion-select-option *ngFor="let option of positionOptions; trackBy: trackByValue" [value]="option">
-              {{ option }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <div class="chip-list" *ngIf="selectedPosicoes.length > 0">
-          <ion-chip *ngFor="let posicao of selectedPosicoes; trackBy: trackByValue" color="tertiary">
-            <ion-label>{{ posicao }}</ion-label>
-          </ion-chip>
-        </div>
-        <div class="error-text" *ngIf="hasError('posicoesInteresse', 'requiredArray')">Selecione ao menos uma posicao.</div>
-
-        <ion-item>
-          <ion-textarea
-            label="Regiao de atuacao"
-            labelPlacement="stacked"
-            placeholder="Ex: Sul do Brasil, litoral de SC e PR"
-            [autoGrow]="true"
-            formControlName="regiaoAtuacaoTexto">
-          </ion-textarea>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('regiaoAtuacaoTexto', 'required')">Informe a regiao de atuacao.</div>
-        <div class="error-text" *ngIf="hasError('regiaoAtuacaoTexto', 'minlength')">Use pelo menos 3 caracteres.</div>
-      </ion-list>
-    </section>
-
-      <section class="section-card">
-      <div class="section-header">
-        <h2>Credibilidade</h2>
-        <p>Mais transparencia gera mais confianca para atletas e familias.</p>
-      </div>
-
-      <div class="verification-box">
-        <div class="verification-status">
-          <ion-icon name="checkmark-circle-outline" color="medium"></ion-icon>
-          <div>
-            <strong>Verificacao pendente</strong>
-            <p>O envio de documentos sera conectado na V2.</p>
+        <div class="avatar-row-container">
+          <div class="avatar-preview" (click)="triggerPhotoSelection()">
+            <img *ngIf="profileForm.get('fotoPerfilUrl')?.value && isValidUrl(profileForm.get('fotoPerfilUrl')?.value)"
+                 [src]="profileForm.get('fotoPerfilUrl')?.value" alt="Foto do perfil">
+            <ion-icon *ngIf="!profileForm.get('fotoPerfilUrl')?.value || !isValidUrl(profileForm.get('fotoPerfilUrl')?.value)"
+                      name="person-circle-outline"></ion-icon>
+          </div>
+          <div class="avatar-actions">
+            <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)">
+            <ion-button fill="outline" size="small" (click)="triggerPhotoSelection()" type="button" class="be-btn-outline">
+              <ion-icon slot="start" name="camera-outline"></ion-icon>
+              Selecionar imagem
+            </ion-button>
           </div>
         </div>
-        <ion-button fill="outline" type="button" (click)="showDocumentUploadInfo()">
-          <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
-          Enviar documento
-        </ion-button>
-      </div>
 
-      <ion-list lines="none">
-        <ion-item>
-          <ion-icon slot="start" name="link-outline"></ion-icon>
-          <ion-input
-            label="Link de referencia (opcional)"
-            labelPlacement="stacked"
-            placeholder="https://..."
-            formControlName="linkReferencia">
-          </ion-input>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('linkReferencia', 'invalidUrl')">Informe uma URL valida.</div>
+        <div class="input-group-container">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input label="Nome completo" labelPlacement="stacked" placeholder="Ex: Rafael Lima" formControlName="nomeCompleto"></ion-input>
+          </ion-item>
+          <div class="error-text" *ngIf="hasError('nomeCompleto', 'required')">Informe o nome completo.</div>
 
-        <ion-item class="checkbox-item">
-          <ion-checkbox formControlName="aceitouTermos" justify="start">Aceito os termos e confirmo que os dados informados sao verdadeiros.</ion-checkbox>
-        </ion-item>
-        <div class="error-text" *ngIf="hasError('aceitouTermos', 'requiredTrue')">Voce precisa aceitar os termos para salvar.</div>
-      </ion-list>
-    </section>
+          <ion-item class="input-field" color="none">
+            <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+            <ion-select label="Tipo de olheiro" labelPlacement="stacked" placeholder="Selecione" interface="action-sheet" formControlName="tipoOlheiro">
+              <ion-select-option *ngFor="let option of typeOptions" [value]="option">{{ option }}</ion-select-option>
+            </ion-select>
+          </ion-item>
 
-      <section class="section-card">
-      <div class="section-header">
-        <h2>Bio</h2>
-        <p>Explique rapidamente sua experiencia e o tipo de talento que voce procura.</p>
-      </div>
+          <ion-item class="input-field" color="none" *ngIf="isTipoOutroSelected">
+            <ion-icon name="ellipsis-horizontal-outline" slot="start"></ion-icon>
+            <ion-input label="Descreva o tipo" labelPlacement="stacked" placeholder="Minimo de 3 caracteres" formControlName="tipoOlheiroOutroTexto"></ion-input>
+          </ion-item>
 
-      <ion-list lines="none">
-        <ion-item>
-          <ion-textarea
-            label="Sobre mim"
-            labelPlacement="stacked"
-            placeholder="Descreva sua experiencia, foco e como voce atua."
-            [autoGrow]="true"
-            formControlName="sobreMim">
-          </ion-textarea>
-        </ion-item>
-        <div class="counter-row">
-          <ion-note [color]="sobreMimLength < 300 || sobreMimLength > 500 ? 'danger' : 'medium'">
-            {{ sobreMimLength }}/500
-          </ion-note>
+          <ion-item class="input-field" color="none">
+            <ion-icon name="business-outline" slot="start"></ion-icon>
+            <ion-input label="Organizacao ou clube" labelPlacement="stacked" placeholder="Opcional" formControlName="organizacaoOuClube"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="id-card-outline" slot="start"></ion-icon>
+            <ion-input label="Cargo ou funcao" labelPlacement="stacked" placeholder="Opcional" formControlName="cargoOuFuncao"></ion-input>
+          </ion-item>
         </div>
-        <div class="error-text" *ngIf="hasError('sobreMim', 'required')">O campo Sobre mim e obrigatorio.</div>
-        <div class="error-text" *ngIf="hasError('sobreMim', 'minlength')">Escreva entre 300 e 500 caracteres.</div>
-        <div class="error-text" *ngIf="hasError('sobreMim', 'maxlength')">Limite maximo de 500 caracteres.</div>
-
-        <ion-item>
-          <ion-textarea
-            label="O que busca no BeSeen (opcional)"
-            labelPlacement="stacked"
-            placeholder="Ex: atletas prontos para avaliacao imediata."
-            [autoGrow]="true"
-            formControlName="oQueBuscaNoBeSeen">
-          </ion-textarea>
-        </ion-item>
-        <div class="counter-row">
-          <ion-note [color]="oQueBuscaLength > 300 ? 'danger' : 'medium'">
-            {{ oQueBuscaLength }}/300
-          </ion-note>
-        </div>
-        <div class="error-text" *ngIf="hasError('oQueBuscaNoBeSeen', 'maxlength')">Limite maximo de 300 caracteres.</div>
-      </ion-list>
       </section>
 
-      <ion-button expand="block" class="save-button inline-save" [disabled]="profileForm.invalid || isSaving" (click)="saveProfile()">
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Contato</h2>
+          <p>Dados basicos para retorno e comunicacao.</p>
+        </div>
+
+        <div class="input-group-container">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input label="Email" labelPlacement="stacked" placeholder="voce@exemplo.com" type="email" formControlName="email"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+            <ion-input label="WhatsApp" labelPlacement="stacked" placeholder="(48) 99999-9999" [value]="phoneDisplayValue" (ionInput)="onPhoneInput($event)"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-input label="Cidade" labelPlacement="stacked" placeholder="Ex: Florianopolis" formControlName="cidade"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="map-outline" slot="start"></ion-icon>
+            <ion-select label="Estado" labelPlacement="stacked" placeholder="Selecione" interface="action-sheet" formControlName="estado">
+              <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="globe-outline" slot="start"></ion-icon>
+            <ion-input label="Pais" labelPlacement="stacked" placeholder="Brasil" formControlName="pais"></ion-input>
+          </ion-item>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Preferencias</h2>
+          <p>Defina exatamente o perfil de atleta que voce quer encontrar.</p>
+        </div>
+
+        <div class="input-group-container">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="football-outline" slot="start"></ion-icon>
+            <ion-select label="Modalidade" labelPlacement="stacked" placeholder="Selecione" interface="action-sheet" formControlName="modalidade">
+              <ion-select-option *ngFor="let option of modalityOptions" [value]="option">{{ option }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="people-outline" slot="start"></ion-icon>
+            <ion-select label="Categorias de idade alvo" labelPlacement="stacked" placeholder="Selecione uma ou mais" interface="alert" [multiple]="true" formControlName="categoriasIdadeAlvo">
+              <ion-select-option *ngFor="let option of ageCategoryOptions" [value]="option">{{ option }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="chip-list" *ngIf="selectedCategorias.length > 0">
+            <ion-chip *ngFor="let categoria of selectedCategorias" color="success"><ion-label>{{ categoria }}</ion-label></ion-chip>
+          </div>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="list-outline" slot="start"></ion-icon>
+            <ion-select label="Posicoes de interesse" labelPlacement="stacked" placeholder="Selecione uma ou mais" interface="alert" [multiple]="true" formControlName="posicoesInteresse">
+              <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="chip-list" *ngIf="selectedPosicoes.length > 0">
+            <ion-chip *ngFor="let posicao of selectedPosicoes" color="tertiary"><ion-label>{{ posicao }}</ion-label></ion-chip>
+          </div>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            <ion-textarea label="Regiao de atuacao" labelPlacement="stacked" placeholder="Ex: Sul do Brasil" [autoGrow]="true" formControlName="regiaoAtuacaoTexto"></ion-textarea>
+          </ion-item>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Credibilidade</h2>
+        </div>
+        <div class="verification-box">
+          <div class="verification-status">
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+            <div>
+              <p>O envio de documentos será conectado na V2.</p>
+            </div>
+          </div>
+          <ion-button fill="outline" type="button" (click)="showDocumentUploadInfo()" class="be-btn-outline">
+            <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+            Enviar documento
+          </ion-button>
+        </div>
+
+        <ion-item class="input-field" color="none" style="margin-top: 15px;">
+          <ion-icon name="link-outline" slot="start"></ion-icon>
+          <ion-input label="Link de referencia (opcional)" labelPlacement="stacked" placeholder="https://..." formControlName="linkReferencia"></ion-input>
+        </ion-item>
+
+        <ion-item class="checkbox-item" lines="none">
+          <ion-checkbox formControlName="aceitouTermos" justify="start">Aceito os termos e confirmo os dados.</ion-checkbox>
+        </ion-item>
+      </section>
+
+      <section class="section-card">
+        <div class="section-header">
+          <h2>Bio</h2>
+        </div>
+        <ion-item class="input-field" color="none">
+          <ion-icon name="document-text-outline" slot="start"></ion-icon>
+          <ion-textarea label="Sobre mim" labelPlacement="stacked" placeholder="Descreva sua experiência..." [autoGrow]="true" formControlName="sobreMim"></ion-textarea>
+        </ion-item>
+        <div class="counter-row">
+          <ion-note>{{ sobreMimLength }}/500</ion-note>
+        </div>
+
+        <ion-item class="input-field" color="none">
+          <ion-icon name="star-outline" slot="start"></ion-icon>
+          <ion-textarea label="O que busca no BeSeen" labelPlacement="stacked" placeholder="Ex: atletas prontos..." [autoGrow]="true" formControlName="oQueBuscaNoBeSeen"></ion-textarea>
+        </ion-item>
+        <div class="counter-row">
+          <ion-note>{{ oQueBuscaLength }}/500</ion-note>
+        </div>
+      </section>
+
+      <ion-button expand="block" class="save-button" [disabled]="profileForm.invalid || isSaving" (click)="saveProfile()">
         {{ isSaving ? 'Salvando...' : 'Salvar' }}
       </ion-button>
     </form>

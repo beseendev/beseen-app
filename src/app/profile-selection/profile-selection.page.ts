@@ -50,7 +50,6 @@ export class ProfileSelectionPage implements OnInit {
       this.loginMethod = params['loginMethod'] || null;
     });
 
-    // Listen to changes to navigate automatically
     this.profileForm.get('role')?.valueChanges.subscribe(role => {
       if (role === 'JOGADOR') {
         this.navigateTo('/create-profile-player', role);
@@ -62,8 +61,8 @@ export class ProfileSelectionPage implements OnInit {
 
   private navigateTo(path: string, role: string) {
     this.navCtrl.navigateRoot(path, {
-      queryParams: { 
-        idToken: this.idToken, 
+      queryParams: {
+        idToken: this.idToken,
         loginMethod: this.loginMethod,
         role: role
       },

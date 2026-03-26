@@ -37,9 +37,9 @@ import { ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
-    IonItem, IonInput, IonButton, IonIcon, IonLabel, IonTextarea,
+    IonItem, IonInput, IonButton, IonIcon, IonTextarea,
     IonDatetime, IonDatetimeButton, IonModal, IonSpinner,
-    IonList, IonNote
+    IonNote
   ]
 })
 export class CreateProfilePlayerPage implements OnInit, OnDestroy {
@@ -98,7 +98,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       this.isRoleFromToken = true;
     }
 
-    // Role can also come from query params (passed from selection screen)
     const roleFromParams = this.route.snapshot.queryParams['role'];
     const finalRole = roleFromToken || roleFromParams || null;
 
@@ -137,13 +136,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   }
 
   private updateFormFields(role: string | null): void {
-    // Remove all specific controls first
-    this.profileForm.removeControl('bio');
-    this.profileForm.removeControl('position');
-    this.profileForm.removeControl('height');
-    this.profileForm.removeControl('weight');
-    this.profileForm.removeControl('careerHistory');
-
     if (role === 'JOGADOR') {
       this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
       this.profileForm.addControl('position', this.fb.control('', [Validators.maxLength(100)]));
@@ -151,10 +143,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       this.profileForm.addControl('weight', this.fb.control('', [Validators.maxLength(20)]));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
-  }
-
-  goToScoutProfile(): void {
-    this.router.navigate(['/create-profile-scout'], { queryParams: this.route.snapshot.queryParams });
   }
 
   goBack(): void {

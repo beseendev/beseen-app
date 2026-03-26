@@ -16,7 +16,9 @@ import {
   personOutline,
   logoGoogle,
   logoFacebook,
-  logoTwitter, shieldCheckmarkOutline
+  logoTwitter, shieldCheckmarkOutline, resizeOutline, listOutline, barbellOutline, idCardOutline, documentTextOutline,
+  callOutline, linkOutline, briefcaseOutline, businessOutline, logoWhatsapp, footballOutline, locationOutline,
+  peopleOutline, mapOutline, ellipsisHorizontalOutline, searchOutline, globeOutline, starOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -42,7 +44,25 @@ export class AppComponent {
       logoGoogle,
       logoFacebook,
       logoTwitter,
-      shieldCheckmarkOutline
+      shieldCheckmarkOutline,
+      resizeOutline,
+      barbellOutline,
+      listOutline,
+      documentTextOutline,
+      idCardOutline,
+      callOutline,
+      linkOutline,
+      briefcaseOutline,
+      businessOutline,
+      logoWhatsapp,
+      locationOutline,
+      footballOutline,
+      peopleOutline,
+      mapOutline,
+      ellipsisHorizontalOutline,
+      globeOutline,
+      searchOutline,
+      starOutline
     });
   }
 }

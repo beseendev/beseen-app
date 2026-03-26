@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, EMPTY } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { ToastController } from '@ionic/angular/standalone';
@@ -29,6 +29,15 @@ export const authInterceptor: HttpInterceptorFn = (
         !req.url.includes('/auth/refresh')
       ) {
         return handle401Error(req, next, authService);
+      }
+
+      if (error.status === 0) {
+        toastController.create({
+          message: "Não foi possível se conectar ao servidor.",
+          duration: 3000,
+          color: 'danger'
+        }).then(toast => toast.present());
+        return EMPTY;
       }
 
       const errorMessage = error.error?.message || 'Ocorreu um erro. Tente novamente.';
