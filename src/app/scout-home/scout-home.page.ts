@@ -26,6 +26,8 @@ import { ScoutProfileService } from '../services/scout-profile.service';
 import { ChatUiService } from '../services/chat-ui.service';
 import { ScoutChatInboxComponent } from './components/scout-chat-inbox/scout-chat-inbox.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
+import {ApiService} from "../services/api.service";
+import {environment} from "../../environments/environment";
 
 interface ScoutTalent {
   id: string;
@@ -51,6 +53,9 @@ export class ScoutHomePage implements OnInit {
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
+  userProfile: any | null = null;
+  avatarLoadFailed = false;
+  isLoading = true;
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -65,6 +70,7 @@ export class ScoutHomePage implements OnInit {
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
+  private readonly apiService = inject(ApiService);
 
   constructor() {
     addIcons({
@@ -83,6 +89,61 @@ export class ScoutHomePage implements OnInit {
     this.scoutProfile = await this.scoutProfileService.getProfile();
     this.loadTalents();
     this.loadVideoPosts();
+  }
+
+  ionViewWillEnter(): void {
+    this.apiService.get<any>('/profile/me').subscribe({
+      next: (profile) => {
+        if (profile && profile.urlPefil) {
+          profile.urlPerfil = profile.urlPefil;
+          delete profile.urlPefil;
+        }
+
+        if (profile) {
+          const rawAvatar = profile.urlPerfil || profile.urlProfileImage || null;
+          profile.urlPerfil = this.normalizeAvatarUrl(rawAvatar);
+        }
+
+        this.userProfile = profile;
+        this.avatarLoadFailed = false;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load user profile', err);
+        this.isLoading = false;
+      },
+    });
+
+    if (this.postService.shouldLoadInitialHomePosts()) {
+      this.postService.loadHomePosts().subscribe();
+    }
+  }
+
+  private normalizeAvatarUrl(rawUrl: string | null): string | null {
+    if (!rawUrl) {
+      return null;
+    }
+
+    const url = rawUrl.trim();
+    if (!url) {
+      return null;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+      return url;
+    }
+
+    if (url.startsWith('//')) {
+      return `https:${url}`;
+    }
+
+    const baseApiUrl = environment.apiUrl;
+    if (url.startsWith('/') && baseApiUrl) {
+      const baseOrigin = baseApiUrl.replace(/\/beseen\/api$/, '');
+      return `${baseOrigin}${url}`;
+    }
+
+    return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
   }
 
   get favoriteCount(): number {

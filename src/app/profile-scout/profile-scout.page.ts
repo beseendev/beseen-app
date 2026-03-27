@@ -148,7 +148,7 @@ export class ProfileScoutPage implements OnInit {
     }
 
     this.isLoading = true;
-    
+
     // Simulação de atualização no backend (mantendo o comportamento do MVP do player)
     const updatedFields = {
       tipoOlheiro: this.draftProfile.tipoOlheiro,
@@ -163,8 +163,6 @@ export class ProfileScoutPage implements OnInit {
       oQueBuscaNoBeSeen: this.draftProfile.oQueBuscaNoBeSeen,
     };
 
-    // Usando o serviço para persistir (se houvesse o endpoint específico de update scout)
-    // No momento, seguindo o padrão de overrides locais para MVP
     setTimeout(() => {
       this.profile = {
         ...this.profile,
