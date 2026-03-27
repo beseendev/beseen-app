@@ -149,7 +149,6 @@ export class ProfilePlayerPage implements OnInit {
 
     this.isLoading = true;
     const updateData: Partial<Profile> = {
-      fullName: (this.draftProfile.fullName || this.profile.fullName || '').trim() || this.profile.fullName,
       bio: (this.draftProfile.bio || '').trim(),
       position: (this.draftProfile.position || '').trim(),
       height: (this.draftProfile.height || '').trim(),
