@@ -24,12 +24,13 @@
 .secondary-action{--color:var(--be-color-text-2)}
 .cancel-btn{--color:var(--be-color-danger)}
 ion-list,ion-grid{background:transparent;padding:0}
-ion-item{--background:var(--be-color-surface-2);--border-radius:12px;--inner-border-width:0;--border-width:0;--highlight-height:0;--padding-start:12px;--padding-end:12px;--inner-padding-top:8px;--inner-padding-bottom:8px;margin-bottom:10px;border:1px solid var(--be-color-line);box-shadow:0 10px 24px rgba(2,6,23,.24)}
 ion-item ion-icon{color:var(--be-color-brand-500);margin-right:10px}
 ion-item h3{margin:0 0 4px;color:var(--be-color-text-2);font-size:.8rem;font-weight:600}
-ion-item p{margin:0;font-size:.92rem}
-ion-input,ion-textarea{--color:var(--be-color-text-1);--placeholder-color:var(--be-color-text-3)}
-ion-input::part(label),ion-textarea::part(label){color:var(--be-color-text-2);font-size:.82rem}
+ion-item p{margin:0;font-size:.92rem;--color: #ffffff !important;
+  color: #ffffff !important;}
+ion-input,ion-textarea,ion-select{--color: #ffffff !important;color: #ffffff !important;--placeholder-color:var(--be-color-text-3);--placeholder-opacity:1}
+ion-select::part(text){color:#ffffff!important}
+ion-input::part(label),ion-textarea::part(label),ion-select::part(label){color:var(--be-color-text-2);font-size:.82rem}
 .text-card{margin:0;padding:16px;border-radius:14px;background:var(--be-color-surface-2);border:1px solid var(--be-color-line);box-shadow:0 10px 24px rgba(2,6,23,.24)}
 .text-card-title{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;margin-bottom:10px}
 .text-card-title ion-icon{color:var(--be-color-brand-500)}
@@ -41,3 +42,38 @@ ion-input::part(label),ion-textarea::part(label){color:var(--be-color-text-2);fo
 .posts-section ion-col{padding:2px}
 .loading-state{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
 .loading-state p{margin:0}
+
+/* Localize este bloco no seu código e altere a linha do border */
+ion-item {
+  --background: var(--be-color-surface-2);
+  --border-radius: 12px;
+  --inner-border-width: 0;
+  --border-width: 0;
+  --highlight-height: 0;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --inner-padding-top: 8px;
+  --inner-padding-bottom: 8px;
+  margin-bottom: 10px;
+  border: none; /* Alterado de 1px solid para none para remover a borda */
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+}
+
+.readonly-item {
+  --background: var(--be-color-surface-2); /* Mantém o fundo */
+  opacity: 0.6; /* O segredo para esmaecer */
+  cursor: not-allowed; /* Muda o cursor no desktop para indicar bloqueio */
+  --inner-padding-end: 0;
+  --ripple-color: transparent; /* Remove o efeito de onda ao clicar */
+}
+
+/* Deixa o ícone um pouco menos vibrante também */
+.readonly-item ion-icon {
+  filter: grayscale(0.5) brightness(0.8);
+}
+
+/* Garante que o texto não pareça um erro, apenas uma informação fixa */
+.readonly-item h3,
+.readonly-item p {
+  user-select: none; /* Evita que o usuário fique selecionando o texto sem querer */
+}

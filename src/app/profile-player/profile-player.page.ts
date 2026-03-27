@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { switchMap, tap, map, filter } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { AuthService } from '../services/auth.service';
 import { catchError, of } from 'rxjs';
+import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
 
 @Component({
   selector: 'app-profile-player',
@@ -43,6 +44,8 @@ import { catchError, of } from 'rxjs';
     IonSegmentButton,
     IonInput,
     IonTextarea,
+    IonSelect,
+    IonSelectOption,
     PostCardComponent
   ],
 })
@@ -55,6 +58,7 @@ export class ProfilePlayerPage implements OnInit {
   selectedSegment: 'images' | 'videos' = 'images';
   draftProfile: Partial<Profile> = {};
   private readonly DEFAULT_POST_LIMIT = 10;
+  readonly positionOptions = SCOUT_POSITION_OPTIONS;
 
   private profileService = inject(ProfileService);
   private postService = inject(PostService);
@@ -171,6 +175,16 @@ export class ProfilePlayerPage implements OnInit {
 
   startChat() {
     console.log('Start chat with', this.profile?.name);
+  }
+
+  onNumericInput(event: any, field: 'height' | 'weight') {
+    const rawValue = event.target.value || '';
+    const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const parts = cleaned.split('.');
+    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
+
+    this.draftProfile[field] = finalValue;
+    event.target.value = finalValue;
   }
 
   async loadMoreUserPosts(event: any) {
