@@ -59,6 +59,16 @@ export const routes: Routes = [
     loadComponent: () => import('./create-profile-scout/create-profile-scout.page').then(m => m.CreateProfileScoutPage)
   },
   {
+    path: 'profile-scout',
+    loadComponent: () => import('./profile-scout/profile-scout.page').then(m => m.ProfileScoutPage),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'profile-scout/:userId',
+    loadComponent: () => import('./profile-scout/profile-scout.page').then(m => m.ProfileScoutPage),
+    canActivate: [authGuard]
+  },
+  {
     path: 'scout-home',
     loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage)
   },

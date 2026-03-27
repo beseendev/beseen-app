@@ -136,6 +136,11 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   contactsLoading = false;
   contactsHasMore = true;
 
+  get userName(): string {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.name || 'Clube';
+  }
+
   private contactsSubscription!: Subscription;
 
   private readonly modalities = ['Futebol', 'Basquete', 'Vôlei', 'Atletismo', 'Futsal', 'Natação'];

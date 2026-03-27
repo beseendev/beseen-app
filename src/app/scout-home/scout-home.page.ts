@@ -143,7 +143,7 @@ export class ScoutHomePage implements OnInit {
   }
 
   editScoutProfile(): void {
-    this.router.navigate(['/create-profile-scout']);
+    this.router.navigate(['/profile-scout']);
   }
 
   logout(): void {

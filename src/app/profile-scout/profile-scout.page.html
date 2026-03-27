@@ -1,0 +1,309 @@
+<ion-content [fullscreen]="true" class="player-profile-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshProfile($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="player-profile-container" *ngIf="profile; else loadingState">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Perfil do Olheiro</span>
+    </div>
+
+    <div class="page-intro">
+      <h1 class="page-title">{{ profile.fullName || profile.name || 'Meu perfil' }}</h1>
+      <p class="page-subtitle">{{ getDisplayRole(profile.role) }}</p>
+    </div>
+
+    <section class="section-card profile-card">
+      <div class="profile-card-head">
+        <div class="profile-identity">
+          <ion-avatar class="profile-avatar">
+            <img *ngIf="profile.urlPerfil || profile.fotoPerfilUrl" [src]="profile.urlPerfil || profile.fotoPerfilUrl" alt="Foto do perfil" />
+            <ion-icon *ngIf="!profile.urlPerfil && !profile.fotoPerfilUrl" name="person-circle-outline"></ion-icon>
+          </ion-avatar>
+
+          <div class="profile-copy">
+            <span>Perfil do olheiro</span>
+            <strong>{{ profile.fullName || profile.name }}</strong>
+            <p>{{ profile.organizacaoOuClube || 'Olheiro Independente' }}</p>
+          </div>
+        </div>
+
+        <div class="profile-actions" *ngIf="isMyProfile">
+          <ng-container *ngIf="!isEditing; else editActions">
+            <ion-button fill="outline" class="profile-action-btn" (click)="startEditing()">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar perfil
+            </ion-button>
+          </ng-container>
+
+          <ng-template #editActions>
+            <ion-button fill="outline" class="profile-action-btn save-btn" (click)="saveProfileEdits()" [disabled]="isLoading">
+              <ion-icon *ngIf="!isLoading" slot="start" name="checkmark-outline"></ion-icon>
+              <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+              {{ isLoading ? 'Salvando...' : 'Salvar' }}
+            </ion-button>
+            <ion-button fill="clear" class="profile-action-btn cancel-btn" (click)="cancelEditing()" [disabled]="isLoading">
+              <ion-icon slot="start" name="close-outline"></ion-icon>
+              Cancelar
+            </ion-button>
+          </ng-template>
+        </div>
+
+        <div class="profile-actions" *ngIf="!isMyProfile">
+          <ion-button expand="block" class="profile-action-btn" (click)="followUser()">
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            Seguir
+          </ion-button>
+          <ion-button expand="block" fill="clear" class="profile-action-btn secondary-action" (click)="startChat()">
+            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+            Chat
+          </ion-button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <h2>Informações Profissionais</h2>
+        <p>Dados de atuação no mercado.</p>
+      </div>
+
+      <ion-list lines="none">
+        <ion-item class="readonly-item">
+          <ion-icon slot="start" name="briefcase-outline"></ion-icon>
+          <ion-label>
+            <h3>Função</h3>
+            <p>{{ getDisplayRole(profile.role) }}</p>
+          </ion-label>
+        </ion-item>
+
+        <!-- Tipo de Olheiro -->
+        <ion-item *ngIf="isEditing; else readScoutType">
+          <ion-icon slot="start" name="business-outline"></ion-icon>
+          <ion-select
+            label="Tipo de Olheiro"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.tipoOlheiro"
+            placeholder="Selecione o tipo"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let option of scoutTypeOptions" [value]="option">{{ option }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readScoutType>
+          <ion-item *ngIf="profile.tipoOlheiro">
+            <ion-icon slot="start" name="business-outline"></ion-icon>
+            <ion-label>
+              <h3>Tipo de Olheiro</h3>
+              <p>{{ profile.tipoOlheiro }} {{ profile.tipoOlheiro === 'Outro' ? '- ' + profile.tipoOlheiroOutroTexto : '' }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Organização / Clube -->
+        <ion-item *ngIf="isEditing; else readOrg">
+          <ion-icon slot="start" name="business-outline"></ion-icon>
+          <ion-input
+            label="Organização ou Clube"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.organizacaoOuClube"
+            placeholder="Nome do clube ou empresa">
+          </ion-input>
+        </ion-item>
+        <ng-template #readOrg>
+          <ion-item *ngIf="profile.organizacaoOuClube">
+            <ion-icon slot="start" name="business-outline"></ion-icon>
+            <ion-label>
+              <h3>Organização ou Clube</h3>
+              <p>{{ profile.organizacaoOuClube }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Cargo -->
+        <ion-item *ngIf="isEditing; else readCargo">
+          <ion-icon slot="start" name="person-outline"></ion-icon>
+          <ion-input
+            label="Cargo ou Função"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.cargoOuFuncao"
+            placeholder="Ex: Scout Chefe, Agente">
+          </ion-input>
+        </ion-item>
+        <ng-template #readCargo>
+          <ion-item *ngIf="profile.cargoOuFuncao">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-label>
+              <h3>Cargo ou Função</h3>
+              <p>{{ profile.cargoOuFuncao }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Modalidade -->
+        <ion-item *ngIf="isEditing; else readModalidade">
+          <ion-icon slot="start" name="trophy-outline"></ion-icon>
+          <ion-select
+            label="Modalidade"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.modalidade"
+            placeholder="Selecione a modalidade"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let option of modalityOptions" [value]="option">{{ option }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readModalidade>
+          <ion-item *ngIf="profile.modalidade">
+            <ion-icon slot="start" name="trophy-outline"></ion-icon>
+            <ion-label>
+              <h3>Modalidade</h3>
+              <p>{{ profile.modalidade }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Região de Atuação -->
+        <ion-item *ngIf="isEditing; else readRegiao">
+          <ion-icon slot="start" name="globe-outline"></ion-icon>
+          <ion-input
+            label="Região de Atuação"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.regiaoAtuacaoTexto"
+            placeholder="Ex: Brasil, Europa, Sudeste">
+          </ion-input>
+        </ion-item>
+        <ng-template #readRegiao>
+          <ion-item *ngIf="profile.regiaoAtuacaoTexto">
+            <ion-icon slot="start" name="globe-outline"></ion-icon>
+            <ion-label>
+              <h3>Região de Atuação</h3>
+              <p>{{ profile.regiaoAtuacaoTexto }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+      </ion-list>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <h2>Foco de Observação</h2>
+        <p>Categorias e posições de interesse.</p>
+      </div>
+
+      <ion-list lines="none">
+        <!-- Categorias Idade -->
+        <ion-item *ngIf="isEditing; else readCategorias">
+          <ion-icon slot="start" name="people-outline"></ion-icon>
+          <ion-select
+            label="Categorias Alvo"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.categoriasIdadeAlvo"
+            multiple="true"
+            placeholder="Selecione as categorias"
+            interface="alert">
+            <ion-select-option *ngFor="let option of ageCategoryOptions" [value]="option">{{ option }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readCategorias>
+          <div class="text-card" style="margin-bottom: 10px;">
+            <div class="text-card-title">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Categorias Alvo</span>
+            </div>
+            <div class="badge-container">
+              <ion-badge color="primary" *ngFor="let cat of profile.categoriasIdadeAlvo" style="margin-right: 4px;">{{ cat }}</ion-badge>
+              <span *ngIf="!profile.categoriasIdadeAlvo?.length">Nenhuma categoria selecionada</span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Posições Interesse -->
+        <ion-item *ngIf="isEditing; else readPosicoes">
+          <ion-icon slot="start" name="search-outline"></ion-icon>
+          <ion-select
+            label="Posições de Interesse"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.posicoesInteresse"
+            multiple="true"
+            placeholder="Selecione as posições"
+            interface="alert">
+            <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readPosicoes>
+          <div class="text-card">
+            <div class="text-card-title">
+              <ion-icon name="search-outline"></ion-icon>
+              <span>Posições de Interesse</span>
+            </div>
+            <div class="badge-container">
+              <ion-badge color="secondary" *ngFor="let pos of profile.posicoesInteresse" style="margin-right: 4px;">{{ pos }}</ion-badge>
+              <span *ngIf="!profile.posicoesInteresse?.length">Nenhuma posição selecionada</span>
+            </div>
+          </div>
+        </ng-template>
+      </ion-list>
+    </section>
+
+    <section class="section-card" *ngIf="isEditing || isMyProfile || profile.sobreMim || profile.oQueBuscaNoBeSeen">
+      <div class="section-header">
+        <h2>Sobre</h2>
+        <p>Apresentação e objetivos.</p>
+      </div>
+
+      <ion-list lines="none">
+        <ion-item *ngIf="isEditing; else readSobre">
+          <ion-textarea
+            label="Sobre mim"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.sobreMim"
+            [autoGrow]="true"
+            placeholder="Conte sobre sua trajetória">
+          </ion-textarea>
+        </ion-item>
+        <ng-template #readSobre>
+          <div class="text-card" *ngIf="profile.sobreMim">
+            <div class="text-card-title">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>Sobre mim</span>
+            </div>
+            <ion-text>{{ profile.sobreMim }}</ion-text>
+          </div>
+          <div class="text-card empty-state" *ngIf="!profile.sobreMim && isMyProfile">
+             <p>Você ainda não adicionou uma descrição sobre você.</p>
+          </div>
+        </ng-template>
+
+        <ion-item *ngIf="isEditing; else readBusca" style="margin-top: 10px;">
+          <ion-textarea
+            label="O que busca no BeSeen"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.oQueBuscaNoBeSeen"
+            [autoGrow]="true"
+            placeholder="Descreva o perfil de atleta que procura">
+          </ion-textarea>
+        </ion-item>
+        <ng-template #readBusca>
+          <div class="text-card" *ngIf="profile.oQueBuscaNoBeSeen" style="margin-top: 10px;">
+            <div class="text-card-title">
+              <ion-icon name="search-outline"></ion-icon>
+              <span>O que busca no BeSeen</span>
+            </div>
+            <ion-text>{{ profile.oQueBuscaNoBeSeen }}</ion-text>
+          </div>
+          <div class="text-card empty-state" *ngIf="!profile.oQueBuscaNoBeSeen && isMyProfile" style="margin-top: 10px;">
+             <p>Adicione o que você busca na plataforma para ajudar os atletas.</p>
+          </div>
+        </ng-template>
+      </ion-list>
+    </section>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-state">
+      <p>Carregando perfil...</p>
+    </div>
+  </ng-template>
+</ion-content>
