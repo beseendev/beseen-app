@@ -53,6 +53,14 @@ export class ProfileService {
     );
   }
 
+  updatePlayerProfile(data: Partial<Profile>): Observable<any> {
+    return this.apiService.put<any>(`${this.profileEndpoint}/update-player`, data).pipe(
+      tap(response => {
+        this.showToast(response.message || 'Perfil atualizado com sucesso!', 'success');
+      })
+    );
+  }
+
   getProfile(userId?: string): Observable<Profile> {
     const endpoint = userId ? `${this.profileEndpoint}/${userId}` : `${this.profileEndpoint}/me/full-profile`;
     return this.apiService.get<Profile>(endpoint);

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model'; // Added FileType import
 import { Observable, BehaviorSubject } from 'rxjs';
-import { switchMap, tap, map, filter } from 'rxjs/operators';
+import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { AuthService } from '../services/auth.service';
 import { catchError, of } from 'rxjs';
@@ -46,6 +46,7 @@ import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
     IonTextarea,
     IonSelect,
     IonSelectOption,
+    IonSpinner,
     PostCardComponent
   ],
 })
@@ -57,6 +58,7 @@ export class ProfilePlayerPage implements OnInit {
   isEditing = false;
   selectedSegment: 'images' | 'videos' = 'images';
   draftProfile: Partial<Profile> = {};
+  isLoading = false;
   private readonly DEFAULT_POST_LIMIT = 10;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
 
@@ -145,9 +147,8 @@ export class ProfilePlayerPage implements OnInit {
       return;
     }
 
-    const mergedProfile: Profile = {
-      ...this.profile,
-      ...this.draftProfile,
+    this.isLoading = true;
+    const updateData: Partial<Profile> = {
       fullName: (this.draftProfile.fullName || this.profile.fullName || '').trim() || this.profile.fullName,
       bio: (this.draftProfile.bio || '').trim(),
       position: (this.draftProfile.position || '').trim(),
@@ -156,17 +157,23 @@ export class ProfilePlayerPage implements OnInit {
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
     };
 
-    this.profile = mergedProfile;
-    this.persistLocalOverrides(mergedProfile);
-    this.isEditing = false;
+    this.profileService.updatePlayerProfile(updateData).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: () => {
+        const mergedProfile: Profile = {
+          ...this.profile!,
+          ...updateData
+        };
 
-    const toast = await this.toastController.create({
-      message: 'Perfil atualizado no dispositivo.',
-      duration: 2200,
-      color: 'success',
-      position: 'top',
+        this.profile = mergedProfile;
+        this.persistLocalOverrides(mergedProfile);
+        this.isEditing = false;
+      },
+      error: (err) => {
+        console.error('Failed to update profile in API', err);
+      }
     });
-    await toast.present();
   }
 
   followUser() {

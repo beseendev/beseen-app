@@ -40,11 +40,12 @@
           </ng-container>
 
           <ng-template #editActions>
-            <ion-button fill="outline" class="profile-action-btn save-btn" (click)="saveProfileEdits()">
-              <ion-icon slot="start" name="checkmark-outline"></ion-icon>
-              Salvar
+            <ion-button fill="outline" class="profile-action-btn save-btn" (click)="saveProfileEdits()" [disabled]="isLoading">
+              <ion-icon *ngIf="!isLoading" slot="start" name="checkmark-outline"></ion-icon>
+              <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+              {{ isLoading ? 'Salvando...' : 'Salvar' }}
             </ion-button>
-            <ion-button fill="clear" class="profile-action-btn cancel-btn" (click)="cancelEditing()">
+            <ion-button fill="clear" class="profile-action-btn cancel-btn" (click)="cancelEditing()" [disabled]="isLoading">
               <ion-icon slot="start" name="close-outline"></ion-icon>
               Cancelar
             </ion-button>
