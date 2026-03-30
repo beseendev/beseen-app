@@ -150,7 +150,7 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.views | number }} views</p>
+              <p>{{ video.likes | number }} curtidas</p>
             </button>
             <span class="status-tag" *ngIf="hasIncomingInvite(video)">Convite</span>
           </div>
@@ -159,7 +159,6 @@
             <span class="interest-badge" *ngIf="hasIncomingInvite(video)">Interesse recebido</span>
           </div>
           <div class="showcase-body">
-            <p class="meta-line">{{ video.modality }} • {{ video.position }} • {{ video.region }}</p>
             <p class="showcase-description">{{ video.description }}</p>
 
             <div class="showcase-actions">
@@ -188,14 +187,13 @@
         <div class="video-meta">
           <button type="button" class="profile-link" (click)="openAthleteProfile(featuredVideo)">
             <h3>{{ featuredVideo.athleteName }}</h3>
-            <p>{{ featuredVideo.views | number }} views</p>
+            <p>{{ featuredVideo.likes | number }} curtidas</p>
           </button>
           <span class="status-tag">Destaque</span>
         </div>
         <div class="media-frame">
           <video [src]="featuredVideo.mediaUrl" playsinline muted controls preload="metadata" class="talent-video"></video>
         </div>
-        <p class="meta-line">{{ featuredVideo.modality }} • {{ featuredVideo.position }} • {{ featuredVideo.region }}</p>
         <p class="showcase-description">{{ featuredVideo.description }}</p>
       </article>
     </section>
@@ -206,7 +204,7 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.views | number }} views</p>
+              <p>{{ video.likes | number }} curtidas</p>
             </button>
             <span class="status-tag">Ranking</span>
           </div>
@@ -216,7 +214,6 @@
           </div>
 
           <div class="showcase-body">
-            <p class="meta-line">{{ video.modality }} • {{ video.position }} • {{ video.region }}</p>
             <p class="showcase-description">{{ video.description }}</p>
           </div>
         </article>
@@ -229,7 +226,7 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.views | number }} views</p>
+              <p>{{ video.likes | number }} curtidas</p>
             </button>
             <span class="status-tag">Novo</span>
           </div>
@@ -239,7 +236,6 @@
           </div>
 
           <div class="showcase-body">
-            <p class="meta-line">{{ video.modality }} • {{ video.position }} • {{ video.region }}</p>
             <p class="showcase-description">{{ video.description }}</p>
           </div>
         </article>

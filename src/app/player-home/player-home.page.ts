@@ -58,7 +58,7 @@ interface ArenaAthlete {
   position: string;
   tag: 'Em Alta' | 'Mais Visto';
   growth: string;
-  views: string;
+  likes: string;
 }
 
 type ArenaTab = 'mine' | 'ranking' | 'new';
@@ -72,7 +72,7 @@ interface PlayerShowcaseVideo {
   position: string;
   region: string;
   description: string;
-  views: number;
+  likes: number;
   createdAt: string;
   scoutId: string;
   scoutName: string;
@@ -461,7 +461,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Atacante',
         region: 'Florianopolis, SC',
         description: 'Finalizacao curta, aceleracao e leitura de espaco na ultima linha.',
-        views: 19320,
+        likes: 19320,
         createdAt: '2026-03-02T10:10:00.000Z',
         scoutId: 'scout-1',
         scoutName: 'Ricardo Moraes',
@@ -477,7 +477,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Meia',
         region: 'Curitiba, PR',
         description: 'Passe vertical, inversao rapida e controle orientado.',
-        views: 15840,
+        likes: 15840,
         createdAt: '2026-03-01T14:40:00.000Z',
         scoutId: 'scout-2',
         scoutName: 'Joao Teles',
@@ -493,7 +493,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Ala',
         region: 'Joinville, SC',
         description: 'Pressao alta, 1x1 curto e intensidade sem bola.',
-        views: 11200,
+        likes: 11200,
         createdAt: '2026-03-03T08:30:00.000Z',
         scoutId: 'scout-3',
         scoutName: 'Camila Duarte',
@@ -509,7 +509,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Zagueiro',
         region: 'Porto Alegre, RS',
         description: 'Cobertura defensiva, jogo aereo e saida curta sob pressao.',
-        views: 9650,
+        likes: 9650,
         createdAt: '2026-02-28T16:15:00.000Z',
         scoutId: 'scout-4',
         scoutName: 'Marcos Vinicius',
@@ -525,7 +525,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Ponta',
         region: 'Sao Jose, SC',
         description: 'Ataque de espaco, cruzamento em velocidade e recomposicao rapida.',
-        views: 7440,
+        likes: 7440,
         createdAt: '2026-03-03T11:00:00.000Z',
         scoutId: 'scout-5',
         scoutName: 'Bruno Saad',
@@ -541,7 +541,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         position: 'Volante',
         region: 'Blumenau, SC',
         description: 'Cobertura central, bola longa e leitura de segunda bola.',
-        views: 6820,
+        likes: 6820,
         createdAt: '2026-03-03T13:12:00.000Z',
         scoutId: 'scout-6',
         scoutName: 'Fernanda Cezar',
@@ -559,7 +559,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     });
 
     this.rankingVideos = [...this.showcaseVideos]
-      .sort((first, second) => second.views - first.views)
+      .sort((first, second) => second.likes - first.likes)
       .slice(0, 5);
     this.newVideos = [...this.showcaseVideos]
       .sort((first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime());
@@ -607,7 +607,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     const name = post.user?.username?.trim() || 'Atleta';
     const tag: 'Em Alta' | 'Mais Visto' = seed % 2 === 0 ? 'Em Alta' : 'Mais Visto';
     const growth = `+${6 + (seed % 7) * 3}%`;
-    const views = this.formatViews(post.likesCount, post.commentsCount, seed);
+    const likes = this.formatLikes(post.likesCount, post.commentsCount, seed);
 
     return {
       post,
@@ -616,19 +616,19 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       position,
       tag,
       growth,
-      views,
+      likes,
     };
   }
 
-  private formatViews(likesCount: number, commentsCount: number, seed: number): string {
-    const estimatedViews = likesCount * 137 + commentsCount * 53 + 1200 + seed * 80;
+  private formatLikes(likesCount: number, commentsCount: number, seed: number): string {
+    const estimatedLikes = likesCount * 137 + commentsCount * 53 + 1200 + seed * 80;
 
-    if (estimatedViews >= 1000) {
-      const inThousands = (estimatedViews / 1000).toFixed(1).replace('.', ',');
+    if (estimatedLikes >= 1000) {
+      const inThousands = (estimatedLikes / 1000).toFixed(1).replace('.', ',');
       return `${inThousands} mil`;
     }
 
-    return `${estimatedViews}`;
+    return `${estimatedLikes}`;
   }
 
   ngOnDestroy(): void {
