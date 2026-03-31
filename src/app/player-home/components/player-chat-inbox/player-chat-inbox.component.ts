@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { chatbubbleEllipsesOutline, closeOutline, personCircleOutline, searchOutline } from 'ionicons/icons';
 import { ChatThreadSummaryDTO } from '../../../models/player-chat.models';
 import { ChatService } from '../../../services/chat.service';
-import { PlayerChatSheetComponent } from '../player-chat-sheet/player-chat-sheet.component';
+import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.component';
 
 @Component({
   selector: 'app-player-chat-inbox',
@@ -50,13 +50,14 @@ export class PlayerChatInboxComponent implements OnInit, OnDestroy {
 
   async openThread(thread: ChatThreadSummaryDTO): Promise<void> {
     const modal = await this.modalController.create({
-      component: PlayerChatSheetComponent,
+      component: ChatSheetComponent,
       componentProps: {
         threadId: thread.chatThreadId,
         inviteId: thread.inviteId,
-        scoutName: thread.counterpartName,
-        scoutAvatarUrl: thread.counterpartAvatar,
-        status: thread.status
+        counterpartName: thread.counterpartName,
+        counterpartAvatarUrl: thread.counterpartAvatar,
+        status: thread.status,
+        isPlayer: true
       },
       breakpoints: [0, 0.35, 0.7, 0.95],
       initialBreakpoint: 0.7,

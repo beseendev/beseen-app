@@ -2,7 +2,7 @@
   display: block;
 }
 
-.player-chat-sheet-content {
+.chat-sheet-content {
   --background: var(--be-color-bg);
 }
 
@@ -11,6 +11,8 @@
   padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
   background: linear-gradient(180deg, var(--be-color-bg-elevated) 0%, var(--be-color-bg) 100%);
   color: var(--be-color-text-1);
+  display: flex;
+  flex-direction: column;
 }
 
 .sheet-header {
@@ -76,6 +78,7 @@
 }
 
 .sheet-body {
+  flex: 1;
   max-height: 46vh;
   overflow-y: auto;
   display: flex;
@@ -90,6 +93,7 @@
   background: rgba(30, 41, 59, 0.9);
   color: var(--be-color-text-3);
   text-align: center;
+  font-size: 0.88rem;
 }
 
 .chat-bubble {
@@ -98,6 +102,7 @@
   border-radius: 14px 14px 14px 6px;
   background: rgba(30, 41, 59, 0.96);
   color: var(--be-color-text-2);
+  font-size: 0.9rem;
 }
 
 .chat-bubble.own {
@@ -113,12 +118,9 @@
 
 .sheet-footer.waiting {
   padding-top: 4px;
-  color: var(--be-color-text-2);
-}
-
-.sheet-footer.waiting p {
-  margin: 0 0 10px;
   color: var(--be-color-text-3);
+  font-size: 0.88rem;
+  text-align: center;
 }
 
 .sheet-footer ion-button {
@@ -126,6 +128,7 @@
   --color: #052e16;
   font-weight: 700;
   text-transform: none;
+  margin-top: 8px;
 }
 
 .chat-input {

@@ -1,19 +1,12 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewChecked,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild,
-  inject
-} from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline } from 'ionicons/icons';
-import { ChatMessageResponse, InviteStatus } from '../../../models/player-chat.models';
-import { ChatService } from '../../../services/chat.service';
+import { ChatMessageResponse, InviteStatus } from '../../models/player-chat.models';
+import { ChatService } from '../../services/chat.service';
+import { PostService } from '../../services/post.service';
 
 @Component({
   selector: 'app-chat-sheet',
@@ -23,10 +16,12 @@ import { ChatService } from '../../../services/chat.service';
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class ChatSheetComponent implements OnInit, AfterViewChecked {
-  @Input({ required: true }) threadId?: number | null;
-  @Input({ required: true }) athleteName!: string;
-  @Input() athleteAvatarUrl?: string | null;
+  @Input() threadId?: number | null;
+  @Input({ required: true }) counterpartName!: string;
+  @Input() counterpartAvatarUrl?: string | null;
+  @Input() inviteId?: number;
   @Input() status: InviteStatus = 'PENDING';
+  @Input() isPlayer = false;
 
   @ViewChild('messagesViewport') messagesViewport?: ElementRef<HTMLDivElement>;
 
@@ -36,6 +31,7 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   private shouldScrollToBottom = false;
 
   private readonly chatService = inject(ChatService);
+  private readonly postService = inject(PostService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
 
@@ -56,15 +52,12 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (!this.shouldScrollToBottom) {
-      return;
-    }
+    if (!this.shouldScrollToBottom) return;
 
     const viewport = this.messagesViewport?.nativeElement;
     if (viewport) {
       viewport.scrollTop = viewport.scrollHeight;
     }
-
     this.shouldScrollToBottom = false;
   }
 
@@ -88,17 +81,36 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   }
 
   get statusLabel(): string {
-    return this.status === 'ACCEPTED' ? 'Liberado' : 'Aguardando Atleta';
+    if (this.status === 'ACCEPTED') return 'Liberado';
+    return this.isPlayer ? 'Convite recebido' : 'Aguardando Atleta';
   }
 
   async close(): Promise<void> {
     await this.modalController.dismiss();
   }
 
+  async acceptInvite(): Promise<void> {
+    if (!this.inviteId) return;
+
+    this.postService.acceptInvite(this.inviteId).subscribe({
+      next: (res) => {
+        this.status = 'ACCEPTED';
+        this.threadId = res.chatThreadId;
+        this.loadMessages();
+
+        this.toastController.create({
+          message: 'Convite aceito. Chat liberado.',
+          duration: 1800,
+          color: 'success',
+          position: 'top'
+        }).then(t => t.present());
+      },
+      error: (err) => console.error('Error accepting', err)
+    });
+  }
+
   sendMessage(): void {
-    if (this.status !== 'ACCEPTED' || !this.threadId) {
-      return;
-    }
+    if (this.status !== 'ACCEPTED' || !this.threadId) return;
 
     const text = this.draftMessage.trim();
     if (!text) return;

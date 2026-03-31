@@ -46,10 +46,8 @@ import { FileType } from '../models/upload.model';
 import { PerfilSearchComponent } from '../perfil-search/perfil-search.component';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { PlayerChatInboxComponent } from './components/player-chat-inbox/player-chat-inbox.component';
-import { PlayerChatSheetComponent } from './components/player-chat-sheet/player-chat-sheet.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { environment } from '../../environments/environment';
-import { InviteStatus } from '../models/player-chat.models';
 
 interface ArenaAthlete {
   post: Post;
@@ -414,14 +412,14 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     if (!this.hasIncomingInvite(video)) {
       return;
     }
-    
+
     // Agora o fluxo real é via openInvitesSheet ou pela inbox central.
     // Para consistência, abrimos a lista de convites do post se for Ver Convite.
     if (video.inviteStatus === 'PENDING') {
       this.openInvitesSheet(video.id);
     } else {
       // Se já aceitou, o ideal é abrir a modal de chat diretamente se tivermos o threadId
-      // No momento o componente de vídeo não tem o threadId direto, 
+      // No momento o componente de vídeo não tem o threadId direto,
       // então instruímos o usuário a ir pela central de chats ou listagem.
       this.openChatInbox();
     }

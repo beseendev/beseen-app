@@ -16,7 +16,7 @@ import { addIcons } from 'ionicons';
 import { closeOutline, personCircleOutline, mailOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { PostService } from '../../../services/post.service';
 import { PostInviteResponse } from '../../../models/player-chat.models';
-import { PlayerChatSheetComponent } from '../player-chat-sheet/player-chat-sheet.component';
+import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.component';
 
 @Component({
   selector: 'app-invites-sheet',
@@ -125,12 +125,13 @@ export class InvitesSheetComponent implements OnInit {
     }
 
     const modal = await this.modalController.create({
-      component: PlayerChatSheetComponent,
+      component: ChatSheetComponent,
       componentProps: {
         threadId: invite.chatThreadId,
-        scoutName: invite.scoutProfile.fullName,
-        scoutAvatarUrl: invite.scoutProfile.urlProfileImage,
-        status: 'ACCEPTED'
+        counterpartName: invite.scoutProfile.fullName,
+        counterpartAvatarUrl: invite.scoutProfile.urlProfileImage,
+        status: 'ACCEPTED',
+        isPlayer: true
       },
       breakpoints: [0, 0.35, 0.7, 0.95],
       initialBreakpoint: 0.7,

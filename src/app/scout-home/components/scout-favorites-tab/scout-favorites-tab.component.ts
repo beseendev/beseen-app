@@ -7,7 +7,6 @@ import { addIcons } from 'ionicons';
 import { heart, heartOutline, locationOutline, starOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat.service';
-import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
 
 @Component({
   selector: 'app-scout-favorites-tab',

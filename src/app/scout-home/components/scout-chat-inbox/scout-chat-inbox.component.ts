@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { closeOutline, personCircleOutline, searchOutline } from 'ionicons/icons';
 import { ChatThreadSummaryDTO } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat.service';
-import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
+import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.component';
 
 @Component({
   selector: 'app-scout-chat-inbox',
@@ -53,9 +53,10 @@ export class ScoutChatInboxComponent implements OnInit, OnDestroy {
       componentProps: {
         threadId: thread.chatThreadId,
         inviteId: thread.inviteId,
-        athleteName: thread.counterpartName,
-        athleteAvatarUrl: thread.counterpartAvatar,
-        status: thread.status
+        counterpartName: thread.counterpartName,
+        counterpartAvatarUrl: thread.counterpartAvatar,
+        status: thread.status,
+        isPlayer: false
       },
       breakpoints: [0, 0.35, 0.7, 0.95],
       initialBreakpoint: 0.7,

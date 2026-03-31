@@ -23,7 +23,7 @@ import { PostService } from '../services/post.service';
 import { ScoutProfileService } from '../services/scout-profile.service';
 import { ChatService } from '../services/chat.service';
 import { ScoutChatInboxComponent } from './components/scout-chat-inbox/scout-chat-inbox.component';
-import { ChatSheetComponent } from './components/chat-sheet/chat-sheet.component';
+import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
@@ -224,9 +224,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         componentProps: {
           threadId: thread.chatThreadId,
           inviteId: thread.inviteId,
-          athleteName: thread.counterpartName,
-          athleteAvatarUrl: thread.counterpartAvatar,
-          status: thread.status
+          counterpartName: thread.counterpartName,
+          counterpartAvatarUrl: thread.counterpartAvatar,
+          status: thread.status,
+          isPlayer: false
         },
         breakpoints: [0, 0.35, 0.7, 0.95],
         initialBreakpoint: 0.7,
