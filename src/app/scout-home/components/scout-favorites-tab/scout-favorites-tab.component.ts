@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { heart, heartOutline, locationOutline, starOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
-import { ChatUiService } from '../../../services/chat-ui.service';
+import { ChatService } from '../../../services/chat.service';
 import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
 
 @Component({
@@ -22,12 +22,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
 
-  private readonly chatUiService = inject(ChatUiService);
+  private readonly chatService = inject(ChatService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
-  private threadsSubscription?: Subscription;
-  private threadsSnapshot: Record<string, { status: ChatStatus }> = {};
 
   constructor() {
     addIcons({
@@ -39,17 +37,13 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.threadsSubscription = this.chatUiService.threads$.subscribe(threads => {
-      this.threadsSnapshot = threads;
-    });
   }
 
   ngOnDestroy(): void {
-    this.threadsSubscription?.unsubscribe();
   }
 
   getStatus(card: FavoriteAthleteVideoCard): ChatStatus {
-    return this.threadsSnapshot[card.athleteId]?.status ?? 'BLOQUEADO';
+    return card.inviteStatus ?? 'PENDING';
   }
 
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {

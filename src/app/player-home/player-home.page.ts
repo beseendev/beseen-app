@@ -39,7 +39,7 @@ import { Router } from '@angular/router';
 
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
-import { ChatService, Contact } from '../services/chat.service';
+import { ChatService } from '../services/chat.service';
 import { PostService } from '../services/post.service';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
@@ -49,8 +49,7 @@ import { PlayerChatInboxComponent } from './components/player-chat-inbox/player-
 import { PlayerChatSheetComponent } from './components/player-chat-sheet/player-chat-sheet.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { environment } from '../../environments/environment';
-import { PlayerChatStatus } from '../models/player-chat.models';
-import { PlayerChatUiService } from '../services/player-chat-ui.service';
+import { InviteStatus } from '../models/player-chat.models';
 
 interface ArenaAthlete {
   post: Post;
@@ -134,16 +133,14 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
 
-  contacts: Contact[] = [];
-  contactsLoading = false;
-  contactsHasMore = true;
+  activeChatCount = 0;
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.name || 'Clube';
   }
 
-  private contactsSubscription!: Subscription;
+  private threadsSubscription!: Subscription;
 
   private readonly modalities = ['Futebol', 'Basquete', 'Vôlei', 'Atletismo', 'Futsal', 'Natação'];
   private readonly positions = ['Atacante', 'Armador', 'Ponteiro', 'Meio-Campo', 'Pivô', 'Líbero'];
@@ -156,7 +153,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   private chatService = inject(ChatService);
   private modalController = inject(ModalController);
   private toastController = inject(ToastController);
-  private playerChatUiService = inject(PlayerChatUiService);
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
@@ -190,11 +186,11 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.contactsSubscription = this.chatService.contactsState$.subscribe((state) => {
-      this.contacts = state.items;
-      this.contactsLoading = state.isLoading;
-      this.contactsHasMore = state.hasMore;
+    this.threadsSubscription = this.chatService.threads$.subscribe(threads => {
+      this.activeChatCount = threads.length;
     });
+
+    this.chatService.loadThreads().subscribe();
 
     this.posts$.subscribe(posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
@@ -258,20 +254,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   private mapPostToVideo(post: Post, isMine: boolean = false): PlayerShowcaseVideo {
-    if (post.inviteStatus === 'ACCEPTED') {
-      this.playerChatUiService.ensureAccepted(
-        String(post.scoutId),
-        'Olheiro',
-        null
-      );
-    } else if (post.inviteStatus === 'PENDING') {
-      this.playerChatUiService.ensureInvite(
-        String(post.scoutId),
-        'Olheiro',
-        null
-      );
-    }
-
     return {
       id: post.id,
       athleteId: String(post.athleteId || post.user.id),
@@ -292,28 +274,16 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   onMenuOpen(): void {
-    this.isMessagesMenuOpen = true;
-    this.loadContacts();
   }
 
   onMenuClose(): void {
-    this.isMessagesMenuOpen = false;
   }
 
   loadContacts(): void {
-    this.chatService.loadContacts().subscribe();
   }
 
   loadMoreContacts(event: any): void {
-    if (this.contactsLoading || !this.contactsHasMore) {
-      event.target.complete();
-      return;
-    }
-
-    this.chatService.loadMoreContacts().subscribe({
-      next: () => event.target.complete(),
-      error: () => event.target.complete(),
-    });
+    event.target.complete();
   }
 
   setActiveTab(tab: ArenaTab): void {
@@ -406,12 +376,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   selectContact(contact: any): void {
-    if (contact.id && contact.fullName) {
-      this.router.navigate(['/chat', contact.id], {
-        state: { contact },
-      });
-    }
-
     this.menuController.close('messagesMenu');
   }
 
@@ -431,11 +395,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     return post.mediaType === FileType.VIDEO;
   }
 
-  getVideoStatus(video: PlayerShowcaseVideo): PlayerChatStatus {
-    const thread = this.playerChatUiService.getThread(video.scoutId, video.scoutName, video.scoutAvatarUrl);
-    return thread.status;
-  }
-
   hasIncomingInvite(video: PlayerShowcaseVideo): boolean {
     return video.inviteStatus === 'PENDING' || video.inviteStatus === 'ACCEPTED';
   }
@@ -451,30 +410,21 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     return this.myVideos.filter((video) => this.hasIncomingInvite(video)).length;
   }
 
-  get activeChatCount(): number {
-    return this.myInviteCount;
-  }
-
   async openScoutChat(video: PlayerShowcaseVideo): Promise<void> {
-    if (this.getVideoStatus(video) === 'SEM_CONVITE') {
+    if (!this.hasIncomingInvite(video)) {
       return;
     }
-
-    const modal = await this.modalController.create({
-      component: PlayerChatSheetComponent,
-      componentProps: {
-        scoutId: video.scoutId,
-        scoutName: video.scoutName,
-        scoutAvatarUrl: video.scoutAvatarUrl ?? null,
-      },
-      breakpoints: [0, 0.35, 0.7, 0.95],
-      initialBreakpoint: 0.7,
-      backdropBreakpoint: 0.35,
-      canDismiss: true,
-      handle: true
-    });
-
-    await modal.present();
+    
+    // Agora o fluxo real é via openInvitesSheet ou pela inbox central.
+    // Para consistência, abrimos a lista de convites do post se for Ver Convite.
+    if (video.inviteStatus === 'PENDING') {
+      this.openInvitesSheet(video.id);
+    } else {
+      // Se já aceitou, o ideal é abrir a modal de chat diretamente se tivermos o threadId
+      // No momento o componente de vídeo não tem o threadId direto, 
+      // então instruímos o usuário a ir pela central de chats ou listagem.
+      this.openChatInbox();
+    }
   }
 
   openAthleteProfile(video: PlayerShowcaseVideo): void {
@@ -638,10 +588,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.contactsSubscription) {
-      this.contactsSubscription.unsubscribe();
+    if (this.threadsSubscription) {
+      this.threadsSubscription.unsubscribe();
     }
-
-    this.chatService.resetContacts();
   }
 }

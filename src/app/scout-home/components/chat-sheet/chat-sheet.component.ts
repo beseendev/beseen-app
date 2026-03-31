@@ -12,8 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline } from 'ionicons/icons';
-import { ChatMessage, ChatStatus, ChatThreadState } from '../../../models/chat.models';
-import { ChatUiService } from '../../../services/chat-ui.service';
+import { ChatMessageResponse, InviteStatus } from '../../../models/player-chat.models';
+import { ChatService } from '../../../services/chat.service';
 
 @Component({
   selector: 'app-chat-sheet',
@@ -23,17 +23,19 @@ import { ChatUiService } from '../../../services/chat-ui.service';
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class ChatSheetComponent implements OnInit, AfterViewChecked {
-  @Input({ required: true }) athleteId!: string;
+  @Input({ required: true }) threadId?: number | null;
   @Input({ required: true }) athleteName!: string;
   @Input() athleteAvatarUrl?: string | null;
+  @Input() status: InviteStatus = 'PENDING';
 
   @ViewChild('messagesViewport') messagesViewport?: ElementRef<HTMLDivElement>;
 
-  thread!: ChatThreadState;
+  messages: ChatMessageResponse[] = [];
   draftMessage = '';
+  isLoading = false;
   private shouldScrollToBottom = false;
 
-  private readonly chatUiService = inject(ChatUiService);
+  private readonly chatService = inject(ChatService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
 
@@ -47,7 +49,9 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.thread = this.chatUiService.getThread(this.athleteId, this.athleteName, this.athleteAvatarUrl);
+    if (this.threadId && this.status === 'ACCEPTED') {
+      this.loadMessages();
+    }
     this.shouldScrollToBottom = true;
   }
 
@@ -64,50 +68,48 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
     this.shouldScrollToBottom = false;
   }
 
-  get status(): ChatStatus {
-    return this.thread.status;
-  }
+  loadMessages(): void {
+    if (!this.threadId) return;
 
-  get messages(): ChatMessage[] {
-    return this.thread.messages;
+    this.isLoading = true;
+    this.chatService.getMessages(this.threadId).subscribe({
+      next: (msgs) => {
+        this.messages = msgs.sort((a, b) => 
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+        this.isLoading = false;
+        this.shouldScrollToBottom = true;
+      },
+      error: (err) => {
+        console.error('Error loading messages', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   get statusLabel(): string {
-    return this.status === 'LIBERADO' ? 'Liberado' : 'Aguardando';
+    return this.status === 'ACCEPTED' ? 'Liberado' : 'Aguardando Atleta';
   }
 
   async close(): Promise<void> {
     await this.modalController.dismiss();
   }
 
-  async simulateAccept(): Promise<void> {
-    this.thread = this.chatUiService.forceAcceptForDemo(this.athleteId, this.athleteName, this.athleteAvatarUrl);
-    this.shouldScrollToBottom = true;
-
-    const toast = await this.toastController.create({
-      message: `${this.athleteName} aceitou. Chat liberado.`,
-      duration: 1800,
-      color: 'success',
-      position: 'top'
-    });
-
-    await toast.present();
-  }
-
   sendMessage(): void {
-    if (this.status !== 'LIBERADO') {
+    if (this.status !== 'ACCEPTED' || !this.threadId) {
       return;
     }
 
-    const nextThread = this.chatUiService.sendMessage(
-      this.athleteId,
-      this.athleteName,
-      this.draftMessage,
-      this.athleteAvatarUrl
-    );
+    const text = this.draftMessage.trim();
+    if (!text) return;
 
-    this.thread = nextThread;
-    this.draftMessage = '';
-    this.shouldScrollToBottom = true;
+    this.chatService.sendMessage(this.threadId, text).subscribe({
+      next: (newMsg) => {
+        this.messages.push(newMsg);
+        this.draftMessage = '';
+        this.shouldScrollToBottom = true;
+      },
+      error: (err) => console.error('Error sending', err)
+    });
   }
 }

@@ -9,50 +9,6 @@
   </ion-content>
 </ion-menu>
 
-<ion-menu side="end" menuId="messagesMenu" contentId="main-content" (ionWillOpen)="onMenuOpen()" (ionWillClose)="onMenuClose()">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Mensagens</ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="closeMessagesMenu()" aria-label="Fechar menu de mensagens">
-          <ion-icon name="close-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-    <app-perfil-search (selectProfile)="selectContact($event)" [isOpen]="isMessagesMenuOpen"></app-perfil-search>
-
-    <ion-list>
-      <ion-item *ngFor="let contact of contacts" (click)="selectContact(contact)">
-        <ion-avatar slot="start">
-          <img *ngIf="contact.urlProfileImage" [src]="contact.urlProfileImage" [alt]="contact.fullName" />
-          <ion-icon *ngIf="!contact.urlProfileImage" name="person-circle-outline"></ion-icon>
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ contact.fullName }}</h2>
-          <p *ngIf="contact.lastMessage" class="last-message">
-            {{ contact.lastMessage | slice:0:30 }}{{ contact.lastMessage.length > 30 ? '...' : '' }}
-          </p>
-          <ion-badge *ngIf="contact.unreadCount && contact.unreadCount > 0" color="primary" class="unread-badge">
-            {{ contact.unreadCount }}
-          </ion-badge>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-
-    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreContacts($event)" *ngIf="contactsHasMore && contacts.length > 0">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais contatos..."></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
-
-    <div *ngIf="contactsLoading && contacts.length === 0" class="loading-contacts">
-      <ion-spinner name="bubbles"></ion-spinner>
-      <p>Carregando contatos...</p>
-    </div>
-  </ion-content>
-</ion-menu>
-
 <ion-content [fullscreen]="true" id="main-content" class="arena-content">
   <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
     <ion-refresher-content></ion-refresher-content>

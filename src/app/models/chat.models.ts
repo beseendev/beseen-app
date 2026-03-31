@@ -1,20 +1,17 @@
-export type ChatStatus = 'BLOQUEADO' | 'AGUARDANDO_CONFIRMACAO' | 'LIBERADO';
+import { InviteStatus, ChatMessageResponse, ChatThreadSummaryDTO } from './player-chat.models';
 
-export type ChatSender = 'SCOUT' | 'ATHLETE';
+export { InviteStatus, ChatMessageResponse, ChatThreadSummaryDTO };
 
-export interface ChatMessage {
-  id: string;
-  sender: ChatSender;
-  text: string;
-  createdAt: string;
-}
+export type ChatStatus = InviteStatus;
 
 export interface ChatThreadState {
   athleteId: string;
   athleteName: string;
   athleteAvatarUrl?: string | null;
-  status: ChatStatus;
-  messages: ChatMessage[];
+  status: InviteStatus;
+  messages: ChatMessageResponse[];
+  inviteId: number;
+  chatThreadId?: number;
 }
 
 export interface FavoriteAthleteVideoCard {
@@ -28,5 +25,5 @@ export interface FavoriteAthleteVideoCard {
   localidade: string;
   destaque: string;
   favorito: boolean;
-  inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
+  inviteStatus?: InviteStatus | null;
 }

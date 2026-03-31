@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
@@ -21,8 +21,9 @@ import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ScoutProfileService } from '../services/scout-profile.service';
-import { ChatUiService } from '../services/chat-ui.service';
+import { ChatService } from '../services/chat.service';
 import { ScoutChatInboxComponent } from './components/scout-chat-inbox/scout-chat-inbox.component';
+import { ChatSheetComponent } from './components/chat-sheet/chat-sheet.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
@@ -42,8 +43,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   userProfile: any | null = null;
   avatarLoadFailed = false;
   isLoading = true;
+  activeChatCount = 0;
 
   private homePostsSub!: Subscription;
+  private threadsSub!: Subscription;
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -52,7 +55,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   private readonly postService = inject(PostService);
   private readonly scoutProfileService = inject(ScoutProfileService);
-  private readonly chatUiService = inject(ChatUiService);
+  private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
@@ -83,12 +86,21 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       }
     });
 
+    this.threadsSub = this.chatService.threads$.subscribe(threads => {
+      this.activeChatCount = threads.length;
+    });
+
+    this.chatService.loadThreads().subscribe();
+
     this.refreshCurrentTab();
   }
 
   ngOnDestroy(): void {
     if (this.homePostsSub) {
       this.homePostsSub.unsubscribe();
+    }
+    if (this.threadsSub) {
+      this.threadsSub.unsubscribe();
     }
   }
 
@@ -165,10 +177,6 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     return this.allVideoCards.filter(card => card.favorito);
   }
 
-  get activeChatCount(): number {
-    return Object.keys(this.chatUiService.getThreadsSnapshot()).length;
-  }
-
   async toggleFavoriteFromCard(card: FavoriteAthleteVideoCard): Promise<void> {
     const isCurrentlyFavorite = card.favorito;
     const postId = card.postId;
@@ -205,15 +213,32 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   async openChat(card: FavoriteAthleteVideoCard): Promise<void> {
     if (card.inviteStatus !== 'ACCEPTED') return;
-    this.router.navigate(['/chat', card.athleteId], {
-      state: { 
-        contact: {
-          id: card.athleteId,
-          fullName: card.athleteName,
-          urlProfileImage: card.athleteAvatarUrl
-        }
-      }
-    });
+
+    const threads = await firstValueFrom(this.chatService.threads$);
+    // Tenta encontrar a thread pelo nome do atleta (já que não temos o threadId no card)
+    const thread = threads.find(t => t.counterpartName === card.athleteName);
+
+    if (thread) {
+      const modal = await this.modalController.create({
+        component: ChatSheetComponent,
+        componentProps: {
+          threadId: thread.chatThreadId,
+          inviteId: thread.inviteId,
+          athleteName: thread.counterpartName,
+          athleteAvatarUrl: thread.counterpartAvatar,
+          status: thread.status
+        },
+        breakpoints: [0, 0.35, 0.7, 0.95],
+        initialBreakpoint: 0.7,
+        backdropBreakpoint: 0.35,
+        handle: true,
+        canDismiss: true
+      });
+      await modal.present();
+    } else {
+      // Se não encontrou no cache, abre a inbox para o usuário selecionar
+      this.openChatInbox();
+    }
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'medium' = 'success') {

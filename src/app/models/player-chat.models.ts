@@ -1,22 +1,4 @@
-export type PlayerChatStatus = 'SEM_CONVITE' | 'CONVITE_RECEBIDO' | 'LIBERADO';
-
-export type PlayerChatSender = 'PLAYER' | 'SCOUT';
-
-export interface PlayerChatMessage {
-  id: string;
-  sender: PlayerChatSender;
-  text: string;
-  createdAt: string;
-}
-
-export interface PlayerChatThreadState {
-  scoutId: string;
-  scoutName: string;
-  scoutAvatarUrl?: string | null;
-  status: PlayerChatStatus;
-  messages: PlayerChatMessage[];
-  inviteId?: number;
-}
+export type InviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 export interface ProfileSummaryResponse {
   id: number;
@@ -31,11 +13,43 @@ export interface PostInviteResponse {
   postId: number;
   scoutProfile: ProfileSummaryResponse;
   playerProfile: ProfileSummaryResponse;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: InviteStatus;
   createdAt: string;
+  chatThreadId?: number | null;
 }
 
 export interface PostInvitePageResponse {
   invites: PostInviteResponse[];
   nextCursor: string | null;
+}
+
+export interface ChatThreadSummaryDTO {
+  inviteId: number;
+  chatThreadId: number | null;
+  counterpartName: string;
+  counterpartAvatar: string | null;
+  lastMessage: string | null;
+  lastMessageAt: string | null;
+  status: InviteStatus;
+  unreadCount: number;
+}
+
+export interface ChatMessageResponse {
+  id: number;
+  senderId: number;
+  text: string;
+  isMine: boolean;
+  createdAt: string;
+}
+
+// Keeping for compatibility with some UI components that might still use this structure
+// but we will transition them to the DTOs above.
+export interface PlayerChatThreadState {
+  scoutId: string;
+  scoutName: string;
+  scoutAvatarUrl?: string | null;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  messages: ChatMessageResponse[];
+  inviteId: number;
+  chatThreadId?: number;
 }

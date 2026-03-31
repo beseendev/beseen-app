@@ -9,21 +9,11 @@
 
         <div>
           <strong>{{ athleteName }}</strong>
-          <span class="status-badge" [class.liberado]="status === 'LIBERADO'">{{ statusLabel }}</span>
+          <span class="status-badge" [class.liberado]="status === 'ACCEPTED'">{{ statusLabel }}</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <ion-button
-          *ngIf="status === 'AGUARDANDO_CONFIRMACAO'"
-          fill="clear"
-          class="accept-btn"
-          aria-label="Simular aceite do atleta"
-          (click)="simulateAccept()">
-          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-          Simular aceite
-        </ion-button>
-
         <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
           <ion-icon slot="icon-only" name="close-outline"></ion-icon>
         </ion-button>
@@ -31,23 +21,27 @@
     </div>
 
     <div class="sheet-body" #messagesViewport>
-      <div class="empty-chat" *ngIf="messages.length === 0 && status !== 'LIBERADO'">
+      <div class="loading-messages" *ngIf="isLoading">
+        <ion-spinner name="bubbles"></ion-spinner>
+      </div>
+
+      <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status !== 'ACCEPTED'">
         Aguardando o atleta aceitar para habilitar o chat.
       </div>
 
-      <div class="empty-chat" *ngIf="messages.length === 0 && status === 'LIBERADO'">
+      <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
         Chat liberado. Envie a primeira mensagem.
       </div>
 
       <div
         class="chat-bubble"
         *ngFor="let message of messages"
-        [class.own]="message.sender === 'SCOUT'">
+        [class.own]="message.isMine">
         {{ message.text }}
       </div>
     </div>
 
-    <div class="sheet-footer" *ngIf="status === 'LIBERADO'">
+    <div class="sheet-footer" *ngIf="status === 'ACCEPTED'">
       <ion-item lines="none" class="chat-input">
         <ion-input
           [(ngModel)]="draftMessage"
@@ -64,7 +58,7 @@
       </ion-item>
     </div>
 
-    <div class="sheet-footer waiting" *ngIf="status !== 'LIBERADO'">
+    <div class="sheet-footer waiting" *ngIf="status !== 'ACCEPTED'">
       Aguardando o atleta aceitar para habilitar o chat.
     </div>
   </div>

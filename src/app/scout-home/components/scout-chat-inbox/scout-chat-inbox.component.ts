@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { closeOutline, personCircleOutline } from 'ionicons/icons';
-import { ChatThreadState } from '../../../models/chat.models';
-import { ChatUiService } from '../../../services/chat-ui.service';
+import { closeOutline, personCircleOutline, searchOutline } from 'ionicons/icons';
+import { ChatThreadSummaryDTO } from '../../../models/chat.models';
+import { ChatService } from '../../../services/chat.service';
 import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
 
 @Component({
@@ -16,23 +16,27 @@ import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
   imports: [CommonModule, IonicModule]
 })
 export class ScoutChatInboxComponent implements OnInit, OnDestroy {
-  threads: ChatThreadState[] = [];
+  threads: ChatThreadSummaryDTO[] = [];
+  isLoading$: Observable<boolean>;
 
   private readonly modalController = inject(ModalController);
-  private readonly chatUiService = inject(ChatUiService);
+  private readonly chatService = inject(ChatService);
   private threadsSubscription?: Subscription;
 
   constructor() {
+    this.isLoading$ = this.chatService.isLoading$;
     addIcons({
       closeOutline,
-      personCircleOutline
+      personCircleOutline,
+      searchOutline
     });
   }
 
   ngOnInit(): void {
-    this.threadsSubscription = this.chatUiService.threads$.subscribe((threadsMap) => {
-      this.threads = Object.values(threadsMap);
+    this.threadsSubscription = this.chatService.threads$.subscribe((threads) => {
+      this.threads = threads;
     });
+    this.chatService.loadThreads().subscribe();
   }
 
   ngOnDestroy(): void {
@@ -43,13 +47,15 @@ export class ScoutChatInboxComponent implements OnInit, OnDestroy {
     await this.modalController.dismiss();
   }
 
-  async openThread(thread: ChatThreadState): Promise<void> {
+  async openThread(thread: ChatThreadSummaryDTO): Promise<void> {
     const modal = await this.modalController.create({
       component: ChatSheetComponent,
       componentProps: {
-        athleteId: thread.athleteId,
-        athleteName: thread.athleteName,
-        athleteAvatarUrl: thread.athleteAvatarUrl ?? null
+        threadId: thread.chatThreadId,
+        inviteId: thread.inviteId,
+        athleteName: thread.counterpartName,
+        athleteAvatarUrl: thread.counterpartAvatar,
+        status: thread.status
       },
       breakpoints: [0, 0.35, 0.7, 0.95],
       initialBreakpoint: 0.7,
@@ -61,7 +67,7 @@ export class ScoutChatInboxComponent implements OnInit, OnDestroy {
     await modal.present();
   }
 
-  trackByThread(_: number, thread: ChatThreadState): string {
-    return thread.athleteId;
+  trackByThread(_: number, thread: ChatThreadSummaryDTO): string {
+    return String(thread.inviteId);
   }
 }

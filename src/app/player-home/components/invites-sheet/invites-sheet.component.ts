@@ -9,12 +9,14 @@ import {
   IonItem,
   IonList,
   IonSpinner,
-  ModalController
+  ModalController,
+  ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { closeOutline, personCircleOutline, mailOutline } from 'ionicons/icons';
+import { closeOutline, personCircleOutline, mailOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { PostService } from '../../../services/post.service';
 import { PostInviteResponse } from '../../../models/player-chat.models';
+import { PlayerChatSheetComponent } from '../player-chat-sheet/player-chat-sheet.component';
 
 @Component({
   selector: 'app-invites-sheet',
@@ -42,12 +44,14 @@ export class InvitesSheetComponent implements OnInit {
 
   private readonly modalController = inject(ModalController);
   private readonly postService = inject(PostService);
+  private readonly toastController = inject(ToastController);
 
   constructor() {
     addIcons({
       closeOutline,
       personCircleOutline,
-      mailOutline
+      mailOutline,
+      checkmarkCircleOutline
     });
   }
 
@@ -93,9 +97,55 @@ export class InvitesSheetComponent implements OnInit {
     return `O olheiro ${invite.scoutProfile.fullName} enviou um convite de interesse em um de seus vídeos!`;
   }
 
+  async acceptAndOpenChat(invite: PostInviteResponse): Promise<void> {
+    this.postService.acceptInvite(invite.id).subscribe({
+      next: async (acceptedInvite) => {
+        invite.status = 'ACCEPTED';
+        invite.chatThreadId = acceptedInvite.chatThreadId;
+
+        const toast = await this.toastController.create({
+          message: 'Convite aceito! Chat liberado.',
+          duration: 2000,
+          color: 'success',
+          position: 'top'
+        });
+        await toast.present();
+
+        this.openChat(invite);
+      },
+      error: (err) => {
+        console.error('Error accepting invite', err);
+      }
+    });
+  }
+
+  async openChat(invite: PostInviteResponse): Promise<void> {
+    if (invite.status !== 'ACCEPTED' || !invite.chatThreadId) {
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: PlayerChatSheetComponent,
+      componentProps: {
+        threadId: invite.chatThreadId,
+        scoutName: invite.scoutProfile.fullName,
+        scoutAvatarUrl: invite.scoutProfile.urlProfileImage,
+        status: 'ACCEPTED'
+      },
+      breakpoints: [0, 0.35, 0.7, 0.95],
+      initialBreakpoint: 0.7,
+      backdropBreakpoint: 0.35,
+      canDismiss: true,
+      handle: true
+    });
+
+    await modal.present();
+    this.modalController.dismiss(); // Close the invites sheet after opening chat
+  }
+
   onInviteClick(invite: PostInviteResponse): void {
-    // Optional: add logic here if clicking an invite should do something,
-    // like opening the chat directly.
-    this.modalController.dismiss({ invite });
+    if (invite.status === 'ACCEPTED') {
+      this.openChat(invite);
+    }
   }
 }

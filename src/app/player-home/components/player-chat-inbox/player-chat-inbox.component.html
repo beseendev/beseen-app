@@ -11,24 +11,28 @@
       </ion-button>
     </div>
 
-    <div class="empty-state" *ngIf="threads.length === 0">
+    <div class="loading-state" *ngIf="isLoading$ | async">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </div>
+
+    <div class="empty-state" *ngIf="(isLoading$ | async) === false && threads.length === 0">
       Nenhuma conversa iniciada ainda.
     </div>
 
     <div class="thread-list" *ngIf="threads.length > 0">
       <button type="button" class="thread-row" *ngFor="let thread of threads; trackBy: trackByThread" (click)="openThread(thread)">
         <div class="avatar-shell">
-          <img *ngIf="thread.scoutAvatarUrl" [src]="thread.scoutAvatarUrl" [alt]="thread.scoutName">
-          <ion-icon *ngIf="!thread.scoutAvatarUrl" name="person-circle-outline"></ion-icon>
+          <img *ngIf="thread.counterpartAvatar" [src]="thread.counterpartAvatar" [alt]="thread.counterpartName">
+          <ion-icon *ngIf="!thread.counterpartAvatar" name="person-circle-outline"></ion-icon>
         </div>
 
         <div class="thread-copy">
-          <strong>{{ thread.scoutName }}</strong>
-          <p>{{ thread.messages[thread.messages.length - 1]?.text || 'Convite pendente' }}</p>
+          <strong>{{ thread.counterpartName }}</strong>
+          <p>{{ thread.status === 'PENDING' ? 'Novo convite recebido' : (thread.lastMessage || 'Inicie a conversa...') }}</p>
         </div>
 
-        <span class="thread-status" [class.open]="thread.status === 'LIBERADO'">
-          {{ thread.status === 'LIBERADO' ? 'Ativo' : 'Pendente' }}
+        <span class="thread-status" [class.open]="thread.status === 'ACCEPTED'">
+          {{ thread.status === 'ACCEPTED' ? 'Ativo' : 'Pendente' }}
         </span>
       </button>
     </div>

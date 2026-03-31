@@ -5,7 +5,7 @@ import { Post, UserInfo } from '../models/post.model';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
 import { FileType } from '../models/upload.model';
-import { PostInvitePageResponse } from '../models/player-chat.models';
+import { PostInvitePageResponse, PostInviteResponse } from '../models/player-chat.models';
 
 interface PostPageResponseDto {
   posts: PostResponseDto[];
@@ -159,8 +159,8 @@ export class PostService {
     );
   }
 
-  acceptInvite(inviteId: number): Observable<void> {
-    return this.apiService.patch<void>(`/posts/invites/${inviteId}/accept`, {});
+  acceptInvite(inviteId: number): Observable<PostInviteResponse> {
+    return this.apiService.patch<PostInviteResponse>(`/posts/invites/${inviteId}/accept`, {});
   }
 
   rejectInvite(inviteId: number): Observable<void> {
