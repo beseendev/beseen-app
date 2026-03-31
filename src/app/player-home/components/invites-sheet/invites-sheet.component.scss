@@ -1,0 +1,178 @@
+.invites-sheet-content {
+  --background: rgba(0, 0, 0, 0.4);
+}
+
+.sheet-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--be-color-bg, #0f172a);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--be-color-line, rgba(148, 163, 184, 0.16));
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon {
+      font-size: 24px;
+      color: var(--be-color-brand-500);
+    }
+
+    strong {
+      font-size: 1.1rem;
+      color: var(--be-color-text-1, #fff);
+    }
+  }
+
+  .close-btn {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    margin: 0;
+    color: var(--be-color-text-3, #94a3b8);
+  }
+}
+
+.sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+
+  ion-list {
+    background: transparent;
+    padding: 0;
+  }
+}
+
+.invite-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  margin-bottom: 12px;
+}
+
+.invite-card {
+  width: 100%;
+  background: var(--be-color-surface-2, #1e293b);
+  border: 1px solid var(--be-color-line, rgba(148, 163, 184, 0.16));
+  border-radius: 12px;
+  padding: 12px;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .invite-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .scout-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--be-color-surface-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      ion-icon {
+        font-size: 32px;
+        color: var(--be-color-text-3);
+      }
+    }
+
+    .scout-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      strong {
+        font-size: 0.95rem;
+        color: var(--be-color-text-1);
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: var(--be-color-text-3);
+      }
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+
+      &.pending {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--be-color-warning);
+      }
+
+      &.accepted {
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--be-color-brand-500);
+      }
+    }
+  }
+
+  .invite-body {
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--be-color-text-2);
+      line-height: 1.4;
+    }
+  }
+
+  .invite-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+
+    .invite-date {
+      font-size: 0.75rem;
+      color: var(--be-color-text-3);
+    }
+  }
+}
+
+.empty-invites, .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--be-color-text-3);
+
+  ion-spinner {
+    margin-bottom: 12px;
+    color: var(--be-color-brand-500);
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}

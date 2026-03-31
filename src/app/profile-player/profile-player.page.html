@@ -20,11 +20,12 @@
       <div class="profile-card-head">
         <div class="profile-identity">
           <ion-avatar class="profile-avatar">
-            <img *ngIf="profile.urlPerfil" [src]="profile.urlPerfil" alt="Foto do perfil" />
-            <ion-icon *ngIf="!profile.urlPerfil" name="person-circle-outline"></ion-icon>
+            <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
+            <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
           </ion-avatar>
 
           <div class="profile-copy">
+
             <span>Perfil do jogador</span>
             <strong>{{ profile.fullName || profile.name }}</strong>
             <p>{{ getDisplayRole(profile.role) }}</p>

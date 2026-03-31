@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
@@ -21,24 +20,12 @@ import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
-import { ScoutFavoritesService } from '../services/scout-favorites.service';
 import { ScoutProfileService } from '../services/scout-profile.service';
 import { ChatUiService } from '../services/chat-ui.service';
 import { ScoutChatInboxComponent } from './components/scout-chat-inbox/scout-chat-inbox.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
-import {ApiService} from "../services/api.service";
-import {environment} from "../../environments/environment";
-
-interface ScoutTalent {
-  id: string;
-  nome: string;
-  idadeCategoria: string;
-  posicao: string;
-  modalidade: string;
-  localidade: string;
-  destaque: string;
-  favorito: boolean;
-}
+import { ApiService } from "../services/api.service";
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: 'app-scout-home',
@@ -47,8 +34,7 @@ interface ScoutTalent {
   standalone: true,
   imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent]
 })
-export class ScoutHomePage implements OnInit {
-  talents: ScoutTalent[] = [];
+export class ScoutHomePage implements OnInit, OnDestroy {
   videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
@@ -57,12 +43,13 @@ export class ScoutHomePage implements OnInit {
   avatarLoadFailed = false;
   isLoading = true;
 
+  private homePostsSub!: Subscription;
+
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.name || 'Clube';
   }
 
-  private readonly favoritesService = inject(ScoutFavoritesService);
   private readonly postService = inject(PostService);
   private readonly scoutProfileService = inject(ScoutProfileService);
   private readonly chatUiService = inject(ChatUiService);
@@ -87,8 +74,22 @@ export class ScoutHomePage implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.scoutProfile = await this.scoutProfileService.getProfile();
-    this.loadTalents();
-    this.loadVideoPosts();
+    
+    // Inscreve-se no stream de posts da home
+    this.homePostsSub = this.postService.homePosts$.subscribe(posts => {
+      if (this.selectedTab === 'vitrine') {
+        this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);
+        this.isLoadingContent = false;
+      }
+    });
+
+    this.refreshCurrentTab();
+  }
+
+  ngOnDestroy(): void {
+    if (this.homePostsSub) {
+      this.homePostsSub.unsubscribe();
+    }
   }
 
   ionViewWillEnter(): void {
@@ -113,41 +114,45 @@ export class ScoutHomePage implements OnInit {
         this.isLoading = false;
       },
     });
+  }
 
-    if (this.postService.shouldLoadInitialHomePosts()) {
-      this.postService.loadHomePosts().subscribe();
+  setActiveTab(tab: 'vitrine' | 'favoritos'): void {
+    if (this.selectedTab === tab) return;
+    
+    this.selectedTab = tab;
+    this.refreshCurrentTab();
+  }
+
+  refreshCurrentTab(): void {
+    this.isLoadingContent = true;
+    if (this.selectedTab === 'vitrine') {
+      this.postService.refreshHomePosts().subscribe();
+    } else {
+      this.postService.getFavoritePosts().subscribe({
+        next: (response) => {
+          this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.isLoadingContent = false;
+        },
+        error: (err) => {
+          console.error('Error loading favorite posts', err);
+          this.isLoadingContent = false;
+        }
+      });
     }
   }
 
   private normalizeAvatarUrl(rawUrl: string | null): string | null {
-    if (!rawUrl) {
-      return null;
-    }
-
+    if (!rawUrl) return null;
     const url = rawUrl.trim();
-    if (!url) {
-      return null;
-    }
-
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-      return url;
-    }
-
-    if (url.startsWith('//')) {
-      return `https:${url}`;
-    }
-
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+    if (url.startsWith('//')) return `https:${url}`;
     const baseApiUrl = environment.apiUrl;
     if (url.startsWith('/') && baseApiUrl) {
       const baseOrigin = baseApiUrl.replace(/\/beseen\/api$/, '');
       return `${baseOrigin}${url}`;
     }
-
     return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
-  }
-
-  get favoriteCount(): number {
-    return this.talents.filter(talent => talent.favorito).length;
   }
 
   get allVideoCards(): FavoriteAthleteVideoCard[] {
@@ -155,6 +160,8 @@ export class ScoutHomePage implements OnInit {
   }
 
   get favoriteVideoCards(): FavoriteAthleteVideoCard[] {
+    // Na aba de favoritos, todos os cards já são favoritos, 
+    // mas mantemos o filtro por segurança ou para cards individuais na vitrine
     return this.allVideoCards.filter(card => card.favorito);
   }
 
@@ -162,45 +169,67 @@ export class ScoutHomePage implements OnInit {
     return Object.keys(this.chatUiService.getThreadsSnapshot()).length;
   }
 
-  setActiveTab(tab: 'vitrine' | 'favoritos'): void {
-    this.selectedTab = tab;
+  async toggleFavoriteFromCard(card: FavoriteAthleteVideoCard): Promise<void> {
+    const isCurrentlyFavorite = card.favorito;
+    const postId = card.postId;
+
+    const action = isCurrentlyFavorite 
+      ? this.postService.unlikePost(postId) 
+      : this.postService.likePost(postId);
+
+    action.subscribe({
+      next: () => {
+        this.showFavoriteToast(!isCurrentlyFavorite, card.athleteName);
+        if (isCurrentlyFavorite && this.selectedTab === 'favoritos') {
+          this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
+        }
+      },
+      error: (err) => console.error('Error toggling favorite', err)
+    });
   }
 
-  async toggleFavorite(talent: ScoutTalent): Promise<void> {
-    const isNowFavorite = this.favoritesService.toggleFavorite(talent.id);
-    talent.favorito = isNowFavorite;
+  sendInvite(card: FavoriteAthleteVideoCard): void {
+    this.postService.sendInvite(card.postId).subscribe({
+      next: () => {
+        this.showToast('Convite enviado com sucesso!', 'success');
+        const post = this.videoPosts.find(p => p.id === card.postId);
+        if (post) {
+          post.inviteStatus = 'PENDING';
+        }
+      },
+      error: (err) => {
+        this.showToast('Erro ao enviar convite: ' + (err.error?.message || 'Tente novamente'), 'danger');
+      }
+    });
+  }
 
+  async openChat(card: FavoriteAthleteVideoCard): Promise<void> {
+    if (card.inviteStatus !== 'ACCEPTED') return;
+    this.router.navigate(['/chat', card.athleteId], {
+      state: { 
+        contact: {
+          id: card.athleteId,
+          fullName: card.athleteName,
+          urlProfileImage: card.athleteAvatarUrl
+        }
+      }
+    });
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'medium' = 'success') {
     const toast = await this.toastController.create({
-      message: isNowFavorite
-        ? `${talent.nome} adicionado aos favoritos`
-        : `${talent.nome} removido dos favoritos`,
-      duration: 1800,
-      color: isNowFavorite ? 'success' : 'medium',
+      message,
+      duration: 2000,
+      color,
       position: 'top'
     });
-
     await toast.present();
   }
 
-  trackByTalent(_: number, talent: ScoutTalent): string {
-    return talent.id;
-  }
-
-  trackByPost(_: number, post: Post): string {
-    return post.id;
-  }
-
-  trackByVideoCard(_: number, card: FavoriteAthleteVideoCard): string {
-    return card.postId;
-  }
-
-  async toggleFavoriteFromCard(card: FavoriteAthleteVideoCard): Promise<void> {
-    const talent = this.talents.find(item => item.id === card.athleteId);
-    if (!talent) {
-      return;
-    }
-
-    await this.toggleFavorite(talent);
+  private async showFavoriteToast(isAdded: boolean, athleteName: string): Promise<void> {
+    this.showToast(isAdded 
+      ? `${athleteName} adicionado aos favoritos` 
+      : `${athleteName} removido dos favoritos`, isAdded ? 'success' : 'medium');
   }
 
   editScoutProfile(): void {
@@ -225,200 +254,26 @@ export class ScoutHomePage implements OnInit {
       canDismiss: true,
       handle: true
     });
-
     await modal.present();
   }
 
-  private loadTalents(): void {
-    const favoriteIds = this.favoritesService.getFavorites();
-
-    this.talents = [
-      {
-        id: 'talent-1',
-        nome: 'Mateus Costa',
-        idadeCategoria: 'Sub-17',
-        posicao: 'Meia',
-        modalidade: 'Futebol de campo',
-        localidade: 'Florianopolis, SC',
-        destaque: 'Visao de jogo e passe vertical',
-        favorito: favoriteIds.includes('talent-1')
-      },
-      {
-        id: 'talent-2',
-        nome: 'Joao Pedro',
-        idadeCategoria: 'Sub-20',
-        posicao: 'Ponta',
-        modalidade: 'Futebol 7',
-        localidade: 'Curitiba, PR',
-        destaque: 'Arranque curto e finalizacao rapida',
-        favorito: favoriteIds.includes('talent-2')
-      },
-      {
-        id: 'talent-3',
-        nome: 'Lucas Ribeiro',
-        idadeCategoria: 'Profissional',
-        posicao: 'Volante',
-        modalidade: 'Futsal',
-        localidade: 'Porto Alegre, RS',
-        destaque: 'Intensidade, cobertura e leitura defensiva',
-        favorito: favoriteIds.includes('talent-3')
-      },
-      {
-        id: 'talent-4',
-        nome: 'Gabriel Santos',
-        idadeCategoria: 'Sub-15',
-        posicao: 'Atacante',
-        modalidade: 'Futebol de campo',
-        localidade: 'Sao Paulo, SP',
-        destaque: 'Ataque ao espaco e boa definicao',
-        favorito: favoriteIds.includes('talent-4')
-      },
-      {
-        id: 'talent-5',
-        nome: 'Henrique Souza',
-        idadeCategoria: 'Sub-20',
-        posicao: 'Lateral',
-        modalidade: 'Futebol 7',
-        localidade: 'Campinas, SP',
-        destaque: 'Apoio ofensivo, cruzamento e retorno rapido',
-        favorito: favoriteIds.includes('talent-5')
-      },
-      {
-        id: 'talent-6',
-        nome: 'Diego Fernandes',
-        idadeCategoria: 'Sub-17',
-        posicao: 'Goleiro',
-        modalidade: 'Futebol de campo',
-        localidade: 'Belo Horizonte, MG',
-        destaque: 'Reflexo curto e reposicao rapida em transicao',
-        favorito: favoriteIds.includes('talent-6')
-      }
-    ];
-  }
-
-  private loadVideoPosts(): void {
-    this.postService.refreshHomePosts(20).pipe(
-      catchError(error => {
-        console.error('Failed to load scout videos from API, using fallback data', error);
-        return of({
-          posts: this.getFallbackVideoPosts(),
-          nextCursor: null
-        });
-      })
-    ).subscribe((response: { posts: Post[]; nextCursor: string | null }) => {
-      const apiVideos = response.posts.filter((post: Post) => post.mediaType === FileType.VIDEO);
-      this.videoPosts = this.mergeWithMockVideos(apiVideos, this.getMockVideoPosts());
-
-      if (this.videoPosts.length === 0) {
-        this.videoPosts = this.getFallbackVideoPosts();
-      }
-
-      this.isLoadingContent = false;
-    });
-  }
-
-  private getFallbackVideoPosts(): Post[] {
-    return [
-      {
-        id: 'video-1',
-        user: { id: 'talent-1', username: 'Mateus Costa' },
-        mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Controle de bola e quebra de linha',
-        likesCount: 18,
-        commentsCount: 3,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'video-2',
-        user: { id: 'talent-2', username: 'Joao Pedro' },
-        mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Finalizacao curta no Futebol 7',
-        likesCount: 24,
-        commentsCount: 5,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'video-3',
-        user: { id: 'talent-5', username: 'Henrique Souza' },
-        mediaUrl: 'https://www.w3schools.com/html/movie.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Ultrapassagem em velocidade e cruzamento no segundo pau',
-        likesCount: 21,
-        commentsCount: 4,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'video-4',
-        user: { id: 'talent-6', username: 'Diego Fernandes' },
-        mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Defesa curta e saida rapida para contra-ataque',
-        likesCount: 27,
-        commentsCount: 6,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      }
-    ];
-  }
-
-  private getMockVideoPosts(): Post[] {
-    return [
-      {
-        id: 'video-mock-1',
-        user: { id: 'talent-5', username: 'Henrique Souza' },
-        mediaUrl: 'https://www.w3schools.com/html/movie.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Apoio por fora com cruzamento rasteiro e recomposicao curta',
-        likesCount: 19,
-        commentsCount: 3,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'video-mock-2',
-        user: { id: 'talent-6', username: 'Diego Fernandes' },
-        mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        mediaType: FileType.VIDEO,
-        caption: 'Reflexo em curta distancia e reposicao direta no ataque',
-        likesCount: 26,
-        commentsCount: 7,
-        isLiked: false,
-        createdAt: new Date().toISOString()
-      }
-    ];
-  }
-
-  private mergeWithMockVideos(apiVideos: Post[], mockVideos: Post[]): Post[] {
-    const videosById = new Map<string, Post>();
-
-    [...apiVideos, ...mockVideos].forEach(video => {
-      videosById.set(video.id, video);
-    });
-
-    return Array.from(videosById.values());
-  }
-
   private toVideoCard(post: Post): FavoriteAthleteVideoCard {
-    const matchingTalent = this.talents.find(
-      talent => talent.id === post.user.id || talent.nome === post.user.username
-    );
-
     return {
       postId: post.id,
-      athleteId: matchingTalent?.id ?? post.user.id,
-      athleteName: matchingTalent?.nome ?? post.user.username,
+      athleteId: String(post.athleteId || post.user.id),
+      athleteName: post.user.username,
       athleteAvatarUrl: post.user.urlPerfil ?? null,
       mediaUrl: post.mediaUrl,
       caption: post.caption,
-      modalidade: matchingTalent?.modalidade ?? 'Talento em observacao',
-      localidade: matchingTalent?.localidade ?? 'Local nao informado',
-      destaque: matchingTalent?.destaque ?? (post.caption || 'Sem descricao adicional'),
-      favorito: matchingTalent?.favorito ?? this.favoritesService.isFavorite(post.user.id)
+      modalidade: 'Futebol', 
+      localidade: 'Base',      
+      destaque: post.caption || 'Talento em observacao',
+      favorito: post.isLiked,
+      inviteStatus: post.inviteStatus
     };
+  }
+
+  trackByVideoCard(_: number, card: FavoriteAthleteVideoCard): string {
+    return card.postId;
   }
 }

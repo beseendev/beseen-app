@@ -5,6 +5,7 @@ import { Post, UserInfo } from '../models/post.model';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
 import { FileType } from '../models/upload.model';
+import { PostInvitePageResponse } from '../models/player-chat.models';
 
 interface PostPageResponseDto {
   posts: PostResponseDto[];
@@ -14,7 +15,7 @@ interface PostPageResponseDto {
 interface PostResponseDto {
   id: number;
   user: {
-    id: number;
+    id?: number;
     username: string;
     urlPerfil?: string;
   };
@@ -25,6 +26,9 @@ interface PostResponseDto {
   commentsCount: number;
   isLiked: boolean;
   createdAt: string;
+  inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
+  scoutId?: number | null;
+  athleteId?: number | null;
 }
 
 @Injectable({
@@ -41,7 +45,7 @@ export class PostService {
 
   private mapPostResponseToPost(postResponse: PostResponseDto): Post {
     const user: UserInfo = {
-      id: String(postResponse.user.id),
+      id: String(postResponse.user.id || postResponse.athleteId || ''),
       username: postResponse.user.username,
       urlPerfil: postResponse.user.urlPerfil
     };
@@ -55,7 +59,10 @@ export class PostService {
       likesCount: postResponse.likesCount,
       commentsCount: postResponse.commentsCount,
       isLiked: postResponse.isLiked,
-      createdAt: postResponse.createdAt
+      createdAt: postResponse.createdAt,
+      inviteStatus: postResponse.inviteStatus,
+      scoutId: postResponse.scoutId,
+      athleteId: postResponse.athleteId
     };
   }
 
@@ -135,6 +142,52 @@ export class PostService {
         if (postToUpdate && postToUpdate.likesCount > 0) {
           this.updatePostInSubjects(postId, false, postToUpdate.likesCount - 1);
         }
+      })
+    );
+  }
+
+  sendInvite(postId: string): Observable<void> {
+    return this.apiService.post<void>(`/posts/${postId}/invite`, {}).pipe(
+      tap(() => {
+        // Find and update the post in the homePosts observable
+        const currentPosts = this.homePosts.getValue();
+        const updatedPosts = currentPosts.map(post =>
+          post.id === postId ? { ...post, inviteStatus: 'PENDING' as any } : post
+        );
+        this.homePosts.next(updatedPosts);
+      })
+    );
+  }
+
+  acceptInvite(inviteId: number): Observable<void> {
+    return this.apiService.patch<void>(`/posts/invites/${inviteId}/accept`, {});
+  }
+
+  rejectInvite(inviteId: number): Observable<void> {
+    return this.apiService.patch<void>(`/posts/invites/${inviteId}/reject`, {});
+  }
+
+  getInvites(limit: number = 10, cursor?: string, postId?: string): Observable<PostInvitePageResponse> {
+    let params = new HttpParams().set('limit', limit.toString());
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+    if (postId) {
+      params = params.set('postId', postId);
+    }
+    return this.apiService.get<PostInvitePageResponse>(`/posts/invites`, { params });
+  }
+
+  getFavoritePosts(limit: number = 10, cursor?: string): Observable<{ posts: Post[], nextCursor: string | null }> {
+    let params = new HttpParams().set('limit', limit.toString());
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+
+    return this.apiService.get<PostPageResponseDto>(`/posts/favorites`, { params }).pipe(
+      map(response => {
+        const mappedPosts = response.posts.map(postDto => this.mapPostResponseToPost(postDto));
+        return { posts: mappedPosts, nextCursor: response.nextCursor };
       })
     );
   }

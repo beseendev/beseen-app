@@ -10,12 +10,13 @@ import { PostService } from '../services/post.service';
 import { Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model'; // Added FileType import
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { AuthService } from '../services/auth.service';
 import { catchError, of } from 'rxjs';
 import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile-player',
@@ -70,6 +71,7 @@ export class ProfilePlayerPage implements OnInit {
   private toastController = inject(ToastController);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
+  private selectedSegmentSubject = new BehaviorSubject<'images' | 'videos'>('images');
   filteredUserPosts$: Observable<Post[]>;
   private userPostsCurrentCursor: string | undefined;
   private userPostsHasMore = true;
@@ -77,12 +79,14 @@ export class ProfilePlayerPage implements OnInit {
   constructor() {
     addIcons({ arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline });
 
-    this.filteredUserPosts$ = this.userPostsSubject.asObservable().pipe(
-      map(posts => posts.filter(post => {
-        // Use FileType enum from post.model.ts for filtering
-        if (this.selectedSegment === 'images') {
+    this.filteredUserPosts$ = combineLatest([
+      this.userPostsSubject.asObservable(),
+      this.selectedSegmentSubject.asObservable()
+    ]).pipe(
+      map(([posts, segment]) => posts.filter(post => {
+        if (segment === 'images') {
           return post.mediaType === FileType.IMAGE;
-        } else if (this.selectedSegment === 'videos') {
+        } else if (segment === 'videos') {
           return post.mediaType === FileType.VIDEO;
         }
         return true;
@@ -107,8 +111,12 @@ export class ProfilePlayerPage implements OnInit {
       }),
       tap(profile => {
         this.profile = this.applyLocalOverrides(profile);
+        if (this.profile) {
+          const rawAvatar = this.profile.urlProfileImage || this.profile.urlPerfil || null;
+          this.profile.urlProfileImage = this.normalizeAvatarUrl(rawAvatar);
+        }
         if (!this.profileId && profile) {
-          this.profileId = profile.id;
+          this.profileId = profile?.id;
         }
         this.syncDraftProfile();
         this.resetAndLoadUserPosts();
@@ -116,8 +124,36 @@ export class ProfilePlayerPage implements OnInit {
     ).subscribe();
   }
 
+  private normalizeAvatarUrl(rawUrl: string | null | undefined): string | null {
+    if (!rawUrl) {
+      return null;
+    }
+
+    const url = rawUrl.trim();
+    if (!url) {
+      return null;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+      return url;
+    }
+
+    if (url.startsWith('//')) {
+      return `https:${url}`;
+    }
+
+    const baseApiUrl = environment.apiUrl;
+    if (url.startsWith('/') && baseApiUrl) {
+      const baseOrigin = baseApiUrl.replace(/\/beseen\/api$/, '');
+      return `${baseOrigin}${url}`;
+    }
+
+    return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
+  }
+
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
+    this.selectedSegmentSubject.next(this.selectedSegment);
   }
 
   goBack() {
@@ -196,15 +232,21 @@ export class ProfilePlayerPage implements OnInit {
   async loadMoreUserPosts(event: any) {
     if (!this.userPostsHasMore || !this.profileId) {
       event.target.complete();
+      event.target.disabled = true;
       return;
     }
 
     this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor).subscribe({
       next: response => {
-        this.userPostsSubject.next([...this.userPostsSubject.getValue(), ...response.posts]);
+        const newPosts = response.posts;
+        this.userPostsSubject.next([...this.userPostsSubject.getValue(), ...newPosts]);
         this.userPostsCurrentCursor = response.nextCursor || undefined;
-        this.userPostsHasMore = !!response.nextCursor;
+        this.userPostsHasMore = !!response.nextCursor && newPosts.length >= this.DEFAULT_POST_LIMIT;
+        
         event.target.complete();
+        if (!this.userPostsHasMore) {
+          event.target.disabled = true;
+        }
       },
       error: err => {
         console.error('Error loading more user posts', err);
@@ -214,18 +256,28 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   async refreshUserPosts(event: any) {
-    await this.resetAndLoadUserPosts();
+    this.resetAndLoadUserPosts();
     event.target.complete();
   }
 
-  private async resetAndLoadUserPosts() {
+  private resetAndLoadUserPosts() {
     this.userPostsSubject.next([]);
     this.userPostsCurrentCursor = undefined;
     this.userPostsHasMore = true;
 
+    // Reset infinite scroll if possible
+    const infiniteScroll = document.querySelector('ion-infinite-scroll');
+    if (infiniteScroll) {
+      (infiniteScroll as any).disabled = false;
+    }
+
     if (this.profileId && !this.isMyProfile) {
-      this.userPostsSubject.next(this.getMockPostsForProfile(this.profileId));
+      const mockPosts = this.getMockPostsForProfile(this.profileId);
+      this.userPostsSubject.next(mockPosts);
       this.userPostsHasMore = false;
+      if (infiniteScroll) {
+        (infiniteScroll as any).disabled = true;
+      }
       return;
     }
 
@@ -234,7 +286,11 @@ export class ProfilePlayerPage implements OnInit {
         next: response => {
           this.userPostsSubject.next(response.posts);
           this.userPostsCurrentCursor = response.nextCursor || undefined;
-          this.userPostsHasMore = !!response.nextCursor;
+          this.userPostsHasMore = !!response.nextCursor && response.posts.length >= this.DEFAULT_POST_LIMIT;
+          
+          if (!this.userPostsHasMore && infiniteScroll) {
+            (infiniteScroll as any).disabled = true;
+          }
         },
         error: err => {
           console.error('Error refreshing user posts', err);

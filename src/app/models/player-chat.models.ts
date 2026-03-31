@@ -15,4 +15,27 @@ export interface PlayerChatThreadState {
   scoutAvatarUrl?: string | null;
   status: PlayerChatStatus;
   messages: PlayerChatMessage[];
+  inviteId?: number;
+}
+
+export interface ProfileSummaryResponse {
+  id: number;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  urlProfileImage?: string | null;
+}
+
+export interface PostInviteResponse {
+  id: number;
+  postId: number;
+  scoutProfile: ProfileSummaryResponse;
+  playerProfile: ProfileSummaryResponse;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+}
+
+export interface PostInvitePageResponse {
+  invites: PostInviteResponse[];
+  nextCursor: string | null;
 }

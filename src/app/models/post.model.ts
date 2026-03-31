@@ -16,4 +16,7 @@ export interface Post {
   commentsCount: number;
   isLiked: boolean;
   createdAt: string;
+  inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
+  scoutId?: number | null;
+  athleteId?: number | null;
 }

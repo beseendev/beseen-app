@@ -16,8 +16,8 @@
       <div class="profile-card-head" *ngIf="!isLoadingContent; else scoutProfileSkeleton">
         <div class="profile-card-id">
           <div class="avatar-shell profile-avatar">
-            <img *ngIf="scoutProfile?.fotoPerfilUrl" [src]="scoutProfile?.fotoPerfilUrl" alt="Perfil do olheiro">
-            <ion-icon *ngIf="!scoutProfile?.fotoPerfilUrl" name="person-circle-outline"></ion-icon>
+            <img *ngIf="userProfile?.urlPerfil" [src]="userProfile?.urlPerfil" alt="Perfil do olheiro">
+            <ion-icon *ngIf="!userProfile?.urlPerfil" name="person-circle-outline"></ion-icon>
           </div>
           <div class="profile-copy">
             <span class="summary-label">Perfil do olheiro</span>
@@ -128,7 +128,9 @@
     <app-scout-favorites-tab
       *ngIf="selectedTab === 'favoritos' && !isLoadingContent"
       [cards]="favoriteVideoCards"
-      (favoriteToggled)="toggleFavoriteFromCard($event)">
+      (favoriteToggled)="toggleFavoriteFromCard($event)"
+      (inviteRequested)="sendInvite($event)"
+      (chatRequested)="openChat($event)">
     </app-scout-favorites-tab>
 
     <section class="content-section section" *ngIf="selectedTab === 'favoritos' && isLoadingContent">

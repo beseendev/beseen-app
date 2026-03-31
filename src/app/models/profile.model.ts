@@ -4,7 +4,8 @@ export interface Profile {
   id: string;
   name: string;
   fullName: string;
-  urlPerfil?: string;
+  urlPerfil?: string | null;
+  urlProfileImage?: string | null;
   role: 'JOGADOR' | 'CLUBE';
   dateOfBirth?: string;
   bio?: string;

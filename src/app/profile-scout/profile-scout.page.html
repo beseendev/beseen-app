@@ -20,8 +20,8 @@
       <div class="profile-card-head">
         <div class="profile-identity">
           <ion-avatar class="profile-avatar">
-            <img *ngIf="profile.urlPerfil || profile.fotoPerfilUrl" [src]="profile.urlPerfil || profile.fotoPerfilUrl" alt="Foto do perfil" />
-            <ion-icon *ngIf="!profile.urlPerfil && !profile.fotoPerfilUrl" name="person-circle-outline"></ion-icon>
+            <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
+            <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
           </ion-avatar>
 
           <div class="profile-copy">

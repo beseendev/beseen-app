@@ -28,4 +28,5 @@ export interface FavoriteAthleteVideoCard {
   localidade: string;
   destaque: string;
   favorito: boolean;
+  inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
 }

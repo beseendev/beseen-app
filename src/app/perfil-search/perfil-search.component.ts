@@ -12,7 +12,6 @@ import {
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
 import { ProfileService } from "../services/profile.service";
-import { IonIcon, IonAvatar, IonSearchbar, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, IonSpinner } from '@ionic/angular/standalone';
 import { CommonModule } from "@angular/common";
 import {ProfileResponse} from "../models/profile.model";
 
@@ -22,16 +21,7 @@ import {ProfileResponse} from "../models/profile.model";
   styleUrls: ['./perfil-search.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    IonIcon,
-    IonAvatar,
-    IonSearchbar,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
-    IonSpinner
+    CommonModule
   ]
 })
 export class PerfilSearchComponent implements OnInit, OnDestroy, OnChanges {

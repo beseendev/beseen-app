@@ -10,6 +10,7 @@ import { Profile, ProfileScoutCreationRequest } from '../models/profile.model';
 import { AuthService } from '../services/auth.service';
 import { catchError, of, filter, map, switchMap, tap, finalize } from 'rxjs';
 import { SCOUT_TYPE_OPTIONS, SCOUT_MODALITY_OPTIONS, SCOUT_AGE_CATEGORIES, SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile-scout',
@@ -24,9 +25,6 @@ import { SCOUT_TYPE_OPTIONS, SCOUT_MODALITY_OPTIONS, SCOUT_AGE_CATEGORIES, SCOUT
     IonContent,
     IonAvatar,
     IonLabel,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonRefresher,
     IonRefresherContent,
     IonItem,
@@ -110,6 +108,15 @@ export class ProfileScoutPage implements OnInit {
       }),
       tap(profile => {
         this.profile = this.applyLocalOverrides(profile);
+        if (this.profile) {
+          const rawAvatar = this.profile.urlProfileImage || this.profile.urlPerfil || this.profile.fotoPerfilUrl || null;
+          this.profile.urlProfileImage = this.normalizeAvatarUrl(rawAvatar);
+          
+          // Mapeia bio da API para sobreMim se sobreMim estiver vazio
+          if (this.profile.bio && !this.profile.sobreMim) {
+            this.profile.sobreMim = this.profile.bio;
+          }
+        }
         if (!this.profileId && profile) {
           this.profileId = profile.id;
         }
@@ -117,6 +124,33 @@ export class ProfileScoutPage implements OnInit {
         this.resetAndLoadUserPosts(); // Mantendo o padrão, embora não haja seção de posts visível
       })
     ).subscribe();
+  }
+
+  private normalizeAvatarUrl(rawUrl: string | null): string | null {
+    if (!rawUrl) {
+      return null;
+    }
+
+    const url = rawUrl.trim();
+    if (!url) {
+      return null;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+      return url;
+    }
+
+    if (url.startsWith('//')) {
+      return `https:${url}`;
+    }
+
+    const baseApiUrl = environment.apiUrl;
+    if (url.startsWith('/') && baseApiUrl) {
+      const baseOrigin = baseApiUrl.replace(/\/beseen\/api$/, '');
+      return `${baseOrigin}${url}`;
+    }
+
+    return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
   }
 
   // Método mantido para seguir o padrão do profile-player

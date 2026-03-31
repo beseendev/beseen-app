@@ -167,7 +167,7 @@
                 size="small"
                 fill="outline"
                 class="chat-cta"
-                (click)="openScoutChat(video)">
+                (click)="video.inviteStatus === 'ACCEPTED' ? openScoutChat(video) : openInvitesSheet(video.id)">
                 {{ getChatButtonLabel(video) }}
               </ion-button>
 
@@ -243,9 +243,6 @@
     </section>
   </div>
 
-  <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 </ion-content>
 
 <ion-footer class="ion-no-border arena-footer">

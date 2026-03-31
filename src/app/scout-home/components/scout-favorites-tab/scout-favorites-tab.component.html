@@ -41,24 +41,39 @@
       </div>
 
       <div class="chat-state-panel">
-        <ng-container [ngSwitch]="getStatus(card)">
-          <div *ngSwitchCase="'BLOQUEADO'" class="state-block">
+        <ng-container [ngSwitch]="card.inviteStatus">
+          <!-- SEM CONVITE -->
+          <div *ngSwitchCase="null" class="state-block">
             <ion-button expand="block" (click)="invite(card)" [attr.aria-label]="'Convidar ' + card.athleteName + ' para conversar'">
               Convidar para conversar
             </ion-button>
           </div>
 
-          <div *ngSwitchCase="'AGUARDANDO_CONFIRMACAO'" class="state-block">
+          <!-- PENDENTE -->
+          <div *ngSwitchCase="'PENDING'" class="state-block">
             <p class="status-text">Convite enviado • aguardando confirmacao</p>
-            <ion-button expand="block" fill="outline" (click)="openSheet(card)" [attr.aria-label]="'Ver convite de ' + card.athleteName">
+            <ion-button expand="block" fill="outline" disabled [attr.aria-label]="'Convite enviado para ' + card.athleteName">
               Ver convite
             </ion-button>
           </div>
 
-          <div *ngSwitchCase="'LIBERADO'" class="state-block">
+          <!-- ACEITO -->
+          <div *ngSwitchCase="'ACCEPTED'" class="state-block">
             <span class="status-chip">Chat liberado</span>
-            <ion-button expand="block" fill="outline" (click)="openSheet(card)" [attr.aria-label]="'Abrir chat com ' + card.athleteName">
+            <ion-button expand="block" fill="solid" (click)="openChat(card)" [attr.aria-label]="'Abrir chat com ' + card.athleteName">
               Abrir chat
+            </ion-button>
+          </div>
+
+          <!-- REJEITADO -->
+          <div *ngSwitchCase="'REJECTED'" class="state-block">
+            <p class="status-text text-danger">Convite rejeitado</p>
+          </div>
+
+          <!-- Fallback para caso inviteStatus não esteja presente e não seja null explicitamente -->
+          <div *ngSwitchDefault class="state-block">
+             <ion-button *ngIf="!card.inviteStatus" expand="block" (click)="invite(card)">
+              Convidar para conversar
             </ion-button>
           </div>
         </ng-container>

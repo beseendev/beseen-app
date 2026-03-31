@@ -1,0 +1,56 @@
+<ion-content class="invites-sheet-content">
+  <div class="sheet-shell">
+    <div class="sheet-header">
+      <div class="header-title">
+        <ion-icon name="mail-outline"></ion-icon>
+        <strong>Meus Convites</strong>
+      </div>
+
+      <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar convites">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="sheet-body">
+      <div class="empty-invites" *ngIf="!isLoading && invites.length === 0">
+        <p>Você ainda não recebeu convites.</p>
+      </div>
+
+      <ion-list lines="none" *ngIf="invites.length > 0">
+        <ion-item *ngFor="let invite of invites" (click)="onInviteClick(invite)" class="invite-item">
+          <div class="invite-card">
+            <div class="invite-header">
+              <div class="scout-avatar">
+                <img *ngIf="invite.scoutProfile.urlProfileImage" [src]="invite.scoutProfile.urlProfileImage" [alt]="invite.scoutProfile.fullName">
+                <ion-icon *ngIf="!invite.scoutProfile.urlProfileImage" name="person-circle-outline"></ion-icon>
+              </div>
+              <div class="scout-info">
+                <strong>{{ invite.scoutProfile.fullName }}</strong>
+                <span>Olheiro</span>
+              </div>
+              <span class="status-badge" [class.pending]="invite.status === 'PENDING'" [class.accepted]="invite.status === 'ACCEPTED'">
+                {{ invite.status === 'PENDING' ? 'Pendente' : 'Aceito' }}
+              </span>
+            </div>
+            <div class="invite-body">
+              <p>{{ getInviteMessage(invite) }}</p>
+            </div>
+            <div class="invite-footer">
+              <span class="invite-date">{{ invite.createdAt | date:'shortDate' }}</span>
+            </div>
+          </div>
+        </ion-item>
+      </ion-list>
+
+      <ion-infinite-scroll threshold="100px" (ionInfinite)="loadInvites($event)" *ngIf="hasMore">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais convites...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+
+      <div *ngIf="isLoading && invites.length === 0" class="loading-state">
+        <ion-spinner name="bubbles"></ion-spinner>
+        <p>Buscando seus convites...</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

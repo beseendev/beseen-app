@@ -47,6 +47,7 @@ import { PerfilSearchComponent } from '../perfil-search/perfil-search.component'
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { PlayerChatInboxComponent } from './components/player-chat-inbox/player-chat-inbox.component';
 import { PlayerChatSheetComponent } from './components/player-chat-sheet/player-chat-sheet.component';
+import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { environment } from '../../environments/environment';
 import { PlayerChatStatus } from '../models/player-chat.models';
 import { PlayerChatUiService } from '../services/player-chat-ui.service';
@@ -79,6 +80,7 @@ interface PlayerShowcaseVideo {
   scoutAvatarUrl?: string | null;
   hasInvite: boolean;
   isMine: boolean;
+  inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
 }
 
 @Component({
@@ -193,6 +195,26 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       this.contactsLoading = state.isLoading;
       this.contactsHasMore = state.hasMore;
     });
+
+    this.posts$.subscribe(posts => {
+      const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
+
+      const allRanking = [...videos]
+        .sort((a, b) => b.likesCount - a.likesCount)
+        .map(p => this.mapPostToVideo(p));
+
+      this.featuredVideo = allRanking[0] ?? null;
+
+      // Exclui o primeiro vídeo (destaque) da lista de ranking
+      this.rankingVideos = allRanking.slice(1, 10);
+
+      const allNew = [...videos]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .map(p => this.mapPostToVideo(p));
+
+      // Exclui o vídeo que está em destaque da lista de novos para não repetir
+      this.newVideos = allNew.filter(v => v.id !== this.featuredVideo?.id);
+    });
   }
 
   ionViewWillEnter(): void {
@@ -211,6 +233,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         this.userProfile = profile;
         this.avatarLoadFailed = false;
         this.isLoading = false;
+
+        this.loadMyPosts();
       },
       error: (err) => {
         console.error('Failed to load user profile', err);
@@ -221,6 +245,50 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     if (this.postService.shouldLoadInitialHomePosts()) {
       this.postService.loadHomePosts().subscribe();
     }
+  }
+
+  private loadMyPosts(): void {
+    this.postService.getPostsForAuthenticatedUser(10).subscribe({
+      next: (res) => {
+        this.myVideos = res.posts
+          .filter(p => p.mediaType === FileType.VIDEO)
+          .map(p => this.mapPostToVideo(p, true));
+      }
+    });
+  }
+
+  private mapPostToVideo(post: Post, isMine: boolean = false): PlayerShowcaseVideo {
+    if (post.inviteStatus === 'ACCEPTED') {
+      this.playerChatUiService.ensureAccepted(
+        String(post.scoutId),
+        'Olheiro',
+        null
+      );
+    } else if (post.inviteStatus === 'PENDING') {
+      this.playerChatUiService.ensureInvite(
+        String(post.scoutId),
+        'Olheiro',
+        null
+      );
+    }
+
+    return {
+      id: post.id,
+      athleteId: String(post.athleteId || post.user.id),
+      athleteName: post.user.username,
+      mediaUrl: post.mediaUrl,
+      modality: 'Futebol',
+      position: 'Atleta',
+      region: '',
+      description: post.caption,
+      likes: post.likesCount,
+      createdAt: post.createdAt,
+      scoutId: String(post.scoutId || ''),
+      scoutName: 'Olheiro',
+      hasInvite: !!post.inviteStatus,
+      isMine: isMine,
+      inviteStatus: post.inviteStatus
+    };
   }
 
   onMenuOpen(): void {
@@ -248,13 +316,44 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     });
   }
 
+  setActiveTab(tab: ArenaTab): void {
+    this.activeTab = tab;
+
+    if (tab === 'ranking' || tab === 'new') {
+      // Sempre recarrega os posts da API ao trocar de aba para garantir dados frescos
+      this.postService.refreshHomePosts().subscribe();
+    } else if (tab === 'mine') {
+      this.loadMyPosts();
+    }
+  }
+
   loadMorePosts(event: any): void {
-    event.target.complete();
+    if (this.activeTab === 'ranking' || this.activeTab === 'new') {
+      this.postService.loadHomePosts().subscribe({
+        next: (res) => {
+          event.target.complete();
+          if (res && !res.nextCursor) {
+            event.target.disabled = true;
+          }
+        },
+        error: () => event.target.complete()
+      });
+    } else {
+      event.target.complete();
+      event.target.disabled = true;
+    }
   }
 
   refreshPosts(event: any): void {
-    this.initializeMockShowcase();
-    event.target.complete();
+    if (this.activeTab === 'ranking' || this.activeTab === 'new') {
+      this.postService.refreshHomePosts().subscribe({
+        next: () => event.target.complete(),
+        error: () => event.target.complete()
+      });
+    } else {
+      this.loadMyPosts();
+      event.target.complete();
+    }
   }
 
   onMessagesClick(): void {
@@ -267,10 +366,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
   goToCreatePost(): void {
     this.router.navigateByUrl('/create-post');
-  }
-
-  setActiveTab(tab: ArenaTab): void {
-    this.activeTab = tab;
   }
 
   onHeaderAvatarClick(): void {
@@ -342,11 +437,14 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   hasIncomingInvite(video: PlayerShowcaseVideo): boolean {
-    return this.getVideoStatus(video) !== 'SEM_CONVITE';
+    return video.inviteStatus === 'PENDING' || video.inviteStatus === 'ACCEPTED';
   }
 
   getChatButtonLabel(video: PlayerShowcaseVideo): string {
-    return this.getVideoStatus(video) === 'LIBERADO' ? 'Abrir chat' : 'Ver convite';
+    if (video.inviteStatus === 'ACCEPTED') {
+      return 'Abrir chat';
+    }
+    return 'Ver convite';
   }
 
   get myInviteCount(): number {
@@ -396,6 +494,23 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       backdropBreakpoint: 0.45,
       canDismiss: true,
       handle: true
+    });
+
+    await modal.present();
+  }
+
+  async openInvitesSheet(postId: string): Promise<void> {
+    const modal = await this.modalController.create({
+      component: InvitesSheetComponent,
+      componentProps: {
+        postId: postId
+      },
+      breakpoints: [0, 0.5, 0.8, 0.95],
+      initialBreakpoint: 0.8,
+      backdropBreakpoint: 0.5,
+      canDismiss: true,
+      handle: true,
+      cssClass: 'invites-modal-sheet'
     });
 
     await modal.present();
@@ -451,120 +566,11 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   private initializeMockShowcase(): void {
-    this.showcaseVideos = [
-      {
-        id: 'showcase-1',
-        athleteId: 'athlete-1',
-        athleteName: 'Lucas Andrade',
-        mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        modality: 'Futebol de campo',
-        position: 'Atacante',
-        region: 'Florianopolis, SC',
-        description: 'Finalizacao curta, aceleracao e leitura de espaco na ultima linha.',
-        likes: 19320,
-        createdAt: '2026-03-02T10:10:00.000Z',
-        scoutId: 'scout-1',
-        scoutName: 'Ricardo Moraes',
-        hasInvite: false,
-        isMine: false
-      },
-      {
-        id: 'showcase-2',
-        athleteId: 'athlete-me',
-        athleteName: 'Mateus Silva',
-        mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        modality: 'Futebol 7',
-        position: 'Meia',
-        region: 'Curitiba, PR',
-        description: 'Passe vertical, inversao rapida e controle orientado.',
-        likes: 15840,
-        createdAt: '2026-03-01T14:40:00.000Z',
-        scoutId: 'scout-2',
-        scoutName: 'Joao Teles',
-        hasInvite: true,
-        isMine: true
-      },
-      {
-        id: 'showcase-3',
-        athleteId: 'athlete-3',
-        athleteName: 'Pedro Alves',
-        mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        modality: 'Futsal',
-        position: 'Ala',
-        region: 'Joinville, SC',
-        description: 'Pressao alta, 1x1 curto e intensidade sem bola.',
-        likes: 11200,
-        createdAt: '2026-03-03T08:30:00.000Z',
-        scoutId: 'scout-3',
-        scoutName: 'Camila Duarte',
-        hasInvite: false,
-        isMine: false
-      },
-      {
-        id: 'showcase-4',
-        athleteId: 'athlete-4',
-        athleteName: 'Vitor Lima',
-        mediaUrl: 'https://www.w3schools.com/html/movie.mp4',
-        modality: 'Futebol de campo',
-        position: 'Zagueiro',
-        region: 'Porto Alegre, RS',
-        description: 'Cobertura defensiva, jogo aereo e saida curta sob pressao.',
-        likes: 9650,
-        createdAt: '2026-02-28T16:15:00.000Z',
-        scoutId: 'scout-4',
-        scoutName: 'Marcos Vinicius',
-        hasInvite: false,
-        isMine: false
-      },
-      {
-        id: 'showcase-5',
-        athleteId: 'athlete-me-2',
-        athleteName: 'Rafael Costa',
-        mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-        modality: 'Futebol 7',
-        position: 'Ponta',
-        region: 'Sao Jose, SC',
-        description: 'Ataque de espaco, cruzamento em velocidade e recomposicao rapida.',
-        likes: 7440,
-        createdAt: '2026-03-03T11:00:00.000Z',
-        scoutId: 'scout-5',
-        scoutName: 'Bruno Saad',
-        hasInvite: true,
-        isMine: true
-      },
-      {
-        id: 'showcase-6',
-        athleteId: 'athlete-6',
-        athleteName: 'Thiago Melo',
-        mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        modality: 'Futebol de campo',
-        position: 'Volante',
-        region: 'Blumenau, SC',
-        description: 'Cobertura central, bola longa e leitura de segunda bola.',
-        likes: 6820,
-        createdAt: '2026-03-03T13:12:00.000Z',
-        scoutId: 'scout-6',
-        scoutName: 'Fernanda Cezar',
-        hasInvite: false,
-        isMine: false
-      }
-    ];
-
-    this.showcaseVideos.forEach((video) => {
-      if (video.hasInvite) {
-        this.playerChatUiService.ensureInvite(video.scoutId, video.scoutName, video.scoutAvatarUrl);
-      } else {
-        this.playerChatUiService.getThread(video.scoutId, video.scoutName, video.scoutAvatarUrl);
-      }
-    });
-
-    this.rankingVideos = [...this.showcaseVideos]
-      .sort((first, second) => second.likes - first.likes)
-      .slice(0, 5);
-    this.newVideos = [...this.showcaseVideos]
-      .sort((first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime());
-    this.myVideos = this.showcaseVideos.filter((video) => video.isMine);
-    this.featuredVideo = this.rankingVideos[0] ?? null;
+    this.showcaseVideos = [];
+    this.rankingVideos = [];
+    this.newVideos = [];
+    this.myVideos = [];
+    this.featuredVideo = null;
   }
 
   private getFeaturedPost(posts: Post[]): Post | null {

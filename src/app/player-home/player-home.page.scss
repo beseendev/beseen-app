@@ -22,7 +22,7 @@
 .profile-link{padding:0;border:0;background:transparent;text-align:left}
 .player-edit-btn,.chat-cta{--color:var(--be-color-brand-500);--border-color:rgba(var(--ion-color-primary-rgb),.45);text-transform:none;font-weight:600}
 .player-logout-btn{--color:var(--be-color-danger);text-transform:none;font-weight:600}
-.my-plays-summary{padding:14px;display:flex;justify-content:space-between;align-items:center}
+.my-plays-summary{padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background-color 0.2s ease;}.my-plays-summary:active{background-color:rgba(var(--ion-color-primary-rgb),0.05);}
 .status-tag{padding:3px 10px;border-radius:999px;background:var(--be-color-surface-1);color:var(--be-color-text-2);font-size:.72rem;font-weight:600;border:1px solid rgba(148,163,184,.12)}
 .arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px}
 .tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}

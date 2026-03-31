@@ -19,6 +19,8 @@ import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   @Input() cards: FavoriteAthleteVideoCard[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
 
   private readonly chatUiService = inject(ChatUiService);
   private readonly modalController = inject(ModalController);
@@ -51,35 +53,11 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   }
 
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {
-    this.chatUiService.sendInvite(card.athleteId, card.athleteName, card.athleteAvatarUrl);
-
-    const toast = await this.toastController.create({
-      message: 'Convite enviado ao atleta',
-      duration: 1800,
-      color: 'success',
-      position: 'top'
-    });
-
-    await toast.present();
+    this.inviteRequested.emit(card);
   }
 
-  async openSheet(card: FavoriteAthleteVideoCard): Promise<void> {
-    const modal = await this.modalController.create({
-      component: ChatSheetComponent,
-      componentProps: {
-        athleteId: card.athleteId,
-        athleteName: card.athleteName,
-        athleteAvatarUrl: card.athleteAvatarUrl ?? null
-      },
-      breakpoints: [0, 0.35, 0.7, 0.95],
-      initialBreakpoint: 0.7,
-      backdropBreakpoint: 0.35,
-      handle: true,
-      canDismiss: true,
-      cssClass: 'chat-sheet-modal'
-    });
-
-    await modal.present();
+  async openChat(card: FavoriteAthleteVideoCard): Promise<void> {
+    this.chatRequested.emit(card);
   }
 
   toggleFavorite(card: FavoriteAthleteVideoCard): void {

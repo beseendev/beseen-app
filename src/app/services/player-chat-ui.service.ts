@@ -41,6 +41,33 @@ export class PlayerChatUiService {
     return nextThread;
   }
 
+  ensureAccepted(scoutId: string, scoutName: string, scoutAvatarUrl?: string | null): PlayerChatThreadState {
+    const existingThread = this.getThread(scoutId, scoutName, scoutAvatarUrl);
+    if (existingThread.status === 'LIBERADO') {
+      return existingThread;
+    }
+
+    const nextThread: PlayerChatThreadState = {
+      ...existingThread,
+      scoutName,
+      scoutAvatarUrl: scoutAvatarUrl ?? existingThread.scoutAvatarUrl ?? null,
+      status: 'LIBERADO'
+    };
+
+    // If it was SEM_CONVITE, maybe we should add the mock invite message too
+    if (existingThread.messages.length === 0) {
+      nextThread.messages = [{
+        id: `msg-${Date.now()}-mock-invite`,
+        sender: 'SCOUT',
+        text: 'Tenho interesse no seu perfil. Se quiser, podemos conversar por aqui.',
+        createdAt: new Date().toISOString()
+      }];
+    }
+
+    this.saveThread(nextThread);
+    return nextThread;
+  }
+
   acceptInvite(scoutId: string, scoutName: string, scoutAvatarUrl?: string | null): PlayerChatThreadState {
     const currentThread = this.getThread(scoutId, scoutName, scoutAvatarUrl);
     const acceptanceMessage: PlayerChatMessage = {
