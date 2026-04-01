@@ -45,7 +45,7 @@ import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { PerfilSearchComponent } from '../perfil-search/perfil-search.component';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
-import { PlayerChatInboxComponent } from './components/player-chat-inbox/player-chat-inbox.component';
+import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { environment } from '../../environments/environment';
 
@@ -436,7 +436,10 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
   async openChatInbox(): Promise<void> {
     const modal = await this.modalController.create({
-      component: PlayerChatInboxComponent,
+      component: ChatInboxComponent,
+      componentProps: {
+        isPlayer: true
+      },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,
       backdropBreakpoint: 0.45,

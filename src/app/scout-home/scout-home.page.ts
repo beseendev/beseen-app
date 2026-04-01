@@ -22,7 +22,7 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ScoutProfileService } from '../services/scout-profile.service';
 import { ChatService } from '../services/chat.service';
-import { ScoutChatInboxComponent } from './components/scout-chat-inbox/scout-chat-inbox.component';
+import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { ApiService } from "../services/api.service";
@@ -273,7 +273,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   async openChatInbox(): Promise<void> {
     const modal = await this.modalController.create({
-      component: ScoutChatInboxComponent,
+      component: ChatInboxComponent,
+      componentProps: {
+        isPlayer: false
+      },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,
       backdropBreakpoint: 0.45,
