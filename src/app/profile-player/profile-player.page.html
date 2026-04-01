@@ -52,25 +52,10 @@
             </ion-button>
           </ng-template>
         </div>
-
-        <div class="profile-actions" *ngIf="!isMyProfile">
-          <ion-button expand="block" class="profile-action-btn" (click)="followUser()">
-            <ion-icon slot="start" name="person-add-outline"></ion-icon>
-            Seguir
-          </ion-button>
-          <ion-button expand="block" fill="clear" class="profile-action-btn secondary-action" (click)="startChat()">
-            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
-            Chat
-          </ion-button>
-        </div>
       </div>
     </section>
 
     <section class="section-card">
-      <div class="section-header">
-        <h2>Informacoes</h2>
-        <p>Dados principais do jogador. A edicao salva apenas no dispositivo neste MVP.</p>
-      </div>
 
       <ion-list lines="none">
         <ion-item class="readonly-item">
@@ -225,10 +210,6 @@
       </div>
 
       <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)" mode="md">
-        <ion-segment-button value="images">
-          <ion-icon name="image-outline"></ion-icon>
-          <ion-label>Imagens</ion-label>
-        </ion-segment-button>
         <ion-segment-button value="videos">
           <ion-icon name="videocam-outline"></ion-icon>
           <ion-label>Videos</ion-label>

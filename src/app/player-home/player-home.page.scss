@@ -80,3 +80,23 @@
 .player-profile-avatar, .be-skeleton-avatar {
   flex-shrink: 0;
 }
+/* Garante que o botão ocupe o espaço necessário para o flexbox funcionar */
+.profile-link.talent-id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: auto; /* Ou 100% se quiser que o clique pegue a linha toda */
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+
+/* Ajuste para o texto dentro do botão não ter margens estranhas */
+.talent-id h3 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.talent-id p {
+  margin: 0;
+}

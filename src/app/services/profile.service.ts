@@ -53,8 +53,8 @@ export class ProfileService {
     );
   }
 
-  getProfile(userId?: string): Observable<Profile> {
-    const endpoint = userId ? `${this.profileEndpoint}/${userId}` : `${this.profileEndpoint}/me/full-profile`;
+  getProfile(profileId?: string): Observable<Profile> {
+    const endpoint = profileId ? `${this.profileEndpoint}/player/full-profile/${profileId}` : `${this.profileEndpoint}/me/full-profile`;
     return this.apiService.get<Profile>(endpoint);
   }
 

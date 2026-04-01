@@ -98,9 +98,13 @@ export class ProfilePlayerPage implements OnInit {
         this.profileId = params.get('userId');
         return this.authService.getCurrentUser().pipe(
           filter(user => !!user),
-          map(user => user.id),
-          tap(currentUserId => {
-            this.isMyProfile = !this.profileId || this.profileId === currentUserId;
+          map(user => user.profileId),
+          tap(currentUserProfileId => {
+            if (!this.profileId) {
+              this.isMyProfile = true;
+            } else {
+              this.isMyProfile = String(this.profileId) === String(currentUserProfileId);
+            }
           }),
           switchMap(() => this.profileService.getProfile(this.profileId ?? undefined))
         );

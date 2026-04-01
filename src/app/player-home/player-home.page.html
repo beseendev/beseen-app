@@ -152,14 +152,20 @@
     <section class="section" *ngIf="activeTab !== 'mine' && featuredVideo as featuredVideo">
       <article class="surface featured be-fade-in">
         <div class="video-meta">
-          <button type="button" class="profile-link" (click)="openAthleteProfile(featuredVideo)">
-            <h3>{{ featuredVideo.athleteName }}</h3>
-            <p *ngIf="featuredVideo.likes">{{ featuredVideo.likes | number }} curtidas</p>
-            <p class="meta-line" *ngIf="featuredVideo.modality || featuredVideo.position">
-              <span *ngIf="featuredVideo.modality">{{ featuredVideo.modality }}</span>
-              <span *ngIf="featuredVideo.modality && featuredVideo.position"> • </span>
-              <span *ngIf="featuredVideo.position">{{ featuredVideo.position }}</span>
-            </p>
+          <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(featuredVideo)">
+            <div class="avatar-shell">
+              <img *ngIf="featuredVideo.athleteAvatarUrl" [src]="featuredVideo.athleteAvatarUrl" [alt]="featuredVideo.athleteName">
+              <ion-icon *ngIf="!featuredVideo.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+            </div>
+            <div>
+              <h3>{{ featuredVideo.athleteName }}</h3>
+              <p *ngIf="featuredVideo.likes">{{ featuredVideo.likes | number }} curtidas</p>
+              <p class="meta-line" *ngIf="featuredVideo.modality || featuredVideo.position">
+                <span *ngIf="featuredVideo.modality">{{ featuredVideo.modality }}</span>
+                <span *ngIf="featuredVideo.modality && featuredVideo.position"> • </span>
+                <span *ngIf="featuredVideo.position">{{ featuredVideo.position }}</span>
+              </p>
+            </div>
           </button>
           <span class="status-tag">Destaque</span>
         </div>
@@ -179,6 +185,7 @@
                 <img *ngIf="video.athleteAvatarUrl" [src]="video.athleteAvatarUrl" [alt]="video.athleteName">
                 <ion-icon *ngIf="!video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
               </div>
+
               <div>
                 <h3>{{ video.athleteName }}</h3>
                 <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
@@ -207,7 +214,7 @@
       <div class="video-stack">
         <article class="surface showcase-card be-fade-in" *ngFor="let video of newVideos; trackBy: trackByVideoId">
           <div class="video-meta">
-            <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
+            <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
               <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
               <p class="meta-line" *ngIf="video.modality || video.position">

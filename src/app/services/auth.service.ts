@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import {tap, catchError, map} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 
@@ -9,6 +9,7 @@ export interface User {
   id: string;
   email: string;
   hasProfile: boolean;
+  profileId: number | null;
 }
 
 export interface JwtPayload {
@@ -45,13 +46,22 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User> {
-    return this.apiService.get<User>('/profile/me').pipe(
+    return this.apiService.get<any>('/profile/me').pipe(
+      map(response => {
+        const user: User = {
+          id: response.id?.toString(),
+          email: response.email,
+          hasProfile: response.hasProfile,
+          profileId: response.profileId
+        };
+        return user;
+      }),
       tap(user => {
         this.currentUserSubject.next(user);
         this.authState.next(true);
       }),
       catchError(err => {
-        this.logout(); // Logout on error to clear invalid state
+        this.logout();
         return throwError(() => err);
       })
     );
@@ -84,7 +94,8 @@ export class AuthService {
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
-          hasProfile: response.hasProfile
+          hasProfile: response.hasProfile,
+          profileId: null
         };
         this.currentUserSubject.next(user);
         this.showToast(response.message || 'Login bem-sucedido!', 'success');
@@ -108,7 +119,8 @@ export class AuthService {
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
-          hasProfile: response.hasProfile
+          hasProfile: response.hasProfile,
+          profileId: null
         };
         this.currentUserSubject.next(user);
         this.showToast(response.message || 'Login com Google bem-sucedido!', 'success');
