@@ -83,6 +83,12 @@
               </div>
               <div>
                 <h3>{{ card.athleteName }}</h3>
+                <p *ngIf="card.likes">{{ card.likes | number }} curtidas</p>
+                <p class="meta-line" *ngIf="card.modalidade || card.localidade">
+                  <span *ngIf="card.modalidade">{{ card.modalidade }}</span>
+                  <span *ngIf="card.modalidade && card.localidade"> • </span>
+                  <span *ngIf="card.localidade">{{ card.localidade }}</span>
+                </p>
               </div>
             </button>
 
@@ -100,11 +106,6 @@
           </div>
 
           <div class="showcase-body">
-            <p class="meta-line" *ngIf="card.modalidade || card.localidade">
-              <span *ngIf="card.modalidade">{{ card.modalidade }}</span>
-              <span *ngIf="card.modalidade && card.localidade"> • </span>
-              <span *ngIf="card.localidade">{{ card.localidade }}</span>
-            </p>
             <p class="showcase-description" *ngIf="card.destaque">{{ card.destaque }}</p>
           </div>
         </article>

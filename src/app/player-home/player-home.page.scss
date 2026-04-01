@@ -56,3 +56,27 @@
 .showcase-card {
   margin-bottom: 8px; /* Margem de segurança inferior */
 }
+
+.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24);overflow:hidden}
+.talent-id {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Adicione esta linha */
+  text-decoration: none; /* Garante que não haja sublinhados */
+  cursor: pointer;
+}
+
+/* Evita que o avatar seja esmagado se o nome for muito longo */
+.avatar-shell {
+  flex-shrink: 0;
+}
+.player-profile-id {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Ajuste o valor (12px, 16px, etc) conforme sua preferência */
+}
+
+/* Importante para que o avatar não diminua de tamanho se o nome for muito longo */
+.player-profile-avatar, .be-skeleton-avatar {
+  flex-shrink: 0;
+}

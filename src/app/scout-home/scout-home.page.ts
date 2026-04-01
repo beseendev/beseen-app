@@ -295,6 +295,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       localidade: (post.user as any).region,
       destaque: post.caption,
       favorito: post.isLiked,
+      likes: post.likesCount,
       inviteStatus: post.inviteStatus
     };
   }

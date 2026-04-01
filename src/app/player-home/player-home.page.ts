@@ -64,6 +64,7 @@ interface PlayerShowcaseVideo {
   id: string;
   athleteId: string;
   athleteName: string;
+  athleteAvatarUrl?: string | null;
   mediaUrl: string;
   modality?: string;
   position?: string;
@@ -235,10 +236,12 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   private mapPostToVideo(post: Post, isMine: boolean = false): PlayerShowcaseVideo {
+    const rawAvatar = post.user.urlPerfil || (post.user as any).urlProfileImage || null;
     return {
       id: post.id,
       athleteId: String(post.athleteId || post.user.id),
       athleteName: post.user.username,
+      athleteAvatarUrl: this.normalizeAvatarUrl(rawAvatar),
       mediaUrl: post.mediaUrl,
       modality: (post.user as any).modality,
       position: (post.user as any).position,
