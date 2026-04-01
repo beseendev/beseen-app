@@ -24,7 +24,8 @@ import {
 import { addIcons } from 'ionicons';
 import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
-import { FileType, ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/profile.service';
+import { FileType } from '../models/upload.model';
 import { Router } from '@angular/router';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';

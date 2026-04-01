@@ -103,6 +103,7 @@
   background: rgba(30, 41, 59, 0.96);
   color: var(--be-color-text-2);
   font-size: 0.9rem;
+  align-self: flex-start;
 }
 
 .chat-bubble.own {
@@ -137,7 +138,6 @@
   --inner-border-width: 0;
   --padding-start: 12px;
   --padding-end: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .chat-input ion-input {

@@ -70,7 +70,7 @@ export class InvitesSheetComponent implements OnInit {
 
     this.postService.getInvites(10, this.nextCursor || undefined, this.postId).subscribe({
       next: (response) => {
-        this.invites = [...this.invites, ...response.invites];
+        this.invites = [...this.invites, ...response.items];
         this.nextCursor = response.nextCursor;
         this.hasMore = !!response.nextCursor;
         this.isLoading = false;

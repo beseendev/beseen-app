@@ -20,7 +20,6 @@ import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
-import { ScoutProfileService } from '../services/scout-profile.service';
 import { ChatService } from '../services/chat.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
@@ -54,7 +53,6 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   private readonly postService = inject(PostService);
-  private readonly scoutProfileService = inject(ScoutProfileService);
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
   private readonly modalController = inject(ModalController);
@@ -76,8 +74,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    this.scoutProfile = await this.scoutProfileService.getProfile();
-    
+
     // Inscreve-se no stream de posts da home
     this.homePostsSub = this.postService.homePosts$.subscribe(posts => {
       if (this.selectedTab === 'vitrine') {
@@ -130,7 +127,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   setActiveTab(tab: 'vitrine' | 'favoritos'): void {
     if (this.selectedTab === tab) return;
-    
+
     this.selectedTab = tab;
     this.refreshCurrentTab();
   }
@@ -172,7 +169,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   get favoriteVideoCards(): FavoriteAthleteVideoCard[] {
-    // Na aba de favoritos, todos os cards já são favoritos, 
+    // Na aba de favoritos, todos os cards já são favoritos,
     // mas mantemos o filtro por segurança ou para cards individuais na vitrine
     return this.allVideoCards.filter(card => card.favorito);
   }
@@ -181,8 +178,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const isCurrentlyFavorite = card.favorito;
     const postId = card.postId;
 
-    const action = isCurrentlyFavorite 
-      ? this.postService.unlikePost(postId) 
+    const action = isCurrentlyFavorite
+      ? this.postService.unlikePost(postId)
       : this.postService.likePost(postId);
 
     action.subscribe({
@@ -253,8 +250,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   private async showFavoriteToast(isAdded: boolean, athleteName: string): Promise<void> {
-    this.showToast(isAdded 
-      ? `${athleteName} adicionado aos favoritos` 
+    this.showToast(isAdded
+      ? `${athleteName} adicionado aos favoritos`
       : `${athleteName} removido dos favoritos`, isAdded ? 'success' : 'medium');
   }
 
@@ -294,9 +291,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       athleteAvatarUrl: post.user.urlPerfil ?? null,
       mediaUrl: post.mediaUrl,
       caption: post.caption,
-      modalidade: 'Futebol', 
-      localidade: 'Base',      
-      destaque: post.caption || 'Talento em observacao',
+      modalidade: (post.user as any).modality,
+      localidade: (post.user as any).region,
+      destaque: post.caption,
       favorito: post.isLiked,
       inviteStatus: post.inviteStatus
     };

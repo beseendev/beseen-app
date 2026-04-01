@@ -28,10 +28,8 @@ import { NavController } from '@ionic/angular';
 export class ProfileSelectionPage implements OnInit {
   profileForm: FormGroup;
   private fb = inject(FormBuilder);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private location = inject(Location);
-  private toastController = inject(ToastController);
   private navCtrl = inject(NavController);
 
   idToken: string | null = null;

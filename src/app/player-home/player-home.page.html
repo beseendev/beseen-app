@@ -106,7 +106,12 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.likes | number }} curtidas</p>
+              <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
+              <p class="meta-line" *ngIf="video.modality || video.position">
+                <span *ngIf="video.modality">{{ video.modality }}</span>
+                <span *ngIf="video.modality && video.position"> • </span>
+                <span *ngIf="video.position">{{ video.position }}</span>
+              </p>
             </button>
             <span class="status-tag" *ngIf="hasIncomingInvite(video)">Convite</span>
           </div>
@@ -129,7 +134,7 @@
 
               <ng-template #noInviteMine>
                 <ion-button size="small" fill="clear" class="empty-cta" (click)="showNoInviteToast()">
-                  Sem convite ainda
+                  Sem convite
                 </ion-button>
               </ng-template>
             </div>
@@ -143,7 +148,12 @@
         <div class="video-meta">
           <button type="button" class="profile-link" (click)="openAthleteProfile(featuredVideo)">
             <h3>{{ featuredVideo.athleteName }}</h3>
-            <p>{{ featuredVideo.likes | number }} curtidas</p>
+            <p *ngIf="featuredVideo.likes">{{ featuredVideo.likes | number }} curtidas</p>
+            <p class="meta-line" *ngIf="featuredVideo.modality || featuredVideo.position">
+              <span *ngIf="featuredVideo.modality">{{ featuredVideo.modality }}</span>
+              <span *ngIf="featuredVideo.modality && featuredVideo.position"> • </span>
+              <span *ngIf="featuredVideo.position">{{ featuredVideo.position }}</span>
+            </p>
           </button>
           <span class="status-tag">Destaque</span>
         </div>
@@ -160,7 +170,12 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.likes | number }} curtidas</p>
+              <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
+              <p class="meta-line" *ngIf="video.modality || video.position">
+                <span *ngIf="video.modality">{{ video.modality }}</span>
+                <span *ngIf="video.modality && video.position"> • </span>
+                <span *ngIf="video.position">{{ video.position }}</span>
+              </p>
             </button>
             <span class="status-tag">Ranking</span>
           </div>
@@ -182,7 +197,12 @@
           <div class="video-meta">
             <button type="button" class="profile-link" (click)="openAthleteProfile(video)">
               <h3>{{ video.athleteName }}</h3>
-              <p>{{ video.likes | number }} curtidas</p>
+              <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
+              <p class="meta-line" *ngIf="video.modality || video.position">
+                <span *ngIf="video.modality">{{ video.modality }}</span>
+                <span *ngIf="video.modality && video.position"> • </span>
+                <span *ngIf="video.position">{{ video.position }}</span>
+              </p>
             </button>
             <span class="status-tag">Novo</span>
           </div>

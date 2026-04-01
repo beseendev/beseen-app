@@ -43,7 +43,6 @@ import { ChatService } from '../services/chat.service';
 import { PostService } from '../services/post.service';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
-import { PerfilSearchComponent } from '../perfil-search/perfil-search.component';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
@@ -52,10 +51,10 @@ import { environment } from '../../environments/environment';
 interface ArenaAthlete {
   post: Post;
   name: string;
-  modality: string;
-  position: string;
-  tag: 'Em Alta' | 'Mais Visto';
-  growth: string;
+  modality?: string;
+  position?: string;
+  tag?: 'Em Alta' | 'Mais Visto';
+  growth?: string;
   likes: string;
 }
 
@@ -66,14 +65,14 @@ interface PlayerShowcaseVideo {
   athleteId: string;
   athleteName: string;
   mediaUrl: string;
-  modality: string;
-  position: string;
-  region: string;
+  modality?: string;
+  position?: string;
+  region?: string;
   description: string;
   likes: number;
   createdAt: string;
   scoutId: string;
-  scoutName: string;
+  scoutName?: string;
   scoutAvatarUrl?: string | null;
   hasInvite: boolean;
   isMine: boolean;
@@ -87,26 +86,15 @@ interface PlayerShowcaseVideo {
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader,
     IonToolbar,
-    IonButtons,
     IonButton,
     IonIcon,
     IonContent,
-    IonAvatar,
     IonFooter,
-    IonSpinner,
     IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
     IonMenu,
-    IonTitle,
-    IonList,
-    IonItem,
-    IonLabel,
-    PerfilSearchComponent,
     IonBadge,
     ProfileDrawerComponent
   ],
@@ -118,7 +106,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   avatarLoadFailed = false;
   isLoading = true;
   userRole: string | null = null;
-  isMessagesMenuOpen = false;
   activeTab: ArenaTab = 'mine';
 
   posts$: Observable<Post[]>;
@@ -139,9 +126,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   private threadsSubscription!: Subscription;
-
-  private readonly modalities = ['Futebol', 'Basquete', 'Vôlei', 'Atletismo', 'Futsal', 'Natação'];
-  private readonly positions = ['Atacante', 'Armador', 'Ponteiro', 'Meio-Campo', 'Pivô', 'Líbero'];
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
@@ -171,7 +155,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     );
 
     this.extractRoleFromToken();
-    this.initializeMockShowcase();
 
     addIcons({
       chatbubbleEllipsesOutline,
@@ -257,31 +240,18 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       athleteId: String(post.athleteId || post.user.id),
       athleteName: post.user.username,
       mediaUrl: post.mediaUrl,
-      modality: 'Futebol',
-      position: 'Atleta',
-      region: '',
+      modality: (post.user as any).modality,
+      position: (post.user as any).position,
+      region: (post.user as any).region,
       description: post.caption,
       likes: post.likesCount,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),
-      scoutName: 'Olheiro',
+      scoutName: (post as any).scoutName,
       hasInvite: !!post.inviteStatus,
       isMine: isMine,
       inviteStatus: post.inviteStatus
     };
-  }
-
-  onMenuOpen(): void {
-  }
-
-  onMenuClose(): void {
-  }
-
-  loadContacts(): void {
-  }
-
-  loadMoreContacts(event: any): void {
-    event.target.complete();
   }
 
   setActiveTab(tab: ArenaTab): void {
@@ -324,20 +294,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     }
   }
 
-  onMessagesClick(): void {
-    this.menuController.open('messagesMenu');
-  }
-
-  onHomeClick(): void {
-    this.content.scrollToTop(500);
-  }
-
   goToCreatePost(): void {
     this.router.navigateByUrl('/create-post');
-  }
-
-  onHeaderAvatarClick(): void {
-    this.menuController.open('profileMenu');
   }
 
   onAvatarImageError(): void {
@@ -369,28 +327,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  closeMessagesMenu(): void {
-    this.menuController.close('messagesMenu');
-  }
-
-  selectContact(contact: any): void {
-    this.menuController.close('messagesMenu');
-  }
-
-  trackById(index: number, post: Post): string {
-    return post.id;
-  }
-
-  trackByAthleteId(index: number, athlete: ArenaAthlete): string {
-    return athlete.post.id;
-  }
-
   trackByVideoId(index: number, video: PlayerShowcaseVideo): string {
     return video.id;
-  }
-
-  isVideo(post: Post): boolean {
-    return post.mediaType === FileType.VIDEO;
   }
 
   hasIncomingInvite(video: PlayerShowcaseVideo): boolean {
@@ -412,15 +350,9 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     if (!this.hasIncomingInvite(video)) {
       return;
     }
-
-    // Agora o fluxo real é via openInvitesSheet ou pela inbox central.
-    // Para consistência, abrimos a lista de convites do post se for Ver Convite.
     if (video.inviteStatus === 'PENDING') {
       this.openInvitesSheet(video.id);
     } else {
-      // Se já aceitou, o ideal é abrir a modal de chat diretamente se tivermos o threadId
-      // No momento o componente de vídeo não tem o threadId direto,
-      // então instruímos o usuário a ir pela central de chats ou listagem.
       this.openChatInbox();
     }
   }
@@ -516,14 +448,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     }
   }
 
-  private initializeMockShowcase(): void {
-    this.showcaseVideos = [];
-    this.rankingVideos = [];
-    this.newVideos = [];
-    this.myVideos = [];
-    this.featuredVideo = null;
-  }
-
   private getFeaturedPost(posts: Post[]): Post | null {
     if (posts.length === 0) {
       return null;
@@ -559,33 +483,27 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   private toArenaAthlete(post: Post, seed: number): ArenaAthlete {
-    const modality = this.modalities[seed % this.modalities.length];
-    const position = this.positions[(seed + 2) % this.positions.length];
+    const modality = (post.user as any).modality;
+    const position = (post.user as any).position;
     const name = post.user?.username?.trim() || 'Atleta';
-    const tag: 'Em Alta' | 'Mais Visto' = seed % 2 === 0 ? 'Em Alta' : 'Mais Visto';
-    const growth = `+${6 + (seed % 7) * 3}%`;
-    const likes = this.formatLikes(post.likesCount, post.commentsCount, seed);
+    const likes = this.formatLikes(post.likesCount);
 
     return {
       post,
       name,
       modality,
       position,
-      tag,
-      growth,
       likes,
     };
   }
 
-  private formatLikes(likesCount: number, commentsCount: number, seed: number): string {
-    const estimatedLikes = likesCount * 137 + commentsCount * 53 + 1200 + seed * 80;
-
-    if (estimatedLikes >= 1000) {
-      const inThousands = (estimatedLikes / 1000).toFixed(1).replace('.', ',');
+  private formatLikes(likesCount: number): string {
+    if (likesCount >= 1000) {
+      const inThousands = (likesCount / 1000).toFixed(1).replace('.', ',');
       return `${inThousands} mil`;
     }
 
-    return `${estimatedLikes}`;
+    return `${likesCount}`;
   }
 
   ngOnDestroy(): void {

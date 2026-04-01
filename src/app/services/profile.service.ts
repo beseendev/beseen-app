@@ -10,23 +10,7 @@ import {
   ProfilePlayerCreationRequest, ProfileResponse,
   ProfileScoutCreationRequest
 } from '../models/profile.model';
-
-export enum FileType {
-  PROFILE_IMAGE = 'PROFILE_IMAGE',
-  COVER_IMAGE = 'COVER_IMAGE'
-}
-
-export interface UploadRequest {
-  fileName: string;
-  contentType: string;
-  category: FileType;
-  size: number;
-}
-
-export interface UploadResponse {
-  uploadUrl: string;
-  fileId: number;
-}
+import { FileType, UploadRequest, UploadResponse } from '../models/upload.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +22,7 @@ export class ProfileService {
   private readonly profileEndpoint = '/profile';
 
   createPlayerProfile(data: ProfilePlayerCreationRequest): Observable<any> {
-    return this.apiService.post<any>(`${this.profileEndpoint}/create-player`, data).pipe(
+    return this.apiService.post<any>(`${this.profileEndpoint}/player`, data).pipe(
       tap(response => {
         this.showToast(response.message || 'Perfil de jogador salvo com sucesso!', 'success');
       })
@@ -46,7 +30,7 @@ export class ProfileService {
   }
 
   createScoutProfile(data: ProfileScoutCreationRequest): Observable<any> {
-    return this.apiService.post<any>(`${this.profileEndpoint}/create-scout`, data).pipe(
+    return this.apiService.post<any>(`${this.profileEndpoint}/scout`, data).pipe(
       tap(response => {
         this.showToast(response.message || 'Perfil de olheiro salvo com sucesso!', 'success');
       })
@@ -54,9 +38,17 @@ export class ProfileService {
   }
 
   updatePlayerProfile(data: Partial<Profile>): Observable<any> {
-    return this.apiService.put<any>(`${this.profileEndpoint}/update-player`, data).pipe(
+    return this.apiService.put<any>(`${this.profileEndpoint}/player`, data).pipe(
       tap(response => {
         this.showToast(response.message || 'Perfil atualizado com sucesso!', 'success');
+      })
+    );
+  }
+
+  updateScoutProfile(data: any): Observable<any> {
+    return this.apiService.put<any>(`${this.profileEndpoint}/scout`, data).pipe(
+      tap(response => {
+        this.showToast(response.message || 'Perfil de olheiro atualizado com sucesso!', 'success');
       })
     );
   }

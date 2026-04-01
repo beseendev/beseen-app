@@ -35,9 +35,9 @@ import {
   ScoutProfile,
   ScoutTypeOption
 } from '../models/scout-profile.model';
-import { ScoutProfileService } from '../services/scout-profile.service';
 import { AuthService, User } from '../services/auth.service';
-import { FileType, ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/profile.service';
+import { FileType } from '../models/upload.model';
 import { ProfileScoutCreationRequest } from '../models/profile.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
@@ -91,7 +91,6 @@ export class CreateProfileScoutPage implements OnInit {
   readonly stateOptions = BR_STATE_OPTIONS;
 
   private readonly fb = inject(FormBuilder);
-  private readonly scoutProfileService = inject(ScoutProfileService);
   private readonly profileService = inject(ProfileService);
   private readonly authService = inject(AuthService);
   private readonly toastController = inject(ToastController);
@@ -132,29 +131,20 @@ export class CreateProfileScoutPage implements OnInit {
       documentoUploadId: [''],
       linkReferencia: ['', [optionalUrlValidator()]],
       aceitouTermos: [false, [requiredTrueValidator()]],
-      sobreMim: ['', [Validators.required, Validators.minLength(300), Validators.maxLength(500)]],
+      bio: ['', [Validators.required, Validators.minLength(300), Validators.maxLength(500)]],
       oQueBuscaNoBeSeen: ['', [Validators.maxLength(300)]]
     });
   }
 
   async ngOnInit(): Promise<void> {
-    this.setupConditionalValidation();
-
-    const savedProfile = await this.scoutProfileService.getProfile();
-    if (savedProfile) {
-      this.profileForm.patchValue(savedProfile);
-      this.phoneDisplayValue = this.formatPhoneBR(savedProfile.telefoneWhatsapp ?? '');
-      this.cpfDisplayValue = this.formatCPF(savedProfile.documentNumber ?? '');
-      return;
-    }
   }
 
   get isTipoOutroSelected(): boolean {
     return this.profileForm.get('tipoOlheiro')?.value === 'Outro';
   }
 
-  get sobreMimLength(): number {
-    return this.getControlValueLength('sobreMim');
+  get bioLength(): number {
+    return this.getControlValueLength('bio');
   }
 
   get oQueBuscaLength(): number {
@@ -189,11 +179,6 @@ export class CreateProfileScoutPage implements OnInit {
     return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
   }
 
-  isValidUrl(url: string): boolean {
-    const normalizedUrl = (url ?? '').trim();
-    return /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(normalizedUrl) || normalizedUrl.startsWith('data:image/');
-  }
-
   onPhoneInput(event: any): void {
     const rawValue = event.target.value || '';
     const digits = this.onlyDigits(rawValue).slice(0, 11);
@@ -210,10 +195,6 @@ export class CreateProfileScoutPage implements OnInit {
     this.cpfDisplayValue = this.formatCPF(digits);
     this.profileForm.get('documentNumber')?.setValue(digits, { emitEvent: false });
     event.target.value = this.cpfDisplayValue;
-  }
-
-  triggerPhotoSelection(): void {
-    this.photoInput?.nativeElement.click();
   }
 
   async selectProfileImage() {
@@ -310,7 +291,7 @@ export class CreateProfileScoutPage implements OnInit {
         documentoUploadId: this.normalizeOptionalValue(formValue.documentoUploadId),
         linkReferencia: this.normalizeOptionalValue(formValue.linkReferencia),
         aceitouTermos: !!formValue.aceitouTermos,
-        sobreMim: formValue.sobreMim.trim(),
+        bio: formValue.bio.trim(),
         oQueBuscaNoBeSeen: this.normalizeOptionalValue(formValue.oQueBuscaNoBeSeen)
       };
 
@@ -373,22 +354,6 @@ export class CreateProfileScoutPage implements OnInit {
 
   goBack(): void {
     this.location.back();
-  }
-
-  private setupConditionalValidation(): void {
-    const tipoOlheiroControl = this.profileForm.get('tipoOlheiro');
-    const outroTextoControl = this.profileForm.get('tipoOlheiroOutroTexto');
-
-    tipoOlheiroControl?.valueChanges.subscribe(selectedType => {
-      if (selectedType === 'Outro') {
-        outroTextoControl?.setValidators([Validators.required, Validators.minLength(3)]);
-      } else {
-        outroTextoControl?.clearValidators();
-        outroTextoControl?.setValue('', { emitEvent: false });
-      }
-
-      outroTextoControl?.updateValueAndValidity({ emitEvent: false });
-    });
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

@@ -247,7 +247,7 @@
       </ion-list>
     </section>
 
-    <section class="section-card" *ngIf="isEditing || isMyProfile || profile.sobreMim || profile.oQueBuscaNoBeSeen">
+    <section class="section-card" *ngIf="isEditing || isMyProfile || profile.bio || profile.oQueBuscaNoBeSeen">
       <div class="section-header">
         <h2>Sobre</h2>
         <p>Apresentação e objetivos.</p>
@@ -256,23 +256,23 @@
       <ion-list lines="none">
         <ion-item *ngIf="isEditing; else readSobre">
           <ion-textarea
-            label="Sobre mim"
+            label="Bio"
             labelPlacement="stacked"
-            [(ngModel)]="draftProfile.sobreMim"
+            [(ngModel)]="draftProfile.bio"
             [autoGrow]="true"
             placeholder="Conte sobre sua trajetória">
           </ion-textarea>
         </ion-item>
         <ng-template #readSobre>
-          <div class="text-card" *ngIf="profile.sobreMim">
+          <div class="text-card" *ngIf="profile.bio">
             <div class="text-card-title">
               <ion-icon name="information-circle-outline"></ion-icon>
-              <span>Sobre mim</span>
+              <span>Bio</span>
             </div>
-            <ion-text>{{ profile.sobreMim }}</ion-text>
+            <ion-text>{{ profile.bio }}</ion-text>
           </div>
-          <div class="text-card empty-state" *ngIf="!profile.sobreMim && isMyProfile">
-             <p>Você ainda não adicionou uma descrição sobre você.</p>
+          <div class="text-card empty-state" *ngIf="!profile.bio && isMyProfile">
+             <p>Você ainda não adicionou uma bio.</p>
           </div>
         </ng-template>
 

@@ -6,15 +6,36 @@ export interface Profile {
   fullName: string;
   urlPerfil?: string | null;
   urlProfileImage?: string | null;
+  fotoPerfilUrl?: string | null;
+  urlCoverImage?: string | null;
   role: 'JOGADOR' | 'CLUBE';
   dateOfBirth?: string;
   bio?: string;
+  documentNumber?: string;
+  phoneNumber?: string;
+
+  // Player fields
   position?: string;
   height?: string;
   weight?: string;
   careerHistory?: string;
-  clubName?: string;
-  areaOfExpertise?: string;
+
+  // Scout fields
+  tipoOlheiro?: ScoutTypeOption;
+  tipoOlheiroOutroTexto?: string | null;
+  organizacaoOuClube?: string | null;
+  cargoOuFuncao?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  pais?: string | null;
+  modalidade?: string | null;
+  categoriasIdadeAlvo?: ScoutAgeCategory[];
+  posicoesInteresse?: ScoutPosition[];
+  regiaoAtuacaoTexto?: string | null;
+  linkReferencia?: string | null;
+  oQueBuscaNoBeSeen?: string | null;
+  documentoVerificado?: boolean;
+  aceitouTermos?: boolean;
 }
 
 export interface ProfilePlayerCreationRequest {
@@ -50,7 +71,7 @@ export interface ProfileScoutCreationRequest {
   documentoUploadId?: string | null;
   linkReferencia?: string | null;
   aceitouTermos: boolean;
-  sobreMim: string;
+  bio: string;
   oQueBuscaNoBeSeen?: string | null;
 }
 
@@ -67,8 +88,36 @@ export interface PageResponse<T> {
 
 export interface ProfileResponse {
   id: number;
+  name: string;
   fullName: string;
-  firstName: string;
-  lastName: string;
   urlProfileImage?: string;
+  urlCoverImage?: string;
+  role: string;
+  dateOfBirth?: string;
+  bio?: string;
+  documentNumber?: string;
+  phoneNumber?: string;
+
+  // Player fields
+  position?: string;
+  height?: string;
+  weight?: string;
+  careerHistory?: string;
+
+  // Scout fields
+  tipoOlheiro?: string;
+  tipoOlheiroOutroTexto?: string;
+  organizacaoOuClube?: string;
+  cargoOuFuncao?: string;
+  cidade?: string;
+  estado?: string;
+  pais?: string;
+  modalidade?: string;
+  categoriasIdadeAlvo?: string[];
+  posicoesInteresse?: string[];
+  regiaoAtuacaoTexto?: string;
+  linkReferencia?: string;
+  oQueBuscaNoBeSeen?: string;
+  documentoVerificado?: boolean;
+  aceitouTermos?: boolean;
 }

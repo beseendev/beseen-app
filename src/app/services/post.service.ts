@@ -8,7 +8,7 @@ import { FileType } from '../models/upload.model';
 import { PostInvitePageResponse, PostInviteResponse } from '../models/player-chat.models';
 
 interface PostPageResponseDto {
-  posts: PostResponseDto[];
+  items: PostResponseDto[];
   nextCursor: string | null;
 }
 
@@ -74,7 +74,7 @@ export class PostService {
 
     return this.apiService.get<PostPageResponseDto>(`/posts/my-posts`, { params }).pipe(
       map(response => {
-        const mappedPosts = response.posts.map(postDto => this.mapPostResponseToPost(postDto));
+        const mappedPosts = response.items.map(postDto => this.mapPostResponseToPost(postDto));
         return { posts: mappedPosts, nextCursor: response.nextCursor };
       }),
       tap(response => {
@@ -100,7 +100,7 @@ export class PostService {
 
     return this.apiService.get<PostPageResponseDto>(`/posts`, { params }).pipe(
       map(response => {
-        const mappedPosts = response.posts.map(postDto => this.mapPostResponseToPost(postDto));
+        const mappedPosts = response.items.map(postDto => this.mapPostResponseToPost(postDto));
         return { posts: mappedPosts, nextCursor: response.nextCursor };
       }),
       tap(response => {
@@ -186,7 +186,7 @@ export class PostService {
 
     return this.apiService.get<PostPageResponseDto>(`/posts/favorites`, { params }).pipe(
       map(response => {
-        const mappedPosts = response.posts.map(postDto => this.mapPostResponseToPost(postDto));
+        const mappedPosts = response.items.map(postDto => this.mapPostResponseToPost(postDto));
         return { posts: mappedPosts, nextCursor: response.nextCursor };
       })
     );

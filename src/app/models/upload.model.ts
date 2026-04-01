@@ -1,6 +1,8 @@
 export enum FileType {
   IMAGE = 'IMAGE',
-  VIDEO = 'VIDEO'
+  VIDEO = 'VIDEO',
+  PROFILE_IMAGE = 'PROFILE_IMAGE',
+  COVER_IMAGE = 'COVER_IMAGE'
 }
 
 export interface UploadRequest {

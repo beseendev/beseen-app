@@ -19,7 +19,7 @@ export interface ScoutProfile {
   documentoUploadId?: string | null;
   linkReferencia?: string | null;
   aceitouTermos: boolean;
-  sobreMim: string;
+  bio: string;
   oQueBuscaNoBeSeen?: string | null;
 }
 

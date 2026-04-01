@@ -39,9 +39,8 @@ import { environment } from '../../environments/environment';
   ],
 })
 export class ProfileScoutPage implements OnInit {
-  private readonly LOCAL_PROFILE_STORAGE_KEY = 'beseen-scout-profile-overrides';
   profileId: string | null = null;
-  profile: any | null = null;
+  profile: Profile | null = null;
   isMyProfile = false;
   isEditing = false;
   draftProfile: {
@@ -49,11 +48,15 @@ export class ProfileScoutPage implements OnInit {
     tipoOlheiroOutroTexto?: string;
     organizacaoOuClube?: string;
     cargoOuFuncao?: string;
+    cidade?: string;
+    estado?: string;
+    pais?: string;
     modalidade?: string;
     categoriasIdadeAlvo?: string[];
     posicoesInteresse?: string[];
     regiaoAtuacaoTexto?: string;
-    sobreMim?: string;
+    linkReferencia?: string;
+    bio?: string;
     oQueBuscaNoBeSeen?: string;
   } = {};
   isLoading = false;
@@ -101,21 +104,14 @@ export class ProfileScoutPage implements OnInit {
           tap(currentUserId => {
             this.isMyProfile = !this.profileId || this.profileId === currentUserId;
           }),
-          switchMap(() => this.profileService.getProfile(this.profileId ?? undefined).pipe(
-            catchError(() => of(this.getMockProfile(this.profileId)))
-          ))
+          switchMap(() => this.profileService.getProfile(this.profileId ?? undefined))
         );
       }),
       tap(profile => {
-        this.profile = this.applyLocalOverrides(profile);
+        this.profile = profile;
         if (this.profile) {
           const rawAvatar = this.profile.urlProfileImage || this.profile.urlPerfil || this.profile.fotoPerfilUrl || null;
           this.profile.urlProfileImage = this.normalizeAvatarUrl(rawAvatar);
-          
-          // Mapeia bio da API para sobreMim se sobreMim estiver vazio
-          if (this.profile.bio && !this.profile.sobreMim) {
-            this.profile.sobreMim = this.profile.bio;
-          }
         }
         if (!this.profileId && profile) {
           this.profileId = profile.id;
@@ -153,7 +149,6 @@ export class ProfileScoutPage implements OnInit {
     return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
   }
 
-  // Método mantido para seguir o padrão do profile-player
   private resetAndLoadUserPosts() {
     console.log('Reset and load user posts - No posts section in scout profile');
   }
@@ -183,30 +178,37 @@ export class ProfileScoutPage implements OnInit {
 
     this.isLoading = true;
 
-    // Simulação de atualização no backend (mantendo o comportamento do MVP do player)
     const updatedFields = {
       tipoOlheiro: this.draftProfile.tipoOlheiro,
       tipoOlheiroOutroTexto: this.draftProfile.tipoOlheiroOutroTexto,
       organizacaoOuClube: this.draftProfile.organizacaoOuClube,
       cargoOuFuncao: this.draftProfile.cargoOuFuncao,
+      cidade: this.draftProfile.cidade,
+      estado: this.draftProfile.estado,
+      pais: this.draftProfile.pais,
       modalidade: this.draftProfile.modalidade,
       categoriasIdadeAlvo: this.draftProfile.categoriasIdadeAlvo,
       posicoesInteresse: this.draftProfile.posicoesInteresse,
       regiaoAtuacaoTexto: this.draftProfile.regiaoAtuacaoTexto,
-      sobreMim: this.draftProfile.sobreMim,
+      linkReferencia: this.draftProfile.linkReferencia,
+      bio: this.draftProfile.bio,
       oQueBuscaNoBeSeen: this.draftProfile.oQueBuscaNoBeSeen,
     };
 
-    setTimeout(() => {
-      this.profile = {
-        ...this.profile,
-        ...updatedFields
-      };
-      this.persistLocalOverrides(this.profile);
-      this.isEditing = false;
-      this.isLoading = false;
-      this.showToast('Perfil atualizado com sucesso!', 'success');
-    }, 1000);
+    this.profileService.updateScoutProfile(updatedFields).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: (response) => {
+        this.profile = {
+          ...this.profile,
+          ...updatedFields
+        } as Profile;
+        this.isEditing = false;
+      },
+      error: (err) => {
+        console.error('Failed to update profile', err);
+      }
+    });
   }
 
   private async showToast(message: string, color: 'success' | 'danger' = 'success') {
@@ -230,7 +232,7 @@ export class ProfileScoutPage implements OnInit {
   async refreshProfile(event: any) {
     this.profileService.getProfile(this.profileId ?? undefined).subscribe({
       next: (profile) => {
-        this.profile = this.applyLocalOverrides(profile);
+        this.profile = profile;
         this.syncDraftProfile();
         event.target.complete();
       },
@@ -258,78 +260,17 @@ export class ProfileScoutPage implements OnInit {
       tipoOlheiroOutroTexto: this.profile.tipoOlheiroOutroTexto || '',
       organizacaoOuClube: this.profile.organizacaoOuClube || '',
       cargoOuFuncao: this.profile.cargoOuFuncao || '',
+      cidade: this.profile.cidade || '',
+      estado: this.profile.estado || '',
+      pais: this.profile.pais || '',
       modalidade: this.profile.modalidade || 'Futebol de campo',
       categoriasIdadeAlvo: Array.isArray(this.profile.categoriasIdadeAlvo) ? [...this.profile.categoriasIdadeAlvo] : [],
       posicoesInteresse: Array.isArray(this.profile.posicoesInteresse) ? [...this.profile.posicoesInteresse] : [],
       regiaoAtuacaoTexto: this.profile.regiaoAtuacaoTexto || '',
-      sobreMim: this.profile.sobreMim || '',
+      linkReferencia: this.profile.linkReferencia || '',
+      bio: this.profile.bio || '',
       oQueBuscaNoBeSeen: this.profile.oQueBuscaNoBeSeen || '',
     };
   }
-
-  private applyLocalOverrides(profile: any): any {
-    if (!profile || !this.isMyProfile) {
-      return profile;
-    }
-
-    try {
-      const rawValue = localStorage.getItem(this.LOCAL_PROFILE_STORAGE_KEY);
-      if (!rawValue) {
-        return profile;
-      }
-
-      const overrides = JSON.parse(rawValue);
-      return {
-        ...profile,
-        ...overrides,
-      };
-    } catch {
-      return profile;
-    }
-  }
-
-  private persistLocalOverrides(profile: any): void {
-    localStorage.setItem(this.LOCAL_PROFILE_STORAGE_KEY, JSON.stringify(profile));
-  }
-
-  private getMockProfile(profileId: string | null): any {
-    const scouts: Record<string, any> = {
-      'scout-1': {
-        id: 'scout-1',
-        name: 'Ricardo Scout',
-        fullName: 'Ricardo Scout de Castro',
-        role: 'CLUBE',
-        tipoOlheiro: 'Clube',
-        organizacaoOuClube: 'BeSeen FC',
-        cargoOuFuncao: 'Scout Sênior',
-        dateOfBirth: '1985-05-20',
-        modalidade: 'Futebol de campo',
-        categoriasIdadeAlvo: ['Sub-17', 'Sub-20'],
-        posicoesInteresse: ['Atacante', 'Meia'],
-        regiaoAtuacaoTexto: 'São Paulo e Rio de Janeiro',
-        sobreMim: 'Experiência de 15 anos observando atletas de base em grandes clubes do Brasil.',
-        oQueBuscaNoBeSeen: 'Novos talentos com perfil técnico elevado para as categorias de base.',
-        documentoVerificado: true
-      },
-      'scout-2': {
-        id: 'scout-2',
-        name: 'Carlos Agente',
-        fullName: 'Carlos Agente Silva',
-        role: 'CLUBE',
-        tipoOlheiro: 'Agente',
-        organizacaoOuClube: 'Elite Sports Management',
-        cargoOuFuncao: 'Diretor Esportivo',
-        dateOfBirth: '1978-10-12',
-        modalidade: 'Futebol de campo',
-        categoriasIdadeAlvo: ['Sub-20', 'Profissional'],
-        posicoesInteresse: ['Goleiro', 'Zagueiro'],
-        regiaoAtuacaoTexto: 'Brasil e Exterior',
-        sobreMim: 'Agente licenciado focado em carreira internacional.',
-        oQueBuscaNoBeSeen: 'Atletas prontos para o mercado europeu.',
-        documentoVerificado: true
-      }
-    };
-
-    return scouts[profileId || 'scout-1'] || scouts['scout-1'];
-  }
 }
+

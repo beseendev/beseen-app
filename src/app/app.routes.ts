@@ -56,12 +56,13 @@ export const routes: Routes = [
   },
   {
     path: 'create-profile-scout',
-    loadComponent: () => import('./create-profile-scout/create-profile-scout.page').then(m => m.CreateProfileScoutPage)
+    loadComponent: () => import('./create-profile-scout/create-profile-scout.page').then(m => m.CreateProfileScoutPage),
+    canActivate: [authGuard]
   },
   {
     path: 'profile-scout',
     loadComponent: () => import('./profile-scout/profile-scout.page').then(m => m.ProfileScoutPage),
-    canActivate: [authGuard]
+    canActivate: [authGuard, profileGuard]
   },
   {
     path: 'profile-scout/:userId',
@@ -70,6 +71,7 @@ export const routes: Routes = [
   },
   {
     path: 'scout-home',
-    loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage)
+    loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage),
+    canActivate: [authGuard, profileGuard]
   },
 ];

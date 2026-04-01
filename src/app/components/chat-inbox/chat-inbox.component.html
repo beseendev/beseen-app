@@ -1,0 +1,47 @@
+<ion-content class="chat-inbox-content">
+  <div class="chat-inbox-shell">
+    <div class="chat-inbox-header">
+      <div>
+        <p>Mensagens</p>
+        <h2>Conversas com {{ isPlayer ? 'olheiros' : 'atletas' }}</h2>
+      </div>
+
+      <ion-button fill="clear" (click)="close()" aria-label="Fechar central de chats">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading$ | async">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </div>
+
+    <div class="empty-state" *ngIf="(isLoading$ | async) === false && threads.length === 0">
+      Nenhuma conversa iniciada ainda.
+    </div>
+
+    <div class="thread-list" *ngIf="threads.length > 0">
+      <button type="button" class="thread-row" *ngFor="let thread of threads; trackBy: trackByThread" (click)="openThread(thread)">
+        <div class="avatar-shell">
+          <img *ngIf="thread.counterpartAvatar" [src]="thread.counterpartAvatar" [alt]="thread.counterpartName">
+          <ion-icon *ngIf="!thread.counterpartAvatar" name="person-circle-outline"></ion-icon>
+        </div>
+
+        <div class="thread-copy">
+          <strong>{{ thread.counterpartName }}</strong>
+          <p>
+            <ng-container *ngIf="thread.status === 'PENDING'; else lastMsg">
+              {{ isPlayer ? 'Novo convite recebido' : 'Aguardando resposta do atleta' }}
+            </ng-container>
+            <ng-template #lastMsg>
+              {{ thread.lastMessage || 'Inicie a conversa...' }}
+            </ng-template>
+          </p>
+        </div>
+
+        <span class="thread-status" [class.open]="thread.status === 'ACCEPTED'">
+          {{ thread.status === 'ACCEPTED' ? 'Ativo' : 'Pendente' }}
+        </span>
+      </button>
+    </div>
+  </div>
+</ion-content>
