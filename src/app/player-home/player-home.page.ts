@@ -97,6 +97,8 @@ interface PlayerShowcaseVideo {
     IonRefresherContent,
     IonMenu,
     IonBadge,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     ProfileDrawerComponent
   ],
 })
@@ -118,6 +120,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   newVideos: PlayerShowcaseVideo[] = [];
   myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
+  private rankingNextCursor: string | null = null;
 
   activeChatCount = 0;
 
@@ -260,16 +263,51 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   setActiveTab(tab: ArenaTab): void {
     this.activeTab = tab;
 
-    if (tab === 'ranking' || tab === 'new') {
-      // Sempre recarrega os posts da API ao trocar de aba para garantir dados frescos
+    if (tab === 'ranking') {
+      this.loadRankingPosts(true);
+    } else if (tab === 'new') {
       this.postService.refreshHomePosts().subscribe();
     } else if (tab === 'mine') {
       this.loadMyPosts();
     }
   }
 
+  private loadRankingPosts(isRefresh = true, event?: any): void {
+    if (isRefresh) {
+      this.rankingNextCursor = null;
+    }
+
+    this.postService.getRankingPosts(10, this.rankingNextCursor || undefined).subscribe({
+      next: (res) => {
+        const mapped = res.posts
+          .filter(p => p.mediaType === FileType.VIDEO)
+          .map(p => this.mapPostToVideo(p));
+
+        if (isRefresh) {
+          this.featuredVideo = mapped[0] || null;
+          this.rankingVideos = mapped.slice(1);
+        } else {
+          this.rankingVideos = [...this.rankingVideos, ...mapped];
+        }
+
+        this.rankingNextCursor = res.nextCursor;
+        if (event) {
+          event.target.complete();
+          if (!res.nextCursor) {
+            event.target.disabled = true;
+          }
+        }
+      },
+      error: () => {
+        if (event) event.target.complete();
+      }
+    });
+  }
+
   loadMorePosts(event: any): void {
-    if (this.activeTab === 'ranking' || this.activeTab === 'new') {
+    if (this.activeTab === 'ranking') {
+      this.loadRankingPosts(false, event);
+    } else if (this.activeTab === 'new') {
       this.postService.loadHomePosts().subscribe({
         next: (res) => {
           event.target.complete();
@@ -286,7 +324,9 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   }
 
   refreshPosts(event: any): void {
-    if (this.activeTab === 'ranking' || this.activeTab === 'new') {
+    if (this.activeTab === 'ranking') {
+      this.loadRankingPosts(true, event);
+    } else if (this.activeTab === 'new') {
       this.postService.refreshHomePosts().subscribe({
         next: () => event.target.complete(),
         error: () => event.target.complete()
