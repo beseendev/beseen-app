@@ -19,6 +19,7 @@ export interface Profile {
   height?: string;
   weight?: string;
   careerHistory?: string;
+  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
 
   // Scout fields
   tipoOlheiro?: ScoutTypeOption;
@@ -48,6 +49,7 @@ export interface ProfilePlayerCreationRequest {
   height?: string;
   weight?: string;
   careerHistory?: string;
+  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
 }
 
 export interface ProfileScoutCreationRequest {
@@ -103,6 +105,7 @@ export interface ProfileResponse {
   height?: string;
   weight?: string;
   careerHistory?: string;
+  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
 
   // Scout fields
   tipoOlheiro?: string;

@@ -61,6 +61,11 @@ export class ProfilePlayerPage implements OnInit {
   isLoading = false;
   private readonly DEFAULT_POST_LIMIT = 10;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
+  readonly footOptions = [
+    { label: 'Destro', value: 'RIGHT' },
+    { label: 'Canhoto', value: 'LEFT' },
+    { label: 'Ambidestro', value: 'BOTH' }
+  ];
 
   private profileService = inject(ProfileService);
   private postService = inject(PostService);
@@ -185,6 +190,7 @@ export class ProfilePlayerPage implements OnInit {
       position: (this.draftProfile.position || '').trim(),
       height: (this.draftProfile.height || '').trim(),
       weight: (this.draftProfile.weight || '').trim(),
+      dominantFoot: this.draftProfile.dominantFoot,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
     };
 
@@ -310,6 +316,11 @@ export class ProfilePlayerPage implements OnInit {
     return role ?? '';
   }
 
+  getDominantFootLabel(foot: string | undefined): string {
+    const option = this.footOptions.find(o => o.value === foot);
+    return option ? option.label : (foot ?? '');
+  }
+
   private syncDraftProfile(): void {
     if (!this.profile) {
       this.draftProfile = {};
@@ -322,6 +333,7 @@ export class ProfilePlayerPage implements OnInit {
       position: this.profile.position ?? '',
       height: this.profile.height ?? '',
       weight: this.profile.weight ?? '',
+      dominantFoot: this.profile.dominantFoot,
       careerHistory: this.profile.careerHistory ?? '',
     };
   }

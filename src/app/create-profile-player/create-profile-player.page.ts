@@ -22,7 +22,7 @@ import {
   IonNote
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline } from 'ionicons/icons';
+import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ProfileService } from '../services/profile.service';
 import { FileType } from '../models/upload.model';
@@ -63,6 +63,11 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   cpfDisplayValue = '';
 
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
+  readonly footOptions = [
+    { label: 'Destro', value: 'RIGHT' },
+    { label: 'Canhoto', value: 'LEFT' },
+    { label: 'Ambidestro', value: 'BOTH' }
+  ];
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -73,7 +78,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private location = inject(Location);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline });
+    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline });
   }
 
   ngOnInit() {
@@ -151,6 +156,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       this.profileForm.addControl('position', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('height', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('weight', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('dominantFoot', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
   }

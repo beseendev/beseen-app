@@ -91,6 +91,20 @@
           </ion-item>
 
           <ion-item class="input-field" color="none">
+            <ion-icon name="body-outline" slot="start"></ion-icon>
+            <ion-select
+              formControlName="dominantFoot"
+              placeholder="Pé Dominante"
+              interface="action-sheet"
+              labelPlacement="stacked">
+              <ion-select-option *ngFor="let option of footOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div *ngIf="profileForm.get('dominantFoot')?.invalid && profileForm.get('dominantFoot')?.touched" class="error-text">
+            Pé dominante é obrigatório.
+          </div>
+
+          <ion-item class="input-field" color="none">
             <ion-icon name="list-outline" slot="start"></ion-icon>
             <ion-textarea
               formControlName="careerHistory"

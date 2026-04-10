@@ -3,7 +3,7 @@ import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, inje
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline, shieldHalfOutline } from 'ionicons/icons';
 import { ChatMessageResponse, InviteStatus } from '../../models/player-chat.models';
 import { ChatService } from '../../services/chat.service';
 import { PostService } from '../../services/post.service';
@@ -40,7 +40,8 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
       checkmarkCircleOutline,
       closeOutline,
       personCircleOutline,
-      sendOutline
+      sendOutline,
+      shieldHalfOutline
     });
   }
 

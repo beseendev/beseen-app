@@ -12,7 +12,7 @@
     </div>
 
     <div class="page-intro">
-      <h1 class="page-title">{{ profile.fullName || profile.name || 'Meu perfil' }}</h1>
+      <h1 class="page-title">{{profile.name || 'Meu perfil' }}</h1>
       <p class="page-subtitle">{{ getDisplayRole(profile.role) }}</p>
     </div>
 
@@ -27,7 +27,7 @@
           <div class="profile-copy">
 
             <span>Perfil do jogador</span>
-            <strong>{{ profile.fullName || profile.name }}</strong>
+            <strong>{{profile.name }}</strong>
             <p>{{ getDisplayRole(profile.role) }}</p>
           </div>
         </div>
@@ -91,6 +91,27 @@
             <ion-label>
               <h3>Posicao</h3>
               <p>{{ profile.position }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <ion-item *ngIf="isEditing; else readFoot">
+          <ion-icon slot="start" name="body-outline"></ion-icon>
+          <ion-select
+            label="Pe Dominante"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.dominantFoot"
+            placeholder="Selecione seu pé dominante"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let option of footOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readFoot>
+          <ion-item *ngIf="profile.dominantFoot">
+            <ion-icon slot="start" name="body-outline"></ion-icon>
+            <ion-label>
+              <h3>Pe Dominante</h3>
+              <p>{{ getDominantFootLabel(profile.dominantFoot) }}</p>
             </ion-label>
           </ion-item>
         </ng-template>

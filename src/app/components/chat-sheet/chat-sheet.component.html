@@ -18,6 +18,12 @@
       </ion-button>
     </div>
 
+    <!-- Banner de Segurança para Jogadores -->
+    <div class="safety-banner" *ngIf="isPlayer">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <p>Para sua segurança, não marque encontros presenciais sem a presença ou autorização de um responsável.</p>
+    </div>
+
     <div class="sheet-body" #messagesViewport>
       <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
         Nenhuma mensagem nesta conversa ainda.
