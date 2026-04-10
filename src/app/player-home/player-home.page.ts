@@ -104,6 +104,7 @@ interface PlayerShowcaseVideo {
 })
 export class PlayerHomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content!: IonContent;
+  @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   userProfile: any | null = null;
   avatarLoadFailed = false;
@@ -112,22 +113,15 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   activeTab: ArenaTab = 'mine';
 
   posts$: Observable<Post[]>;
-  featuredAthlete$: Observable<ArenaAthlete | null>;
-  rankingAthletes$: Observable<ArenaAthlete[]>;
-  newAthletes$: Observable<ArenaAthlete[]>;
   showcaseVideos: PlayerShowcaseVideo[] = [];
   rankingVideos: PlayerShowcaseVideo[] = [];
   newVideos: PlayerShowcaseVideo[] = [];
   myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
-  private rankingNextCursor: string | null = null;
 
+  private rankingCurrentPage = 0;
+  private myPostsNextCursor: string | null = null;
   activeChatCount = 0;
-
-  get userName(): string {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    return decodedToken?.name || 'Clube';
-  }
 
   private threadsSubscription!: Subscription;
 
@@ -142,22 +136,6 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
-
-    this.featuredAthlete$ = this.posts$.pipe(
-      map((posts) => {
-        const featuredPost = this.getFeaturedPost(posts);
-        return featuredPost ? this.toArenaAthlete(featuredPost, 0) : null;
-      })
-    );
-
-    this.rankingAthletes$ = this.posts$.pipe(
-      map((posts) => this.getRankingPosts(posts).map((post, index) => this.toArenaAthlete(post, index + 1)))
-    );
-
-    this.newAthletes$ = this.posts$.pipe(
-      map((posts) => this.getNewestPosts(posts).map((post, index) => this.toArenaAthlete(post, index + 7)))
-    );
-
     this.extractRoleFromToken();
 
     addIcons({
@@ -168,6 +146,11 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       personCircleOutline,
       starOutline
     });
+  }
+
+  get userName(): string {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.name || 'Clube';
   }
 
   ngOnInit(): void {
@@ -215,7 +198,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
         this.avatarLoadFailed = false;
         this.isLoading = false;
 
-        this.loadMyPosts();
+        this.loadMyPosts(true);
       },
       error: (err) => {
         console.error('Failed to load user profile', err);
@@ -224,18 +207,138 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     });
 
     if (this.postService.shouldLoadInitialHomePosts()) {
-      this.postService.loadHomePosts().subscribe();
+      this.postService.loadHomePosts(10).subscribe();
     }
   }
 
-  private loadMyPosts(): void {
-    this.postService.getPostsForAuthenticatedUser(10).subscribe({
+  private loadMyPosts(isRefresh = true, event?: any): void {
+    if (isRefresh) {
+      this.myPostsNextCursor = null;
+    }
+
+    this.postService.getPostsForAuthenticatedUser(10, this.myPostsNextCursor || undefined).subscribe({
       next: (res) => {
-        this.myVideos = res.posts
+        const mapped = res.posts
           .filter(p => p.mediaType === FileType.VIDEO)
           .map(p => this.mapPostToVideo(p, true));
-      }
+
+        if (isRefresh) {
+          this.myVideos = mapped;
+        } else {
+          const filtered = mapped.filter(newVideo => !this.myVideos.some(existing => existing.id === newVideo.id));
+          this.myVideos = [...this.myVideos, ...filtered];
+        }
+
+        this.myPostsNextCursor = res.nextCursor;
+        this.finalizeLoad(event, !res.nextCursor);
+      },
+      error: () => this.finalizeLoad(event)
     });
+  }
+
+  private loadRankingPosts(isRefresh = true, event?: any): void {
+    if (isRefresh) {
+      this.rankingCurrentPage = 0;
+      if (this.infiniteScroll) {
+        this.infiniteScroll.disabled = false;
+      }
+    }
+
+    const pageParam: any = this.rankingCurrentPage;
+
+    this.postService.getRankingPosts(10, pageParam).subscribe({
+      next: (res) => {
+        const mapped = res.posts
+          .filter(p => p.mediaType === FileType.VIDEO)
+          .map(p => this.mapPostToVideo(p));
+
+        if (isRefresh) {
+          this.featuredVideo = mapped[0] || null;
+          this.rankingVideos = mapped.slice(1);
+        } else {
+          const filtered = mapped.filter(newVideo =>
+            !this.rankingVideos.some(existing => existing.id === newVideo.id) &&
+            newVideo.id !== this.featuredVideo?.id
+          );
+          this.rankingVideos = [...this.rankingVideos, ...filtered];
+        }
+
+        if (res.posts.length > 0) {
+          this.rankingCurrentPage++;
+        }
+
+        this.finalizeLoad(event, res.posts.length === 0);
+      },
+      error: () => this.finalizeLoad(event)
+    });
+  }
+
+  setActiveTab(tab: ArenaTab): void {
+    this.activeTab = tab;
+
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
+    }
+
+    if (tab === 'ranking') {
+      this.loadRankingPosts(true);
+    } else if (tab === 'new') {
+      this.postService.refreshHomePosts().subscribe(() => {
+        setTimeout(() => {
+          if (this.infiniteScroll) {
+            this.infiniteScroll.disabled = false;
+          }
+        }, 300);
+      });
+    } else if (tab === 'mine') {
+      this.loadMyPosts(true);
+    }
+  }
+
+  loadMorePosts(event: any): void {
+    if (this.activeTab === 'ranking') {
+      this.loadRankingPosts(false, event);
+    } else if (this.activeTab === 'new') {
+      this.postService.loadHomePosts().subscribe({
+        next: (res) => {
+          this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    } else if (this.activeTab === 'mine') {
+      this.loadMyPosts(false, event);
+    } else {
+      this.finalizeLoad(event, true);
+    }
+  }
+
+  refreshPosts(event: any): void {
+    if (this.activeTab === 'ranking') {
+      this.loadRankingPosts(true, event);
+    } else if (this.activeTab === 'new') {
+      this.postService.refreshHomePosts().subscribe({
+        next: () => {
+          this.finalizeLoad(event);
+          setTimeout(() => {
+            if (this.infiniteScroll) {
+              this.infiniteScroll.disabled = false;
+            }
+          }, 300);
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    } else {
+      this.loadMyPosts(true, event);
+    }
+  }
+
+  private finalizeLoad(event: any, shouldDisable: boolean = false): void {
+    if (event) {
+      event.target.complete();
+      if (shouldDisable) {
+        event.target.disabled = true;
+      }
+    }
   }
 
   private mapPostToVideo(post: Post, isMine: boolean = false): PlayerShowcaseVideo {
@@ -253,88 +356,10 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       likes: post.likesCount,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),
-      scoutName: (post as any).scoutName,
       hasInvite: !!post.inviteStatus,
       isMine: isMine,
       inviteStatus: post.inviteStatus
     };
-  }
-
-  setActiveTab(tab: ArenaTab): void {
-    this.activeTab = tab;
-
-    if (tab === 'ranking') {
-      this.loadRankingPosts(true);
-    } else if (tab === 'new') {
-      this.postService.refreshHomePosts().subscribe();
-    } else if (tab === 'mine') {
-      this.loadMyPosts();
-    }
-  }
-
-  private loadRankingPosts(isRefresh = true, event?: any): void {
-    if (isRefresh) {
-      this.rankingNextCursor = null;
-    }
-
-    this.postService.getRankingPosts(10, this.rankingNextCursor || undefined).subscribe({
-      next: (res) => {
-        const mapped = res.posts
-          .filter(p => p.mediaType === FileType.VIDEO)
-          .map(p => this.mapPostToVideo(p));
-
-        if (isRefresh) {
-          this.featuredVideo = mapped[0] || null;
-          this.rankingVideos = mapped.slice(1);
-        } else {
-          this.rankingVideos = [...this.rankingVideos, ...mapped];
-        }
-
-        this.rankingNextCursor = res.nextCursor;
-        if (event) {
-          event.target.complete();
-          if (!res.nextCursor) {
-            event.target.disabled = true;
-          }
-        }
-      },
-      error: () => {
-        if (event) event.target.complete();
-      }
-    });
-  }
-
-  loadMorePosts(event: any): void {
-    if (this.activeTab === 'ranking') {
-      this.loadRankingPosts(false, event);
-    } else if (this.activeTab === 'new') {
-      this.postService.loadHomePosts().subscribe({
-        next: (res) => {
-          event.target.complete();
-          if (res && !res.nextCursor) {
-            event.target.disabled = true;
-          }
-        },
-        error: () => event.target.complete()
-      });
-    } else {
-      event.target.complete();
-      event.target.disabled = true;
-    }
-  }
-
-  refreshPosts(event: any): void {
-    if (this.activeTab === 'ranking') {
-      this.loadRankingPosts(true, event);
-    } else if (this.activeTab === 'new') {
-      this.postService.refreshHomePosts().subscribe({
-        next: () => event.target.complete(),
-        error: () => event.target.complete()
-      });
-    } else {
-      this.loadMyPosts();
-      event.target.complete();
-    }
   }
 
   goToCreatePost(): void {

@@ -88,9 +88,9 @@ export class PostService {
   private homeNextCursor: string | null = null;
   private homeHasMorePosts = true;
 
-  loadHomePosts(limit: number = 1): Observable<any> {
+  loadHomePosts(limit: number = 10): Observable<any> {
     if (!this.homeHasMorePosts) {
-      return EMPTY;
+      return of({ posts: [], nextCursor: null });
     }
 
     let params = new HttpParams().set('limit', limit.toString());
@@ -192,11 +192,10 @@ export class PostService {
     );
   }
 
-  getRankingPosts(limit: number = 10, cursor?: string): Observable<{ posts: Post[], nextCursor: string | null }> {
-    let params = new HttpParams().set('limit', limit.toString());
-    if (cursor) {
-      params = params.set('cursor', cursor);
-    }
+  getRankingPosts(limit: number = 10, page: number = 0): Observable<{ posts: Post[], nextCursor: string | null }> {
+    let params = new HttpParams()
+      .set('limit', limit.toString())
+      .set('page', page.toString());
 
     return this.apiService.get<PostPageResponseDto>(`/posts/most-liked`, { params }).pipe(
       map(response => {
