@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import {arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline} from 'ionicons/icons';
+import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline } from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
 
@@ -67,6 +67,25 @@ export class CreatePostPage implements OnInit {
         return;
       }
 
+      try {
+        const duration = await this.getVideoDuration(file);
+        const maxDuration = 30;
+
+        if (duration > maxDuration) {
+          const toast = await this.toastCtrl.create({
+            message: `O vídeo deve ter no máximo ${maxDuration} segundos para melhor engajamento.`,
+            duration: 4000,
+            color: 'warning',
+            position: 'top'
+          });
+          await toast.present();
+          this.removeSelectedMedia();
+          return;
+        }
+      } catch (err) {
+        console.error('Erro ao verificar duração do vídeo:', err);
+      }
+
       this.selectedMedia = file;
       const reader = new FileReader();
       reader.onload = () => {
@@ -87,6 +106,22 @@ export class CreatePostPage implements OnInit {
     if (clearError) {
       this.fileError = null;
     }
+  }
+
+  private getVideoDuration(file: File): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      };
+      video.onerror = (err) => {
+        window.URL.revokeObjectURL(video.src);
+        reject('Erro ao carregar o vídeo.');
+      };
+      video.src = URL.createObjectURL(file);
+    });
   }
 
   async submitPost() {
