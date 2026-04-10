@@ -170,7 +170,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       this.featuredVideo = allRanking[0] ?? null;
 
       // Exclui o primeiro vídeo (destaque) da lista de ranking
-      this.rankingVideos = allRanking.slice(1, 10);
+      this.rankingVideos = allRanking.slice(1, 11);
 
       const allNew = [...videos]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -207,7 +207,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     });
 
     if (this.postService.shouldLoadInitialHomePosts()) {
-      this.postService.loadHomePosts(10).subscribe();
+      this.postService.loadHomePosts(11).subscribe();
     }
   }
 
@@ -245,8 +245,9 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     }
 
     const pageParam: any = this.rankingCurrentPage;
+    const limit = isRefresh ? 11 : 10;
 
-    this.postService.getRankingPosts(10, pageParam).subscribe({
+    this.postService.getRankingPosts(limit, pageParam).subscribe({
       next: (res) => {
         const mapped = res.posts
           .filter(p => p.mediaType === FileType.VIDEO)

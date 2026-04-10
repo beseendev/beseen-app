@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
+import { IonicModule, ModalController, ToastController, IonInfiniteScroll } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
@@ -35,6 +35,8 @@ import { environment } from "../../environments/environment";
   imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
+  @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+
   videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
@@ -43,6 +45,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   avatarLoadFailed = false;
   isLoading = true;
   activeChatCount = 0;
+  private favoritesNextCursor: string | null = null;
 
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
@@ -129,6 +132,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     if (this.selectedTab === tab) return;
 
     this.selectedTab = tab;
+
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
+    }
+
     this.refreshCurrentTab();
   }
 
@@ -137,9 +145,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     if (this.selectedTab === 'vitrine') {
       this.postService.refreshHomePosts().subscribe();
     } else {
-      this.postService.getFavoritePosts().subscribe({
+      this.favoritesNextCursor = null;
+      this.postService.getFavoritePosts(10).subscribe({
         next: (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.favoritesNextCursor = response.nextCursor;
           this.isLoadingContent = false;
         },
         error: (err) => {
@@ -302,5 +312,64 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   trackByVideoCard(_: number, card: FavoriteAthleteVideoCard): string {
     return card.postId;
+  }
+
+  refreshPosts(event: any): void {
+    if (this.selectedTab === 'vitrine') {
+      this.postService.refreshHomePosts().subscribe({
+        next: () => {
+          this.finalizeLoad(event);
+          if (this.infiniteScroll) {
+            this.infiniteScroll.disabled = false;
+          }
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    } else {
+      this.favoritesNextCursor = null;
+      this.postService.getFavoritePosts(10).subscribe({
+        next: (response) => {
+          this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.favoritesNextCursor = response.nextCursor;
+          this.finalizeLoad(event, !response.nextCursor);
+          if (this.infiniteScroll) {
+            this.infiniteScroll.disabled = !response.nextCursor;
+          }
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    }
+  }
+
+  loadMorePosts(event: any): void {
+    if (this.selectedTab === 'vitrine') {
+      this.postService.loadHomePosts().subscribe({
+        next: (res) => {
+          this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    } else if (this.selectedTab === 'favoritos' && this.favoritesNextCursor) {
+      this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
+        next: (response) => {
+          const newVideos = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.videoPosts = [...this.videoPosts, ...newVideos];
+          this.favoritesNextCursor = response.nextCursor;
+          this.finalizeLoad(event, !response.nextCursor);
+        },
+        error: () => this.finalizeLoad(event)
+      });
+    } else {
+      this.finalizeLoad(event, true);
+    }
+  }
+
+  private finalizeLoad(event: any, shouldDisable: boolean = false): void {
+    if (event) {
+      event.target.complete();
+      if (shouldDisable) {
+        event.target.disabled = true;
+      }
+    }
   }
 }
