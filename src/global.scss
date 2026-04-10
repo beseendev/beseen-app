@@ -397,3 +397,16 @@ button:focus-visible,
 .publish-footer ion-toolbar {
   padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
 }
+
+/* Remover os 3 pontinhos dos videos no Android/Chrome */
+video::-internal-media-controls-download-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  overflow: hidden !important;
+}
+
+video::-webkit-media-controls-panel {
+  width: calc(100% + 30px) !important; /* Esconde o botão de opções deslocando-o */
+}

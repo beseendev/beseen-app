@@ -27,14 +27,24 @@
       </div>
 
       <div *ngIf="selectedMedia" class="media-preview-wrap" [class.is-video]="selectedMedia.type.startsWith('video')">
+        <img *ngIf="selectedMedia.type.startsWith('image')" [src]="selectedMediaUrl" alt="Pré-visualização da mídia" class="preview-media">
+        <video *ngIf="selectedMedia.type.startsWith('video')" [src]="selectedMediaUrl" controls controlsList="nodownload nopictureinpicture" playsinline preload="metadata" class="preview-media"></video>
+
         <button type="button" class="remove-media-btn" (click)="removeSelectedMedia()" aria-label="Remover mídia">
           <ion-icon name="close-outline"></ion-icon>
         </button>
-
-        <img *ngIf="selectedMedia.type.startsWith('image')" [src]="selectedMediaUrl" alt="Pré-visualização da mídia" class="preview-media">
-        <video *ngIf="selectedMedia.type.startsWith('video')" [src]="selectedMediaUrl" controls playsinline preload="metadata" class="preview-media"></video>
       </div>
     </section>
+
+    <div class="engagement-hint">
+      <div class="hint-icon">
+        <ion-icon name="flash-outline"></ion-icon>
+      </div>
+      <div class="hint-content">
+        <strong>Dica de Engajamento</strong>
+        <p>Vídeos de até <strong>30 segundos</strong> têm maior alcance e engajamento dos olheiros!</p>
+      </div>
+    </div>
 
     <section class="caption-card">
       <ion-textarea

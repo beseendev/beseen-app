@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, closeOutline, footballOutline, imageOutline, starOutline } from 'ionicons/icons';
+import {arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline} from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
 
@@ -32,7 +32,7 @@ export class CreatePostPage implements OnInit {
   private toastCtrl = inject(ToastController);
 
   constructor() {
-    addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline });
+    addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline });
   }
 
   ngOnInit() {
@@ -42,7 +42,7 @@ export class CreatePostPage implements OnInit {
     this.router.navigateByUrl('/player-home');
   }
 
-  onFileSelected(event: Event) {
+  async onFileSelected(event: Event) {
     this.fileError = null;
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -55,8 +55,14 @@ export class CreatePostPage implements OnInit {
         return;
       }
 
-      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-        this.fileError = 'Por favor, selecione um arquivo de imagem ou vídeo.';
+      if (!file.type.startsWith('video/')) {
+        const toast = await this.toastCtrl.create({
+          message: 'Por favor, selecione um arquivo de vídeo.',
+          duration: 3000,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
         this.removeSelectedMedia();
         return;
       }

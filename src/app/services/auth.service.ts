@@ -98,7 +98,6 @@ export class AuthService {
           profileId: null
         };
         this.currentUserSubject.next(user);
-        this.showToast(response.message || 'Login bem-sucedido!', 'success');
       }),
       catchError(err => {
         this.authState.next(false);
@@ -123,7 +122,6 @@ export class AuthService {
           profileId: null
         };
         this.currentUserSubject.next(user);
-        this.showToast(response.message || 'Login com Google bem-sucedido!', 'success');
       }),
       catchError(err => {
         this.authState.next(false);

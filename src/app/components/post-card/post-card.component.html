@@ -8,7 +8,7 @@
 
   <div class="media-container">
     <img *ngIf="post.mediaType === FileType.IMAGE" [src]="post.mediaUrl" class="post-image" />
-    <video *ngIf="post.mediaType === FileType.VIDEO" [src]="post.mediaUrl" class="post-video" controls loop></video>  </div>
+    <video *ngIf="post.mediaType === FileType.VIDEO" [src]="post.mediaUrl" class="post-video" controls controlsList="nodownload nopictureinpicture" loop></video>  </div>
 
   <div class="actions">
     <ion-button fill="clear" (click)="toggleLike()">

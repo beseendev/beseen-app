@@ -122,7 +122,7 @@
             <span class="status-tag" *ngIf="hasIncomingInvite(video)">Convite</span>
           </div>
           <div class="media-frame showcase-media">
-            <video [src]="video.mediaUrl" muted playsinline controls preload="metadata" class="talent-video"></video>
+            <video [src]="video.mediaUrl" muted playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
             <span class="interest-badge" *ngIf="hasIncomingInvite(video)">Interesse recebido</span>
           </div>
           <div class="showcase-body">
@@ -199,7 +199,7 @@
             <span class="status-tag">Ranking</span>
           </div>
           <div class="media-frame showcase-media">
-            <video [src]="video.mediaUrl" muted playsinline controls preload="metadata" class="talent-video"></video>
+            <video [src]="video.mediaUrl" muted playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
             <span class="interest-badge" *ngIf="hasIncomingInvite(video)">Olheiro interessado</span>
           </div>
 
@@ -226,7 +226,7 @@
             <span class="status-tag">Novo</span>
           </div>
           <div class="media-frame showcase-media">
-            <video [src]="video.mediaUrl" muted playsinline controls preload="metadata" class="talent-video"></video>
+            <video [src]="video.mediaUrl" muted playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
             <span class="interest-badge" *ngIf="hasIncomingInvite(video)">Olheiro interessado</span>
           </div>
 
