@@ -10,6 +10,7 @@ export interface UploadRequest {
   contentType: string;
   category: FileType;
   size: number;
+  duration?: number;
 }
 
 export interface UploadResponse {

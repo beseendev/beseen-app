@@ -17,7 +17,7 @@ export class UploadPostService {
 
   constructor() { }
 
-  uploadAndCreatePost(file: File, caption: string): Observable<Post> {
+  uploadAndCreatePost(file: File, caption: string, duration?: number): Observable<Post> {
     const fileType = file.type.startsWith('image/') ? FileType.IMAGE : FileType.VIDEO;
     let currentFileId: number;
 
@@ -25,7 +25,8 @@ export class UploadPostService {
       fileName: file.name,
       contentType: file.type,
       category: fileType,
-      size: file.size
+      size: file.size,
+      duration: duration
     }).pipe(
       tap(uploadResponse => currentFileId = uploadResponse.fileId),
       switchMap(uploadResponse => this.uploadFileToS3(uploadResponse.uploadUrl, file).pipe(

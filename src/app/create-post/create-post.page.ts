@@ -22,6 +22,7 @@ export class CreatePostPage implements OnInit {
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
   selectedMedia: File | null = null;
   selectedMediaUrl: string | null = null;
+  selectedMediaDuration: number | null = null;
   caption: string = '';
   fileError: string | null = null;
   isSubmitting = false;
@@ -69,7 +70,8 @@ export class CreatePostPage implements OnInit {
 
       try {
         const duration = await this.getVideoDuration(file);
-        const maxDuration = 30;
+        this.selectedMediaDuration = duration;
+        const maxDuration = 30; // Limite de 30 segundos
 
         if (duration > maxDuration) {
           const toast = await this.toastCtrl.create({
@@ -100,6 +102,7 @@ export class CreatePostPage implements OnInit {
   removeSelectedMedia(clearError = true) {
     this.selectedMedia = null;
     this.selectedMediaUrl = null;
+    this.selectedMediaDuration = null;
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
@@ -137,7 +140,11 @@ export class CreatePostPage implements OnInit {
     });
     await loading.present();
 
-    this.uploadPostService.uploadAndCreatePost(this.selectedMedia, this.caption).subscribe({
+    this.uploadPostService.uploadAndCreatePost(
+      this.selectedMedia,
+      this.caption,
+      this.selectedMediaDuration ?? undefined
+    ).subscribe({
       next: async (post) => {
         await loading.dismiss();
         this.isSubmitting = false;

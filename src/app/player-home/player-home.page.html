@@ -170,7 +170,7 @@
           <span class="status-tag">Destaque</span>
         </div>
         <div class="media-frame">
-          <video [src]="featuredVideo.mediaUrl" playsinline muted controls preload="metadata" class="talent-video"></video>
+          <video [src]="featuredVideo.mediaUrl" playsinline muted controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
         </div>
         <p class="showcase-description">{{ featuredVideo.description }}</p>
       </article>
