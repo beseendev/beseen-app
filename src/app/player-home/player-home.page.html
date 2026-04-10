@@ -215,6 +215,10 @@
         <article class="surface showcase-card be-fade-in" *ngFor="let video of newVideos; trackBy: trackByVideoId">
           <div class="video-meta">
             <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(video)">
+              <div class="avatar-shell">
+                <img *ngIf="video.athleteAvatarUrl" [src]="video.athleteAvatarUrl" [alt]="video.athleteName">
+                <ion-icon *ngIf="!video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+              </div>
               <h3>{{ video.athleteName }}</h3>
               <p *ngIf="video.likes">{{ video.likes | number }} curtidas</p>
               <p class="meta-line" *ngIf="video.modality || video.position">
