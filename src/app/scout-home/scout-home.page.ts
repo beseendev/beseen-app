@@ -114,7 +114,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const result: ScoutFeedItem[] = [];
     for (let i = 0; i < cards.length; i++) {
       result.push({ type: 'video', video: cards[i] });
-      if ((i + 1) % 1 === 0) {
+      if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
           if (ad) {

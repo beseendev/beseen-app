@@ -199,7 +199,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     const result: PlayerFeedItem[] = [];
     for (let i = 0; i < videos.length; i++) {
       result.push({ type: 'video', video: videos[i] });
-      if ((i + 1) % 2 === 0) {
+      if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
           if (ad) {
