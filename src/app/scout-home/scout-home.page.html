@@ -107,7 +107,8 @@
             </div>
 
             <div class="media-frame showcase-media">
-              <video [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
+              <div class="video-overlay" (click)="toggleFullScreen(vVitrine)"></div>
+              <video #vVitrine [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
             </div>
 
             <div class="showcase-body">

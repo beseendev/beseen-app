@@ -508,6 +508,21 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     await modal.present();
   }
 
+  toggleFullScreen(video: any) {
+    console.log('toggleFullScreen chamado para:', video);
+    if (!video) return;
+
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
+    } else if (video.webkitRequestFullscreen) {
+      video.webkitRequestFullscreen();
+    } else if (video.msRequestFullscreen) {
+      video.msRequestFullscreen();
+    }
+  }
+
   async showNoInviteToast(): Promise<void> {
     const toast = await this.toastController.create({
       message: 'Esse video ainda nao recebeu interesse de olheiros.',

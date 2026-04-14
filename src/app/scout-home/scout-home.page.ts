@@ -328,6 +328,14 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     await modal.present();
   }
 
+  toggleFullScreen(video: HTMLVideoElement) {
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if ((video as any).webkitEnterFullscreen) {
+      (video as any).webkitEnterFullscreen();
+    }
+  }
+
   private toVideoCard(post: Post): FavoriteAthleteVideoCard {
     return {
       postId: post.id,

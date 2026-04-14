@@ -123,7 +123,9 @@
               <span class="status-tag" *ngIf="hasIncomingInvite(item.video)">Convite</span>
             </div>
             <div class="media-frame showcase-media">
-              <video [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
+              <!-- Overlay invisível que captura o clique -->
+              <div class="video-overlay" (click)="toggleFullScreen(vMine)"></div>
+              <video #vMine [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
               <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Interesse recebido</span>
             </div>
             <div class="showcase-body">
@@ -173,7 +175,8 @@
           <span class="status-tag">Destaque</span>
         </div>
         <div class="media-frame">
-          <video [src]="featuredVideo.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
+          <div class="video-overlay" (click)="toggleFullScreen(vFeatured)"></div>
+          <video #vFeatured [src]="featuredVideo.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
         </div>
         <div class="showcase-body">
           <p class="showcase-description">{{ featuredVideo.description }}</p>
@@ -205,7 +208,8 @@
               <span class="status-tag">Ranking</span>
             </div>
             <div class="media-frame showcase-media">
-              <video [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
+              <div class="video-overlay" (click)="toggleFullScreen(vRanking)"></div>
+              <video #vRanking [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
               <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Olheiro interessado</span>
             </div>
 
@@ -239,7 +243,8 @@
               <span class="status-tag">Novo</span>
             </div>
             <div class="media-frame showcase-media">
-              <video [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
+              <div class="video-overlay" (click)="toggleFullScreen(vNew)"></div>
+              <video #vNew [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
               <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Olheiro interessado</span>
             </div>
 

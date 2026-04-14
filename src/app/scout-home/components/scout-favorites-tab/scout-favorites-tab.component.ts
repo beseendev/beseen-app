@@ -63,6 +63,14 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
     this.router.navigate(['/profile-player', card.athleteId]);
   }
 
+  toggleFullScreen(video: HTMLVideoElement) {
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if ((video as any).webkitEnterFullscreen) {
+      (video as any).webkitEnterFullscreen();
+    }
+  }
+
   trackByCard(_: number, item: ScoutFeedItem): string {
     return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
   }

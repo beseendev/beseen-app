@@ -39,6 +39,15 @@
 .favorite-btn ion-icon{font-size:1.45rem}
 .talent-video,.media-frame video{width:100%;display:block;border-radius:0;background:var(--be-color-media-bg);height:100%;object-fit:cover}
 .media-frame{position:relative;border-radius:0;overflow:hidden;aspect-ratio:16/9;background:var(--be-color-media-bg)}
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  z-index: 5;
+  background: transparent;
+}
 .showcase-body{padding:16px}
 .meta-line{margin:0;font-size:.82rem;color:var(--be-color-text-3)}
 .showcase-description{margin:0;line-height:1.5;color:var(--be-color-text-2);font-size:.9rem}
