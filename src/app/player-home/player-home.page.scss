@@ -7,7 +7,7 @@
 .chat-inbox-btn{position:relative;--color:var(--be-color-text-2);overflow:visible}
 .chat-inbox-btn::part(native){overflow:visible}
 .chat-inbox-btn ion-badge{position:absolute;top:2px;right:2px;transform:translate(32%,-32%);z-index:2}
-.player-profile-card,.surface{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(2,6,23,.26)}
+.player-profile-card,.surface{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(2,6,23,.26);overflow:hidden}
 .player-profile-card{padding:16px}
 .player-profile-head,.player-profile-id,.player-profile-actions,.video-meta,.talent-id,.footer-buttons{display:flex;align-items:center}
 .player-profile-head,.video-meta{justify-content:space-between}
@@ -27,15 +27,16 @@
 .arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px}
 .tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}
 .tab-btn.active{color:var(--text);background:rgba(var(--ion-color-primary-rgb),.16)}
-.featured,.showcase-card{padding:16px}
-.video-meta{margin-bottom:12px}
-.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24)}
+.featured,.showcase-card{padding:0}
+.video-meta{padding:16px 16px 12px}
+.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24);overflow:hidden}
 .talent-video{width:100%;display:block}
-.media-frame{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#000}
+.media-frame{position:relative;border-radius:0;overflow:hidden;aspect-ratio:16/9;background:#000}
 .talent-video{height:100%;object-fit:cover}
 .interest-badge{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;background:rgba(var(--ion-color-primary-rgb),.16);border:1px solid rgba(var(--ion-color-primary-rgb),.24);color:#dcfce7;font-size:.68rem;font-weight:700}
 .meta-line{margin:0;font-size:.82rem}
-.showcase-description{margin:12px 0 0;line-height:1.5;color:#e2e8f0;font-size:.9rem}
+.showcase-body{padding:12px 16px 16px}
+.showcase-description{margin:0;line-height:1.5;color:#e2e8f0;font-size:.9rem}
 .arena-footer ion-toolbar{--background:rgba(7,22,39,.82);--border-width:0;padding:8px 14px}
 .footer-buttons{display:flex;justify-content:center;align-items:center}
 .post-fab{width:54px;height:54px;--border-radius:999px;--background:var(--be-color-brand-500);--color:#052e16}
@@ -57,12 +58,11 @@
   margin-bottom: 8px; /* Margem de segurança inferior */
 }
 
-.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24);overflow:hidden}
 .talent-id {
   display: flex;
   align-items: center;
-  gap: 12px; /* Adicione esta linha */
-  text-decoration: none; /* Garante que não haja sublinhados */
+  gap: 12px;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -73,7 +73,7 @@
 .player-profile-id {
   display: flex;
   align-items: center;
-  gap: 16px; /* Ajuste o valor (12px, 16px, etc) conforme sua preferência */
+  gap: 16px;
 }
 
 /* Importante para que o avatar não diminua de tamanho se o nome for muito longo */
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  width: auto; /* Ou 100% se quiser que o clique pegue a linha toda */
+  width: auto;
   border: none;
   background: transparent;
   text-align: left;
