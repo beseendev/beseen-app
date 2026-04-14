@@ -12,7 +12,17 @@
   </ion-item>
 
   <div class="media-container" (click)="goToSite()">
-    <img [src]="ad.thumbnailLink" class="ad-image" />
+    <!-- Prioriza o vídeo se existir -->
+    <video *ngIf="ad.videoLink" [src]="ad.videoLink" class="ad-media" autoplay muted loop playsinline></video>
+    
+    <!-- Fallback para imagem se não houver vídeo -->
+    <img *ngIf="!ad.videoLink && ad.thumbnailLink" [src]="ad.thumbnailLink" class="ad-media" />
+    
+    <!-- Placeholder se não houver nada -->
+    <div *ngIf="!ad.videoLink && !ad.thumbnailLink" class="ad-media-placeholder">
+       <ion-icon name="star-outline"></ion-icon>
+    </div>
+
     <div class="ad-overlay">
        <ion-badge color="primary">Anúncio</ion-badge>
     </div>

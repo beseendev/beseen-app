@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge } from '@ionic/angular/standalone';
 import { Advertisement } from '../../models/advertisement.model';
 import { addIcons } from 'ionicons';
-import { megaphoneOutline, openOutline } from 'ionicons/icons';
+import { megaphoneOutline, openOutline, starOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-ad-card',
@@ -16,7 +16,7 @@ export class AdCardComponent {
   @Input() ad!: Advertisement;
 
   constructor() {
-    addIcons({ megaphoneOutline, openOutline });
+    addIcons({ megaphoneOutline, openOutline, starOutline });
   }
 
   goToSite() {
