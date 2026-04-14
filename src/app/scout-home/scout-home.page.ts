@@ -16,23 +16,28 @@ import {
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
+import { Advertisement } from '../models/advertisement.model';
 import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ChatService } from '../services/chat.service';
+import { AdvertisementService } from '../services/advertisement.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
+import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
+
+export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
 
 @Component({
   selector: 'app-scout-home',
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent]
+  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
@@ -50,6 +55,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
 
+  // New list for ads
+  feedItems: ScoutFeedItem[] = [];
+
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.name || 'Clube';
@@ -58,6 +66,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly postService = inject(PostService);
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
+  private readonly adService = inject(AdvertisementService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
@@ -79,10 +88,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
 
     // Inscreve-se no stream de posts da home
-    this.homePostsSub = this.postService.homePosts$.subscribe(posts => {
+    this.homePostsSub = this.postService.homePosts$.subscribe(async posts => {
       if (this.selectedTab === 'vitrine') {
         this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);
         this.isLoadingContent = false;
+        await this.updateFeedItems();
       }
     });
 
@@ -93,6 +103,29 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.chatService.loadThreads().subscribe();
 
     this.refreshCurrentTab();
+  }
+
+  private async updateFeedItems() {
+    const cards = this.selectedTab === 'vitrine' ? this.allVideoCards : this.favoriteVideoCards;
+    this.feedItems = await this.interleaveAds(cards);
+  }
+
+  private async interleaveAds(cards: FavoriteAthleteVideoCard[]): Promise<ScoutFeedItem[]> {
+    const result: ScoutFeedItem[] = [];
+    for (let i = 0; i < cards.length; i++) {
+      result.push({ type: 'video', video: cards[i] });
+      if ((i + 1) % 1 === 0) {
+        try {
+          const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
+          if (ad) {
+            result.push({ type: 'ad', ad });
+          }
+        } catch (e) {
+          console.error('Error fetching ad', e);
+        }
+      }
+    }
+    return result;
   }
 
   ngOnDestroy(): void {
@@ -140,17 +173,18 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.refreshCurrentTab();
   }
 
-  refreshCurrentTab(): void {
+  async refreshCurrentTab(): Promise<void> {
     this.isLoadingContent = true;
     if (this.selectedTab === 'vitrine') {
       this.postService.refreshHomePosts().subscribe();
     } else {
       this.favoritesNextCursor = null;
       this.postService.getFavoritePosts(10).subscribe({
-        next: (response) => {
+        next: async (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
           this.isLoadingContent = false;
+          await this.updateFeedItems();
         },
         error: (err) => {
           console.error('Error loading favorite posts', err);
@@ -193,11 +227,12 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       : this.postService.likePost(postId);
 
     action.subscribe({
-      next: () => {
+      next: async () => {
         this.showFavoriteToast(!isCurrentlyFavorite, card.athleteName);
         if (isCurrentlyFavorite && this.selectedTab === 'favoritos') {
           this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
         }
+        await this.updateFeedItems();
       },
       error: (err) => console.error('Error toggling favorite', err)
     });
@@ -310,31 +345,33 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     };
   }
 
-  trackByVideoCard(_: number, card: FavoriteAthleteVideoCard): string {
-    return card.postId;
+  trackByVideoCard(_: number, item: ScoutFeedItem): string {
+    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
   }
 
   refreshPosts(event: any): void {
     if (this.selectedTab === 'vitrine') {
       this.postService.refreshHomePosts().subscribe({
-        next: () => {
+        next: async () => {
           this.finalizeLoad(event);
           if (this.infiniteScroll) {
             this.infiniteScroll.disabled = false;
           }
+          await this.updateFeedItems();
         },
         error: () => this.finalizeLoad(event)
       });
     } else {
       this.favoritesNextCursor = null;
       this.postService.getFavoritePosts(10).subscribe({
-        next: (response) => {
+        next: async (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
           this.finalizeLoad(event, !response.nextCursor);
           if (this.infiniteScroll) {
             this.infiniteScroll.disabled = !response.nextCursor;
           }
+          await this.updateFeedItems();
         },
         error: () => this.finalizeLoad(event)
       });
@@ -344,18 +381,20 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   loadMorePosts(event: any): void {
     if (this.selectedTab === 'vitrine') {
       this.postService.loadHomePosts().subscribe({
-        next: (res) => {
+        next: async (res) => {
           this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
+          await this.updateFeedItems();
         },
         error: () => this.finalizeLoad(event)
       });
     } else if (this.selectedTab === 'favoritos' && this.favoritesNextCursor) {
       this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
-        next: (response) => {
+        next: async (response) => {
           const newVideos = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.videoPosts = [...this.videoPosts, ...newVideos];
           this.favoritesNextCursor = response.nextCursor;
           this.finalizeLoad(event, !response.nextCursor);
+          await this.updateFeedItems();
         },
         error: () => this.finalizeLoad(event)
       });

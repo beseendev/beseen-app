@@ -34,18 +34,21 @@ import {
   personCircleOutline,
   starOutline
 } from 'ionicons/icons';
-import { Observable, Subscription, map } from 'rxjs';
+import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { ChatService } from '../services/chat.service';
 import { PostService } from '../services/post.service';
+import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
+import { Advertisement } from '../models/advertisement.model';
 import { FileType } from '../models/upload.model';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
+import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { environment } from '../../environments/environment';
 
 interface ArenaAthlete {
@@ -80,6 +83,8 @@ interface PlayerShowcaseVideo {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
 }
 
+export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { type: 'ad', ad: Advertisement };
+
 @Component({
   selector: 'app-player-home',
   templateUrl: './player-home.page.html',
@@ -99,7 +104,8 @@ interface PlayerShowcaseVideo {
     IonBadge,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    ProfileDrawerComponent
+    ProfileDrawerComponent,
+    AdCardComponent
   ],
 })
 export class PlayerHomePage implements OnInit, OnDestroy {
@@ -119,6 +125,11 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
 
+  // Arrays for display with ads interleaved
+  myVideosWithAds: PlayerFeedItem[] = [];
+  rankingVideosWithAds: PlayerFeedItem[] = [];
+  newVideosWithAds: PlayerFeedItem[] = [];
+
   private rankingCurrentPage = 0;
   private myPostsNextCursor: string | null = null;
   activeChatCount = 0;
@@ -129,6 +140,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private router = inject(Router);
   private postService = inject(PostService);
+  private adService = inject(AdvertisementService);
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private modalController = inject(ModalController);
@@ -160,7 +172,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
     this.chatService.loadThreads().subscribe();
 
-    this.posts$.subscribe(posts => {
+    this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
 
       const allRanking = [...videos]
@@ -171,6 +183,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
       // Exclui o primeiro vídeo (destaque) da lista de ranking
       this.rankingVideos = allRanking.slice(1, 11);
+      this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
 
       const allNew = [...videos]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -178,7 +191,26 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
       // Exclui o vídeo que está em destaque da lista de novos para não repetir
       this.newVideos = allNew.filter(v => v.id !== this.featuredVideo?.id);
+      this.newVideosWithAds = await this.interleaveAds(this.newVideos);
     });
+  }
+
+  private async interleaveAds(videos: PlayerShowcaseVideo[]): Promise<PlayerFeedItem[]> {
+    const result: PlayerFeedItem[] = [];
+    for (let i = 0; i < videos.length; i++) {
+      result.push({ type: 'video', video: videos[i] });
+      if ((i + 1) % 2 === 0) {
+        try {
+          const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
+          if (ad) {
+            result.push({ type: 'ad', ad });
+          }
+        } catch (e) {
+          console.error('Error fetching ad', e);
+        }
+      }
+    }
+    return result;
   }
 
   ionViewWillEnter(): void {
@@ -217,7 +249,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     }
 
     this.postService.getPostsForAuthenticatedUser(10, this.myPostsNextCursor || undefined).subscribe({
-      next: (res) => {
+      next: async (res) => {
         const mapped = res.posts
           .filter(p => p.mediaType === FileType.VIDEO)
           .map(p => this.mapPostToVideo(p, true));
@@ -228,6 +260,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
           const filtered = mapped.filter(newVideo => !this.myVideos.some(existing => existing.id === newVideo.id));
           this.myVideos = [...this.myVideos, ...filtered];
         }
+
+        this.myVideosWithAds = await this.interleaveAds(this.myVideos);
 
         this.myPostsNextCursor = res.nextCursor;
         this.finalizeLoad(event, !res.nextCursor);
@@ -248,7 +282,7 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     const limit = isRefresh ? 11 : 10;
 
     this.postService.getRankingPosts(limit, pageParam).subscribe({
-      next: (res) => {
+      next: async (res) => {
         const mapped = res.posts
           .filter(p => p.mediaType === FileType.VIDEO)
           .map(p => this.mapPostToVideo(p));
@@ -263,6 +297,8 @@ export class PlayerHomePage implements OnInit, OnDestroy {
           );
           this.rankingVideos = [...this.rankingVideos, ...filtered];
         }
+
+        this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
 
         if (res.posts.length > 0) {
           this.rankingCurrentPage++;
@@ -394,6 +430,10 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  trackByFeedItem(index: number, item: PlayerFeedItem): string {
+    return item.type === 'video' ? item.video.id : `ad-${item.ad.id}`;
   }
 
   trackByVideoId(index: number, video: PlayerShowcaseVideo): string {

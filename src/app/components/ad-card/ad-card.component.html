@@ -1,0 +1,31 @@
+<ion-card class="ad-card">
+  <ion-item lines="none" class="ad-header">
+    <ion-avatar slot="start">
+      <div class="ad-avatar-placeholder">
+        <ion-icon name="megaphone-outline"></ion-icon>
+      </div>
+    </ion-avatar>
+    <ion-label class="company-name">
+      {{ ad.companyName }}
+      <p class="sponsored-label">Patrocinado</p>
+    </ion-label>
+  </ion-item>
+
+  <div class="media-container" (click)="goToSite()">
+    <img [src]="ad.thumbnailLink" class="ad-image" />
+    <div class="ad-overlay">
+       <ion-badge color="primary">Anúncio</ion-badge>
+    </div>
+  </div>
+
+  <div class="ad-content">
+    <div class="ad-info">
+      <h3 class="ad-title">{{ ad.description }}</h3>
+    </div>
+
+    <ion-button expand="block" (click)="goToSite()" class="cta-button">
+      {{ ad.ctaText || 'Saiba Mais' }}
+      <ion-icon slot="end" name="open-outline"></ion-icon>
+    </ion-button>
+  </div>
+</ion-card>

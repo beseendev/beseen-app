@@ -78,41 +78,44 @@
       </div>
 
       <div class="video-list">
-        <article class="video-card surface be-fade-in" *ngFor="let card of allVideoCards; trackBy: trackByVideoCard">
-          <div class="video-meta">
-            <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(card)">
-              <div class="avatar-shell">
-                <img *ngIf="card.athleteAvatarUrl" [src]="card.athleteAvatarUrl" [alt]="card.athleteName">
-                <ion-icon *ngIf="!card.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-              </div>
-              <div>
-                <h3>{{ card.athleteName }}</h3>
-                <p *ngIf="card.likes">{{ card.likes | number }} curtidas</p>
-                <p class="meta-line" *ngIf="card.modalidade || card.localidade">
-                  <span *ngIf="card.modalidade">{{ card.modalidade }}</span>
-                  <span *ngIf="card.modalidade && card.localidade"> • </span>
-                  <span *ngIf="card.localidade">{{ card.localidade }}</span>
-                </p>
-              </div>
-            </button>
+        <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
+          <article class="video-card surface be-fade-in" *ngIf="item.type === 'video'">
+            <div class="video-meta">
+              <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(item.video)">
+                <div class="avatar-shell">
+                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
+                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
+                </div>
+                <div>
+                  <h3>{{ item.video.athleteName }}</h3>
+                  <p *ngIf="item.video.likes">{{ item.video.likes | number }} curtidas</p>
+                  <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
+                    <span *ngIf="item.video.modalidade">{{ item.video.modalidade }}</span>
+                    <span *ngIf="item.video.modalidade && item.video.localidade"> • </span>
+                    <span *ngIf="item.video.localidade">{{ item.video.localidade }}</span>
+                  </p>
+                </div>
+              </button>
 
-            <ion-button
-              fill="clear"
-              class="favorite-btn"
-              (click)="toggleFavoriteFromCard(card)"
-              [attr.aria-label]="'Favoritar ' + card.athleteName">
-              <ion-icon [name]="card.favorito ? 'heart' : 'heart-outline'"></ion-icon>
-            </ion-button>
-          </div>
+              <ion-button
+                fill="clear"
+                class="favorite-btn"
+                (click)="toggleFavoriteFromCard(item.video)"
+                [attr.aria-label]="'Favoritar ' + item.video.athleteName">
+                <ion-icon [name]="item.video.favorito ? 'heart' : 'heart-outline'"></ion-icon>
+              </ion-button>
+            </div>
 
-          <div class="media-frame showcase-media">
-            <video [src]="card.mediaUrl" controls controlsList="nodownload nopictureinpicture" preload="metadata" playsinline class="talent-video"></video>
-          </div>
+            <div class="media-frame showcase-media">
+              <video [src]="item.video.mediaUrl" controls controlsList="nodownload nopictureinpicture" preload="metadata" playsinline class="talent-video"></video>
+            </div>
 
-          <div class="showcase-body">
-            <p class="showcase-description" *ngIf="card.destaque">{{ card.destaque }}</p>
-          </div>
-        </article>
+            <div class="showcase-body">
+              <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
+            </div>
+          </article>
+          <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
+        </ng-container>
       </div>
     </section>
 
@@ -135,7 +138,7 @@
 
     <app-scout-favorites-tab
       *ngIf="selectedTab === 'favoritos' && !isLoadingContent"
-      [cards]="favoriteVideoCards"
+      [items]="feedItems"
       (favoriteToggled)="toggleFavoriteFromCard($event)"
       (inviteRequested)="sendInvite($event)"
       (chatRequested)="openChat($event)">

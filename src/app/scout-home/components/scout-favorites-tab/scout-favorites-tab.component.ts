@@ -7,16 +7,18 @@ import { addIcons } from 'ionicons';
 import { heart, heartOutline, locationOutline, starOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat.service';
+import { ScoutFeedItem } from '../../scout-home.page';
+import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
 
 @Component({
   selector: 'app-scout-favorites-tab',
   templateUrl: './scout-favorites-tab.component.html',
   styleUrls: ['./scout-favorites-tab.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule, AdCardComponent]
 })
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
-  @Input() cards: FavoriteAthleteVideoCard[] = [];
+  @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
@@ -61,7 +63,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
     this.router.navigate(['/profile-player', card.athleteId]);
   }
 
-  trackByCard(_: number, card: FavoriteAthleteVideoCard): string {
-    return card.postId;
+  trackByCard(_: number, item: ScoutFeedItem): string {
+    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
   }
 }
