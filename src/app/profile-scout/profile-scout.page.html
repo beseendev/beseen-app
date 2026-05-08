@@ -81,26 +81,13 @@
         </ion-item>
 
         <!-- Tipo de Olheiro -->
-        <ion-item *ngIf="isEditing; else readScoutType">
+        <ion-item class="readonly-item">
           <ion-icon slot="start" name="business-outline"></ion-icon>
-          <ion-select
-            label="Tipo de Olheiro"
-            labelPlacement="stacked"
-            [(ngModel)]="draftProfile.tipoOlheiro"
-            placeholder="Selecione o tipo"
-            interface="action-sheet">
-            <ion-select-option *ngFor="let option of scoutTypeOptions" [value]="option">{{ option }}</ion-select-option>
-          </ion-select>
+          <ion-label>
+            <h3>Tipo de Olheiro</h3>
+            <p>{{ profile.tipoOlheiro }} {{ profile.tipoOlheiro === 'Outro' ? '- ' + profile.tipoOlheiroOutroTexto : '' }}</p>
+          </ion-label>
         </ion-item>
-        <ng-template #readScoutType>
-          <ion-item *ngIf="profile.tipoOlheiro">
-            <ion-icon slot="start" name="business-outline"></ion-icon>
-            <ion-label>
-              <h3>Tipo de Olheiro</h3>
-              <p>{{ profile.tipoOlheiro }} {{ profile.tipoOlheiro === 'Outro' ? '- ' + profile.tipoOlheiroOutroTexto : '' }}</p>
-            </ion-label>
-          </ion-item>
-        </ng-template>
 
         <!-- Organização / Clube -->
         <ion-item *ngIf="isEditing; else readOrg">

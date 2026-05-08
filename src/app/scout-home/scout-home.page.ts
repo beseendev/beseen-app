@@ -58,12 +58,16 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
 
-  // New list for ads
   feedItems: ScoutFeedItem[] = [];
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.name || 'Clube';
+  }
+
+  get scoutType(): string | null {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.scoutType || null;
   }
 
   private readonly postService = inject(PostService);

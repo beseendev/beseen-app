@@ -27,7 +27,7 @@
             <span class="summary-label">Perfil do olheiro</span>
             <strong>{{ userName }}</strong>
             <p>
-              {{ scoutProfile?.tipoOlheiro || 'Tipo nao informado' }}
+              {{ scoutType || 'Tipo não informado' }}
               <span *ngIf="scoutProfile?.cidade || scoutProfile?.estado">
                 • {{ scoutProfile?.cidade || 'Cidade' }}{{ scoutProfile?.estado ? ', ' + scoutProfile?.estado : '' }}
               </span>
