@@ -35,6 +35,19 @@ export class PlansModalComponent implements OnInit {
   loading = true;
   purchasing = false;
 
+  isCurrentPlan(plan: Plan): boolean {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    if (!decodedToken) return false;
+
+    const isSamePlan = decodedToken.planName === plan.name;
+    const isStatusActive = decodedToken.subscriptionStatus === SubscriptionStatus.ACTIVE;
+    const isDateValid = decodedToken.subscriptionEndDate
+      ? new Date(decodedToken.subscriptionEndDate) > new Date()
+      : true;
+
+    return isSamePlan && isStatusActive && isDateValid;
+  }
+
   constructor() {
     addIcons({
       arrowBackOutline,

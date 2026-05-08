@@ -39,6 +39,10 @@
           <ion-badge *ngIf="getPlanBadge(plan)" class="plan-badge">
             {{ getPlanBadge(plan) }}
           </ion-badge>
+
+          <ion-badge *ngIf="isCurrentPlan(plan)" color="success" class="current-plan-badge">
+            Seu plano atual
+          </ion-badge>
         </div>
 
         <div class="plan-copy">
@@ -70,9 +74,9 @@
           class="select-plan-btn"
           [class.featured-button]="plan.featured"
           (click)="selectPlan(plan)"
-          [disabled]="purchasing">
-          <ion-icon slot="start" name="flash-outline"></ion-icon>
-          {{ purchasing ? 'Processando...' : 'Escolher plano' }}
+          [disabled]="purchasing || isCurrentPlan(plan)">
+          <ion-icon slot="start" [name]="isCurrentPlan(plan) ? 'checkmark-circle-outline' : 'flash-outline'"></ion-icon>
+          {{ purchasing ? 'Processando...' : (isCurrentPlan(plan) ? 'Plano Ativo' : 'Escolher plano') }}
         </ion-button>
       </article>
     </section>

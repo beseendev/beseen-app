@@ -12,7 +12,9 @@ import {
   createOutline,
   personCircleOutline,
   starOutline,
-  locationOutline
+  locationOutline,
+  cardOutline,
+  helpCircleOutline
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -25,6 +27,7 @@ import { ChatService } from '../services/chat.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
+import { PlansModalComponent } from '../components/plans-modal/plans-modal.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { ApiService } from "../services/api.service";
@@ -81,8 +84,21 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       createOutline,
       personCircleOutline,
       starOutline,
-      locationOutline
+      locationOutline,
+      cardOutline,
+      helpCircleOutline
     });
+  }
+
+  async openPlans() {
+    const modal = await this.modalController.create({
+      component: PlansModalComponent,
+    });
+    return await modal.present();
+  }
+
+  openSupport() {
+    // Para implementação futura
   }
 
   async ngOnInit(): Promise<void> {

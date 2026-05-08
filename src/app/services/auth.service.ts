@@ -23,7 +23,7 @@ export interface JwtPayload {
   scoutType: string | null;
   subscriptionEndDate: string | null;
   subscriptionStatus: string | null;
-  planDescription: string | null;
+  planName: string | null;
   exp?: number;
   iat?: number;
 }
