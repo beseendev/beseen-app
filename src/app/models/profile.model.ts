@@ -44,6 +44,9 @@ export interface ProfilePlayerCreationRequest {
   documentNumber: string;
   phoneNumber: string;
   dateOfBirth: string;
+  cidade: string;
+  estado: string;
+  pais: string;
   bio?: string;
   position?: string;
   height?: string;

@@ -164,6 +164,44 @@
               </ng-template>
             </ion-modal>
           </ion-item>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="cidade"
+              placeholder="Cidade (Ex: Florianópolis)"
+              maxlength="100">
+            </ion-input>
+          </ion-item>
+          <div *ngIf="profileForm.get('cidade')?.invalid && profileForm.get('cidade')?.touched" class="error-text">
+            Cidade é obrigatória.
+          </div>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="map-outline" slot="start"></ion-icon>
+            <ion-select
+              formControlName="estado"
+              placeholder="Estado"
+              interface="action-sheet"
+              labelPlacement="stacked">
+              <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div *ngIf="profileForm.get('estado')?.invalid && profileForm.get('estado')?.touched" class="error-text">
+            Estado é obrigatório.
+          </div>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="globe-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="pais"
+              placeholder="País (Ex: Brasil)"
+              maxlength="50">
+            </ion-input>
+          </ion-item>
+          <div *ngIf="profileForm.get('pais')?.invalid && profileForm.get('pais')?.touched" class="error-text">
+            País é obrigatório.
+          </div>
         </div>
       </section>
 

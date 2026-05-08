@@ -22,7 +22,7 @@ import {
   IonNote
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline } from 'ionicons/icons';
+import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ProfileService } from '../services/profile.service';
 import { FileType } from '../models/upload.model';
@@ -32,7 +32,7 @@ import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfilePlayerCreationRequest } from '../models/profile.model';
 import { ActivatedRoute } from '@angular/router';
-import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
+import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 
 @Component({
   selector: 'app-create-profile-player',
@@ -63,6 +63,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   cpfDisplayValue = '';
 
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
+  readonly stateOptions = BR_STATE_OPTIONS;
   readonly footOptions = [
     { label: 'Destro', value: 'RIGHT' },
     { label: 'Canhoto', value: 'LEFT' },
@@ -78,7 +79,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private location = inject(Location);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline });
+    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline });
   }
 
   ngOnInit() {
@@ -125,6 +126,9 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       documentNumber: ['', [Validators.required, Validators.minLength(11)]],
       phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
       dateOfBirth: [null, [Validators.required]],
+      cidade: ['', [Validators.required]],
+      estado: ['', [Validators.required]],
+      pais: ['Brasil', [Validators.required]],
       role: [finalRole, [Validators.required]]
     });
 
@@ -243,7 +247,12 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     this.isLoading = true;
     const formValue = this.profileForm.getRawValue();
     const formattedDate = this.formatDate(formValue.dateOfBirth);
-    const requestData = { ...formValue, dateOfBirth: formattedDate };
+    const requestData = {
+      ...formValue,
+      dateOfBirth: formattedDate,
+      cidade: formValue.cidade?.trim(),
+      pais: formValue.pais?.trim()
+    };
 
     const profileCreation$ = this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest);
 

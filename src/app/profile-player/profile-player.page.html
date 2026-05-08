@@ -74,6 +74,68 @@
           </ion-label>
         </ion-item>
 
+        <!-- Cidade -->
+        <ion-item *ngIf="isEditing; else readCidade">
+          <ion-icon slot="start" name="location-outline"></ion-icon>
+          <ion-input
+            label="Cidade"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.cidade"
+            placeholder="Ex: Florianópolis">
+          </ion-input>
+        </ion-item>
+        <ng-template #readCidade>
+          <ion-item *ngIf="profile.cidade">
+            <ion-icon slot="start" name="location-outline"></ion-icon>
+            <ion-label>
+              <h3>Cidade</h3>
+              <p>{{ profile.cidade }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Estado -->
+        <ion-item *ngIf="isEditing; else readEstado">
+          <ion-icon slot="start" name="map-outline"></ion-icon>
+          <ion-select
+            label="Estado"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.estado"
+            placeholder="Selecione"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readEstado>
+          <ion-item *ngIf="profile.estado">
+            <ion-icon slot="start" name="map-outline"></ion-icon>
+            <ion-label>
+              <h3>Estado</h3>
+              <p>{{ profile.estado }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <!-- Pais -->
+        <ion-item *ngIf="isEditing; else readPais">
+          <ion-icon slot="start" name="globe-outline"></ion-icon>
+          <ion-input
+            label="País"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.pais"
+            placeholder="Ex: Brasil">
+          </ion-input>
+        </ion-item>
+        <ng-template #readPais>
+          <ion-item *ngIf="profile.pais">
+            <ion-icon slot="start" name="globe-outline"></ion-icon>
+            <ion-label>
+              <h3>País</h3>
+              <p>{{ profile.pais }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
         <ion-item *ngIf="isEditing; else readPosition">
           <ion-icon slot="start" name="body-outline"></ion-icon>
           <ion-select

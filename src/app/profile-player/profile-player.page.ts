@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
@@ -15,7 +15,7 @@ import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { AuthService } from '../services/auth.service';
 import { catchError, of } from 'rxjs';
-import { SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
+import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -61,6 +61,7 @@ export class ProfilePlayerPage implements OnInit {
   isLoading = false;
   private readonly DEFAULT_POST_LIMIT = 10;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
+  readonly stateOptions = BR_STATE_OPTIONS;
   readonly footOptions = [
     { label: 'Destro', value: 'RIGHT' },
     { label: 'Canhoto', value: 'LEFT' },
@@ -80,7 +81,7 @@ export class ProfilePlayerPage implements OnInit {
   private userPostsHasMore = true;
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline });
+    addIcons({ arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -192,6 +193,9 @@ export class ProfilePlayerPage implements OnInit {
       weight: (this.draftProfile.weight || '').trim(),
       dominantFoot: this.draftProfile.dominantFoot,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
+      cidade: (this.draftProfile.cidade || '').trim(),
+      estado: this.draftProfile.estado,
+      pais: (this.draftProfile.pais || '').trim(),
     };
 
     this.profileService.updatePlayerProfile(updateData).pipe(
@@ -335,6 +339,9 @@ export class ProfilePlayerPage implements OnInit {
       weight: this.profile.weight ?? '',
       dominantFoot: this.profile.dominantFoot,
       careerHistory: this.profile.careerHistory ?? '',
+      cidade: this.profile.cidade ?? '',
+      estado: this.profile.estado ?? '',
+      pais: this.profile.pais ?? '',
     };
   }
 }
