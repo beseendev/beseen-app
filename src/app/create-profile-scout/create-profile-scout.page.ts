@@ -302,12 +302,7 @@ export class CreateProfileScoutPage implements OnInit {
       }
 
       this.profileService.createScoutProfile(profile).pipe(
-        switchMap(() => {
-          if (this.selectedImageFile) {
-            return this.handleImageUpload(this.selectedImageFile);
-          }
-          return of(null);
-        }),
+        switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
         switchMap(() => this.authService.refreshCurrentUser()),
         catchError(err => {
           console.error('Erro ao criar o perfil de olheiro', err);

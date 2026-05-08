@@ -9,6 +9,11 @@ export interface Plan {
   id: number;
   name: string;
   description: string;
+  price: string;
+  period: string;
+  featured: boolean;
+  features: string[];
+  restrictions: string[];
   revenueCatProductId: string;
 }
 

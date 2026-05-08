@@ -1,27 +1,198 @@
-.plans-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
+.scout-plans-content {
+  --background: var(--be-color-bg);
+  font-family: var(--ion-font-family);
 }
 
-.intro-text {
-  text-align: center;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  color: var(--ion-color-medium);
+.scout-plans-container {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  color: var(--be-color-text-1);
+}
+
+.top-bar,
+.rule-card,
+.plan-head,
+.plan-price,
+.feature-list li {
+  display: flex;
+}
+
+.top-bar {
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.back-button {
+  --color: var(--be-color-text-2);
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+}
+
+.top-bar-title {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.hero-block {
+  margin-bottom: 22px;
+}
+
+.be-eyebrow {
+  margin-bottom: 8px;
+}
+
+h1 {
+  margin: 0;
+  line-height: 1.05;
+  font-weight: 800;
+  font-size: clamp(2rem, 7vw, 2.6rem);
+}
+
+.hero-copy,
+.plan-copy p,
+.plan-price span {
+  color: var(--be-color-text-3);
+}
+
+.hero-copy {
+  margin: 10px 0 0;
+}
+
+.rule-card {
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.rule-card ion-icon {
+  font-size: 1.35rem;
+  color: var(--be-color-brand-500);
+}
+
+.rule-card strong {
+  display: block;
+}
+
+.rule-card p {
+  margin: 4px 0 0;
+  color: var(--be-color-text-3);
+  font-size: 0.88rem;
+}
+
+.plans-list,
+.feature-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.plans-list {
+  gap: 14px;
 }
 
 .plan-card {
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 1rem;
-  border: 2px solid var(--ion-color-primary);
+  padding: 16px;
+  border: 1px solid var(--be-color-border);
   border-radius: 16px;
 }
 
-ion-card-title {
-  font-weight: bold;
-  font-size: 1.4rem;
+.plan-card.featured {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.54);
+}
+
+.plan-head {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.plan-icon ion-icon {
+  font-size: 1.45rem;
+  color: var(--be-color-brand-500);
+}
+
+.plan-badge {
+  --background: rgba(var(--ion-color-primary-rgb), 0.18);
+  --color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+.plan-copy h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.plan-copy p {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.plan-price {
+  align-items: flex-end;
+  gap: 4px;
+  margin: 18px 0 14px;
+}
+
+.plan-price strong {
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.plan-price span {
+  font-weight: 700;
+}
+
+.feature-list,
+.restriction-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list {
+  margin: 0 0 18px;
+  gap: 10px;
+}
+
+.feature-list li {
+  gap: 9px;
+  color: var(--be-color-text-2);
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.feature-list ion-icon {
+  color: var(--be-color-brand-500);
+  font-size: 1.2rem;
+}
+
+.restriction-list {
+  margin: -8px 0 18px;
+  color: var(--be-color-text-3);
+  font-size: 0.82rem;
+}
+
+.restriction-list li {
+  margin-top: 6px;
+}
+
+.select-plan-btn {
+  height: 50px;
+  font-weight: 700;
+  --border-radius: 14px;
+  --border-color: rgba(var(--ion-color-primary-rgb), 0.45);
+  --color: var(--be-color-brand-500);
+  margin: 0;
+}
+
+.select-plan-btn.featured-button {
+  --background: var(--be-color-brand-500);
+  --background-hover: var(--be-color-brand-600);
+  --background-activated: var(--be-color-brand-700);
+  --color: #052e16;
 }

@@ -2,11 +2,16 @@ import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResp
 import { inject } from '@angular/core';
 import { Observable, throwError, BehaviorSubject, EMPTY } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
-import { ToastController } from '@ionic/angular/standalone';
+import { AuthService, JwtPayload } from '../services/auth.service';
+import { ToastController, ModalController } from '@ionic/angular/standalone';
 import { environment } from '../../environments/environment';
+import { SubscriptionService } from '../services/subscription.service';
+import { jwtDecode } from 'jwt-decode';
+import { SubscriptionStatus } from '../models/subscription.model';
+import { PlansModalComponent } from '../components/plans-modal/plans-modal.component';
 
 let isRefreshing = false;
+let isModalOpen = false;
 const refreshTokenSubject = new BehaviorSubject<any>(null);
 
 export const authInterceptor: HttpInterceptorFn = (
@@ -15,6 +20,8 @@ export const authInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
   const toastController = inject(ToastController);
+  const modalController = inject(ModalController);
+  const subscriptionService = inject(SubscriptionService);
   const accessToken = authService.getAccessToken();
 
   if (accessToken && req.url.startsWith(environment.apiUrl)) {
@@ -28,7 +35,7 @@ export const authInterceptor: HttpInterceptorFn = (
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh')
       ) {
-        return handle401Error(req, next, authService);
+        return handle401Error(req, next, authService, subscriptionService, modalController);
       }
 
       if (error.status === 0) {
@@ -63,7 +70,9 @@ const addToken = (req: HttpRequest<any>, token: string) => {
 const handle401Error = (
   req: HttpRequest<any>,
   next: HttpHandlerFn,
-  authService: AuthService
+  authService: AuthService,
+  subscriptionService: SubscriptionService,
+  modalController: ModalController
 ): Observable<HttpEvent<any>> => {
   if (!isRefreshing) {
     isRefreshing = true;
@@ -73,6 +82,22 @@ const handle401Error = (
       switchMap((response: any) => {
         isRefreshing = false;
         refreshTokenSubject.next(response.accessToken);
+
+        const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
+        if (decodedToken.role === 'CLUBE') {
+          const isStatusActive = decodedToken.subscriptionStatus === SubscriptionStatus.ACTIVE;
+          const isDateExpired = decodedToken.subscriptionEndDate
+            ? new Date(decodedToken.subscriptionEndDate) < new Date()
+            : false;
+
+          if (!isStatusActive || isDateExpired) {
+            if (isDateExpired) {
+              subscriptionService.expireExpired().subscribe();
+            }
+            openPlansModal(modalController);
+          }
+        }
+
         return next(addToken(req, response.accessToken));
       }),
       catchError((err) => {
@@ -91,3 +116,15 @@ const handle401Error = (
     );
   }
 };
+
+async function openPlansModal(modalController: ModalController) {
+  if (isModalOpen) return;
+  isModalOpen = true;
+  const modal = await modalController.create({
+    component: PlansModalComponent,
+    backdropDismiss: false
+  });
+  await modal.present();
+  await modal.onDidDismiss();
+  isModalOpen = false;
+}

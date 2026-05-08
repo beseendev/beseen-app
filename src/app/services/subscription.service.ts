@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Plan, Subscription, SubscriptionSyncRequest, SubscriptionStatus } from '../models/subscription.model';
 import { Capacitor } from '@capacitor/core';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -15,33 +16,38 @@ export class SubscriptionService {
   private currentSubscriptionSubject = new BehaviorSubject<Subscription | null>(null);
   public currentSubscription$ = this.currentSubscriptionSubject.asObservable();
 
-  constructor() {
-    this.loadSubscriptionFromStorage();
-  }
-
-  private loadSubscriptionFromStorage() {
-    const saved = localStorage.getItem('user_subscription');
-    if (saved) {
-      try {
-        this.currentSubscriptionSubject.next(JSON.parse(saved));
-      } catch (e) {
-        localStorage.removeItem('user_subscription');
-      }
-    }
-  }
-
   async initializeRevenueCat(userId: string) {
     if (!Capacitor.isNativePlatform()) {
       console.warn('RevenueCat: Ignorando inicialização no Navegador');
       return;
     }
     try {
-      await Purchases.configure({ 
-        apiKey: 'goog_placeholder_api_key', 
-        appUserID: userId 
+      await Purchases.configure({
+        apiKey: 'goog_placeholder_api_key',
+        appUserID: userId
       });
     } catch (e) {
       console.error('Erro ao inicializar RevenueCat', e);
+    }
+  }
+
+  hasActiveSubscription(): boolean {
+    const token = localStorage.getItem('access_token');
+    if (!token) return false;
+    try {
+      const decoded = jwtDecode<any>(token);
+      const status = decoded.subscriptionStatus;
+      const endDateStr = decoded.subscriptionEndDate;
+
+      if (status !== SubscriptionStatus.ACTIVE) return false;
+
+      if (endDateStr) {
+        return new Date(endDateStr) > new Date();
+      }
+
+      return true;
+    } catch {
+      return false;
     }
   }
 
@@ -57,6 +63,10 @@ export class SubscriptionService {
         throw err;
       })
     );
+  }
+
+  expireExpired(): Observable<any> {
+    return this.apiService.post<any>('/subscriptions/expire-expired', {});
   }
 
   async purchasePlan(plan: Plan): Promise<Subscription> {
@@ -100,16 +110,6 @@ export class SubscriptionService {
   private saveSubscription(sub: Subscription) {
     localStorage.setItem('user_subscription', JSON.stringify(sub));
     this.currentSubscriptionSubject.next(sub);
-  }
-
-  hasActiveSubscription(): boolean {
-    const sub = this.currentSubscriptionSubject.value;
-    if (!sub) return false;
-
-    const isActive = sub.status === SubscriptionStatus.ACTIVE;
-    const isNotExpired = !sub.endDate || new Date(sub.endDate) > new Date();
-
-    return isActive && isNotExpired;
   }
 
   clearSubscription() {

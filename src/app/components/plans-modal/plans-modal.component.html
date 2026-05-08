@@ -1,32 +1,80 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Escolha seu Plano</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="scout-plans-content">
+  <div class="scout-plans-container">
+    <div class="top-bar">
+      <ion-button *ngIf="!isExpired" fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Planos do Olheiro</span>
+    </div>
 
-<ion-content class="ion-padding">
-  <div class="plans-container">
-    <p class="intro-text">Para continuar como Olheiro de Clube, você precisa de uma assinatura ativa.</p>
+    <section class="hero-block">
+      <p class="be-eyebrow">Planos</p>
+      <h1>Contrate seu acesso</h1>
+      <p class="hero-copy">Contas de olheiro precisam de assinatura ativa para utilizar recursos pagos do beeSeen.</p>
+    </section>
+
+    <section class="rule-card be-surface">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <div>
+        <strong>{{ scoutType ? 'Tipo: ' + getDisplayScoutType(scoutType) : 'Perfil de olheiro pendente' }}</strong>
+        <p>{{ rulesSummary }}</p>
+      </div>
+    </section>
 
     <div *ngIf="loading" class="ion-text-center ion-padding">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Carregando planos...</p>
     </div>
 
-    <div *ngIf="!loading && plans.length === 0" class="ion-text-center ion-padding">
-      <p>Nenhum plano disponível no momento.</p>
-    </div>
+    <section *ngIf="!loading" class="plans-list" aria-label="Opções de planos">
+      <article
+        class="plan-card be-surface be-fade-in"
+        *ngFor="let plan of plans; trackBy: trackByPlan"
+        [class.featured]="plan.featured">
+        <div class="plan-head">
+          <div class="plan-icon">
+            <ion-icon [name]="getPlanIcon(plan)"></ion-icon>
+          </div>
 
-    <ion-card *ngFor="let plan of plans" class="plan-card">
-      <ion-card-header>
-        <ion-card-title>{{ plan.name }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>{{ plan.description }}</p>
-        <ion-button expand="block" (click)="subscribe(plan)" [disabled]="purchasing" class="ion-margin-top">
-          {{ purchasing ? 'Processando...' : 'Assinar Agora' }}
+          <ion-badge *ngIf="getPlanBadge(plan)" class="plan-badge">
+            {{ getPlanBadge(plan) }}
+          </ion-badge>
+        </div>
+
+        <div class="plan-copy">
+          <h2>{{ plan.name }}</h2>
+          <p>{{ plan.description }}</p>
+        </div>
+
+        <div class="plan-price">
+          <strong>{{ plan.price }}</strong>
+          <span>{{ plan.period }}</span>
+        </div>
+
+        <ul class="feature-list">
+          <li *ngFor="let feature of plan.features">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>{{ feature }}</span>
+          </li>
+        </ul>
+
+        <ul class="restriction-list" *ngIf="plan.restrictions?.length">
+          <li *ngFor="let restriction of plan.restrictions">
+            <span>{{ restriction }}</span>
+          </li>
+        </ul>
+
+        <ion-button
+          expand="block"
+          [fill]="plan.featured ? 'solid' : 'outline'"
+          class="select-plan-btn"
+          [class.featured-button]="plan.featured"
+          (click)="selectPlan(plan)"
+          [disabled]="purchasing">
+          <ion-icon slot="start" name="flash-outline"></ion-icon>
+          {{ purchasing ? 'Processando...' : 'Escolher plano' }}
         </ion-button>
-      </ion-card-content>
-    </ion-card>
+      </article>
+    </section>
   </div>
 </ion-content>

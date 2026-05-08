@@ -11,6 +11,7 @@ export interface User {
   email: string;
   hasProfile: boolean;
   profileId: number | null;
+  scoutType?: string | null;
 }
 
 export interface JwtPayload {
@@ -19,6 +20,10 @@ export interface JwtPayload {
   name: string;
   role: string;
   clubName: string | null;
+  scoutType: string | null;
+  subscriptionEndDate: string | null;
+  subscriptionStatus: string | null;
+  planDescription: string | null;
   exp?: number;
   iat?: number;
 }
@@ -54,18 +59,19 @@ export class AuthService {
     const decodedToken = this.getDecodedToken<JwtPayload>();
     if (decodedToken?.role === 'CLUBE') {
       this.subscriptionService.initializeRevenueCat(user.id);
-      this.subscriptionService.getMySubscription().subscribe();
     }
   }
 
   getCurrentUser(): Observable<User> {
     return this.apiService.get<any>('/profile/me').pipe(
       map(response => {
+        const decodedToken = this.getDecodedToken<JwtPayload>();
         const user: User = {
           id: response.id?.toString(),
           email: response.email,
           hasProfile: response.hasProfile,
-          profileId: response.profileId
+          profileId: response.profileId,
+          scoutType: decodedToken?.scoutType
         };
         return user;
       }),
@@ -105,11 +111,13 @@ export class AuthService {
         localStorage.setItem('access_token', response.accessToken);
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
+        const decodedToken = this.getDecodedToken<JwtPayload>();
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
           hasProfile: response.hasProfile,
-          profileId: null
+          profileId: null,
+          scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
       }),
@@ -129,11 +137,13 @@ export class AuthService {
         localStorage.setItem('access_token', response.accessToken);
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
+        const decodedToken = this.getDecodedToken<JwtPayload>();
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
           hasProfile: response.hasProfile,
-          profileId: null
+          profileId: null,
+          scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
       }),
