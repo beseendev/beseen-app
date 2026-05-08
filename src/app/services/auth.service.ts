@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import {tap, catchError, map} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
+import { SubscriptionService } from './subscription.service';
 
 export interface User {
   id: string;
@@ -33,15 +34,27 @@ export class AuthService {
   private readonly authSocial = '/auth/social';
 
   private toastController = inject(ToastController);
+  private subscriptionService = inject(SubscriptionService);
 
   constructor(private apiService: ApiService) {
     if (this.hasToken()) {
       // Automatically fetch user data if a token exists
       this.getCurrentUser().subscribe({
+        next: (user) => {
+          this.checkSubscriptionIfNeeded(user);
+        },
         error: () => {
           this.logout();
         }
       });
+    }
+  }
+
+  private checkSubscriptionIfNeeded(user: User) {
+    const decodedToken = this.getDecodedToken<JwtPayload>();
+    if (decodedToken?.role === 'CLUBE') {
+      this.subscriptionService.initializeRevenueCat(user.id);
+      this.subscriptionService.getMySubscription().subscribe();
     }
   }
 
@@ -59,6 +72,7 @@ export class AuthService {
       tap(user => {
         this.currentUserSubject.next(user);
         this.authState.next(true);
+        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.logout();
@@ -133,6 +147,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    this.subscriptionService.clearSubscription();
     this.authState.next(false);
     this.currentUserSubject.next(null);
     this.showToast('Você foi desconectado.', 'success');

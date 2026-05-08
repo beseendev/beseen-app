@@ -1,0 +1,27 @@
+.plans-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.intro-text {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: var(--ion-color-medium);
+}
+
+.plan-card {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1rem;
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 16px;
+}
+
+ion-card-title {
+  font-weight: bold;
+  font-size: 1.4rem;
+}

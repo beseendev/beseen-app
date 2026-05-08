@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { profileGuard } from './guards/profile-guard';
+import { subscriptionGuard } from './guards/subscription.guard';
 
 export const routes: Routes = [
   {
@@ -10,7 +11,7 @@ export const routes: Routes = [
   {
     path: 'player-home',
     loadComponent: () => import('./player-home/player-home.page').then(m => m.PlayerHomePage),
-    canActivate: [authGuard, profileGuard]
+    canActivate: [authGuard, profileGuard, subscriptionGuard]
   },
   {
     path: '',
@@ -42,17 +43,17 @@ export const routes: Routes = [
   {
     path: 'profile-player',
     loadComponent: () => import('./profile-player/profile-player.page').then(m => m.ProfilePlayerPage),
-    canActivate: [authGuard]
+    canActivate: [authGuard, subscriptionGuard]
   },
   {
     path: 'profile-player/:userId',
     loadComponent: () => import('./profile-player/profile-player.page').then(m => m.ProfilePlayerPage),
-    canActivate: [authGuard]
+    canActivate: [authGuard, subscriptionGuard]
   },
   {
     path: 'create-post',
     loadComponent: () => import('./create-post/create-post.page').then(m => m.CreatePostPage),
-    canActivate: [authGuard]
+    canActivate: [authGuard, subscriptionGuard]
   },
   {
     path: 'create-profile-scout',
@@ -62,16 +63,16 @@ export const routes: Routes = [
   {
     path: 'profile-scout',
     loadComponent: () => import('./profile-scout/profile-scout.page').then(m => m.ProfileScoutPage),
-    canActivate: [authGuard, profileGuard]
+    canActivate: [authGuard, profileGuard, subscriptionGuard]
   },
   {
     path: 'profile-scout/:userId',
     loadComponent: () => import('./profile-scout/profile-scout.page').then(m => m.ProfileScoutPage),
-    canActivate: [authGuard]
+    canActivate: [authGuard, subscriptionGuard]
   },
   {
     path: 'scout-home',
     loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage),
-    canActivate: [authGuard, profileGuard]
+    canActivate: [authGuard, profileGuard, subscriptionGuard]
   },
 ];
