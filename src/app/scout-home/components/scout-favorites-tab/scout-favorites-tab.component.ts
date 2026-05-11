@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.model
 import { ChatService } from '../../../services/chat.service';
 import { ScoutFeedItem } from '../../scout-home.page';
 import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
-import {SubscriptionService} from "../../../services/subscription.service";
+import { SubscriptionService } from "../../../services/subscription.service";
 
 @Component({
   selector: 'app-scout-favorites-tab',
@@ -18,16 +18,19 @@ import {SubscriptionService} from "../../../services/subscription.service";
   standalone: true,
   imports: [CommonModule, IonicModule, AdCardComponent]
 })
-export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
+export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
 
+  @ViewChildren('vFav') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
+  private videoObserver?: IntersectionObserver;
+
   private readonly chatService = inject(ChatService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
-  public readonly subscriptionService = inject(SubscriptionService);
+  public readonly subscriptionService: SubscriptionService = inject(SubscriptionService);
   private readonly router = inject(Router);
 
   constructor() {
@@ -42,7 +45,40 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
+  ngAfterViewInit(): void {
+    this.setupVideoObserver();
+    this.videoElements.changes.subscribe(() => {
+      this.setupVideoObserver();
+    });
+  }
+
+  private setupVideoObserver(): void {
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
+    }
+
+    this.videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(e => console.log('Autoplay blocked:', e));
+        } else {
+          video.pause();
+        }
+      });
+    }, {
+      threshold: 0.6
+    });
+
+    this.videoElements.forEach(videoRef => {
+      this.videoObserver?.observe(videoRef.nativeElement);
+    });
+  }
+
   ngOnDestroy(): void {
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
+    }
   }
 
   getStatus(card: FavoriteAthleteVideoCard): ChatStatus {

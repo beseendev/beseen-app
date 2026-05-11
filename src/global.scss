@@ -161,6 +161,118 @@ ion-segment-button {
   gap: 8px;
 }
 
+/* TikTok-style Video Feed */
+.be-tiktok-container {
+  --tiktok-height: calc(100vh - 100px); /* Even taller height */
+  scroll-snap-type: y mandatory;
+  overflow-y: auto;
+  height: var(--tiktok-height);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  background: #000;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.be-tiktok-card {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: var(--tiktok-height);
+  width: 100%;
+  position: relative;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.be-tiktok-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.be-tiktok-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 100px 70px 20px 16px; /* Increased right padding to 70px */
+  background: linear-gradient(to top, 
+    rgba(0, 0, 0, 0.9) 0%, 
+    rgba(0, 0, 0, 0.5) 40%, 
+    rgba(0, 0, 0, 0.2) 70%, 
+    transparent 100%);
+  color: white;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.be-tiktok-overlay * {
+  pointer-events: auto;
+}
+
+.be-tiktok-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 20px; /* Aligned with the bottom of the overlay padding */
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Slightly reduced gap */
+  align-items: center;
+}
+
+.be-tiktok-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.be-tiktok-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.be-tiktok-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.be-tiktok-info .meta-line {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.be-tiktok-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.be-tiktok-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @keyframes beFadeIn {
   from {
     opacity: 0;

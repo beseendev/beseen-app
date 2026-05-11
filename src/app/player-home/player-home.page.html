@@ -106,52 +106,46 @@
         <span class="status-tag" *ngIf="myInviteCount > 0">{{ myInviteCount }} convites</span>
       </article>
 
-      <div class="video-stack">
+      <div class="video-stack be-tiktok-container">
         <ng-container *ngFor="let item of myVideosWithAds; trackBy: trackByFeedItem">
-          <article class="surface showcase-card my-video-card be-fade-in" *ngIf="item.type === 'video'">
-            <div class="video-meta">
-              <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(item.video)">
-                <div class="avatar-shell">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-                </div>
-                <div>
-                  <h3>{{ item.video.athleteName }}</h3>
-                  <p *ngIf="item.video.likes">{{ item.video.likes | number }} curtidas</p>
-                  <p class="meta-line" *ngIf="item.video.modality || item.video.position">
+          <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
+            <video #vMine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            
+            <div class="be-tiktok-overlay">
+              <div class="be-tiktok-info">
+                <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
+                  <h3>@{{ item.video.athleteName }}</h3>
+                </button>
+                <p class="showcase-description">{{ item.video.description }}</p>
+                <p class="meta-line" *ngIf="item.video.modality || item.video.position">
                     <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
                     <span *ngIf="item.video.modality && item.video.position"> • </span>
                     <span *ngIf="item.video.position">{{ item.video.position }}</span>
-                  </p>
-                </div>
-              </button>
-              <span class="status-tag" *ngIf="hasIncomingInvite(item.video)">Convite</span>
-            </div>
-            <div class="media-frame showcase-media">
-              <!-- Overlay invisível que captura o clique -->
-              <div class="video-overlay" (click)="toggleFullScreen(vMine)"></div>
-              <video #vMine [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
-              <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Interesse recebido</span>
-            </div>
-            <div class="showcase-body">
-              <p class="showcase-description">{{ item.video.description }}</p>
+                </p>
+              </div>
 
-              <div class="showcase-actions">
+              <div class="showcase-actions" style="margin-top: 12px; pointer-events: auto;">
                 <ion-button
                   *ngIf="hasIncomingInvite(item.video); else noInviteMine"
                   size="small"
-                  fill="outline"
-                  class="chat-cta"
+                  fill="solid"
+                  color="primary"
                   (click)="item.video.inviteStatus === 'ACCEPTED' ? openScoutChat(item.video) : openInvitesSheet(item.video.id)">
                   {{ getChatButtonLabel(item.video) }}
                 </ion-button>
 
                 <ng-template #noInviteMine>
-                  <ion-button size="small" fill="clear" class="empty-cta" (click)="showNoInviteToast()">
-                    Sem convite
-                  </ion-button>
+                   <span class="status-tag" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(4px);">Sem convite</span>
                 </ng-template>
               </div>
+            </div>
+
+            <div class="be-tiktok-actions">
+               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
+                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
+                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               </div>
+               <span class="status-tag" *ngIf="hasIncomingInvite(item.video)" style="background: var(--be-color-brand-500); color: white; border: none;">Convite</span>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -159,67 +153,32 @@
       </div>
     </section>
 
-    <section class="section" *ngIf="activeTab !== 'mine' && featuredVideo as featuredVideo">
-      <article class="surface featured be-fade-in">
-        <div class="video-meta">
-          <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(featuredVideo)">
-            <div class="avatar-shell">
-              <img *ngIf="featuredVideo.athleteAvatarUrl" [src]="featuredVideo.athleteAvatarUrl" [alt]="featuredVideo.athleteName">
-              <ion-icon *ngIf="!featuredVideo.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-            </div>
-            <div>
-              <h3>{{ featuredVideo.athleteName }}</h3>
-              <p *ngIf="featuredVideo.likes">{{ featuredVideo.likes | number }} curtidas</p>
-              <p class="meta-line" *ngIf="featuredVideo.modality || featuredVideo.position">
-                <span *ngIf="featuredVideo.modality">{{ featuredVideo.modality }}</span>
-                <span *ngIf="featuredVideo.modality && featuredVideo.position"> • </span>
-                <span *ngIf="featuredVideo.position">{{ featuredVideo.position }}</span>
-              </p>
-            </div>
-          </button>
-          <span class="status-tag">Destaque</span>
-        </div>
-        <div class="media-frame">
-          <div class="video-overlay" (click)="toggleFullScreen(vFeatured)"></div>
-          <video #vFeatured [src]="featuredVideo.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
-        </div>
-        <div class="showcase-body">
-          <p class="showcase-description">{{ featuredVideo.description }}</p>
-        </div>
-      </article>
-    </section>
-
     <section class="section tab-panel" [class.active]="activeTab === 'ranking'" *ngIf="activeTab === 'ranking'">
-      <div class="video-stack">
+      <div class="video-stack be-tiktok-container">
         <ng-container *ngFor="let item of rankingVideosWithAds; trackBy: trackByFeedItem">
-          <article class="surface showcase-card be-fade-in" *ngIf="item.type === 'video'">
-            <div class="video-meta">
-              <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(item.video)">
-                <div class="avatar-shell">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-                </div>
-
-                <div>
-                  <h3>{{ item.video.athleteName }}</h3>
-                  <p *ngIf="item.video.likes">{{ item.video.likes | number }} curtidas</p>
-                  <p class="meta-line" *ngIf="item.video.modality || item.video.position">
+          <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
+            <video #vRanking [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            
+            <div class="be-tiktok-overlay">
+              <div class="be-tiktok-info">
+                <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
+                  <h3>@{{ item.video.athleteName }}</h3>
+                </button>
+                <p class="showcase-description">{{ item.video.description }}</p>
+                <p class="meta-line" *ngIf="item.video.modality || item.video.position">
                     <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
                     <span *ngIf="item.video.modality && item.video.position"> • </span>
                     <span *ngIf="item.video.position">{{ item.video.position }}</span>
-                  </p>
-                </div>
-              </button>
-              <span class="status-tag">Ranking</span>
-            </div>
-            <div class="media-frame showcase-media">
-              <div class="video-overlay" (click)="toggleFullScreen(vRanking)"></div>
-              <video #vRanking [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
-              <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Olheiro interessado</span>
+                </p>
+              </div>
             </div>
 
-            <div class="showcase-body">
-              <p class="showcase-description">{{ item.video.description }}</p>
+            <div class="be-tiktok-actions">
+               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
+                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
+                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               </div>
+               <span class="status-tag" style="background: rgba(var(--ion-color-primary-rgb), 0.5); color: white; border: none;">Ranking</span>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -228,33 +187,31 @@
     </section>
 
     <section class="section tab-panel" [class.active]="activeTab === 'new'" *ngIf="activeTab === 'new'">
-      <div class="video-stack">
+      <div class="video-stack be-tiktok-container">
         <ng-container *ngFor="let item of newVideosWithAds; trackBy: trackByFeedItem">
-          <article class="surface showcase-card be-fade-in" *ngIf="item.type === 'video'">
-            <div class="video-meta">
-              <button type="button" class="profile-link talent-id" (click)="openAthleteProfile(item.video)">
-                <div class="avatar-shell">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-                </div>
-                <h3>{{ item.video.athleteName }}</h3>
-                <p *ngIf="item.video.likes">{{ item.video.likes | number }} curtidas</p>
+          <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
+            <video #vNew [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            
+            <div class="be-tiktok-overlay">
+              <div class="be-tiktok-info">
+                <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
+                  <h3>@{{ item.video.athleteName }}</h3>
+                </button>
+                <p class="showcase-description">{{ item.video.description }}</p>
                 <p class="meta-line" *ngIf="item.video.modality || item.video.position">
-                  <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
-                  <span *ngIf="item.video.modality && item.video.position"> • </span>
-                  <span *ngIf="item.video.position">{{ item.video.position }}</span>
+                    <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
+                    <span *ngIf="item.video.modality && item.video.position"> • </span>
+                    <span *ngIf="item.video.position">{{ item.video.position }}</span>
                 </p>
-              </button>
-              <span class="status-tag">Novo</span>
-            </div>
-            <div class="media-frame showcase-media">
-              <div class="video-overlay" (click)="toggleFullScreen(vNew)"></div>
-              <video #vNew [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
-              <span class="interest-badge" *ngIf="hasIncomingInvite(item.video)">Olheiro interessado</span>
+              </div>
             </div>
 
-            <div class="showcase-body">
-              <p class="showcase-description">{{ item.video.description }}</p>
+            <div class="be-tiktok-actions">
+               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
+                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
+                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               </div>
+               <span class="status-tag" style="background: rgba(var(--ion-color-secondary-rgb), 0.5); color: white; border: none;">Novo</span>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

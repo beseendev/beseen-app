@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { IonicModule, ModalController, ToastController, IonInfiniteScroll } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
@@ -43,8 +43,11 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   standalone: true,
   imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent]
 })
-export class ScoutHomePage implements OnInit, OnDestroy {
+export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+  @ViewChildren('vVitrine') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
+
+  private videoObserver?: IntersectionObserver;
 
   videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
@@ -123,6 +126,36 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.refreshCurrentTab();
   }
 
+  ngAfterViewInit(): void {
+    this.setupVideoObserver();
+    this.videoElements.changes.subscribe(() => {
+      this.setupVideoObserver();
+    });
+  }
+
+  private setupVideoObserver(): void {
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
+    }
+
+    this.videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(e => console.log('Autoplay blocked:', e));
+        } else {
+          video.pause();
+        }
+      });
+    }, {
+      threshold: 0.6
+    });
+
+    this.videoElements.forEach(videoRef => {
+      this.videoObserver?.observe(videoRef.nativeElement);
+    });
+  }
+
   private async updateFeedItems() {
     const cards = this.selectedTab === 'vitrine' ? this.allVideoCards : this.favoriteVideoCards;
     this.feedItems = await this.interleaveAds(cards);
@@ -152,6 +185,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     }
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
+    }
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
     }
   }
 

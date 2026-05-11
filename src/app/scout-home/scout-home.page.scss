@@ -20,13 +20,43 @@
 .summary-label{display:block;color:var(--be-color-text-3);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
 .edit-profile-btn{--color:var(--be-color-brand-500);--border-color:rgba(var(--ion-color-primary-rgb),.45);text-transform:none;font-weight:600}
 .logout-btn{--color:var(--be-color-danger);text-transform:none;font-weight:600}
-.arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px}
+.arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px;position:sticky;top:0;z-index:100}
 .tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--be-color-text-3);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}
 .tab-btn.active{color:var(--be-color-text-1);background:rgba(var(--ion-color-primary-rgb),.16)}
 .content-section{margin-bottom:24px}
 .section-heading{margin-bottom:12px}
 .section-heading h2{margin:0;color:var(--be-color-text-1);font-size:1.05rem}
-.video-list{display:flex;flex-direction:column;gap:14px}
+.video-list.be-tiktok-container {
+  --tiktok-height: calc(100vh - 100px);
+  width: 100%;
+  height: var(--tiktok-height);
+}
+
+@media (min-width: 768px) {
+  .video-list.be-tiktok-container {
+    --tiktok-height: clamp(400px, 75vh, 700px);
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    height: auto;
+    min-height: var(--tiktok-height);
+    border-radius: 16px;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    scroll-snap-type: none;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .be-tiktok-card {
+     height: var(--tiktok-height);
+     scroll-snap-align: none;
+     border-radius: 16px;
+     margin-bottom: 14px;
+  }
+}
+
 .video-card{padding:0}
 .video-meta{align-items:center;gap:10px;margin-bottom:0;padding:16px}
 .video-meta h3{margin:0;color:var(--be-color-text-1);font-size:.96rem}

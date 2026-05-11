@@ -82,47 +82,39 @@
     </nav>
 
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
-      <div class="section-heading">
-        <p class="eyebrow">Vitrine</p>
-        <h2>Todos os videos</h2>
-      </div>
-
-      <div class="video-list">
+      <div class="video-list be-tiktok-container">
         <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
-          <article class="video-card surface be-fade-in" *ngIf="item.type === 'video'">
-            <div class="video-meta">
-              <button type="button" class="talent-id profile-link" (click)="openAthleteProfile(item.video)">
-                <div class="avatar-shell">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline"></ion-icon>
-                </div>
-                <div>
-                  <h3>{{ item.video.athleteName }}</h3>
-                  <p *ngIf="item.video.likes">{{ item.video.likes | number }} curtidas</p>
-                  <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
+          <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
+            <video #vVitrine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            
+            <div class="be-tiktok-overlay">
+              <div class="be-tiktok-info">
+                <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
+                  <h3>@{{ item.video.athleteName }}</h3>
+                </button>
+                <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
+                <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
                     <span *ngIf="item.video.modalidade">{{ item.video.modalidade }}</span>
                     <span *ngIf="item.video.modalidade && item.video.localidade"> • </span>
                     <span *ngIf="item.video.localidade">{{ item.video.localidade }}</span>
-                  </p>
-                </div>
-              </button>
+                </p>
+              </div>
+            </div>
 
-              <ion-button
+            <div class="be-tiktok-actions">
+               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
+                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
+                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               </div>
+               
+               <ion-button
                 fill="clear"
                 class="favorite-btn"
                 (click)="toggleFavoriteFromCard(item.video)"
+                style="--color: #fff; margin-bottom: 8px;"
                 [attr.aria-label]="'Favoritar ' + item.video.athleteName">
-                <ion-icon [name]="item.video.favorito ? 'heart' : 'heart-outline'"></ion-icon>
+                <ion-icon [name]="item.video.favorito ? 'heart' : 'heart-outline'" style="font-size: 32px; color: {{ item.video.favorito ? 'var(--be-color-brand-500)' : '#fff' }}"></ion-icon>
               </ion-button>
-            </div>
-
-            <div class="media-frame showcase-media">
-              <div class="video-overlay" (click)="toggleFullScreen(vVitrine)"></div>
-              <video #vVitrine [src]="item.video.mediaUrl" autoplay muted loop playsinline controls controlsList="nodownload nopictureinpicture" preload="metadata" class="talent-video"></video>
-            </div>
-
-            <div class="showcase-body">
-              <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

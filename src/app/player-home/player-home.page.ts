@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, ViewChild, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {
   IonAvatar,
   IonBadge,
@@ -109,9 +109,12 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     AdCardComponent
   ],
 })
-export class PlayerHomePage implements OnInit, OnDestroy {
+export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+  @ViewChildren('vMine, vRanking, vNew') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
+
+  private videoObserver?: IntersectionObserver;
 
   userProfile: any | null = null;
   avatarLoadFailed = false;
@@ -187,16 +190,16 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
       this.featuredVideo = allRanking[0] ?? null;
 
-      // Exclui o primeiro vídeo (destaque) da lista de ranking
-      this.rankingVideos = allRanking.slice(1, 11);
+      // Inclui todos os vídeos na lista de ranking para o feed TikTok
+      this.rankingVideos = allRanking.slice(0, 10);
       this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
 
       const allNew = [...videos]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .map(p => this.mapPostToVideo(p));
 
-      // Exclui o vídeo que está em destaque da lista de novos para não repetir
-      this.newVideos = allNew.filter(v => v.id !== this.featuredVideo?.id);
+      // Inclui todos os vídeos na lista de novos
+      this.newVideos = allNew.slice(0, 10);
       this.newVideosWithAds = await this.interleaveAds(this.newVideos);
     });
   }
@@ -249,6 +252,36 @@ export class PlayerHomePage implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.setupVideoObserver();
+    this.videoElements.changes.subscribe(() => {
+      this.setupVideoObserver();
+    });
+  }
+
+  private setupVideoObserver(): void {
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
+    }
+
+    this.videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(e => console.log('Autoplay blocked:', e));
+        } else {
+          video.pause();
+        }
+      });
+    }, {
+      threshold: 0.6 // Video must be 60% visible to play
+    });
+
+    this.videoElements.forEach(videoRef => {
+      this.videoObserver?.observe(videoRef.nativeElement);
+    });
+  }
+
   private loadMyPosts(isRefresh = true, event?: any): void {
     if (isRefresh) {
       this.myPostsNextCursor = null;
@@ -295,11 +328,10 @@ export class PlayerHomePage implements OnInit, OnDestroy {
 
         if (isRefresh) {
           this.featuredVideo = mapped[0] || null;
-          this.rankingVideos = mapped.slice(1);
+          this.rankingVideos = mapped;
         } else {
           const filtered = mapped.filter(newVideo =>
-            !this.rankingVideos.some(existing => existing.id === newVideo.id) &&
-            newVideo.id !== this.featuredVideo?.id
+            !this.rankingVideos.some(existing => existing.id === newVideo.id)
           );
           this.rankingVideos = [...this.rankingVideos, ...filtered];
         }
@@ -392,9 +424,9 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       athleteName: post.user.username,
       athleteAvatarUrl: this.normalizeAvatarUrl(rawAvatar),
       mediaUrl: post.mediaUrl,
-      modality: (post.user as any).modality,
-      position: (post.user as any).position,
-      region: (post.user as any).region,
+      modality: (post.user as any).modality || (post.user as any).modalidade,
+      position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao,
+      region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,
       createdAt: post.createdAt,
@@ -639,6 +671,9 @@ export class PlayerHomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.threadsSubscription) {
       this.threadsSubscription.unsubscribe();
+    }
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
     }
   }
 }

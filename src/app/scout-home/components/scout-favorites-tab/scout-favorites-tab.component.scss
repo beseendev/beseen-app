@@ -40,16 +40,14 @@
 }
 
 .video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  --tiktok-height: calc(100vh - 100px);
 }
 
 .surface,
 .video-card {
   background: var(--be-color-surface-2);
   border: 1px solid var(--be-color-line);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 0;
   box-shadow: var(--be-shadow-card);
   overflow: hidden;
@@ -170,8 +168,8 @@
 }
 
 .chat-state-panel {
-  margin-top: 0;
-  padding: 0 16px 16px;
+  margin-top: 12px;
+  padding: 0;
   border-top: none;
 }
 
