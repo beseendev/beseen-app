@@ -102,12 +102,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   openSupport() {
-    // Para implementação futura
+    this.router.navigate(['/suporte']);
   }
 
   async ngOnInit(): Promise<void> {
-
-    // Inscreve-se no stream de posts da home
     this.homePostsSub = this.postService.homePosts$.subscribe(async posts => {
       if (this.selectedTab === 'vitrine') {
         this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);

@@ -1,0 +1,58 @@
+<ion-content [fullscreen]="true" class="support-content">
+  <div class="support-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Suporte</span>
+    </div>
+
+    <section class="hero-block">
+      <p class="be-eyebrow">Contato</p>
+      <h1>Fale com o suporte</h1>
+      <p class="hero-copy">Envie uma sugestão, reclamação, dúvida ou problema técnico para a equipe BeSeen.</p>
+    </section>
+
+    <form class="support-card be-surface" [formGroup]="supportForm" (ngSubmit)="submitSupportRequest()">
+      <ion-list lines="none">
+        <ion-item class="select-item">
+          <ion-select label="Tipo de contato" labelPlacement="stacked" interface="action-sheet" formControlName="type">
+            <ion-select-option *ngFor="let option of typeOptions" [value]="option">{{ option }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input label="Assunto" labelPlacement="stacked" placeholder="Resumo da mensagem" formControlName="subject"></ion-input>
+        </ion-item>
+        <div class="error-text" *ngIf="hasError('subject', 'required')">Informe o assunto.</div>
+        <div class="error-text" *ngIf="hasError('subject', 'minlength')">Use pelo menos 4 caracteres.</div>
+
+        <ion-item>
+          <ion-input label="E-mail de retorno" labelPlacement="stacked" type="email" placeholder="voce@email.com" formControlName="replyEmail"></ion-input>
+        </ion-item>
+        <div class="error-text" *ngIf="hasError('replyEmail', 'required')">Informe um e-mail para retorno.</div>
+        <div class="error-text" *ngIf="hasError('replyEmail', 'email')">Informe um e-mail válido.</div>
+
+        <ion-item>
+          <ion-textarea
+            label="Mensagem"
+            labelPlacement="stacked"
+            placeholder="Descreva o que aconteceu ou a sua sugestão"
+            [autoGrow]="true"
+            formControlName="message">
+          </ion-textarea>
+        </ion-item>
+        <div class="counter-row">
+          <ion-note>{{ messageLength }}/1200</ion-note>
+        </div>
+        <div class="error-text" *ngIf="hasError('message', 'required')">Escreva sua mensagem.</div>
+        <div class="error-text" *ngIf="hasError('message', 'minlength')">Use pelo menos 10 caracteres.</div>
+      </ion-list>
+
+      <ion-button expand="block" type="submit" class="send-button">
+        <ion-icon slot="start" name="send-outline"></ion-icon>
+        Enviar email
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

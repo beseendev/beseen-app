@@ -1,0 +1,135 @@
+.support-content {
+  --background: var(--be-color-bg);
+  font-family: var(--ion-font-family);
+}
+
+.support-container {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  color: var(--be-color-text-1);
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.back-button {
+  --color: var(--be-color-text-2);
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+}
+
+.top-bar-title {
+  font-weight: 700;
+}
+
+.hero-block {
+  margin-bottom: 22px;
+}
+
+.be-eyebrow {
+  margin-bottom: 8px;
+}
+
+h1 {
+  margin: 0;
+  line-height: 1.05;
+  font-weight: 800;
+  font-size: clamp(2rem, 7vw, 2.6rem);
+}
+
+.hero-copy {
+  margin: 10px 0 0;
+  color: var(--be-color-text-3);
+  line-height: 1.45;
+}
+
+.support-card {
+  padding: 16px;
+}
+
+ion-list {
+  --background: transparent;
+  background: transparent;
+  padding: 0;
+}
+
+ion-item {
+  --background: var(--be-color-surface-1);
+  --background-focused: var(--be-color-surface-1);
+  --inner-border-width: 0;
+  --highlight-height: 0;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --inner-padding-top: 8px;
+  --inner-padding-bottom: 8px;
+  margin-bottom: 10px;
+  border: 1px solid var(--be-color-line);
+  border-radius: 12px;
+}
+
+ion-item:focus-within {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.6);
+  box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.14);
+}
+
+ion-input, ion-select, ion-textarea {
+  --color: var(--be-color-text-1);
+  --placeholder-color: var(--be-color-text-3);
+}
+
+ion-input::part(label), ion-select::part(label), ion-textarea::part(label) {
+  color: var(--be-color-text-2);
+}
+
+.select-item {
+  --background: rgba(var(--ion-color-primary-rgb), 0.14);
+  border-color: rgba(var(--ion-color-primary-rgb), 0.42);
+}
+
+.select-item ion-select {
+  color: var(--be-color-text-2);
+}
+
+.select-item ion-select::part(icon) {
+  color: var(--be-color-brand-500);
+  opacity: 1;
+}
+
+ion-select::part(text) {
+  color: var(--be-color-text-1);
+}
+
+.counter-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 4px 10px;
+}
+
+.counter-row ion-note {
+  color: var(--be-color-text-3);
+}
+
+.error-text {
+  color: var(--be-color-danger);
+  font-size: 0.78rem;
+  margin: -4px 6px 10px;
+  text-align: left;
+}
+
+.send-button {
+  height: 54px;
+  margin-top: 8px;
+  --border-radius: 14px;
+  --background: var(--be-color-brand-500);
+  --background-hover: var(--be-color-brand-600);
+  --background-activated: var(--be-color-brand-700);
+  --color: #052e16;
+  font-weight: 700;
+}

@@ -75,4 +75,9 @@ export const routes: Routes = [
     loadComponent: () => import('./scout-home/scout-home.page').then(m => m.ScoutHomePage),
     canActivate: [authGuard, profileGuard, subscriptionGuard]
   },
+  {
+    path: 'suporte',
+    loadComponent: () => import('./support/support.page').then(m => m.SupportPage),
+    canActivate: [authGuard]
+  },
 ];
