@@ -25,13 +25,14 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ChatService } from '../services/chat.service';
 import { AdvertisementService } from '../services/advertisement.service';
+import { SubscriptionService } from '../services/subscription.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
-import { PlansModalComponent } from '../components/plans-modal/plans-modal.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
+import { ModalStateService } from '../services/modal-state.service';
 
 export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
 
@@ -74,6 +75,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
   private readonly adService = inject(AdvertisementService);
+  private readonly subscriptionService = inject(SubscriptionService);
+  private readonly modalService = inject(ModalStateService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
@@ -95,10 +98,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async openPlans() {
-    const modal = await this.modalController.create({
-      component: PlansModalComponent,
-    });
-    return await modal.present();
+    return await this.modalService.openPlansModal();
   }
 
   openSupport() {
@@ -259,6 +259,18 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   sendInvite(card: FavoriteAthleteVideoCard): void {
+    if (!this.subscriptionService.canSendInvites()) {
+        this.showToast('Seu plano atual não permite enviar convites. Faça um upgrade!', 'medium');
+        this.openPlans();
+        return;
+    }
+
+    if (!this.subscriptionService.canSendMoreInvites(this.activeChatCount)) {
+        this.showToast('Você atingiu o limite de 2 convites do plano Contato. Faça um upgrade para o plano Clube para convites ilimitados!', 'medium');
+        this.openPlans();
+        return;
+    }
+
     this.postService.sendInvite(card.postId).subscribe({
       next: () => {
         this.showToast('Convite enviado com sucesso!', 'success');
@@ -274,6 +286,12 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async openChat(card: FavoriteAthleteVideoCard): Promise<void> {
+    if (!this.subscriptionService.canAccessChat()) {
+        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'medium');
+        this.openPlans();
+        return;
+    }
+
     if (card.inviteStatus !== 'ACCEPTED') return;
 
     const threads = await firstValueFrom(this.chatService.threads$);
@@ -330,10 +348,21 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
+    if (!this.subscriptionService.canViewProfiles()) {
+        this.showToast('Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!', 'medium');
+        this.openPlans();
+        return;
+    }
     this.router.navigate(['/profile-player', card.athleteId]);
   }
 
   async openChatInbox(): Promise<void> {
+    if (!this.subscriptionService.canAccessChat()) {
+        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'medium');
+        this.openPlans();
+        return;
+    }
+
     const modal = await this.modalController.create({
       component: ChatInboxComponent,
       componentProps: {
@@ -395,13 +424,13 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         next: async (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
-          this.finalizeLoad(event, !response.nextCursor);
-          if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = !response.nextCursor;
-          }
+          this.isLoadingContent = false;
           await this.updateFeedItems();
         },
-        error: () => this.finalizeLoad(event)
+        error: (err) => {
+          console.error('Error loading favorite posts', err);
+          this.isLoadingContent = false;
+        }
       });
     }
   }

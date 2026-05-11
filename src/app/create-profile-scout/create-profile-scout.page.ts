@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { take, switchMap, catchError } from 'rxjs/operators';
+import {take, switchMap, catchError, finalize, first} from 'rxjs/operators';
 import { of } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -237,8 +237,10 @@ export class CreateProfileScoutPage implements OnInit {
     };
 
     return this.profileService.getPresignedUrl(uploadRequest).pipe(
+      first(),
       switchMap(uploadResponse => {
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
+          first(),
           catchError(uploadErr => {
             console.error('Image upload failed, but profile was created.', uploadErr);
             this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'warning');
@@ -248,6 +250,7 @@ export class CreateProfileScoutPage implements OnInit {
       }),
       switchMap(() => {
         return this.profileService.notifyUploadComplete().pipe(
+           first(),
            catchError(notifyErr => {
             console.error('Notifying backend failed.', notifyErr);
             return of(null);
@@ -303,28 +306,25 @@ export class CreateProfileScoutPage implements OnInit {
 
       this.profileService.createScoutProfile(profile).pipe(
         switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
-        switchMap(() => this.authService.refreshCurrentUser()),
+        finalize(() => this.isSaving = false),
         catchError(err => {
           console.error('Erro ao criar o perfil de olheiro', err);
           this.showToast('Erro ao salvar o perfil.', 'danger');
-          this.isSaving = false;
           throw err;
         })
       ).subscribe({
         next: async () => {
-
           const toast = await this.toastController.create({
-            message: 'Perfil de olheiro salvo com sucesso!',
-            duration: 2000,
+            message: 'Perfil criado com sucesso! Por favor, faça login novamente para acessar sua conta.',
+            duration: 1000,
             color: 'success',
             position: 'top'
           });
 
           await toast.present();
-          await this.router.navigate(['/scout-home']);
-        },
-        complete: () => {
-          this.isSaving = false;
+
+          this.authService.logout();
+          this.router.navigate(['/login']);
         }
       });
     } catch (error) {

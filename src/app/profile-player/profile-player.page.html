@@ -12,7 +12,7 @@
     </div>
 
     <div class="page-intro">
-      <h1 class="page-title">{{profile.name || 'Meu perfil' }}</h1>
+      <h1 class="page-title">{{ hasFullAccess ? (profile.name || 'Meu perfil') : (profile.name.split(' ')[0]) }}</h1>
       <p class="page-subtitle">{{ getDisplayRole(profile.role) }}</p>
     </div>
 
@@ -27,7 +27,7 @@
           <div class="profile-copy">
 
             <span>Perfil do jogador</span>
-            <strong>{{profile.name }}</strong>
+            <strong>{{ hasFullAccess ? profile.name : profile.name.split(' ')[0] }}</strong>
             <p>{{ getDisplayRole(profile.role) }}</p>
           </div>
         </div>
@@ -75,66 +75,68 @@
         </ion-item>
 
         <!-- Cidade -->
-        <ion-item *ngIf="isEditing; else readCidade">
-          <ion-icon slot="start" name="location-outline"></ion-icon>
-          <ion-input
-            label="Cidade"
-            labelPlacement="stacked"
-            [(ngModel)]="draftProfile.cidade"
-            placeholder="Ex: Florianópolis">
-          </ion-input>
-        </ion-item>
-        <ng-template #readCidade>
-          <ion-item *ngIf="profile.cidade">
+        <ng-container *ngIf="hasFullAccess">
+          <ion-item *ngIf="isEditing; else readCidade">
             <ion-icon slot="start" name="location-outline"></ion-icon>
-            <ion-label>
-              <h3>Cidade</h3>
-              <p>{{ profile.cidade }}</p>
-            </ion-label>
+            <ion-input
+              label="Cidade"
+              labelPlacement="stacked"
+              [(ngModel)]="draftProfile.cidade"
+              placeholder="Ex: Florianópolis">
+            </ion-input>
           </ion-item>
-        </ng-template>
+          <ng-template #readCidade>
+            <ion-item *ngIf="profile.cidade">
+              <ion-icon slot="start" name="location-outline"></ion-icon>
+              <ion-label>
+                <h3>Cidade</h3>
+                <p>{{ profile.cidade }}</p>
+              </ion-label>
+            </ion-item>
+          </ng-template>
 
-        <!-- Estado -->
-        <ion-item *ngIf="isEditing; else readEstado">
-          <ion-icon slot="start" name="map-outline"></ion-icon>
-          <ion-select
-            label="Estado"
-            labelPlacement="stacked"
-            [(ngModel)]="draftProfile.estado"
-            placeholder="Selecione"
-            interface="action-sheet">
-            <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ng-template #readEstado>
-          <ion-item *ngIf="profile.estado">
+          <!-- Estado -->
+          <ion-item *ngIf="isEditing; else readEstado">
             <ion-icon slot="start" name="map-outline"></ion-icon>
-            <ion-label>
-              <h3>Estado</h3>
-              <p>{{ profile.estado }}</p>
-            </ion-label>
+            <ion-select
+              label="Estado"
+              labelPlacement="stacked"
+              [(ngModel)]="draftProfile.estado"
+              placeholder="Selecione"
+              interface="action-sheet">
+              <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
+            </ion-select>
           </ion-item>
-        </ng-template>
+          <ng-template #readEstado>
+            <ion-item *ngIf="profile.estado">
+              <ion-icon slot="start" name="map-outline"></ion-icon>
+              <ion-label>
+                <h3>Estado</h3>
+                <p>{{ profile.estado }}</p>
+              </ion-label>
+            </ion-item>
+          </ng-template>
 
-        <!-- Pais -->
-        <ion-item *ngIf="isEditing; else readPais">
-          <ion-icon slot="start" name="globe-outline"></ion-icon>
-          <ion-input
-            label="País"
-            labelPlacement="stacked"
-            [(ngModel)]="draftProfile.pais"
-            placeholder="Ex: Brasil">
-          </ion-input>
-        </ion-item>
-        <ng-template #readPais>
-          <ion-item *ngIf="profile.pais">
+          <!-- Pais -->
+          <ion-item *ngIf="isEditing; else readPais">
             <ion-icon slot="start" name="globe-outline"></ion-icon>
-            <ion-label>
-              <h3>País</h3>
-              <p>{{ profile.pais }}</p>
-            </ion-label>
+            <ion-input
+              label="País"
+              labelPlacement="stacked"
+              [(ngModel)]="draftProfile.pais"
+              placeholder="Ex: Brasil">
+            </ion-input>
           </ion-item>
-        </ng-template>
+          <ng-template #readPais>
+            <ion-item *ngIf="profile.pais">
+              <ion-icon slot="start" name="globe-outline"></ion-icon>
+              <ion-label>
+                <h3>País</h3>
+                <p>{{ profile.pais }}</p>
+              </ion-label>
+            </ion-item>
+          </ng-template>
+        </ng-container>
 
         <ion-item *ngIf="isEditing; else readPosition">
           <ion-icon slot="start" name="body-outline"></ion-icon>
@@ -230,7 +232,7 @@
       </ion-list>
     </section>
 
-    <section class="section-card" *ngIf="isEditing || profile.bio">
+    <section class="section-card" *ngIf="isEditing || (profile.bio && hasFullAccess)">
       <div class="section-header">
         <h2>Sobre</h2>
         <p>Resumo rapido para apresentar o atleta.</p>
@@ -258,33 +260,43 @@
       </ion-list>
     </section>
 
-    <section class="section-card" *ngIf="isEditing || profile.careerHistory">
-      <div class="section-header">
-        <h2>Historico</h2>
-        <p>Trajetoria esportiva e clubes por onde voce passou.</p>
-      </div>
+      <section class="section-card" *ngIf="isEditing || (profile.careerHistory && hasFullAccess)">
+        <div class="section-header">
+          <h2>Historico</h2>
+          <p>Trajetoria esportiva e clubes por onde voce passou.</p>
+        </div>
 
-      <ion-list lines="none">
-        <ion-item *ngIf="isEditing; else readCareer">
-          <ion-textarea
-            label="Historico de carreira"
-            labelPlacement="stacked"
-            [(ngModel)]="draftProfile.careerHistory"
-            [autoGrow]="true"
-            placeholder="Descreva sua carreira">
-          </ion-textarea>
-        </ion-item>
-        <ng-template #readCareer>
-          <div class="text-card">
-            <div class="text-card-title">
-              <ion-icon name="time-outline"></ion-icon>
-              <span>Historico de carreira</span>
+        <ion-list lines="none">
+          <ion-item *ngIf="isEditing; else readCareer">
+            <ion-textarea
+              label="Historico de carreira"
+              labelPlacement="stacked"
+              [(ngModel)]="draftProfile.careerHistory"
+              [autoGrow]="true"
+              placeholder="Descreva sua carreira">
+            </ion-textarea>
+          </ion-item>
+          <ng-template #readCareer>
+            <div class="text-card">
+              <div class="text-card-title">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>Historico de carreira</span>
+              </div>
+              <ion-text>{{ profile.careerHistory }}</ion-text>
             </div>
-            <ion-text>{{ profile.careerHistory }}</ion-text>
-          </div>
-        </ng-template>
-      </ion-list>
-    </section>
+          </ng-template>
+        </ion-list>
+      </section>
+
+      <!-- Placeholder para usuários com acesso restrito -->
+      <section class="section-card upgrade-banner" *ngIf="!hasFullAccess && !isMyProfile">
+        <div class="upgrade-content">
+          <ion-icon name="lock-closed-outline" color="warning"></ion-icon>
+          <h3>Acesso Restrito</h3>
+          <p>Assine o plano <b>Clube</b> para ver bio, histórico completo e localização deste atleta.</p>
+          <ion-button fill="solid" color="primary" (click)="subscriptionService.getMySubscription()">Ver Planos</ion-button>
+        </div>
+      </section>
 
     <section class="section-card posts-section">
       <div class="section-header posts-header">

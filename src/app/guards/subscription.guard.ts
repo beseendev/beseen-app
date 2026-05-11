@@ -2,31 +2,18 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { SubscriptionService } from '../services/subscription.service';
-import { map, take, tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { ModalController } from '@ionic/angular/standalone';
+import { map } from 'rxjs/operators';
+import { of, from } from 'rxjs';
+import { ToastController } from '@ionic/angular/standalone';
 import { SubscriptionStatus } from '../models/subscription.model';
-import { PlansModalComponent } from '../components/plans-modal/plans-modal.component';
-
-let isModalOpen = false;
-
-async function openPlansModal(modalController: ModalController) {
-  if (isModalOpen) return;
-  isModalOpen = true;
-  const modal = await modalController.create({
-    component: PlansModalComponent,
-    backdropDismiss: false
-  });
-  await modal.present();
-  await modal.onDidDismiss();
-  isModalOpen = false;
-}
+import { ModalStateService } from '../services/modal-state.service';
 
 export const subscriptionGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const subscriptionService = inject(SubscriptionService);
-  const modalController = inject(ModalController);
+  const modalService = inject(ModalStateService);
   const router = inject(Router);
+  const toastController = inject(ToastController);
 
   const decodedToken = authService.getDecodedToken<JwtPayload>();
   const isClube = decodedToken?.role === 'CLUBE';
@@ -44,25 +31,40 @@ export const subscriptionGuard: CanActivateFn = (route, state) => {
     if (isDateExpired) {
       subscriptionService.expireExpired().subscribe();
     }
-    openPlansModal(modalController);
-    return of(true);
+
+    return from(modalService.openPlansModal()).pipe(
+      map(purchased => {
+        if (purchased) {
+          const role = authService.getDecodedToken<JwtPayload>()?.role;
+          if (role === 'CLUBE') router.navigate(['/scout-home']);
+          else if (role === 'JOGADOR') router.navigate(['/player-home']);
+          return true;
+        }
+        return false;
+      })
+    );
   }
 
-  if (subscriptionService.hasActiveSubscription()) {
-    return of(true);
+  if (!subscriptionService.hasActiveSubscription()) {
+     return from(modalService.openPlansModal()).pipe(
+       map(purchased => {
+         if (purchased) return true;
+         return false;
+       })
+     );
   }
 
-  return subscriptionService.getMySubscription().pipe(
-    map(sub => {
-      const active = sub && sub.status === 'ACTIVE';
-      if (active) return true;
+  const planName = subscriptionService.getPlanName();
+  const url = state.url;
+  if (planName === 'Visualização' && url.includes('/profile-player')) {
+    toastController.create({
+      message: 'Seu plano Visualização não permite ver perfis. Faça upgrade para o plano Contato ou Clube!',
+      duration: 3000,
+      color: 'warning',
+      position: 'top'
+    }).then(t => t.present());
+    return of(false);
+  }
 
-      console.warn('Usuário CLUBE sem assinatura ativa. O bloqueio será feito via modal global.');
-      openPlansModal(modalController);
-      return true;
-    }),
-    catchError(() => {
-      return of(true);
-    })
-  );
+  return of(true);
 };

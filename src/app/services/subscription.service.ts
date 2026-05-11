@@ -51,6 +51,49 @@ export class SubscriptionService {
     }
   }
 
+  getPlanName(): string | null {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode<any>(token);
+      return decoded.planName;
+    } catch {
+      return null;
+    }
+  }
+
+  canViewProfiles(): boolean {
+    if (!this.hasActiveSubscription()) return false;
+    const plan = this.getPlanName();
+    return plan === 'Clube' || plan === 'Contato';
+  }
+
+  canSendInvites(): boolean {
+    if (!this.hasActiveSubscription()) return false;
+    const plan = this.getPlanName();
+    return plan === 'Clube' || plan === 'Contato';
+  }
+
+  canSendMoreInvites(currentThreadsCount: number): boolean {
+    if (!this.hasActiveSubscription()) return false;
+    const plan = this.getPlanName();
+    if (plan === 'Clube') return true;
+    if (plan === 'Contato') return currentThreadsCount < 2;
+    return false;
+  }
+
+  canAccessChat(): boolean {
+    if (!this.hasActiveSubscription()) return false;
+    const plan = this.getPlanName();
+    return plan === 'Clube' || plan === 'Contato';
+  }
+
+  hasFullProfileAccess(): boolean {
+    if (!this.hasActiveSubscription()) return false;
+    const plan = this.getPlanName();
+    return plan === 'Clube';
+  }
+
   getPlans(): Observable<Plan[]> {
     return this.apiService.get<Plan[]>('/subscriptions/plans');
   }
@@ -103,7 +146,11 @@ export class SubscriptionService {
 
   private syncWithBackend(request: SubscriptionSyncRequest): Observable<Subscription> {
     return this.apiService.post<Subscription>('/subscriptions/sync', request).pipe(
-      tap(sub => this.saveSubscription(sub))
+      tap(sub => {
+        this.saveSubscription(sub);
+        // Ao sincronizar, limpamos o token antigo para forçar o interceptor a renová-lo
+        // ou solicitamos um novo token se o backend retornar
+      })
     );
   }
 

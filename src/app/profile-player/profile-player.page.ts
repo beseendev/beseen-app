@@ -1,22 +1,22 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, ToastController, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
 import { Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
-import { FileType } from '../models/upload.model'; // Added FileType import
+import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
 import { AuthService } from '../services/auth.service';
-import { catchError, of } from 'rxjs';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
+import {SubscriptionService} from "../services/subscription.service";
 
 @Component({
   selector: 'app-profile-player',
@@ -71,6 +71,7 @@ export class ProfilePlayerPage implements OnInit {
   private profileService = inject(ProfileService);
   private postService = inject(PostService);
   private authService = inject(AuthService);
+  public subscriptionService = inject(SubscriptionService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -80,8 +81,12 @@ export class ProfilePlayerPage implements OnInit {
   private userPostsCurrentCursor: string | undefined;
   private userPostsHasMore = true;
 
+  get hasFullAccess(): boolean {
+    return this.isMyProfile || this.subscriptionService.hasFullProfileAccess();
+  }
+
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personAddOutline, chatbubbleOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, imageOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),

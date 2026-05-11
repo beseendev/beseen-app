@@ -46,7 +46,7 @@
           <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
         </div>
 
-        <div class="chat-state-panel">
+        <div class="chat-state-panel" *ngIf="subscriptionService.canSendInvites()">
           <ng-container [ngSwitch]="item.video.inviteStatus">
             <!-- SEM CONVITE -->
             <div *ngSwitchCase="null" class="state-block">

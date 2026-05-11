@@ -3,15 +3,14 @@ import { inject } from '@angular/core';
 import { Observable, throwError, BehaviorSubject, EMPTY } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService, JwtPayload } from '../services/auth.service';
-import { ToastController, ModalController } from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular/standalone';
 import { environment } from '../../environments/environment';
 import { SubscriptionService } from '../services/subscription.service';
 import { jwtDecode } from 'jwt-decode';
 import { SubscriptionStatus } from '../models/subscription.model';
-import { PlansModalComponent } from '../components/plans-modal/plans-modal.component';
+import { ModalStateService } from '../services/modal-state.service';
 
 let isRefreshing = false;
-let isModalOpen = false;
 const refreshTokenSubject = new BehaviorSubject<any>(null);
 
 export const authInterceptor: HttpInterceptorFn = (
@@ -20,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
   const toastController = inject(ToastController);
-  const modalController = inject(ModalController);
+  const modalService = inject(ModalStateService);
   const subscriptionService = inject(SubscriptionService);
   const accessToken = authService.getAccessToken();
 
@@ -35,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh')
       ) {
-        return handle401Error(req, next, authService, subscriptionService, modalController);
+        return handle401Error(req, next, authService, subscriptionService, modalService);
       }
 
       if (error.status === 0) {
@@ -72,7 +71,7 @@ const handle401Error = (
   next: HttpHandlerFn,
   authService: AuthService,
   subscriptionService: SubscriptionService,
-  modalController: ModalController
+  modalService: ModalStateService
 ): Observable<HttpEvent<any>> => {
   if (!isRefreshing) {
     isRefreshing = true;
@@ -94,7 +93,7 @@ const handle401Error = (
             if (isDateExpired) {
               subscriptionService.expireExpired().subscribe();
             }
-            openPlansModal(modalController);
+            modalService.openPlansModal();
           }
         }
 
@@ -116,15 +115,3 @@ const handle401Error = (
     );
   }
 };
-
-async function openPlansModal(modalController: ModalController) {
-  if (isModalOpen) return;
-  isModalOpen = true;
-  const modal = await modalController.create({
-    component: PlansModalComponent,
-    backdropDismiss: false
-  });
-  await modal.present();
-  await modal.onDidDismiss();
-  isModalOpen = false;
-}

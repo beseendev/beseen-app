@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonApp, IonRouterOutlet, ModalController } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { AuthService, JwtPayload, User } from './services/auth.service';
 import { SubscriptionService } from './services/subscription.service';
-import { PlansModalComponent } from './components/plans-modal/plans-modal.component';
+import { ModalStateService } from './services/modal-state.service';
 import {
   logOutOutline,
   personCircleOutline,
@@ -33,10 +33,8 @@ import {
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);
   private subscriptionService = inject(SubscriptionService);
-  private modalCtrl = inject(ModalController);
+  private modalService = inject(ModalStateService);
   private router = inject(Router);
-
-  private modalVisible = false;
 
   constructor() {
     addIcons({
@@ -105,21 +103,9 @@ export class AppComponent implements OnInit {
   }
 
   private async showPlansModal() {
-    if (this.modalVisible) return;
+    const purchased = await this.modalService.openPlansModal();
 
-    this.modalVisible = true;
-    const modal = await this.modalCtrl.create({
-      component: PlansModalComponent,
-      backdropDismiss: false,
-      keyboardClose: false
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    this.modalVisible = false;
-
-    if (!data && !this.subscriptionService.hasActiveSubscription()) {
+    if (!purchased && !this.subscriptionService.hasActiveSubscription()) {
       this.authService.logout();
     }
   }

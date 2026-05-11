@@ -9,6 +9,7 @@ import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.model
 import { ChatService } from '../../../services/chat.service';
 import { ScoutFeedItem } from '../../scout-home.page';
 import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
+import {SubscriptionService} from "../../../services/subscription.service";
 
 @Component({
   selector: 'app-scout-favorites-tab',
@@ -26,6 +27,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   private readonly chatService = inject(ChatService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
+  public readonly subscriptionService = inject(SubscriptionService);
   private readonly router = inject(Router);
 
   constructor() {
@@ -60,6 +62,15 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
+    if (!this.subscriptionService.canViewProfiles()) {
+      this.toastController.create({
+        message: 'Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!',
+        duration: 3000,
+        color: 'medium',
+        position: 'top'
+      }).then(t => t.present());
+      return;
+    }
     this.router.navigate(['/profile-player', card.athleteId]);
   }
 
