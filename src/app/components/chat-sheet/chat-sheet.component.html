@@ -24,6 +24,11 @@
       <p>Para sua segurança, não marque encontros presenciais sem a presença ou autorização de um responsável.</p>
     </div>
 
+    <div class="safety-banner" *ngIf="!isPlayer">
+      <ion-icon name="shield-half-outline"></ion-icon>
+      <p>Este chat pode envolver menor de idade. Mantenha a conversa estritamente relacionada ao esporte e não solicite dados pessoais ou encontros sem ciência dos pais ou responsável legal.</p>
+    </div>
+
     <div class="sheet-body" #messagesViewport>
       <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
         Nenhuma mensagem nesta conversa ainda.
