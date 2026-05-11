@@ -13,7 +13,7 @@ import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
 import { PostCardComponent } from '../components/post-card/post-card.component';
-import { AuthService } from '../services/auth.service';
+import {AuthService, JwtPayload} from '../services/auth.service';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
 import {SubscriptionService} from "../services/subscription.service";
@@ -167,8 +167,16 @@ export class ProfilePlayerPage implements OnInit {
     this.selectedSegmentSubject.next(this.selectedSegment);
   }
 
+  openSupport() {
+    this.router.navigate(['/suporte']);
+  }
+
+
   goBack() {
-    this.router.navigateByUrl('/player-home');
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const isClube = decodedToken?.role === 'CLUBE';
+
+    isClube ? this.router.navigateByUrl('/scout-home') : this.router.navigateByUrl('/player-home');
   }
 
   startEditing(): void {

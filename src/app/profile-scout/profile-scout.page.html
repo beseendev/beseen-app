@@ -50,16 +50,10 @@
               Cancelar
             </ion-button>
           </ng-template>
-        </div>
-
-        <div class="profile-actions" *ngIf="!isMyProfile">
-          <ion-button expand="block" class="profile-action-btn" (click)="followUser()">
-            <ion-icon slot="start" name="person-add-outline"></ion-icon>
-            Seguir
-          </ion-button>
-          <ion-button expand="block" fill="clear" class="profile-action-btn secondary-action" (click)="startChat()">
-            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
-            Chat
+          
+          <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
+            <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+            Suporte
           </ion-button>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { AuthService } from '../services/auth.service';
 import { catchError, of, filter, map, switchMap, tap, finalize } from 'rxjs';
 import { SCOUT_TYPE_OPTIONS, SCOUT_MODALITY_OPTIONS, SCOUT_AGE_CATEGORIES, SCOUT_POSITION_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
+import {IonicModule} from "@ionic/angular";
 
 @Component({
   selector: 'app-profile-scout',
@@ -120,6 +121,10 @@ export class ProfileScoutPage implements OnInit {
         this.resetAndLoadUserPosts(); // Mantendo o padrão, embora não haja seção de posts visível
       })
     ).subscribe();
+  }
+
+  openSupport() {
+    this.router.navigate(['/suporte']);
   }
 
   private normalizeAvatarUrl(rawUrl: string | null): string | null {

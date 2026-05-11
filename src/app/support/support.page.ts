@@ -67,11 +67,8 @@ export class SupportPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser.pipe(take(1)).subscribe(user => {
-      if (user?.email) {
-        this.supportForm.patchValue({ replyEmail: user.email });
-      }
-    });
+    const decoded = this.authService.getDecodedToken<JwtPayload>();
+    decoded?.email && this.supportForm.get('replyEmail')?.setValue(decoded.email);
   }
 
   get messageLength(): number {
@@ -94,7 +91,6 @@ export class SupportPage implements OnInit {
     }
 
     const value = this.supportForm.getRawValue();
-    const decoded = this.authService.getDecodedToken<JwtPayload>();
     const now = new Date().toLocaleString('pt-BR');
 
     const subject = `BeSeen - ${value.type} - ${value.subject}`;

@@ -29,7 +29,7 @@ import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
   closeOutline,
-  createOutline,
+  createOutline, helpCircleOutline,
   logOutOutline,
   personCircleOutline,
   starOutline
@@ -50,6 +50,7 @@ import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.componen
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { environment } from '../../environments/environment';
+import {IonicModule} from "@ionic/angular";
 
 interface ArenaAthlete {
   post: Post;
@@ -156,13 +157,18 @@ export class PlayerHomePage implements OnInit, OnDestroy {
       createOutline,
       logOutOutline,
       personCircleOutline,
-      starOutline
+      starOutline,
+      helpCircleOutline
     });
   }
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.name || 'Clube';
+  }
+
+  openSupport() {
+    this.router.navigate(['/suporte']);
   }
 
   ngOnInit(): void {
