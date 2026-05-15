@@ -137,6 +137,17 @@ export class CreateProfileScoutPage implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.profileForm.reset({
+      pais: 'Brasil',
+      documentoVerificado: false,
+      aceitouTermos: false,
+      categoriasIdadeAlvo: [],
+      posicoesInteresse: []
+    });
+    this.profileImageUrl = null;
+    this.selectedImageFile = null;
+    this.cpfDisplayValue = '';
+    this.phoneDisplayValue = '';
   }
 
   get isTipoOutroSelected(): boolean {

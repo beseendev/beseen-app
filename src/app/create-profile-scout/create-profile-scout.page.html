@@ -11,7 +11,7 @@
       <h1 class="page-title">Perfil de Olheiro</h1>
     </div>
 
-    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form" autocomplete="off">
 
       <section class="section-card">
         <div class="section-header">
@@ -35,7 +35,7 @@
         <div class="input-group-container">
           <ion-item class="input-field" color="none">
             <ion-icon name="id-card-outline" slot="start"></ion-icon>
-            <ion-input label="CPF ou Identidade" labelPlacement="stacked" placeholder="000.000.000-00" [value]="cpfDisplayValue" (ionInput)="onCPFInput($event)" maxlength="14" formControlName="documentNumber"></ion-input>
+            <ion-input label="CPF ou Identidade" labelPlacement="stacked" placeholder="000.000.000-00" [value]="cpfDisplayValue" (ionInput)="onCPFInput($event)" maxlength="14" formControlName="documentNumber" autocomplete="off"></ion-input>
           </ion-item>
           <div class="error-text" *ngIf="hasError('documentNumber', 'required')">Informe o documento.</div>
 
@@ -48,17 +48,17 @@
 
           <ion-item class="input-field" color="none" *ngIf="isTipoOutroSelected">
             <ion-icon name="ellipsis-horizontal-outline" slot="start"></ion-icon>
-            <ion-input label="Descreva o tipo" labelPlacement="stacked" placeholder="Minimo de 3 caracteres" formControlName="tipoOlheiroOutroTexto"></ion-input>
+            <ion-input label="Descreva o tipo" labelPlacement="stacked" placeholder="Minimo de 3 caracteres" formControlName="tipoOlheiroOutroTexto" autocomplete="off"></ion-input>
           </ion-item>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="business-outline" slot="start"></ion-icon>
-            <ion-input label="Organizacao ou clube" labelPlacement="stacked" placeholder="Opcional" formControlName="organizacaoOuClube"></ion-input>
+            <ion-input label="Organizacao ou clube" labelPlacement="stacked" placeholder="Opcional" formControlName="organizacaoOuClube" autocomplete="off"></ion-input>
           </ion-item>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="id-card-outline" slot="start"></ion-icon>
-            <ion-input label="Cargo ou funcao" labelPlacement="stacked" placeholder="Opcional" formControlName="cargoOuFuncao"></ion-input>
+            <ion-input label="Cargo ou funcao" labelPlacement="stacked" placeholder="Opcional" formControlName="cargoOuFuncao" autocomplete="off"></ion-input>
           </ion-item>
         </div>
       </section>
@@ -85,12 +85,12 @@
 
           <ion-item class="input-field" color="none">
             <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-            <ion-input label="WhatsApp" labelPlacement="stacked" placeholder="(48) 99999-9999" type="tel" [value]="phoneDisplayValue" (ionInput)="onPhoneInput($event)" maxlength="15"></ion-input>
+            <ion-input label="WhatsApp" labelPlacement="stacked" placeholder="(48) 99999-9999" type="tel" [value]="phoneDisplayValue" (ionInput)="onPhoneInput($event)" maxlength="15" autocomplete="off"></ion-input>
           </ion-item>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="location-outline" slot="start"></ion-icon>
-            <ion-input label="Cidade" labelPlacement="stacked" placeholder="Ex: Florianopolis" formControlName="cidade"></ion-input>
+            <ion-input label="Cidade" labelPlacement="stacked" placeholder="Ex: Florianopolis" formControlName="cidade" autocomplete="off"></ion-input>
           </ion-item>
 
           <ion-item class="input-field" color="none">
@@ -102,7 +102,7 @@
 
           <ion-item class="input-field" color="none">
             <ion-icon name="globe-outline" slot="start"></ion-icon>
-            <ion-input label="Pais" labelPlacement="stacked" placeholder="Brasil" formControlName="pais"></ion-input>
+            <ion-input label="Pais" labelPlacement="stacked" placeholder="Brasil" formControlName="pais" autocomplete="off"></ion-input>
           </ion-item>
         </div>
       </section>

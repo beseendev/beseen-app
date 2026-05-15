@@ -282,7 +282,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     action.subscribe({
       next: async () => {
-        this.showFavoriteToast(!isCurrentlyFavorite, card.athleteName);
         if (isCurrentlyFavorite && this.selectedTab === 'favoritos') {
           this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
         }
@@ -366,11 +365,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     await toast.present();
   }
 
-  private async showFavoriteToast(isAdded: boolean, athleteName: string): Promise<void> {
-    this.showToast(isAdded
-      ? `${athleteName} adicionado aos favoritos`
-      : `${athleteName} removido dos favoritos`, isAdded ? 'success' : 'medium');
-  }
 
   editScoutProfile(): void {
     this.router.navigate(['/profile-scout']);

@@ -35,7 +35,7 @@
               </div>
 
               <div *ngSwitchCase="'PENDING'" class="state-block">
-                <span class="status-tag" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(4px);">Aguardando confirmação</span>
+                <span class="status-tag" style="background: var(--be-color-warning); color: #000; border: none;">Aguardando confirmação</span>
               </div>
 
               <div *ngSwitchCase="'ACCEPTED'" class="state-block">
@@ -45,7 +45,7 @@
               </div>
 
               <div *ngSwitchCase="'REJECTED'" class="state-block">
-                <span class="status-tag" style="background: var(--be-color-danger); color: white; border: none;">Convite rejeitado</span>
+                <span class="status-tag" style="background: var(--be-color-danger); color: #fff; border: none;">Convite rejeitado</span>
               </div>
 
               <div *ngSwitchDefault class="state-block">

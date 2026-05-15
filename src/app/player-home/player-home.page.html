@@ -124,19 +124,14 @@
                 </p>
               </div>
 
-              <div class="showcase-actions" style="margin-top: 12px; pointer-events: auto;">
+              <div class="showcase-actions" *ngIf="hasIncomingInvite(item.video)" style="margin-top: 12px; pointer-events: auto;">
                 <ion-button
-                  *ngIf="hasIncomingInvite(item.video); else noInviteMine"
                   size="small"
                   fill="solid"
                   color="primary"
                   (click)="item.video.inviteStatus === 'ACCEPTED' ? openScoutChat(item.video) : openInvitesSheet(item.video.id)">
                   {{ getChatButtonLabel(item.video) }}
                 </ion-button>
-
-                <ng-template #noInviteMine>
-                   <span class="status-tag" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(4px);">Sem convite</span>
-                </ng-template>
               </div>
             </div>
 
@@ -145,7 +140,13 @@
                   <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
                   <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
                </div>
-               <span class="status-tag" *ngIf="hasIncomingInvite(item.video)" style="background: var(--be-color-brand-500); color: white; border: none;">Convite</span>
+               
+               <ng-container *ngIf="hasIncomingInvite(item.video); else noInviteBadge">
+                  <span class="status-tag" style="background: var(--be-color-brand-500); color: white; border: none;">Convite</span>
+               </ng-container>
+               <ng-template #noInviteBadge>
+                  <span class="status-tag" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(4px);">Sem convite</span>
+               </ng-template>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
