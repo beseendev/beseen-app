@@ -170,9 +170,15 @@
           <ion-input label="Link de referencia (opcional)" labelPlacement="stacked" placeholder="https://..." formControlName="linkReferencia"></ion-input>
         </ion-item>
 
+        <div class="terms-required-notice" style="padding: 0 16px; margin-bottom: 4px;">
+          <span style="color: var(--be-color-brand-500); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Campo obrigatório</span>
+        </div>
         <ion-item class="checkbox-item" lines="none">
           <ion-checkbox formControlName="aceitouTermos" justify="start">Aceito os termos e confirmo os dados.</ion-checkbox>
         </ion-item>
+        <div class="error-text" *ngIf="hasError('aceitouTermos', 'requiredTrue')" style="padding: 0 16px 8px;">
+          Voce precisa aceitar os termos para continuar.
+        </div>
       </section>
 
       <section class="section-card">
@@ -181,15 +187,16 @@
         </div>
         <ion-item class="input-field" color="none">
           <ion-icon name="document-text-outline" slot="start"></ion-icon>
-          <ion-textarea label="Bio" labelPlacement="stacked" placeholder="Descreva sua experiência..." [autoGrow]="true" formControlName="bio"></ion-textarea>
+          <ion-textarea label="Bio" labelPlacement="stacked" placeholder="Descreva sua experiência..." [autoGrow]="true" formControlName="bio" maxlength="500"></ion-textarea>
         </ion-item>
         <div class="counter-row">
+          <div class="error-text" *ngIf="hasError('bio', 'minlength')">A bio deve ter pelo menos 10 caracteres.</div>
           <ion-note>{{ bioLength }}/500</ion-note>
         </div>
 
         <ion-item class="input-field" color="none">
           <ion-icon name="star-outline" slot="start"></ion-icon>
-          <ion-textarea label="O que busca no BeSeen" labelPlacement="stacked" placeholder="Ex: atletas prontos..." [autoGrow]="true" formControlName="oQueBuscaNoBeSeen"></ion-textarea>
+          <ion-textarea label="O que busca no BeSeen" labelPlacement="stacked" placeholder="Ex: atletas prontos..." [autoGrow]="true" formControlName="oQueBuscaNoBeSeen" maxlength="500"></ion-textarea>
         </ion-item>
         <div class="counter-row">
           <ion-note>{{ oQueBuscaLength }}/500</ion-note>

@@ -131,7 +131,7 @@ export class CreateProfileScoutPage implements OnInit {
       documentoUploadId: [''],
       linkReferencia: ['', [optionalUrlValidator()]],
       aceitouTermos: [false, [requiredTrueValidator()]],
-      bio: ['', [Validators.required, Validators.minLength(300), Validators.maxLength(500)]],
+      bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       oQueBuscaNoBeSeen: ['', [Validators.maxLength(300)]]
     });
   }
