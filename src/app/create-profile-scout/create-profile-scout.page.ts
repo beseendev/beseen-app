@@ -82,6 +82,7 @@ export class CreateProfileScoutPage implements OnInit {
   isSaving = false;
   phoneDisplayValue = '';
   cpfDisplayValue = '';
+  dateOfBirthDisplayValue = '';
   private selectedImageFile: File | null = null;
 
   readonly typeOptions = SCOUT_TYPE_OPTIONS;
@@ -132,7 +133,7 @@ export class CreateProfileScoutPage implements OnInit {
       linkReferencia: ['', [optionalUrlValidator()]],
       aceitouTermos: [false, [requiredTrueValidator()]],
       bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-      oQueBuscaNoBeSeen: ['', [Validators.maxLength(300)]]
+      oQueBuscaNoBeSeen: ['', [Validators.maxLength(500)]]
     });
   }
 
@@ -148,6 +149,44 @@ export class CreateProfileScoutPage implements OnInit {
     this.selectedImageFile = null;
     this.cpfDisplayValue = '';
     this.phoneDisplayValue = '';
+    this.dateOfBirthDisplayValue = '';
+  }
+
+  onDateInput(event: any): void {
+    const rawValue = event.target.value || '';
+    const digits = rawValue.replace(/\D/g, '').slice(0, 8);
+
+    let formatted = '';
+    if (digits.length <= 2) {
+      formatted = digits;
+    } else if (digits.length <= 4) {
+      formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    } else {
+      formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+    }
+
+    this.dateOfBirthDisplayValue = formatted;
+    event.target.value = formatted;
+
+    if (digits.length === 8) {
+      const day = digits.slice(0, 2);
+      const month = digits.slice(2, 4);
+      const year = digits.slice(4);
+      const isoDate = `${year}-${month}-${day}`;
+      this.profileForm.get('dateOfBirth')?.setValue(isoDate, { emitEvent: false });
+    } else {
+      this.profileForm.get('dateOfBirth')?.setValue(null, { emitEvent: false });
+    }
+  }
+
+  onDateSelected(event: any): void {
+    const isoDate = event.detail.value;
+    if (isoDate) {
+      const datePart = isoDate.split('T')[0];
+      this.profileForm.get('dateOfBirth')?.setValue(datePart, { emitEvent: false });
+      const [year, month, day] = datePart.split('-');
+      this.dateOfBirthDisplayValue = `${day}/${month}/${year}`;
+    }
   }
 
   get isTipoOutroSelected(): boolean {

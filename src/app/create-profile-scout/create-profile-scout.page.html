@@ -70,15 +70,29 @@
         </div>
 
         <div class="input-group-container">
-          <ion-item class="input-field datetime-item" color="none">
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
-            <div class="datetime-wrapper">
-              <span class="label-placeholder">Data de Nascimento</span>
-              <ion-datetime-button datetime="datetime-scout"></ion-datetime-button>
-            </div>
-            <ion-modal [keepContentsMounted]="true">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="calendar-outline" slot="start" id="open-date-picker-scout"></ion-icon>
+            <ion-input 
+              class="date-input"
+              label="Data de Nascimento" 
+              labelPlacement="stacked" 
+              placeholder="DD/MM/AAAA" 
+              [value]="dateOfBirthDisplayValue" 
+              (ionInput)="onDateInput($event)" 
+              maxlength="10"
+              autocomplete="off">
+            </ion-input>
+            <ion-modal trigger="open-date-picker-scout" [keepContentsMounted]="true" class="be-date-modal">
               <ng-template>
-                <ion-datetime id="datetime-scout" formControlName="dateOfBirth" presentation="date"></ion-datetime>
+                <ion-datetime 
+                  presentation="date" 
+                  preferWheel="true"
+                  [value]="profileForm.get('dateOfBirth')?.value" 
+                  (ionChange)="onDateSelected($event)"
+                  [showDefaultButtons]="true"
+                  doneText="Confirmar"
+                  cancelText="Cancelar">
+                </ion-datetime>
               </ng-template>
             </ion-modal>
           </ion-item>

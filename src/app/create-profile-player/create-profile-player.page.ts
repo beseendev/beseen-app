@@ -61,6 +61,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
 
   phoneDisplayValue = '';
   cpfDisplayValue = '';
+  dateOfBirthDisplayValue = '';
 
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
   readonly stateOptions = BR_STATE_OPTIONS;
@@ -83,6 +84,12 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.phoneDisplayValue = '';
+    this.cpfDisplayValue = '';
+    this.dateOfBirthDisplayValue = '';
+    this.profileImageUrl = null;
+    this.selectedImageFile = null;
+
     const shouldContinue = this.initializeForm();
     if (!shouldContinue) {
       return;
@@ -177,6 +184,43 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     const digits = this.onlyDigits(rawValue).slice(0, 11);
     this.cpfDisplayValue = this.formatCPF(digits);
     this.profileForm.get('documentNumber')?.setValue(digits, { emitEvent: false });
+  }
+
+  onDateInput(event: any): void {
+    const rawValue = event.target.value || '';
+    const digits = rawValue.replace(/\D/g, '').slice(0, 8);
+
+    let formatted = '';
+    if (digits.length <= 2) {
+      formatted = digits;
+    } else if (digits.length <= 4) {
+      formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    } else {
+      formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+    }
+
+    this.dateOfBirthDisplayValue = formatted;
+    event.target.value = formatted;
+
+    if (digits.length === 8) {
+      const day = digits.slice(0, 2);
+      const month = digits.slice(2, 4);
+      const year = digits.slice(4);
+      const isoDate = `${year}-${month}-${day}`;
+      this.profileForm.get('dateOfBirth')?.setValue(isoDate, { emitEvent: false });
+    } else {
+      this.profileForm.get('dateOfBirth')?.setValue(null, { emitEvent: false });
+    }
+  }
+
+  onDateSelected(event: any): void {
+    const isoDate = event.detail.value;
+    if (isoDate) {
+      const datePart = isoDate.split('T')[0];
+      this.profileForm.get('dateOfBirth')?.setValue(datePart, { emitEvent: false });
+      const [year, month, day] = datePart.split('-');
+      this.dateOfBirthDisplayValue = `${day}/${month}/${year}`;
+    }
   }
 
   onNumericInput(event: any, controlName: string) {

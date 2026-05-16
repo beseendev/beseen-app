@@ -549,3 +549,10 @@ video::-webkit-media-controls-enclosure {
 video::-webkit-media-controls-panel {
   width: calc(100% + 30px) !important; /* Esconde o botão de opções deslocando-o */
 }
+
+/* Custom Date Picker Modal */
+.be-date-modal {
+  --height: auto;
+  --width: fit-content;
+  --border-radius: 12px;
+}

@@ -93,10 +93,40 @@
   background-color: var(--be-color-surface-1);
 }
 
+.input-field::part(label) {
+  color: var(--be-color-brand-500) !important;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding-bottom: 4px;
+}
+
 .input-field ion-icon {
   color: var(--be-color-text-2);
   font-size: 1.2rem;
   margin-right: 8px;
+}
+
+/* Ícone de calendário clicável */
+.input-field ion-icon[id^="open-date-picker"] {
+  cursor: pointer;
+  color: var(--be-color-brand-500);
+  padding: 4px;
+  margin-left: -4px;
+  transition: opacity 0.2s ease;
+}
+
+.input-field ion-icon[id^="open-date-picker"]:active {
+  opacity: 0.6;
+}
+
+/* Removido o estilo de padding-end e do botão quadrado anterior */
+.input-field ion-input {
+  /* Mantém o padrão */
+}
+
+.date-input {
+  font-size: 0.8rem !important;
 }
 
 .input-field ion-input,
@@ -143,25 +173,6 @@
     height: 100%;
     object-fit: cover;
   }
-}
-
-/* Datetime Custom Styling */
-.datetime-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.label-placeholder {
-  color: var(--be-color-text-3);
-  font-size: 0.95rem;
-}
-
-ion-datetime-button {
-  --background: var(--be-color-surface-3);
-  --color: var(--be-color-text-1);
-  --border-radius: 8px;
 }
 
 /* Global Elements */

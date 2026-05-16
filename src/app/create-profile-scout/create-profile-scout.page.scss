@@ -123,6 +123,28 @@ ion-input, ion-textarea {
   margin-right: 8px;
 }
 
+/* Ícone de calendário clicável para abrir o datepicker */
+.input-field ion-icon[id^="open-date-picker"] {
+  cursor: pointer;
+  color: var(--be-color-brand-500);
+  padding: 4px;
+  margin-left: -4px; /* Ajuste para compensar o padding e alinhar com os outros */
+  transition: opacity 0.2s ease;
+}
+
+.input-field ion-icon[id^="open-date-picker"]:active {
+  opacity: 0.6;
+}
+
+/* Removido o estilo de padding-end e do botão quadrado anterior */
+.input-field ion-input {
+  /* Mantém o padrão dos outros inputs */
+}
+
+.date-input {
+  font-size: 0.8rem !important;
+}
+
 .avatar-preview {
   width: 84px;
   height: 84px;

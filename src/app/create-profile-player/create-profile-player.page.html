@@ -44,8 +44,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="document-text-outline" slot="start"></ion-icon>
             <ion-textarea
+              label="Bio"
+              labelPlacement="stacked"
               formControlName="bio"
-              placeholder="Bio: Fale sobre sua trajetória"
+              placeholder="Fale sobre sua trajetória e experiência"
               [autoGrow]="true"
               maxlength="500">
             </ion-textarea>
@@ -57,10 +59,11 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
             <ion-select
+              label="Posição principal"
+              labelPlacement="stacked"
               formControlName="position"
               placeholder="Selecione sua posição"
-              interface="action-sheet"
-              labelPlacement="stacked">
+              interface="action-sheet">
               <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -71,8 +74,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="resize-outline" slot="start"></ion-icon>
             <ion-input
+              label="Altura"
+              labelPlacement="stacked"
               formControlName="height"
-              placeholder="Altura (Ex: 1.80)"
+              placeholder="Ex: 1.80"
               inputmode="decimal"
               (ionInput)="onNumericInput($event, 'height')"
               maxlength="10">
@@ -82,8 +87,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
             <ion-input
+              label="Peso"
+              labelPlacement="stacked"
               formControlName="weight"
-              placeholder="Peso (Ex: 75.5)"
+              placeholder="Ex: 75.5"
               inputmode="decimal"
               (ionInput)="onNumericInput($event, 'weight')"
               maxlength="10">
@@ -93,10 +100,11 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="body-outline" slot="start"></ion-icon>
             <ion-select
+              label="Pé Dominante"
+              labelPlacement="stacked"
               formControlName="dominantFoot"
-              placeholder="Pé Dominante"
-              interface="action-sheet"
-              labelPlacement="stacked">
+              placeholder="Selecione"
+              interface="action-sheet">
               <ion-select-option *ngFor="let option of footOptions" [value]="option.value">{{ option.label }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -107,8 +115,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="list-outline" slot="start"></ion-icon>
             <ion-textarea
+              label="Histórico de carreira"
+              labelPlacement="stacked"
               formControlName="careerHistory"
-              placeholder="Histórico: Clubes, títulos, etc."
+              placeholder="Clubes anteriores, títulos, conquistas (Opcional)"
               [autoGrow]="true"
               maxlength="1000">
             </ion-textarea>
@@ -129,8 +139,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="id-card-outline" slot="start"></ion-icon>
             <ion-input
+              label="CPF ou Identidade"
+              labelPlacement="stacked"
               formControlName="documentNumber"
-              placeholder="CPF ou Identidade"
+              placeholder="000.000.000-00"
               [value]="cpfDisplayValue"
               (ionInput)="onCPFInput($event)"
               maxlength="14">
@@ -143,8 +155,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="call-outline" slot="start"></ion-icon>
             <ion-input
+              label="Telefone WhatsApp"
+              labelPlacement="stacked"
               formControlName="phoneNumber"
-              placeholder="Telefone (00) 00000-0000"
+              placeholder="(00) 00000-0000"
               type="tel"
               [value]="phoneDisplayValue"
               (ionInput)="onPhoneInput($event)"
@@ -152,15 +166,29 @@
             </ion-input>
           </ion-item>
 
-          <ion-item class="input-field datetime-item" color="none">
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
-            <div class="datetime-wrapper">
-              <span class="label-placeholder">Data de Nascimento</span>
-              <ion-datetime-button datetime="datetime-player"></ion-datetime-button>
-            </div>
-            <ion-modal [keepContentsMounted]="true">
+          <ion-item class="input-field" color="none">
+            <ion-icon name="calendar-outline" slot="start" id="open-date-picker-player"></ion-icon>
+            <ion-input 
+              label="Data de Nascimento"
+              labelPlacement="stacked"
+              class="date-input"
+              placeholder="DD/MM/AAAA" 
+              [value]="dateOfBirthDisplayValue" 
+              (ionInput)="onDateInput($event)" 
+              maxlength="10"
+              autocomplete="off">
+            </ion-input>
+            <ion-modal trigger="open-date-picker-player" [keepContentsMounted]="true" class="be-date-modal">
               <ng-template>
-                <ion-datetime id="datetime-player" formControlName="dateOfBirth" presentation="date"></ion-datetime>
+                <ion-datetime 
+                  presentation="date" 
+                  preferWheel="true"
+                  [value]="profileForm.get('dateOfBirth')?.value" 
+                  (ionChange)="onDateSelected($event)"
+                  [showDefaultButtons]="true"
+                  doneText="Confirmar"
+                  cancelText="Cancelar">
+                </ion-datetime>
               </ng-template>
             </ion-modal>
           </ion-item>
@@ -168,8 +196,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="location-outline" slot="start"></ion-icon>
             <ion-input
+              label="Cidade"
+              labelPlacement="stacked"
               formControlName="cidade"
-              placeholder="Cidade (Ex: Florianópolis)"
+              placeholder="Ex: Florianópolis"
               maxlength="100">
             </ion-input>
           </ion-item>
@@ -180,10 +210,11 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="map-outline" slot="start"></ion-icon>
             <ion-select
+              label="Estado"
+              labelPlacement="stacked"
               formControlName="estado"
-              placeholder="Estado"
-              interface="action-sheet"
-              labelPlacement="stacked">
+              placeholder="Selecione"
+              interface="action-sheet">
               <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -194,8 +225,10 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="globe-outline" slot="start"></ion-icon>
             <ion-input
+              label="País"
+              labelPlacement="stacked"
               formControlName="pais"
-              placeholder="País (Ex: Brasil)"
+              placeholder="Ex: Brasil"
               maxlength="50">
             </ion-input>
           </ion-item>
