@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChi
 import { IonicModule, ModalController, ToastController, IonInfiniteScroll } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
@@ -304,16 +305,15 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
         return;
     }
 
-    this.postService.sendInvite(card.postId).subscribe({
+    card.isInviting = true;
+    this.postService.sendInvite(card.postId).pipe(
+      finalize(() => card.isInviting = false)
+    ).subscribe({
       next: () => {
-        this.showToast('Convite enviado com sucesso!', 'success');
         const post = this.videoPosts.find(p => p.id === card.postId);
         if (post) {
           post.inviteStatus = 'PENDING';
         }
-      },
-      error: (err) => {
-        this.showToast('Erro ao enviar convite: ' + (err.error?.message || 'Tente novamente'), 'danger');
       }
     });
   }

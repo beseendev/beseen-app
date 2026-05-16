@@ -29,8 +29,9 @@
           <div class="chat-state-panel" *ngIf="subscriptionService.canSendInvites()">
             <ng-container [ngSwitch]="item.video.inviteStatus">
               <div *ngSwitchCase="null" class="state-block">
-                <ion-button size="small" fill="solid" color="primary" (click)="invite(item.video)">
-                  Convidar para conversar
+                <ion-button size="small" fill="solid" color="primary" (click)="invite(item.video)" [disabled]="item.video.isInviting">
+                  <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
+                  {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
                 </ion-button>
               </div>
 
@@ -49,8 +50,9 @@
               </div>
 
               <div *ngSwitchDefault class="state-block">
-                 <ion-button *ngIf="!item.video.inviteStatus" size="small" fill="solid" color="primary" (click)="invite(item.video)">
-                  Convidar para conversar
+                 <ion-button *ngIf="!item.video.inviteStatus" size="small" fill="solid" color="primary" (click)="invite(item.video)" [disabled]="item.video.isInviting">
+                  <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
+                  {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
                 </ion-button>
               </div>
             </ng-container>

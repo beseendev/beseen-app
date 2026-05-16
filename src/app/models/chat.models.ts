@@ -81,4 +81,5 @@ export interface FavoriteAthleteVideoCard {
   favorito: boolean;
   likes?: number;
   inviteStatus?: InviteStatus | null;
+  isInviting?: boolean;
 }
