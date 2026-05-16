@@ -38,13 +38,8 @@
               <div class="invite-actions" *ngIf="invite.status === 'PENDING'">
                 <ion-button size="small" (click)="$event.stopPropagation(); acceptAndOpenChat(invite)" class="accept-btn">
                   <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-                  Aceitar e Abrir Chat
+                  Aceitar
                 </ion-button>
-              </div>
-
-              <div class="invite-info-tag" *ngIf="invite.status === 'ACCEPTED'">
-                <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
-                <span>Toque para ver a conversa</span>
               </div>
             </div>
             <div class="invite-footer">

@@ -102,16 +102,6 @@ export class InvitesSheetComponent implements OnInit {
       next: async (acceptedInvite) => {
         invite.status = 'ACCEPTED';
         invite.chatThreadId = acceptedInvite.chatThreadId;
-
-        const toast = await this.toastController.create({
-          message: 'Convite aceito! Chat liberado.',
-          duration: 2000,
-          color: 'success',
-          position: 'top'
-        });
-        await toast.present();
-
-        this.openChat(invite);
       },
       error: (err) => {
         console.error('Error accepting invite', err);
