@@ -9,8 +9,88 @@
 .chat-inbox-btn ion-badge{position:absolute;top:2px;right:2px;transform:translate(32%,-32%);z-index:2}
 .player-profile-card,.surface{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(2,6,23,.26);overflow:hidden}
 .player-profile-card{padding:16px}
-.player-profile-head,.player-profile-id,.player-profile-actions,.video-meta,.talent-id,.footer-buttons{display:flex;align-items:center}
-.player-profile-head,.video-meta{justify-content:space-between}
+.player-profile-head {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.player-profile-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.player-profile-id {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-actions {
+  display: none;
+}
+
+.menu-btn {
+  --color: var(--be-color-text-2);
+  margin: 0;
+}
+
+.options-popover {
+  --background: var(--be-color-surface-2);
+  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  
+  ion-list {
+    background: var(--be-color-surface-2);
+    padding: 8px 0;
+  }
+
+  ion-item {
+    --background: var(--be-color-surface-2);
+    --color: var(--be-color-text-2);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --inner-padding-end: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    ion-icon {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      color: var(--be-color-brand-500);
+    }
+
+    &.logout-item {
+      ion-icon {
+        color: var(--be-color-danger);
+      }
+      ion-label {
+        color: var(--be-color-danger);
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .desktop-actions {
+    display: none;
+  }
+  .mobile-actions {
+    display: block;
+  }
+}
+
+.video-meta{justify-content:space-between}
 .player-profile-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--be-color-surface-1);border:1px solid rgba(var(--ion-color-primary-rgb),.24)}
 .player-profile-avatar img,.avatar-shell img{width:100%;height:100%;object-fit:cover}
 .player-profile-avatar ion-icon,.avatar-shell ion-icon{font-size:2rem;color:var(--be-color-text-2)}
@@ -106,11 +186,6 @@
 .avatar-shell {
   flex-shrink: 0;
 }
-.player-profile-id {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
 
 /* Importante para que o avatar não diminua de tamanho se o nome for muito longo */
 .player-profile-avatar, .be-skeleton-avatar {
@@ -136,3 +211,5 @@
 .talent-id p {
   margin: 0;
 }
+
+.video-meta{justify-content:space-between}

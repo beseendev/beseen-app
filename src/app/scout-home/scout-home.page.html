@@ -36,25 +36,56 @@
         </div>
 
         <div class="profile-card-actions">
-          <ion-button fill="clear" class="edit-profile-btn" (click)="editScoutProfile()" aria-label="Editar perfil do olheiro">
-            <ion-icon slot="start" name="create-outline"></ion-icon>
-            Editar perfil
-          </ion-button>
+          <div class="desktop-actions">
+            <ion-button fill="clear" class="edit-profile-btn" (click)="editScoutProfile()" aria-label="Editar perfil do olheiro">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar perfil
+            </ion-button>
 
-          <ion-button fill="clear" class="plans-btn" (click)="openPlans()" aria-label="Ver planos">
-            <ion-icon slot="start" name="card-outline"></ion-icon>
-            Planos
-          </ion-button>
+            <ion-button fill="clear" class="plans-btn" (click)="openPlans()" aria-label="Ver planos">
+              <ion-icon slot="start" name="card-outline"></ion-icon>
+              Planos
+            </ion-button>
 
-          <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
-            <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-            Suporte
-          </ion-button>
+            <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
+              <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+              Suporte
+            </ion-button>
 
-          <ion-button fill="clear" class="logout-btn" (click)="logout()" aria-label="Sair da conta">
-            <ion-icon slot="start" name="log-out-outline"></ion-icon>
-            Sair
-          </ion-button>
+            <ion-button fill="clear" class="logout-btn" (click)="logout()" aria-label="Sair da conta">
+              <ion-icon slot="start" name="log-out-outline"></ion-icon>
+              Sair
+            </ion-button>
+          </div>
+
+          <div class="mobile-actions">
+            <ion-button fill="clear" id="scout-options-trigger" class="menu-btn" aria-label="Opções">
+              <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+            </ion-button>
+
+            <ion-popover trigger="scout-options-trigger" triggerAction="click" class="options-popover">
+              <ng-template>
+                <ion-list lines="none">
+                  <ion-item button (click)="editScoutProfile(); popoverController.dismiss()">
+                    <ion-icon slot="start" name="create-outline"></ion-icon>
+                    <ion-label>Editar perfil</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openPlans(); popoverController.dismiss()">
+                    <ion-icon slot="start" name="card-outline"></ion-icon>
+                    <ion-label>Planos</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openSupport(); popoverController.dismiss()">
+                    <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+                    <ion-label>Suporte</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="logout(); popoverController.dismiss()" class="logout-item">
+                    <ion-icon slot="start" name="log-out-outline"></ion-icon>
+                    <ion-label>Sair</ion-label>
+                  </ion-item>
+                </ion-list>
+              </ng-template>
+            </ion-popover>
+          </div>
         </div>
       </div>
 

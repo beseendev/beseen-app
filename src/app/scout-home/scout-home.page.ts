@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { IonicModule, ModalController, ToastController, IonInfiniteScroll } from '@ionic/angular';
+import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -15,7 +15,8 @@ import {
   starOutline,
   locationOutline,
   cardOutline,
-  helpCircleOutline
+  helpCircleOutline,
+  menuOutline
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -82,6 +83,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private readonly subscriptionService = inject(SubscriptionService);
   private readonly modalService = inject(ModalStateService);
   private readonly modalController = inject(ModalController);
+  public readonly popoverController = inject(PopoverController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
   private readonly apiService = inject(ApiService);

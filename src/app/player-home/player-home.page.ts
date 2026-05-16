@@ -14,6 +14,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonPopover,
   IonMenu,
   IonRefresher,
   IonRefresherContent,
@@ -23,6 +24,7 @@ import {
   IonToolbar,
   MenuController,
   ModalController,
+  PopoverController,
   ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -32,7 +34,8 @@ import {
   createOutline, helpCircleOutline,
   logOutOutline,
   personCircleOutline,
-  starOutline
+  starOutline,
+  menuOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -103,6 +106,10 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonRefresherContent,
     IonMenu,
     IonBadge,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonPopover,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     ProfileDrawerComponent,
@@ -148,6 +155,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private modalController = inject(ModalController);
+  public popoverController = inject(PopoverController);
   private toastController = inject(ToastController);
 
   constructor() {

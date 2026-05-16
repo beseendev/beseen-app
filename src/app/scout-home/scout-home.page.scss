@@ -12,6 +12,66 @@
 .surface,.profile-card,.video-card{background:var(--be-color-surface-2);border:1px solid var(--be-color-line);border-radius:16px;box-shadow:var(--be-shadow-card);overflow:hidden}
 .profile-card{padding:16px}
 .profile-card-head,.profile-card-id,.profile-card-actions,.video-meta,.talent-id{display:flex;align-items:center}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-actions {
+  display: none;
+}
+
+.menu-btn {
+  --color: var(--be-color-text-2);
+  margin: 0;
+}
+
+.options-popover {
+  --background: var(--be-color-surface-2);
+  --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  
+  ion-list {
+    background: var(--be-color-surface-2);
+    padding: 8px 0;
+  }
+
+  ion-item {
+    --background: var(--be-color-surface-2);
+    --color: var(--be-color-text-2);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --inner-padding-end: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    ion-icon {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      color: var(--be-color-brand-500);
+    }
+
+    &.logout-item {
+      ion-icon {
+        color: var(--be-color-danger);
+      }
+      ion-label {
+        color: var(--be-color-danger);
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .desktop-actions {
+    display: none;
+  }
+  .mobile-actions {
+    display: block;
+  }
+}
+
 .profile-card-head,.video-meta{justify-content:space-between}
 .profile-card-id,.profile-card-actions,.talent-id{gap:12px}
 .profile-copy{display:flex;flex-direction:column;gap:2px}
