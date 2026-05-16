@@ -15,6 +15,28 @@
     <form [formGroup]="profileForm" class="profile-form">
       <section class="section-card">
         <div class="section-header">
+          <h2>Termos de Uso</h2>
+          <p>Leia e aceite as diretrizes para continuar.</p>
+        </div>
+        
+        <div class="terms-container">
+          <div class="terms-content-wrap">
+            <ion-checkbox [checked]="profileForm.get('acceptedTerms')?.value" [disabled]="!profileForm.get('acceptedTerms')?.value" labelPlacement="end" justify="start" class="terms-checkbox">
+              <span class="terms-text">
+                Eu aceito os <span class="terms-link-style">Termos de Uso e Privacidade</span>
+              </span>
+            </ion-checkbox>
+          </div>
+          <!-- Camada invisível que captura o clique e abre o modal. Desaparece após aceito -->
+          <div *ngIf="!profileForm.get('acceptedTerms')?.value" id="open-terms-modal" class="terms-click-overlay"></div>
+        </div>
+        <div *ngIf="profileForm.get('acceptedTerms')?.invalid && profileForm.get('acceptedTerms')?.touched" class="error-text">
+          Você deve aceitar os termos para continuar.
+        </div>
+      </section>
+
+      <section class="section-card" [class.disabled-section]="!profileForm.get('acceptedTerms')?.value">
+        <div class="section-header">
           <h2>Tipo de Perfil</h2>
           <p>Selecione como você deseja atuar na plataforma.</p>
         </div>
@@ -31,5 +53,58 @@
         </div>
       </section>
     </form>
+
+    <ion-modal trigger="open-terms-modal" #termsModal class="terms-modal" (ionWillPresent)="resetTermsRead()">
+      <ng-template>
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-title>Termos e Condições</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="termsModal.dismiss()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content (ionScroll)="onTermsScroll($event)" [scrollEvents]="true" class="terms-content">
+          <div class="terms-text-body">
+            <h3>1. Introdução e Propósito</h3>
+            <p>Bem-vindo ao <strong>BeSeen</strong>. Nossa plataforma é uma vitrine digital <strong>exclusiva para o ecossistema do esporte e futebol</strong>. O propósito é conectar atletas (jogadores) a olheiros, clubes e agentes esportivos.</p>
+
+            <h3>2. Proteção de Dados (LGPD)</h3>
+            <p>Em conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD)</strong>, informamos que coletamos dados pessoais como nome, e-mail, data de nascimento e imagens de vídeo para a finalidade estrita de promover o perfil esportivo do usuário. Seus dados não serão vendidos a terceiros sem seu consentimento explícito.</p>
+
+            <h3>3. Usuários Menores de Idade</h3>
+            <p>O BeSeen reconhece que muitos atletas são menores de idade. O cadastro de indivíduos com menos de 18 anos <strong>deve ser assistido ou autorizado pelos pais ou responsáveis legais</strong>. Ao aceitar estes termos, você declara que possui tal autorização.</p>
+            <p>Reforçamos que a segurança é nossa prioridade e qualquer comportamento suspeito deve ser reportado imediatamente.</p>
+
+            <h3>4. Conduta e Conteúdo Proibido</h3>
+            <p>É terminantemente proibido o envio de vídeos, imagens ou mensagens que contenham:</p>
+            <ul>
+              <li>Conteúdo de cunho sexual, nudez ou qualquer teor pornográfico.</li>
+              <li>Discurso de ódio, violência ou bullying.</li>
+              <li>Conteúdo que não seja relacionado ao esporte/futebol.</li>
+            </ul>
+            <p>O BeSeen utiliza filtros e moderação ativa. Violações graves resultarão no <strong>banimento imediato da conta e, se necessário, notificação às autoridades competentes para medidas penais cabíveis</strong>.</p>
+
+            <h3>5. Limitação de Responsabilidade</h3>
+            <p>O BeSeen atua como facilitador de conexões. Não garantimos contratos, testes em clubes ou sucesso profissional. Não nos responsabilizamos por encontros presenciais ou negociações externas iniciadas através da plataforma.</p>
+
+            <div class="scroll-finish-indicator" *ngIf="!hasReadToBottom">
+              <ion-icon name="arrow-down-outline"></ion-icon>
+              <span>Leia até o fim para aceitar</span>
+            </div>
+          </div>
+        </ion-content>
+        <ion-footer class="ion-no-border">
+          <ion-toolbar>
+            <ion-button expand="block" [disabled]="!hasReadToBottom || isAcceptingTerms" (click)="confirmAcceptance(termsModal)" class="accept-btn">
+              <span *ngIf="!isAcceptingTerms">LI E ACEITO OS TERMOS</span>
+              <ion-spinner *ngIf="isAcceptingTerms" name="crescent"></ion-spinner>
+            </ion-button>
+          </ion-toolbar>
+        </ion-footer>
+      </ng-template>
+    </ion-modal>
   </div>
 </ion-content>

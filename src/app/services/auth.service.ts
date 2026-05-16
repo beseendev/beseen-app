@@ -12,6 +12,7 @@ export interface User {
   hasProfile: boolean;
   profileId: number | null;
   scoutType?: string | null;
+  acceptedTerms?: boolean;
 }
 
 export interface JwtPayload {
@@ -25,6 +26,7 @@ export interface JwtPayload {
   subscriptionEndDate: string | null;
   subscriptionStatus: string | null;
   planName: string | null;
+  acceptedTerms?: boolean;
   exp?: number;
   iat?: number;
 }
@@ -44,7 +46,6 @@ export class AuthService {
 
   constructor(private apiService: ApiService) {
     if (this.hasToken()) {
-      // Automatically fetch user data if a token exists
       this.getCurrentUser().subscribe({
         next: (user) => {
           this.checkSubscriptionIfNeeded(user);
@@ -84,6 +85,17 @@ export class AuthService {
       catchError(err => {
         this.logout();
         return throwError(() => err);
+      })
+    );
+  }
+
+  acceptTerms(): Observable<any> {
+    return this.apiService.post<any>(`${this.authEndpoint}/accept-terms`, {}).pipe(
+      tap(() => {
+        const user = this.currentUserSubject.value;
+        if (user) {
+          this.currentUserSubject.next({ ...user, acceptedTerms: true });
+        }
       })
     );
   }

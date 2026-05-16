@@ -42,7 +42,7 @@ import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profil
   imports: [
     IonContent, CommonModule, FormsModule, ReactiveFormsModule,
     IonItem, IonInput, IonButton, IonIcon, IonTextarea,
-    IonDatetime, IonDatetimeButton, IonModal, IonSpinner,
+    IonDatetime, IonModal, IonSpinner,
     IonSelect, IonSelectOption,
     IonNote
   ]

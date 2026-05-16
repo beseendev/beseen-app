@@ -27,6 +27,7 @@ export class SignupPage implements OnInit {
   showPassword = false;
   showConfirmPassword = false;
   isLoading = false;
+  hasReadToBottom = false;
 
   constructor(
     private fb: FormBuilder,
@@ -41,8 +42,27 @@ export class SignupPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
-      role: ['JOGADOR', Validators.required]
+      role: ['JOGADOR', Validators.required],
+      acceptedTerms: [false, Validators.requiredTrue]
     }, { validators: passwordMatchValidator });
+  }
+
+  onTermsScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+
+    const target = event.target;
+    target.getScrollElement().then((el: HTMLElement) => {
+      const scrollHeight = el.scrollHeight;
+      const clientHeight = el.clientHeight;
+
+      if (scrollHeight - scrollTop <= clientHeight + 20) {
+        this.hasReadToBottom = true;
+      }
+    });
+  }
+
+  resetTermsRead() {
+    this.hasReadToBottom = false;
   }
 
   togglePasswordVisibility() {

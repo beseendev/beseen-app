@@ -211,6 +211,51 @@
   }
 }
 
+.guidelines-card {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+  padding: 16px;
+  animation: mediaFadeIn 0.45s ease;
+
+  .guidelines-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #f87171;
+
+    ion-icon {
+      font-size: 1.4rem;
+    }
+
+    strong {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  .guidelines-content {
+    p {
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+
+      &:not(:last-child) {
+        margin-bottom: 8px;
+      }
+
+      strong {
+        color: #fca5a5;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
 .caption-card {
   background: #1e293b;
   border-radius: 12px;
