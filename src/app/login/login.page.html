@@ -46,7 +46,7 @@
     </div>
 
     <div class="social-actions">
-      <button type="button" class="social-btn" aria-label="Facebook">
+      <button type="button" class="social-btn" aria-label="Facebook" (click)="socialLoginComingSoon('Facebook')">
         <ion-icon name="logo-facebook"></ion-icon>
       </button>
 
@@ -55,7 +55,7 @@
         <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
       </button>
 
-      <button type="button" class="social-btn" aria-label="Twitter">
+      <button type="button" class="social-btn" aria-label="Twitter" (click)="socialLoginComingSoon('Twitter')">
         <ion-icon name="logo-twitter"></ion-icon>
       </button>
     </div>

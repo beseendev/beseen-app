@@ -109,6 +109,10 @@ export class LoginPage implements AfterViewInit {
     }
   }
 
+  async socialLoginComingSoon(platform: string) {
+    this.showToast(`Login com ${platform} estará disponível em breve!`, 'warning');
+  }
+
   login() {
     if (this.loginForm.invalid) {
       return;
