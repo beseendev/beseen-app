@@ -113,7 +113,7 @@
     </nav>
 
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
-      <div class="video-list be-tiktok-container">
+      <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
         <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
             <video #vVitrine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>

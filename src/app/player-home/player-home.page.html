@@ -133,7 +133,7 @@
         <span class="status-tag" *ngIf="myInviteCount > 0">{{ myInviteCount }} convites</span>
       </article>
 
-      <div class="video-stack be-tiktok-container">
+      <div class="video-stack be-tiktok-container" *ngIf="myVideosWithAds.length > 0">
         <ng-container *ngFor="let item of myVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
             <video #vMine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
@@ -182,7 +182,7 @@
     </section>
 
     <section class="section tab-panel" [class.active]="activeTab === 'ranking'" *ngIf="activeTab === 'ranking'">
-      <div class="video-stack be-tiktok-container">
+      <div class="video-stack be-tiktok-container" *ngIf="rankingVideosWithAds.length > 0">
         <ng-container *ngFor="let item of rankingVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
             <video #vRanking [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
@@ -215,7 +215,7 @@
     </section>
 
     <section class="section tab-panel" [class.active]="activeTab === 'new'" *ngIf="activeTab === 'new'">
-      <div class="video-stack be-tiktok-container">
+      <div class="video-stack be-tiktok-container" *ngIf="newVideosWithAds.length > 0">
         <ng-container *ngFor="let item of newVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
             <video #vNew [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
