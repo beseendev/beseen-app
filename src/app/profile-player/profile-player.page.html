@@ -22,13 +22,27 @@
           <ion-avatar class="profile-avatar">
             <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
             <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
+            
+            <!-- Feedback visual discreto apenas durante o upload -->
+            <div class="avatar-upload-overlay" *ngIf="isUploadingPhoto">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
           </ion-avatar>
 
           <div class="profile-copy">
+            <ng-container *ngIf="!isEditing">
+              <span>Perfil do jogador</span>
+              <strong>{{ hasFullAccess ? profile.name : profile.name.split(' ')[0] }}</strong>
+              <p>{{ getDisplayRole(profile.role) }}</p>
+            </ng-container>
 
-            <span>Perfil do jogador</span>
-            <strong>{{ hasFullAccess ? profile.name : profile.name.split(' ')[0] }}</strong>
-            <p>{{ getDisplayRole(profile.role) }}</p>
+            <ng-container *ngIf="isEditing">
+              <strong>{{ profile.name }}</strong>
+              <ion-button fill="clear" size="small" class="change-photo-btn" (click)="changeProfilePhoto()" [disabled]="isUploadingPhoto">
+                <ion-icon slot="start" name="image-outline" *ngIf="!isUploadingPhoto"></ion-icon>
+                {{ isUploadingPhoto ? 'Enviando...' : 'Alterar foto de perfil' }}
+              </ion-button>
+            </ng-container>
           </div>
         </div>
 

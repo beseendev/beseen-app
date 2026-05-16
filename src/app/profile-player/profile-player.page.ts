@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
 import { Profile } from '../models/profile.model';
@@ -56,6 +57,7 @@ export class ProfilePlayerPage implements OnInit {
   profile: Profile | null = null;
   isMyProfile = false;
   isEditing = false;
+  isUploadingPhoto = false;
   selectedSegment: 'images' | 'videos' = 'images';
   draftProfile: Partial<Profile> = {};
   isLoading = false;
@@ -86,7 +88,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -177,6 +179,55 @@ export class ProfilePlayerPage implements OnInit {
     const isClube = decodedToken?.role === 'CLUBE';
 
     isClube ? this.router.navigateByUrl('/scout-home') : this.router.navigateByUrl('/player-home');
+  }
+
+  async changeProfilePhoto(): Promise<void> {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Photos
+      });
+
+      if (image.webPath) {
+        this.isUploadingPhoto = true;
+
+        const response = await fetch(image.webPath);
+        const blob = await response.blob();
+        const file = new File([blob], `profile_${new Date().getTime()}.${image.format}`, { type: blob.type });
+
+        const uploadRequest = {
+          fileName: file.name,
+          contentType: file.type,
+          category: FileType.PROFILE_IMAGE,
+          size: file.size
+        };
+
+        this.profileService.getPresignedUrl(uploadRequest).pipe(
+          switchMap(uploadResponse => {
+            return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
+              filter((event: any) => event.type === 4), // HttpEventType.Response
+              map(() => uploadResponse)
+            );
+          }),
+          switchMap(() => this.profileService.notifyUploadComplete()),
+          finalize(() => this.isUploadingPhoto = false)
+        ).subscribe({
+          next: (updatedProfile) => {
+            if (this.profile) {
+              const rawAvatar = updatedProfile.urlProfileImage || updatedProfile.urlPerfil || null;
+              this.profile.urlProfileImage = this.normalizeAvatarUrl(rawAvatar);
+            }
+          },
+          error: (err) => {
+            console.error('Error updating profile photo', err);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error selecting photo', error);
+    }
   }
 
   startEditing(): void {
