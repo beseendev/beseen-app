@@ -171,7 +171,6 @@ ion-segment-button {
   -webkit-overflow-scrolling: touch;
   background: #000;
   border-radius: 20px;
-  overflow: hidden;
 }
 
 .be-tiktok-card {
@@ -316,7 +315,11 @@ button:focus-visible,
   outline-offset: 2px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 600px) {
+  :root {
+    --tiktok-height: clamp(400px, 75vh, 700px);
+  }
+
   .arena-shell,
   .scout-home-container,
   .player-profile-container {
@@ -330,6 +333,17 @@ button:focus-visible,
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
+    height: auto !important;
+    min-height: var(--tiktok-height);
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .be-tiktok-card {
+     height: var(--tiktok-height);
+     scroll-snap-align: none !important;
+     border-radius: 16px !important;
+     margin-bottom: 14px;
   }
 
   .arena-shell .featured {
