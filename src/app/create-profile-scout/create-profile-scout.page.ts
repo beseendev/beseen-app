@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import {take, switchMap, catchError, finalize, first} from 'rxjs/operators';
+import {take, switchMap, catchError, finalize, tap, filter} from 'rxjs/operators';
 import { of } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -287,10 +287,9 @@ export class CreateProfileScoutPage implements OnInit {
     };
 
     return this.profileService.getPresignedUrl(uploadRequest).pipe(
-      first(),
       switchMap(uploadResponse => {
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
-          first(),
+          filter((event: any) => event.type === 4), // HttpEventType.Response
           catchError(uploadErr => {
             console.error('Image upload failed, but profile was created.', uploadErr);
             this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'warning');
@@ -298,9 +297,9 @@ export class CreateProfileScoutPage implements OnInit {
           })
         );
       }),
-      switchMap(() => {
+      switchMap((s3Response) => {
+        if (!s3Response) return of(null);
         return this.profileService.notifyUploadComplete().pipe(
-           first(),
            catchError(notifyErr => {
             console.error('Notifying backend failed.', notifyErr);
             return of(null);

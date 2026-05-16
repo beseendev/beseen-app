@@ -27,7 +27,7 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { ProfileService } from '../services/profile.service';
 import { FileType } from '../models/upload.model';
 import { Router } from '@angular/router';
-import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, switchMap, tap, filter } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfilePlayerCreationRequest } from '../models/profile.model';
@@ -332,13 +332,15 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     return this.profileService.getPresignedUrl(uploadRequest).pipe(
       switchMap(uploadResponse => {
         return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
+          filter((event: any) => event.type === 4), // HttpEventType.Response
           catchError(uploadErr => {
             this.showToast('Perfil salvo, mas o upload da imagem falhou.', 'warning');
             return of(null);
           })
         );
       }),
-      switchMap(() => {
+      switchMap((s3Response) => {
+        if (!s3Response) return of(null);
         return this.profileService.notifyUploadComplete().pipe(
            catchError(notifyErr => {
             console.error('Notifying backend failed.', notifyErr);
