@@ -103,7 +103,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
         message: 'Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!',
         duration: 3000,
         color: 'medium',
-        position: 'top'
+        position: 'bottom'
       }).then(t => t.present());
       return;
     }

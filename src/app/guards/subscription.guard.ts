@@ -58,10 +58,10 @@ export const subscriptionGuard: CanActivateFn = (route, state) => {
   const url = state.url;
   if (planName === 'Visualização' && url.includes('/profile-player')) {
     toastController.create({
-      message: 'Seu plano Visualização não permite ver perfis. Faça upgrade para o plano Contato ou Clube!',
+      message: 'Seu plano Visualização não permite ver perfis. Faça upgrade!',
       duration: 3000,
       color: 'warning',
-      position: 'top'
+      position: 'bottom'
     }).then(t => t.present());
     return of(false);
   }

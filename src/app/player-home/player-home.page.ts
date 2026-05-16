@@ -573,8 +573,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     const toast = await this.toastController.create({
       message: 'Esse video ainda nao recebeu interesse de olheiros.',
       duration: 1800,
-      color: 'medium',
-      position: 'top'
+      color: 'warning',
+      position: 'bottom'
     });
 
     await toast.present();

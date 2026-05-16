@@ -296,13 +296,13 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   sendInvite(card: FavoriteAthleteVideoCard): void {
     if (!this.subscriptionService.canSendInvites()) {
-        this.showToast('Seu plano atual não permite enviar convites. Faça um upgrade!', 'medium');
+        this.showToast('Seu plano atual não permite enviar convites. Faça um upgrade!', 'warning');
         this.openPlans();
         return;
     }
 
     if (!this.subscriptionService.canSendMoreInvites(this.activeChatCount)) {
-        this.showToast('Você atingiu o limite de 2 convites do plano Contato. Faça um upgrade para o plano Clube para convites ilimitados!', 'medium');
+        this.showToast('Você atingiu o limite de 2 convites do plano Contato. Faça um upgrade para o plano Clube para convites ilimitados!', 'warning');
         this.openPlans();
         return;
     }
@@ -322,7 +322,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   async openChat(card: FavoriteAthleteVideoCard): Promise<void> {
     if (!this.subscriptionService.canAccessChat()) {
-        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'medium');
+        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'warning');
         this.openPlans();
         return;
     }
@@ -357,12 +357,12 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async showToast(message: string, color: 'success' | 'danger' | 'medium' = 'success') {
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'success') {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
       color,
-      position: 'top'
+      position: 'bottom'
     });
     await toast.present();
   }
@@ -379,7 +379,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
     if (!this.subscriptionService.canViewProfiles()) {
-        this.showToast('Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!', 'medium');
+        this.showToast('Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!', 'warning');
         this.openPlans();
         return;
     }
@@ -388,7 +388,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   async openChatInbox(): Promise<void> {
     if (!this.subscriptionService.canAccessChat()) {
-        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'medium');
+        this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'warning');
         this.openPlans();
         return;
     }
