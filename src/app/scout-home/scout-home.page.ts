@@ -342,9 +342,9 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
           status: thread.status,
           isPlayer: false
         },
-        breakpoints: [0, 0.35, 0.7, 0.95],
-        initialBreakpoint: 0.7,
-        backdropBreakpoint: 0.35,
+        breakpoints: [0, 0.4, 1],
+        initialBreakpoint: 1,
+        backdropBreakpoint: 0.4,
         handle: true,
         canDismiss: true
       });

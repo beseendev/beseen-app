@@ -1,90 +1,94 @@
-<ion-content class="chat-sheet-content">
-  <div class="sheet-shell">
-    <div class="sheet-header">
-      <div class="counterparty-head">
-        <div class="avatar-shell">
-          <img *ngIf="counterpartAvatarUrl" [src]="counterpartAvatarUrl" [alt]="counterpartName">
-          <ion-icon *ngIf="!counterpartAvatarUrl" name="person-circle-outline"></ion-icon>
-        </div>
-
-        <div>
-          <strong>{{ counterpartName }}</strong>
-          <span class="status-badge" [class.liberado]="status === 'ACCEPTED'">{{ statusLabel }}</span>
-        </div>
+<ion-header class="ion-no-border chat-sheet-header">
+  <div class="sheet-header-container">
+    <div class="counterparty-head">
+      <div class="avatar-shell">
+        <img *ngIf="counterpartAvatarUrl" [src]="counterpartAvatarUrl" [alt]="counterpartName">
+        <ion-icon *ngIf="!counterpartAvatarUrl" name="person-circle-outline"></ion-icon>
       </div>
 
-      <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
-        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-      </ion-button>
+      <div>
+        <strong>{{ counterpartName }}</strong>
+        <span class="status-badge" [class.liberado]="status === 'ACCEPTED'">{{ statusLabel }}</span>
+      </div>
     </div>
 
-    <!-- Banner de Segurança para Jogadores -->
+    <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
+      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Banners de Segurança -->
+  <div class="safety-banners">
     <div class="safety-banner" *ngIf="isPlayer">
       <ion-icon name="shield-half-outline"></ion-icon>
-      <p>Para sua segurança, não marque encontros presenciais sem a presença ou autorização de um responsável.</p>
+      <p>Para sua segurança, não marque encontros presenciais sem a autorização de um responsável.</p>
     </div>
 
     <div class="safety-banner" *ngIf="!isPlayer">
       <ion-icon name="shield-half-outline"></ion-icon>
-      <p>Este chat pode envolver menor de idade. Mantenha a conversa estritamente relacionada ao esporte e não solicite dados pessoais ou encontros sem ciência dos pais ou responsável legal.</p>
+      <p>Este chat pode envolver menor de idade. Mantenha a conversa estritamente relacionada ao esporte.</p>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="chat-sheet-content">
+  <div class="sheet-body" #messagesViewport>
+    <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
+      Nenhuma mensagem nesta conversa ainda.
     </div>
 
-    <div class="sheet-body" #messagesViewport>
-      <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
-        Nenhuma mensagem nesta conversa ainda.
-      </div>
-
-      <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status !== 'ACCEPTED'">
-        <ng-container *ngIf="isPlayer; else scoutWaiting">
-          O olheiro demonstrou interesse no seu perfil. Aceite para liberar o chat.
-        </ng-container>
-        <ng-template #scoutWaiting>
-          Aguardando o atleta aceitar para habilitar o chat.
-        </ng-template>
-      </div>
-
-      <div class="loading-messages" *ngIf="isLoading">
-        <ion-spinner name="bubbles"></ion-spinner>
-      </div>
-
-      <div
-        class="chat-bubble"
-        *ngFor="let message of messages"
-        [class.own]="message.isMine">
-        {{ message.text }}
-      </div>
+    <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status !== 'ACCEPTED'">
+      <ng-container *ngIf="isPlayer; else scoutWaiting">
+        O olheiro demonstrou interesse no seu perfil. Aceite para liberar o chat.
+      </ng-container>
+      <ng-template #scoutWaiting>
+        Aguardando o atleta aceitar para habilitar o chat.
+      </ng-template>
     </div>
 
-    <!-- Footer para o Jogador Aceitar -->
-    <div class="sheet-footer waiting" *ngIf="status === 'PENDING' && isPlayer">
-      <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite e abrir chat">
-        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-        Aceitar e abrir chat
-      </ion-button>
+    <div class="loading-messages" *ngIf="isLoading">
+      <ion-spinner name="bubbles"></ion-spinner>
     </div>
 
-    <!-- Footer de Mensagem (Liberado) -->
-    <div class="sheet-footer" *ngIf="status === 'ACCEPTED'">
-      <ion-item lines="none" class="chat-input">
-        <ion-input
-          [(ngModel)]="draftMessage"
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Digite sua mensagem"
-          (keyup.enter)="sendMessage()">
-        </ion-input>
-        <ion-button
-          slot="end"
-          fill="clear"
-          (click)="sendMessage()"
-          aria-label="Enviar mensagem">
-          <ion-icon slot="icon-only" name="send-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </div>
-
-    <!-- Footer de Espera (Olheiro) -->
-    <div class="sheet-footer waiting" *ngIf="status === 'PENDING' && !isPlayer">
-      Aguardando o atleta aceitar para habilitar o chat.
+    <div
+      class="chat-bubble"
+      *ngFor="let message of messages"
+      [class.own]="message.isMine">
+      {{ message.text }}
     </div>
   </div>
 </ion-content>
+
+<ion-footer class="ion-no-border chat-sheet-footer">
+  <!-- Footer para o Jogador Aceitar -->
+  <div class="footer-container waiting" *ngIf="status === 'PENDING' && isPlayer">
+    <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite e abrir chat">
+      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+      Aceitar e abrir chat
+    </ion-button>
+  </div>
+
+  <!-- Footer de Mensagem (Liberado) -->
+  <div class="footer-container" *ngIf="status === 'ACCEPTED'">
+    <ion-item lines="none" class="chat-input">
+      <ion-input
+        [(ngModel)]="draftMessage"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Digite sua mensagem"
+        (keyup.enter)="sendMessage()">
+      </ion-input>
+      <ion-button
+        slot="end"
+        fill="clear"
+        (click)="sendMessage()"
+        aria-label="Enviar mensagem">
+        <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </div>
+
+  <!-- Footer de Espera (Olheiro) -->
+  <div class="footer-container waiting" *ngIf="status === 'PENDING' && !isPlayer">
+    Aguardando o atleta aceitar para habilitar o chat.
+  </div>
+</ion-footer>

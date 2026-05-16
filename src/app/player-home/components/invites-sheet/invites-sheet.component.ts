@@ -133,9 +133,9 @@ export class InvitesSheetComponent implements OnInit {
         status: 'ACCEPTED',
         isPlayer: true
       },
-      breakpoints: [0, 0.35, 0.7, 0.95],
-      initialBreakpoint: 0.7,
-      backdropBreakpoint: 0.35,
+      breakpoints: [0, 0.4, 1],
+      initialBreakpoint: 1,
+      backdropBreakpoint: 0.4,
       canDismiss: true,
       handle: true
     });

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController, IonContent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline, shieldHalfOutline } from 'ionicons/icons';
 import { ChatMessageResponse, InviteStatus } from '../../models/player-chat.models';
@@ -23,7 +23,7 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   @Input() status: InviteStatus = 'PENDING';
   @Input() isPlayer = false;
 
-  @ViewChild('messagesViewport') messagesViewport?: ElementRef<HTMLDivElement>;
+  @ViewChild(IonContent, { static: false }) content?: IonContent;
 
   messages: ChatMessageResponse[] = [];
   draftMessage = '';
@@ -54,12 +54,14 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (!this.shouldScrollToBottom) return;
-
-    const viewport = this.messagesViewport?.nativeElement;
-    if (viewport) {
-      viewport.scrollTop = viewport.scrollHeight;
-    }
+    this.scrollToBottom();
     this.shouldScrollToBottom = false;
+  }
+
+  private scrollToBottom(): void {
+    if (this.content) {
+      this.content.scrollToBottom(300);
+    }
   }
 
   loadMessages(): void {
