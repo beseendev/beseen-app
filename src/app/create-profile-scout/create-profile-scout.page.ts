@@ -363,15 +363,6 @@ export class CreateProfileScoutPage implements OnInit {
         })
       ).subscribe({
         next: async () => {
-          const toast = await this.toastController.create({
-            message: 'Perfil criado com sucesso! Por favor, faça login novamente para acessar sua conta.',
-            duration: 1000,
-            color: 'success',
-            position: 'top'
-          });
-
-          await toast.present();
-
           this.authService.logout();
           this.router.navigate(['/login']);
         }

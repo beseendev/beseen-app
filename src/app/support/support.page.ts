@@ -115,7 +115,7 @@ export class SupportPage implements OnInit {
       message: 'Abrindo seu aplicativo de email para enviar a mensagem.',
       duration: 2200,
       color: 'success',
-      position: 'top'
+      position: 'bottom'
     });
 
     await toast.present();

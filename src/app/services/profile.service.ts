@@ -22,35 +22,19 @@ export class ProfileService {
   private readonly profileEndpoint = '/profile';
 
   createPlayerProfile(data: ProfilePlayerCreationRequest): Observable<any> {
-    return this.apiService.post<any>(`${this.profileEndpoint}/player`, data).pipe(
-      tap(response => {
-        this.showToast(response.message || 'Perfil de jogador salvo com sucesso!', 'success');
-      })
-    );
+    return this.apiService.post<any>(`${this.profileEndpoint}/player`, data).pipe();
   }
 
   createScoutProfile(data: ProfileScoutCreationRequest): Observable<any> {
-    return this.apiService.post<any>(`${this.profileEndpoint}/scout`, data).pipe(
-      tap(response => {
-        this.showToast(response.message || 'Perfil de olheiro salvo com sucesso!', 'success');
-      })
-    );
+    return this.apiService.post<any>(`${this.profileEndpoint}/scout`, data).pipe();
   }
 
   updatePlayerProfile(data: Partial<Profile>): Observable<any> {
-    return this.apiService.put<any>(`${this.profileEndpoint}/player`, data).pipe(
-      tap(response => {
-        this.showToast(response.message || 'Perfil atualizado com sucesso!', 'success');
-      })
-    );
+    return this.apiService.put<any>(`${this.profileEndpoint}/player`, data).pipe();
   }
 
   updateScoutProfile(data: any): Observable<any> {
-    return this.apiService.put<any>(`${this.profileEndpoint}/scout`, data).pipe(
-      tap(response => {
-        this.showToast(response.message || 'Perfil de olheiro atualizado com sucesso!', 'success');
-      })
-    );
+    return this.apiService.put<any>(`${this.profileEndpoint}/scout`, data).pipe();
   }
 
   getProfile(profileId?: string): Observable<Profile> {

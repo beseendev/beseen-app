@@ -133,7 +133,6 @@ export class PlansModalComponent implements OnInit {
 
       this.authService.refreshToken().subscribe({
         next: () => {
-          this.showToast('Assinatura realizada com sucesso!', 'success');
           this.modalCtrl.dismiss(true);
         },
         error: () => {

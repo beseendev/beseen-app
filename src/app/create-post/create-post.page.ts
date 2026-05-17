@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline } from 'ionicons/icons';
+import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline, alertCircleOutline } from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
 
@@ -33,7 +33,7 @@ export class CreatePostPage implements OnInit {
   private toastCtrl = inject(ToastController);
 
   constructor() {
-    addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline });
+    addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline, alertCircleOutline });
   }
 
   ngOnInit() {
@@ -148,13 +148,6 @@ export class CreatePostPage implements OnInit {
       next: async (post) => {
         await loading.dismiss();
         this.isSubmitting = false;
-        const toast = await this.toastCtrl.create({
-          message: 'Post criado com sucesso!',
-          duration: 2000,
-          color: 'success'
-        });
-        await toast.present();
-        console.log('Post created:', post);
         this.router.navigateByUrl('/player-home');
       },
       error: async (err) => {

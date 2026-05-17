@@ -109,7 +109,7 @@ export class AuthService {
       message: message,
       duration: 3000,
       color: color,
-      position: 'top'
+      position: 'bottom'
     });
     toast.present();
   }
@@ -173,15 +173,11 @@ export class AuthService {
     this.subscriptionService.clearSubscription();
     this.authState.next(false);
     this.currentUserSubject.next(null);
-    this.showToast('Você foi desconectado.', 'success');
+    this.showToast('Você foi desconectado. Faça login novamente.', 'success');
   }
 
   register(userData: any): Observable<any> {
-    return this.apiService.post<any>(`${this.authEndpoint}/register-user`, userData).pipe(
-      tap(() => {
-        this.showToast('Registro realizado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.', 'success');
-      })
-    );
+    return this.apiService.post<any>(`${this.authEndpoint}/register-user`, userData).pipe();
   }
 
   confirmAccountByCode(data: { email: string, code: string }): Observable<any> {
@@ -195,7 +191,7 @@ export class AuthService {
   resendConfirmationCode(data: { email: string }): Observable<any> {
     return this.apiService.post<any>(`${this.authEndpoint}/resend-confirmation-code`, data).pipe(
       tap((response) => {
-        this.showToast(response.message || 'Novo código enviado para seu e-mail.', 'success');
+        this.showToast('Novo código enviado para seu e-mail.', 'success');
       })
     );
   }
