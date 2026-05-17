@@ -1,61 +1,20 @@
-.ad-card {
-  margin: 0;
-  border-radius: 16px;
-  background: var(--be-color-surface-2);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.26);
+.ad-card-tiktok {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: var(--tiktok-height);
+  width: 100%;
+  position: relative;
+  background: black;
+  border-radius: 20px;
   overflow: hidden;
-  border: 1px solid var(--be-color-line);
+  border: none !important;
+  box-shadow: none !important;
 
-  ion-item {
-    --background: var(--be-color-surface-2);
-    --color: white;
-    --padding-start: 16px;
-    --inner-padding-end: 16px;
-    height: 60px;
-  }
-
-  .ad-header {
-    .ad-avatar-placeholder {
-      width: 40px;
-      height: 40px;
-      background: var(--ion-color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-
-      ion-icon {
-        color: white;
-        font-size: 18px;
-      }
-    }
-
-    .company-name {
-      font-weight: 600;
-      font-size: 14px;
-      color: white;
-
-      .sponsored-label {
-        margin: 0;
-        font-size: 11px;
-        color: #999;
-        font-weight: 400;
-      }
-    }
-  }
-
-  .media-container {
-    position: relative;
+  .be-tiktok-media-container {
     width: 100%;
-    aspect-ratio: 16/9;
-    cursor: pointer;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-
-    .ad-media {
+    height: 100%;
+    
+    .be-tiktok-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -65,55 +24,119 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
       height: 100%;
-      background: #2a2a2a;
-
+      background: #1a1a1a;
       ion-icon {
-        font-size: 40px;
-        color: #444;
-      }
-    }
-
-    .ad-overlay {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-
-      ion-badge {
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
+        font-size: 64px;
+        color: var(--be-color-surface-3);
       }
     }
   }
 
-  .ad-content {
-    padding: 16px;
-    background: var(--be-color-surface-2);
+  .be-tiktok-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 80px 20px 16px; /* Espaço para as ações laterais */
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-    .ad-info {
-      margin-bottom: 12px;
+    .be-tiktok-info {
+      .ad-badge-container {
+        margin-bottom: 8px;
+        ion-badge {
+          --padding-start: 8px;
+          --padding-end: 8px;
+          --padding-top: 4px;
+          --padding-bottom: 4px;
+          font-size: 10px;
+          text-transform: uppercase;
+          font-weight: bold;
+        }
+      }
 
-      .ad-title {
+      .ad-company-name {
         margin: 0;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      }
+
+      .ad-description {
+        margin: 4px 0 0;
         font-size: 14px;
-        line-height: 1.4;
-        color: #efefef;
-        font-weight: 400;
+        color: rgba(255,255,255,0.9);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
     }
 
-    .cta-button {
-      --border-radius: 8px;
-      --box-shadow: none;
-      --background: var(--ion-color-primary);
-      margin: 0;
-      font-weight: 600;
-      text-transform: none;
+    .ad-cta-container {
+      margin-top: 8px;
+      .cta-button-tiktok {
+        --background: var(--ion-color-primary);
+        --border-radius: 8px;
+        --color: white;
+        font-weight: bold;
+        margin: 0;
+        height: 40px;
+        font-size: 14px;
+        text-transform: none;
+      }
+    }
+  }
+
+  .be-tiktok-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+
+    .ad-avatar-circle {
+      width: 44px;
       height: 44px;
+      border-radius: 50%;
+      background: var(--ion-color-primary);
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+
+      ion-icon {
+        color: white;
+        font-size: 20px;
+      }
+    }
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+
+      ion-icon {
+        font-size: 30px;
+        color: white;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+      }
+
+      span {
+        font-size: 10px;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      }
     }
   }
 }

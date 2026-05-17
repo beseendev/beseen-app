@@ -1,36 +1,41 @@
-<ion-card class="ad-card">
-  <ion-item lines="none" class="ad-header">
-    <ion-avatar slot="start">
-      <div class="ad-avatar-placeholder">
-        <ion-icon name="megaphone-outline"></ion-icon>
-      </div>
-    </ion-avatar>
-    <ion-label class="company-name">
-      {{ ad.companyName }}
-      <p class="sponsored-label">Patrocinado</p>
-    </ion-label>
-  </ion-item>
-
-  <div class="media-container" (click)="goToSite()">
-    <video *ngIf="ad.videoLink" [src]="ad.videoLink" class="ad-media" autoplay muted loop playsinline></video>
-    <img *ngIf="!ad.videoLink && ad.thumbnailLink" [src]="ad.thumbnailLink" class="ad-media" />
+<article class="ad-card-tiktok be-fade-in" (click)="goToSite()">
+  <!-- Mídia de Fundo -->
+  <div class="be-tiktok-media-container">
+    <video *ngIf="ad.videoLink" [src]="ad.videoLink" class="be-tiktok-video" autoplay muted loop playsinline></video>
+    <img *ngIf="!ad.videoLink && ad.thumbnailLink" [src]="ad.thumbnailLink" class="be-tiktok-video" />
     <div *ngIf="!ad.videoLink && !ad.thumbnailLink" class="ad-media-placeholder">
-       <ion-icon name="star-outline"></ion-icon>
-    </div>
-
-    <div class="ad-overlay">
-       <ion-badge color="primary">Anúncio</ion-badge>
+       <ion-icon name="megaphone-outline"></ion-icon>
     </div>
   </div>
 
-  <div class="ad-content">
-    <div class="ad-info">
-      <h3 class="ad-title">{{ ad.description }}</h3>
+  <!-- Overlay de Informações (Inferior) -->
+  <div class="be-tiktok-overlay">
+    <div class="be-tiktok-info">
+      <div class="ad-badge-container">
+        <ion-badge color="primary">Patrocinado</ion-badge>
+      </div>
+      <h3 class="ad-company-name">@{{ ad.companyName }}</h3>
+      <p class="ad-description">{{ ad.description }}</p>
     </div>
 
-    <ion-button expand="block" (click)="goToSite()" class="cta-button">
-      {{ ad.ctaText || 'Saiba Mais' }}
-      <ion-icon slot="end" name="open-outline"></ion-icon>
-    </ion-button>
+    <!-- Botão de Ação -->
+    <div class="ad-cta-container">
+      <ion-button expand="block" (click)="$event.stopPropagation(); goToSite()" class="cta-button-tiktok">
+        {{ ad.ctaText || 'Saiba Mais' }}
+        <ion-icon slot="end" name="open-outline"></ion-icon>
+      </ion-button>
+    </div>
   </div>
-</ion-card>
+
+  <!-- Ações Laterais (Direita) -->
+  <div class="be-tiktok-actions">
+    <div class="ad-avatar-circle">
+      <ion-icon name="megaphone-outline"></ion-icon>
+    </div>
+    
+    <div class="action-item">
+      <ion-icon name="star-outline"></ion-icon>
+      <span>Anúncio</span>
+    </div>
+  </div>
+</article>
