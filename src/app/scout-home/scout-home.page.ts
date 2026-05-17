@@ -299,7 +299,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (!this.subscriptionService.canSendMoreInvites(this.activeChatCount)) {
-        this.showToast('Você atingiu o limite de 2 convites do plano Contato. Faça um upgrade para o plano Clube para convites ilimitados!', 'warning');
+        this.showToast('Seu plano atual (Contato) permite o envio de até 2 convites, e esse limite já foi alcançado', 'warning');
         this.openPlans();
         return;
     }
@@ -355,7 +355,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium' = 'success') {
     const toast = await this.toastController.create({
       message,
-      duration: 2000,
+      duration: 4000,
       color,
       position: 'bottom'
     });
