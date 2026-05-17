@@ -5,6 +5,7 @@ import {tap, catchError, map} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { SubscriptionService } from './subscription.service';
+import { ChatService } from './chat.service';
 
 export interface User {
   id: string;
@@ -43,6 +44,7 @@ export class AuthService {
 
   private toastController = inject(ToastController);
   private subscriptionService = inject(SubscriptionService);
+  private chatService = inject(ChatService);
 
   constructor(private apiService: ApiService) {
     if (this.hasToken()) {
@@ -171,6 +173,7 @@ export class AuthService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     this.subscriptionService.clearSubscription();
+    this.chatService.clearThreads();
     this.authState.next(false);
     this.currentUserSubject.next(null);
     this.showToast('Você foi desconectado. Faça login novamente.', 'success');

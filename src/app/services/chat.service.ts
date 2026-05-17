@@ -26,6 +26,11 @@ export class ChatService {
     );
   }
 
+  clearThreads(): void {
+    this.threadsSubject.next([]);
+    this.isLoadingSubject.next(false);
+  }
+
   getMessages(threadId: number, cursor?: string, limit: number = 20): Observable<ChatMessageResponse[]> {
     let params = new HttpParams().set('limit', limit.toString());
     if (cursor) {
