@@ -35,7 +35,7 @@
         <div class="input-group-container">
           <ion-item class="input-field" color="none">
             <ion-icon name="id-card-outline" slot="start"></ion-icon>
-            <ion-input label="CPF ou Identidade" labelPlacement="stacked" placeholder="000.000.000-00" [value]="cpfDisplayValue" (ionInput)="onCPFInput($event)" maxlength="14" formControlName="documentNumber" autocomplete="off"></ion-input>
+            <ion-input label="CPF ou CNPJ" labelPlacement="stacked" placeholder="000.000.000-00 ou 00.000.000/0000-00" [value]="documentDisplayValue" (ionInput)="onDocumentInput($event)" maxlength="18" formControlName="documentNumber" autocomplete="off"></ion-input>
           </ion-item>
           <div class="error-text" *ngIf="hasError('documentNumber', 'required')">Informe o documento.</div>
 
@@ -74,9 +74,9 @@
             <ion-icon name="calendar-outline" slot="start" id="open-date-picker-scout"></ion-icon>
             <ion-input 
               class="date-input"
-              label="Data de Nascimento" 
+              [label]="getDateLabel()" 
               labelPlacement="stacked" 
-              placeholder="DD/MM/AAAA" 
+              [placeholder]="isTipoClubeSelected ? 'Data de fundação da organização' : 'DD/MM/AAAA'" 
               [value]="dateOfBirthDisplayValue" 
               (ionInput)="onDateInput($event)" 
               maxlength="10"
@@ -87,6 +87,7 @@
                 <ion-datetime 
                   presentation="date" 
                   preferWheel="true"
+                  min="1700"
                   [value]="profileForm.get('dateOfBirth')?.value" 
                   (ionChange)="onDateSelected($event)"
                   [showDefaultButtons]="true"

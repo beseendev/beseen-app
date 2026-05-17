@@ -81,7 +81,7 @@ export class CreateProfileScoutPage implements OnInit {
   saveAttempted = false;
   isSaving = false;
   phoneDisplayValue = '';
-  cpfDisplayValue = '';
+  documentDisplayValue = '';
   dateOfBirthDisplayValue = '';
   private selectedImageFile: File | null = null;
 
@@ -147,7 +147,7 @@ export class CreateProfileScoutPage implements OnInit {
     });
     this.profileImageUrl = null;
     this.selectedImageFile = null;
-    this.cpfDisplayValue = '';
+    this.documentDisplayValue = '';
     this.phoneDisplayValue = '';
     this.dateOfBirthDisplayValue = '';
   }
@@ -193,6 +193,19 @@ export class CreateProfileScoutPage implements OnInit {
     return this.profileForm.get('tipoOlheiro')?.value === 'Outro';
   }
 
+  get isTipoClubeSelected(): boolean {
+    const tipo = this.profileForm.get('tipoOlheiro')?.value;
+    return tipo === 'Clube' || tipo === 'Academia';
+  }
+
+  getDateLabel(): string {
+    const tipo = this.profileForm.get('tipoOlheiro')?.value;
+    if (!tipo) {
+      return 'Data de Nascimento / Fundação';
+    }
+    return (tipo === 'Clube' || tipo === 'Academia') ? 'Data de Fundação' : 'Data de Nascimento';
+  }
+
   get bioLength(): number {
     return this.getControlValueLength('bio');
   }
@@ -221,12 +234,23 @@ export class CreateProfileScoutPage implements OnInit {
     return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
   }
 
-  formatCPF(digits: string): string {
-    const cleaned = this.onlyDigits(digits).slice(0, 11);
-    if (cleaned.length <= 3) return cleaned;
-    if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
-    if (cleaned.length <= 9) return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
-    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
+  formatDocument(digits: string): string {
+    const cleaned = this.onlyDigits(digits);
+    if (cleaned.length <= 11) {
+      // CPF
+      if (cleaned.length <= 3) return cleaned;
+      if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
+      if (cleaned.length <= 9) return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
+      return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
+    } else {
+      // CNPJ
+      const d = cleaned.slice(0, 14);
+      if (d.length <= 2) return d;
+      if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+      if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+      if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+      return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12, 14)}`;
+    }
   }
 
   onPhoneInput(event: any): void {
@@ -238,13 +262,13 @@ export class CreateProfileScoutPage implements OnInit {
     event.target.value = this.phoneDisplayValue;
   }
 
-  onCPFInput(event: any): void {
+  onDocumentInput(event: any): void {
     const rawValue = event.target.value || '';
-    const digits = this.onlyDigits(rawValue).slice(0, 11);
+    const digits = this.onlyDigits(rawValue).slice(0, 14);
 
-    this.cpfDisplayValue = this.formatCPF(digits);
+    this.documentDisplayValue = this.formatDocument(digits);
     this.profileForm.get('documentNumber')?.setValue(digits, { emitEvent: false });
-    event.target.value = this.cpfDisplayValue;
+    event.target.value = this.documentDisplayValue;
   }
 
   async selectProfileImage() {
