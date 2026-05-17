@@ -134,9 +134,4 @@ export class InvitesSheetComponent implements OnInit {
     this.modalController.dismiss();
   }
 
-  onInviteClick(invite: PostInviteResponse): void {
-    if (invite.status === 'ACCEPTED') {
-      this.openChat(invite);
-    }
-  }
 }
