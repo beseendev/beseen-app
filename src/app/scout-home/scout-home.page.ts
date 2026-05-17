@@ -123,7 +123,9 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.activeChatCount = threads.length;
     });
 
-    this.chatService.loadThreads().subscribe();
+    if (this.subscriptionService.canAccessChat()) {
+      this.chatService.loadThreads().subscribe();
+    }
 
     this.refreshCurrentTab();
   }
