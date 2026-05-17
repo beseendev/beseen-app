@@ -61,7 +61,9 @@ export class AuthService {
 
   private checkSubscriptionIfNeeded(user: User) {
     const decodedToken = this.getDecodedToken<JwtPayload>();
-    if (decodedToken?.role === 'CLUBE') {
+    const isPayableRole = decodedToken?.role === 'CLUBE' || decodedToken?.role === 'SCOUT';
+    
+    if (isPayableRole) {
       this.subscriptionService.initializeRevenueCat(user.id);
     }
   }

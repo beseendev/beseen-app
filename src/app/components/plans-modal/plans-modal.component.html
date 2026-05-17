@@ -80,5 +80,11 @@
         </ion-button>
       </article>
     </section>
+
+    <section *ngIf="!loading" class="restore-container ion-text-center ion-padding-bottom">
+      <ion-button fill="clear" size="small" (click)="restorePurchases()" [disabled]="purchasing">
+        Já possui uma assinatura? Restaurar Compras
+      </ion-button>
+    </section>
   </div>
 </ion-content>

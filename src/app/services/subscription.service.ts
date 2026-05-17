@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { Purchases } from '@revenuecat/purchases-capacitor';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { Purchases, LOG_LEVEL, CustomerInfo } from '@revenuecat/purchases-capacitor';
+import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Plan, Subscription, SubscriptionSyncRequest, SubscriptionStatus } from '../models/subscription.model';
 import { Capacitor } from '@capacitor/core';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -22,13 +23,37 @@ export class SubscriptionService {
       return;
     }
     try {
+      const platform = Capacitor.getPlatform();
+      let apiKey = '';
+
+      if (platform === 'ios') {
+        apiKey = environment.revenueCatIosKey;
+      } else if (platform === 'android') {
+        apiKey = environment.revenueCatAndroidKey;
+      }
+
+      if (!apiKey) {
+        console.error('RevenueCat: API Key não configurada para a plataforma:', platform);
+        return;
+      }
+
+      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
       await Purchases.configure({
-        apiKey: 'goog_placeholder_api_key',
+        apiKey: apiKey,
         appUserID: userId
       });
+
+      Purchases.addCustomerInfoUpdateListener((info) => {
+        this.handleCustomerInfoUpdate(info);
+      });
+
     } catch (e) {
       console.error('Erro ao inicializar RevenueCat', e);
     }
+  }
+
+  private handleCustomerInfoUpdate(info: CustomerInfo) {
+    console.log('Customer Info atualizado:', info);
   }
 
   hasActiveSubscription(): boolean {
@@ -124,7 +149,6 @@ export class SubscriptionService {
 
     try {
       const offerings = await Purchases.getOfferings();
-
       const pkg = offerings.current?.availablePackages.find(p => p.product.identifier === plan.revenueCatProductId);
 
       if (!pkg) throw new Error('Plano não disponível no RevenueCat');
@@ -138,8 +162,39 @@ export class SubscriptionService {
       };
 
       return this.syncWithBackend(syncRequest).toPromise() as Promise<Subscription>;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.userCancelled) {
+        console.log('Usuário cancelou a compra');
+        throw { userCancelled: true };
+      }
       console.error('Erro na compra:', error);
+      throw error;
+    }
+  }
+
+  async restorePurchases(): Promise<Subscription | null> {
+    if (!Capacitor.isNativePlatform()) return null;
+
+    try {
+      const result = await Purchases.restorePurchases();
+      const customerInfo = result.customerInfo;
+      console.log('Restauração concluída:', customerInfo);
+
+      const activeEntitlements = Object.values(customerInfo.entitlements.active);
+
+      if (activeEntitlements.length > 0) {
+        const latestEntitlement = activeEntitlements[0] as any;
+        const syncRequest: SubscriptionSyncRequest = {
+          revenueCatCustomerId: customerInfo.originalAppUserId,
+          productId: latestEntitlement.productIdentifier,
+          transactionId: 'RESTORE_FLOW'
+        };
+        return this.syncWithBackend(syncRequest).toPromise() as Promise<Subscription>;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Erro ao restaurar compras:', error);
       throw error;
     }
   }
@@ -162,3 +217,4 @@ export class SubscriptionService {
     this.currentSubscriptionSubject.next(null);
   }
 }
+

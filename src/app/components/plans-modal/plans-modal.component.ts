@@ -133,6 +133,7 @@ export class PlansModalComponent implements OnInit {
 
       this.authService.refreshToken().subscribe({
         next: () => {
+          this.showToast('Assinatura ativada com sucesso!', 'success');
           this.modalCtrl.dismiss(true);
         },
         error: () => {
@@ -140,11 +141,35 @@ export class PlansModalComponent implements OnInit {
           this.modalCtrl.dismiss(true);
         }
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.userCancelled) {
+        return;
+      }
       console.error('Erro ao realizar assinatura', error);
       this.showToast('Erro ao processar assinatura. Verifique seus dados.', 'danger');
     } finally {
       this.purchasing = false;
+    }
+  }
+
+  async restorePurchases() {
+    this.loading = true;
+    try {
+      const sub = await this.subscriptionService.restorePurchases();
+      if (sub) {
+        this.authService.refreshToken().subscribe({
+          next: () => {
+            this.showToast('Assinatura restaurada com sucesso!', 'success');
+            this.modalCtrl.dismiss(true);
+          }
+        });
+      } else {
+        this.showToast('Nenhuma assinatura ativa encontrada para restaurar.', 'warning');
+      }
+    } catch (error) {
+      this.showToast('Erro ao restaurar compras. Tente novamente.', 'danger');
+    } finally {
+      this.loading = false;
     }
   }
 
