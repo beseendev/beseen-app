@@ -309,6 +309,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       finalize(() => card.isInviting = false)
     ).subscribe({
       next: () => {
+        card.inviteStatus = 'PENDING';
         const post = this.videoPosts.find(p => p.id === card.postId);
         if (post) {
           post.inviteStatus = 'PENDING';
