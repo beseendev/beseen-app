@@ -122,7 +122,7 @@ export class ProfileScoutPage implements OnInit {
           this.profileId = profile.id;
         }
         this.syncDraftProfile();
-        this.resetAndLoadUserPosts(); // Mantendo o padrão, embora não haja seção de posts visível
+        this.resetAndLoadUserPosts();
       })
     ).subscribe();
   }
@@ -192,7 +192,7 @@ export class ProfileScoutPage implements OnInit {
         this.profileService.getPresignedUrl(uploadRequest).pipe(
           switchMap(uploadResponse => {
             return this.profileService.uploadImageToS3(uploadResponse.uploadUrl, file, file.type).pipe(
-              filter((event: any) => event.type === 4), // HttpEventType.Response
+              filter((event: any) => event.type === 4),
               map(() => uploadResponse)
             );
           }),

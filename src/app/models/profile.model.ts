@@ -14,14 +14,12 @@ export interface Profile {
   documentNumber?: string;
   phoneNumber?: string;
 
-  // Player fields
   position?: string;
   height?: string;
   weight?: string;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
 
-  // Scout fields
   tipoOlheiro?: ScoutTypeOption;
   tipoOlheiroOutroTexto?: string | null;
   organizacaoOuClube?: string | null;
@@ -103,14 +101,12 @@ export interface ProfileResponse {
   documentNumber?: string;
   phoneNumber?: string;
 
-  // Player fields
   position?: string;
   height?: string;
   weight?: string;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
 
-  // Scout fields
   tipoOlheiro?: string;
   tipoOlheiroOutroTexto?: string;
   organizacaoOuClube?: string;

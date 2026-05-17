@@ -1,12 +1,11 @@
 .ad-card {
-  margin: 0; // Removido margin para ocupar toda a largura como os posts
-  border-radius: 16px; // Ajustado para 16px como os cards do app
+  margin: 0;
+  border-radius: 16px;
   background: var(--be-color-surface-2);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.26); // Mesmo shadow dos showcase-cards
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.26);
   overflow: hidden;
-  border: 1px solid var(--be-color-line); // Mesmo border dos showcase-cards
+  border: 1px solid var(--be-color-line);
 
-  // Garante que o ion-item herde a cor de fundo correta
   ion-item {
     --background: var(--be-color-surface-2);
     --color: white;
@@ -54,7 +53,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0; // Reset margin se houver
+    margin: 0;
 
     .ad-media {
       width: 100%;
@@ -92,7 +91,7 @@
   }
 
   .ad-content {
-    padding: 16px; // Ajustado para 16px para bater com showcase-card
+    padding: 16px;
     background: var(--be-color-surface-2);
 
     .ad-info {

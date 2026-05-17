@@ -1,17 +1,88 @@
-.scout-home-content{--background:var(--be-color-bg);font-family:var(--ion-font-family)}
-.scout-home-container{width:100%;max-width:460px;margin:0 auto;padding:28px 24px 40px;color:var(--be-color-text-1)}
-.section{margin-top:24px}
-.hero-block{margin-bottom:22px}
-.hero-topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.eyebrow{margin:0 0 8px;color:var(--be-color-brand-500);font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-.hero-block h1{margin:0;color:var(--be-color-text-1);line-height:1.05;font-weight:800;font-size:clamp(2rem,7vw,2.6rem)}
-.hero-copy{margin:10px 0 0;color:var(--be-color-text-3);line-height:1.45}
-.chat-inbox-btn{position:relative;--color:var(--be-color-text-2);overflow:visible}
-.chat-inbox-btn::part(native){overflow:visible}
-.chat-inbox-btn ion-badge{position:absolute;top:2px;right:2px;transform:translate(32%,-32%);z-index:2}
-.surface,.profile-card,.video-card{background:var(--be-color-surface-2);border:1px solid var(--be-color-line);border-radius:16px;box-shadow:var(--be-shadow-card);overflow:hidden}
-.profile-card{padding:16px}
-.profile-card-head,.profile-card-id,.profile-card-actions,.video-meta,.talent-id{display:flex;align-items:center}
+.scout-home-content {
+  --background: var(--be-color-bg);
+  font-family: var(--ion-font-family)
+}
+
+.scout-home-container {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  color: var(--be-color-text-1)
+}
+
+.section {
+  margin-top: 24px
+}
+
+.hero-block {
+  margin-bottom: 22px
+}
+
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--be-color-brand-500);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase
+}
+
+.hero-block h1 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  line-height: 1.05;
+  font-weight: 800;
+  font-size: clamp(2rem, 7vw, 2.6rem)
+}
+
+.hero-copy {
+  margin: 10px 0 0;
+  color: var(--be-color-text-3);
+  line-height: 1.45
+}
+
+.chat-inbox-btn {
+  position: relative;
+  --color: var(--be-color-text-2);
+  overflow: visible
+}
+
+.chat-inbox-btn::part(native) {
+  overflow: visible
+}
+
+.chat-inbox-btn ion-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  transform: translate(32%, -32%);
+  z-index: 2
+}
+
+.surface, .profile-card, .video-card {
+  background: var(--be-color-surface-2);
+  border: 1px solid var(--be-color-line);
+  border-radius: 16px;
+  box-shadow: var(--be-shadow-card);
+  overflow: hidden
+}
+
+.profile-card {
+  padding: 16px
+}
+
+.profile-card-head, .profile-card-id, .profile-card-actions, .video-meta, .talent-id {
+  display: flex;
+  align-items: center
+}
 
 .desktop-actions {
   display: flex;
@@ -31,7 +102,7 @@
 .options-popover {
   --background: var(--be-color-surface-2);
   --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  
+
   ion-list {
     background: var(--be-color-surface-2);
     padding: 8px 0;
@@ -56,6 +127,7 @@
       ion-icon {
         color: var(--be-color-danger);
       }
+
       ion-label {
         color: var(--be-color-danger);
       }
@@ -72,20 +144,99 @@
   }
 }
 
-.profile-card-head,.video-meta{justify-content:space-between}
-.profile-card-id,.profile-card-actions,.talent-id{gap:12px}
-.profile-copy{display:flex;flex-direction:column;gap:2px}
-.profile-card-id strong{display:block;margin:0;color:var(--be-color-text-1);font-size:1rem}
-.profile-card-id p{margin:0;color:var(--be-color-text-3);font-size:.82rem}
-.summary-label{display:block;color:var(--be-color-text-3);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
-.edit-profile-btn{--color:var(--be-color-brand-500);--border-color:rgba(var(--ion-color-primary-rgb),.45);text-transform:none;font-weight:600}
-.logout-btn{--color:var(--be-color-danger);text-transform:none;font-weight:600}
-.arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px;position:sticky;top:0;z-index:100}
-.tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--be-color-text-3);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}
-.tab-btn.active{color:var(--be-color-text-1);background:rgba(var(--ion-color-primary-rgb),.16)}
-.content-section{margin-bottom:24px}
-.section-heading{margin-bottom:12px}
-.section-heading h2{margin:0;color:var(--be-color-text-1);font-size:1.05rem}
+.profile-card-head, .video-meta {
+  justify-content: space-between
+}
+
+.profile-card-id, .profile-card-actions, .talent-id {
+  gap: 12px
+}
+
+.profile-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px
+}
+
+.profile-card-id strong {
+  display: block;
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: 1rem
+}
+
+.profile-card-id p {
+  margin: 0;
+  color: var(--be-color-text-3);
+  font-size: .82rem
+}
+
+.summary-label {
+  display: block;
+  color: var(--be-color-text-3);
+  font-size: .74rem;
+  letter-spacing: .06em;
+  text-transform: uppercase
+}
+
+.edit-profile-btn {
+  --color: var(--be-color-brand-500);
+  --border-color: rgba(var(--ion-color-primary-rgb), .45);
+  text-transform: none;
+  font-weight: 600
+}
+
+.logout-btn {
+  --color: var(--be-color-danger);
+  text-transform: none;
+  font-weight: 600
+}
+
+.arena-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+  overflow: auto;
+  padding: 4px;
+  background: var(--be-color-surface-1);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100
+}
+
+.tab-btn {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--be-color-text-3);
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: 10px
+}
+
+.tab-btn.active {
+  color: var(--be-color-text-1);
+  background: rgba(var(--ion-color-primary-rgb), .16)
+}
+
+.content-section {
+  margin-bottom: 24px
+}
+
+.section-heading {
+  margin-bottom: 12px
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: 1.05rem
+}
+
 .video-list.be-tiktok-container {
   --tiktok-height: calc(100vh - 100px);
   width: 100%;
@@ -110,25 +261,95 @@
   }
 
   .be-tiktok-card {
-     height: var(--tiktok-height);
-     scroll-snap-align: none;
-     border-radius: 16px;
-     margin-bottom: 14px;
+    height: var(--tiktok-height);
+    scroll-snap-align: none;
+    border-radius: 16px;
+    margin-bottom: 14px;
   }
 }
 
-.video-card{padding:0}
-.video-meta{align-items:center;gap:10px;margin-bottom:0;padding:16px}
-.video-meta h3{margin:0;color:var(--be-color-text-1);font-size:.96rem}
-.video-meta p,.talent-id p{margin:0;color:var(--be-color-text-3);font-size:.82rem}
-.profile-link{padding:0;border:0;background:transparent;color:inherit;text-align:left}
-.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24);overflow:hidden}
-.avatar-shell img{width:100%;height:100%;object-fit:cover}
-.avatar-shell ion-icon{color:var(--be-color-text-2);font-size:2rem}
-.favorite-btn{--color:var(--be-color-brand-500);--padding-start:0;--padding-end:0;margin:0}
-.favorite-btn ion-icon{font-size:1.45rem}
-.talent-video,.media-frame video{width:100%;display:block;border-radius:0;background:var(--be-color-media-bg);height:100%;object-fit:cover}
-.media-frame{position:relative;border-radius:0;overflow:hidden;aspect-ratio:16/9;background:var(--be-color-media-bg)}
+.video-card {
+  padding: 0
+}
+
+.video-meta {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+  padding: 16px
+}
+
+.video-meta h3 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: .96rem
+}
+
+.video-meta p, .talent-id p {
+  margin: 0;
+  color: var(--be-color-text-3);
+  font-size: .82rem
+}
+
+.profile-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left
+}
+
+.avatar-shell {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--be-color-surface-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), .24);
+  overflow: hidden
+}
+
+.avatar-shell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.avatar-shell ion-icon {
+  color: var(--be-color-text-2);
+  font-size: 2rem
+}
+
+.favorite-btn {
+  --color: var(--be-color-brand-500);
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0
+}
+
+.favorite-btn ion-icon {
+  font-size: 1.45rem
+}
+
+.talent-video, .media-frame video {
+  width: 100%;
+  display: block;
+  border-radius: 0;
+  background: var(--be-color-media-bg);
+  height: 100%;
+  object-fit: cover
+}
+
+.media-frame {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  background: var(--be-color-media-bg)
+}
+
 .video-overlay {
   position: absolute;
   top: 0;
@@ -138,6 +359,20 @@
   z-index: 5;
   background: transparent;
 }
-.showcase-body{padding:16px}
-.meta-line{margin:0;font-size:.82rem;color:var(--be-color-text-3)}
-.showcase-description{margin:0;line-height:1.5;color:var(--be-color-text-2);font-size:.9rem}
+
+.showcase-body {
+  padding: 16px
+}
+
+.meta-line {
+  margin: 0;
+  font-size: .82rem;
+  color: var(--be-color-text-3)
+}
+
+.showcase-description {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--be-color-text-2);
+  font-size: .9rem
+}

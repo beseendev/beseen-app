@@ -65,7 +65,7 @@
               Cancelar
             </ion-button>
           </ng-template>
-          
+
           <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
             <ion-icon slot="start" name="help-circle-outline"></ion-icon>
             Suporte
@@ -89,7 +89,6 @@
           </ion-label>
         </ion-item>
 
-        <!-- Tipo de Olheiro -->
         <ion-item class="readonly-item">
           <ion-icon slot="start" name="business-outline"></ion-icon>
           <ion-label>
@@ -98,7 +97,6 @@
           </ion-label>
         </ion-item>
 
-        <!-- Organização / Clube -->
         <ion-item *ngIf="isEditing; else readOrg">
           <ion-icon slot="start" name="business-outline"></ion-icon>
           <ion-input
@@ -118,7 +116,6 @@
           </ion-item>
         </ng-template>
 
-        <!-- Cargo -->
         <ion-item *ngIf="isEditing; else readCargo">
           <ion-icon slot="start" name="person-outline"></ion-icon>
           <ion-input
@@ -138,7 +135,6 @@
           </ion-item>
         </ng-template>
 
-        <!-- Modalidade -->
         <ion-item *ngIf="isEditing; else readModalidade">
           <ion-icon slot="start" name="trophy-outline"></ion-icon>
           <ion-select
@@ -160,7 +156,6 @@
           </ion-item>
         </ng-template>
 
-        <!-- Região de Atuação -->
         <ion-item *ngIf="isEditing; else readRegiao">
           <ion-icon slot="start" name="globe-outline"></ion-icon>
           <ion-input

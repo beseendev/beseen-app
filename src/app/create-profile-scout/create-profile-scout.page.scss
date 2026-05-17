@@ -42,14 +42,13 @@
 
 .section-header {
   h2 {
-    color: var(--be-color-brand-500) !important; /* Verde BeSeen */
+    color: var(--be-color-brand-500) !important;
   }
   p {
-    color: #cbd5e1 !important; /* Cinza azulado claro para as descrições */
+    color: #cbd5e1 !important;
   }
 }
 
-/* ESTILO PADRÃO BE SEEN */
 .input-field {
   --background: var(--be-color-surface-2);
   --border-radius: 12px;
@@ -74,7 +73,6 @@ ion-input, ion-textarea {
   color: #ffffff !important;
 }
 
-/* Botão de seleção com estilo condizente */
 .be-btn-outline {
   --border-color: var(--be-color-brand-500);
   --color: var(--be-color-brand-500);
@@ -83,20 +81,20 @@ ion-input, ion-textarea {
 }
 
 .top-bar-title {
-  color: #ffffff !important; /* Força o branco */
+  color: #ffffff !important;
   font-weight: 700;
   font-size: 1.1rem;
 }
 
 .verification-status {
   strong {
-    color: #ffffff !important; /* "Verificacao pendente" em branco */
+    color: #ffffff !important;
     display: block;
     font-size: 0.95rem;
   }
 
   p {
-    color: var(--be-color-text-3) !important; /* O texto da V2 em cinza claro */
+    color: var(--be-color-text-3) !important;
     margin: 4px 0 0;
     font-size: 0.85rem;
     opacity: 0.8;
@@ -123,12 +121,11 @@ ion-input, ion-textarea {
   margin-right: 8px;
 }
 
-/* Ícone de calendário clicável para abrir o datepicker */
 .input-field ion-icon[id^="open-date-picker"] {
   cursor: pointer;
   color: var(--be-color-brand-500);
   padding: 4px;
-  margin-left: -4px; /* Ajuste para compensar o padding e alinhar com os outros */
+  margin-left: -4px;
   transition: opacity 0.2s ease;
 }
 
@@ -136,9 +133,7 @@ ion-input, ion-textarea {
   opacity: 0.6;
 }
 
-/* Removido o estilo de padding-end e do botão quadrado anterior */
 .input-field ion-input {
-  /* Mantém o padrão dos outros inputs */
 }
 
 .date-input {
@@ -158,7 +153,7 @@ ion-input, ion-textarea {
   margin-bottom: 15px;
 
   ion-icon {
-    font-size: 5.5rem; /* Ajustado para preencher bem o círculo */
+    font-size: 5.5rem;
     color: var(--be-color-text-2);
   }
 
@@ -171,8 +166,8 @@ ion-input, ion-textarea {
 
 .avatar-row-container {
   display: flex;
-  align-items: center; /* Alinha verticalmente ao centro */
-  gap: 20px;           /* Espaço entre a foto e o botão */
+  align-items: center;
+  gap: 20px;
   margin-bottom: 24px;
 }
 
@@ -211,7 +206,7 @@ ion-input, ion-textarea {
   overflow: hidden;
 
   ion-icon {
-    font-size: 5rem; /* Aumentado de 4.25 para 5 ou mais */
+    font-size: 5rem;
     color: var(--be-color-text-2);
     min-width: 100%;
     min-height: 100%;

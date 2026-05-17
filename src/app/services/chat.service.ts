@@ -16,9 +16,6 @@ export class ChatService {
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
 
-  /**
-   * Loads the inbox (list of chat threads/invites)
-   */
   loadThreads(): Observable<ChatThreadSummaryDTO[]> {
     this.isLoadingSubject.next(true);
     return this.apiService.get<ChatThreadSummaryDTO[]>('/chat/threads').pipe(
@@ -29,9 +26,6 @@ export class ChatService {
     );
   }
 
-  /**
-   * Fetches messages for a specific thread with pagination
-   */
   getMessages(threadId: number, cursor?: string, limit: number = 20): Observable<ChatMessageResponse[]> {
     let params = new HttpParams().set('limit', limit.toString());
     if (cursor) {
@@ -40,9 +34,6 @@ export class ChatService {
     return this.apiService.get<ChatMessageResponse[]>(`/chat/threads/${threadId}/messages`, { params });
   }
 
-  /**
-   * Sends a message to a thread
-   */
   sendMessage(threadId: number, text: string): Observable<ChatMessageResponse> {
     return this.apiService.post<ChatMessageResponse>(`/chat/threads/${threadId}/messages`, { text }).pipe(
       tap(newMessage => {
@@ -60,10 +51,5 @@ export class ChatService {
         }
       })
     );
-  }
-
-  resetChat(): void {
-    this.threadsSubject.next([]);
-    this.isLoadingSubject.next(false);
   }
 }

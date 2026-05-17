@@ -71,7 +71,7 @@ export class CreatePostPage implements OnInit {
       try {
         const duration = await this.getVideoDuration(file);
         this.selectedMediaDuration = duration;
-        const maxDuration = 30; // Limite de 30 segundos
+        const maxDuration = 30;
 
         if (duration > maxDuration) {
           const toast = await this.toastCtrl.create({

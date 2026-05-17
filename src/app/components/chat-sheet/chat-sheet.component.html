@@ -17,7 +17,6 @@
     </ion-button>
   </div>
 
-  <!-- Banners de Segurança -->
   <div class="safety-banners">
     <div class="safety-banner" *ngIf="isPlayer">
       <ion-icon name="shield-half-outline"></ion-icon>
@@ -60,7 +59,6 @@
 </ion-content>
 
 <ion-footer class="ion-no-border chat-sheet-footer">
-  <!-- Footer para o Jogador Aceitar -->
   <div class="footer-container waiting" *ngIf="status === 'PENDING' && isPlayer">
     <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite">
       <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
@@ -68,7 +66,6 @@
     </ion-button>
   </div>
 
-  <!-- Footer de Mensagem (Liberado) -->
   <div class="footer-container" *ngIf="status === 'ACCEPTED'">
     <ion-item lines="none" class="chat-input">
       <ion-input
@@ -87,7 +84,6 @@
     </ion-item>
   </div>
 
-  <!-- Footer de Espera (Olheiro) -->
   <div class="footer-container waiting" *ngIf="status === 'PENDING' && !isPlayer">
     Aguardando o atleta aceitar para habilitar o chat.
   </div>

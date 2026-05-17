@@ -81,10 +81,6 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
 
-  getStatus(card: FavoriteAthleteVideoCard): ChatStatus {
-    return card.inviteStatus ?? 'PENDING';
-  }
-
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {
     this.inviteRequested.emit(card);
   }
@@ -108,14 +104,6 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       return;
     }
     this.router.navigate(['/profile-player', card.athleteId]);
-  }
-
-  toggleFullScreen(video: HTMLVideoElement) {
-    if (video.requestFullscreen) {
-      video.requestFullscreen();
-    } else if ((video as any).webkitEnterFullscreen) {
-      (video as any).webkitEnterFullscreen();
-    }
   }
 
   trackByCard(_: number, item: ScoutFeedItem): string {

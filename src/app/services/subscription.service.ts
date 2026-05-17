@@ -148,8 +148,6 @@ export class SubscriptionService {
     return this.apiService.post<Subscription>('/subscriptions/sync', request).pipe(
       tap(sub => {
         this.saveSubscription(sub);
-        // Ao sincronizar, limpamos o token antigo para forçar o interceptor a renová-lo
-        // ou solicitamos um novo token se o backend retornar
       })
     );
   }

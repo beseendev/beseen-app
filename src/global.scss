@@ -1,40 +1,15 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-//@import '@ionic/angular/css/palettes/dark.system.css';
 
 html,
 body,
@@ -163,7 +138,7 @@ ion-segment-button {
 
 /* TikTok-style Video Feed */
 .be-tiktok-container {
-  --tiktok-height: calc(100vh - 100px); /* Even taller height */
+  --tiktok-height: calc(100vh - 100px);
   scroll-snap-type: y mandatory;
   overflow-y: auto;
   height: var(--tiktok-height);
@@ -204,11 +179,11 @@ ion-segment-button {
   left: 0;
   right: 0;
   z-index: 10;
-  padding: 100px 70px 20px 16px; /* Increased right padding to 70px */
-  background: linear-gradient(to top, 
-    rgba(0, 0, 0, 0.9) 0%, 
-    rgba(0, 0, 0, 0.5) 40%, 
-    rgba(0, 0, 0, 0.2) 70%, 
+  padding: 100px 70px 20px 16px;
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.2) 70%,
     transparent 100%);
   color: white;
   pointer-events: none;
@@ -224,11 +199,11 @@ ion-segment-button {
 .be-tiktok-actions {
   position: absolute;
   right: 12px;
-  bottom: 20px; /* Aligned with the bottom of the overlay padding */
+  bottom: 20px;
   z-index: 11;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Slightly reduced gap */
+  gap: 12px;
   align-items: center;
 }
 
@@ -537,7 +512,6 @@ button:focus-visible,
   padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
 }
 
-/* Remover os 3 pontinhos dos videos no Android/Chrome */
 video::-internal-media-controls-download-button {
   display: none !important;
 }
@@ -547,10 +521,9 @@ video::-webkit-media-controls-enclosure {
 }
 
 video::-webkit-media-controls-panel {
-  width: calc(100% + 30px) !important; /* Esconde o botão de opções deslocando-o */
+  width: calc(100% + 30px) !important;
 }
 
-/* Custom Date Picker Modal */
 .be-date-modal {
   --height: auto;
   --width: fit-content;

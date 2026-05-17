@@ -18,30 +18,27 @@ export class PostCardComponent {
   @Input() post!: Post;
   public FileType = FileType;
 
-  private postService = inject(PostService); // Injected PostService
-  private toastCtrl = inject(ToastController); // Injected ToastController
+  private postService = inject(PostService);
+  private toastCtrl = inject(ToastController);
 
   constructor() {
     addIcons({ football, footballOutline, chatbubbleOutline });
   }
 
-  async toggleLike() { // Made async for toastController
+  async toggleLike() {
     const previousIsLiked = this.post.isLiked;
-    const previousLikesCount = this.post.likesCount; // Keep for error reversion
+    const previousLikesCount = this.post.likesCount;
 
-    // Optimistic UI update (only isLiked, likesCount will be updated by PostService)
     this.post.isLiked = !this.post.isLiked;
 
     const operation = previousIsLiked ? this.postService.unlikePost(this.post.id) : this.postService.likePost(this.post.id);
 
     operation.subscribe({
       next: async () => {
-        // No action needed here, PostService's tap operator updates the likesCount
       },
       error: async (err) => {
-        // Revert UI on error
         this.post.isLiked = previousIsLiked;
-        this.post.likesCount = previousLikesCount; // Revert likesCount as well on error
+        this.post.likesCount = previousLikesCount;
         const toast = await this.toastCtrl.create({
           message: `Erro ao ${previousIsLiked ? 'descurtir' : 'curtir'} o post: ${err.message || 'Tente novamente.'}`,
           duration: 2000,

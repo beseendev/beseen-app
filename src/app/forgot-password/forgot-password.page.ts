@@ -7,7 +7,6 @@ import { AuthService } from '../services/auth.service';
 import { finalize, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-// This validator now correctly checks for a 'password' control.
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
@@ -41,7 +40,6 @@ export class ForgotPasswordPage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    // The form control is now correctly named 'password'.
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       code: [''],

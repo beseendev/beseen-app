@@ -22,7 +22,7 @@
           <ion-avatar class="profile-avatar">
             <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
             <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
-            
+
             <!-- Feedback visual discreto apenas durante o upload -->
             <div class="avatar-upload-overlay" *ngIf="isUploadingPhoto">
               <ion-spinner name="crescent"></ion-spinner>
@@ -112,8 +112,6 @@
               </ion-label>
             </ion-item>
           </ng-template>
-
-          <!-- Estado -->
           <ion-item *ngIf="isEditing; else readEstado">
             <ion-icon slot="start" name="map-outline"></ion-icon>
             <ion-select
@@ -134,8 +132,6 @@
               </ion-label>
             </ion-item>
           </ng-template>
-
-          <!-- Pais -->
           <ion-item *ngIf="isEditing; else readPais">
             <ion-icon slot="start" name="globe-outline"></ion-icon>
             <ion-input
@@ -306,7 +302,6 @@
         </ion-list>
       </section>
 
-      <!-- Placeholder para usuários com acesso restrito -->
       <section class="section-card upgrade-banner" *ngIf="!hasFullAccess && !isMyProfile">
         <div class="upgrade-content">
           <ion-icon name="lock-closed-outline" color="warning"></ion-icon>

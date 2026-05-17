@@ -44,10 +44,6 @@ export interface ChatMessageResponse {
 
 export type ChatStatus = InviteStatus;
 
-/**
- * Legacy state interfaces for UI compatibility.
- * Prefer using ChatThreadSummaryDTO and ChatMessageResponse for new features.
- */
 export interface ChatThreadState {
   athleteId: string;
   athleteName: string;

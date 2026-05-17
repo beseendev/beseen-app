@@ -10,7 +10,6 @@
   padding: 24px 24px 112px;
 }
 
-/* Page Header */
 .top-bar {
   display: flex;
   align-items: center;
@@ -73,7 +72,6 @@
   font-size: 0.88rem;
 }
 
-/* O ESTILO DO INPUT (IGUAL AO LOGIN) */
 .input-field {
   --background: var(--be-color-surface-2);
   --border-radius: 12px;
@@ -107,7 +105,6 @@
   margin-right: 8px;
 }
 
-/* Ícone de calendário clicável */
 .input-field ion-icon[id^="open-date-picker"] {
   cursor: pointer;
   color: var(--be-color-brand-500);
@@ -120,7 +117,6 @@
   opacity: 0.6;
 }
 
-/* Removido o estilo de padding-end e do botão quadrado anterior */
 .input-field ion-input {
   /* Mantém o padrão */
 }
@@ -162,7 +158,7 @@
   overflow: hidden;
 
   ion-icon {
-    font-size: 5rem; /* Aumentado de 4.25 para 5 ou mais */
+    font-size: 5rem;
     color: var(--be-color-text-2);
     min-width: 100%;
     min-height: 100%;
@@ -175,7 +171,6 @@
   }
 }
 
-/* Global Elements */
 .error-text {
   color: var(--be-color-danger);
   font-size: 0.75rem;

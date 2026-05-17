@@ -131,7 +131,7 @@ export class InvitesSheetComponent implements OnInit {
     });
 
     await modal.present();
-    this.modalController.dismiss(); // Close the invites sheet after opening chat
+    this.modalController.dismiss();
   }
 
   onInviteClick(invite: PostInviteResponse): void {

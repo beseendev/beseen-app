@@ -13,7 +13,6 @@ import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { switchMap, tap, map, filter, finalize } from 'rxjs/operators';
-import { PostCardComponent } from '../components/post-card/post-card.component';
 import {AuthService, JwtPayload} from '../services/auth.service';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
@@ -159,11 +158,6 @@ export class ProfilePlayerPage implements OnInit {
     return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
   }
 
-  segmentChanged(event: any) {
-    this.selectedSegment = event.detail.value;
-    this.selectedSegmentSubject.next(this.selectedSegment);
-  }
-
   openSupport() {
     this.router.navigate(['/suporte']);
   }
@@ -275,14 +269,6 @@ export class ProfilePlayerPage implements OnInit {
     });
   }
 
-  followUser() {
-    console.log('Follow user', this.profile?.name);
-  }
-
-  startChat() {
-    console.log('Start chat with', this.profile?.name);
-  }
-
   onNumericInput(event: any, field: 'height' | 'weight') {
     const rawValue = event.target.value || '';
     const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
@@ -300,8 +286,6 @@ export class ProfilePlayerPage implements OnInit {
       return;
     }
 
-    // TODO: Se não for meu perfil, precisamos de um endpoint para buscar posts de outro usuário
-    // Por enquanto, apenas o dono do perfil consegue ver seus posts reais via API
     if (!this.isMyProfile) {
         event.target.complete();
         event.target.disabled = true;
@@ -337,7 +321,6 @@ export class ProfilePlayerPage implements OnInit {
     this.userPostsCurrentCursor = undefined;
     this.userPostsHasMore = true;
 
-    // Reset infinite scroll if possible
     const infiniteScroll = document.querySelector('ion-infinite-scroll');
     if (infiniteScroll) {
       (infiniteScroll as any).disabled = false;
@@ -359,7 +342,6 @@ export class ProfilePlayerPage implements OnInit {
         }
       });
     } else {
-        // Se não for meu perfil, desabilita carregamento por enquanto (necessário endpoint público)
         this.userPostsHasMore = false;
         if (infiniteScroll) {
             (infiniteScroll as any).disabled = true;
@@ -367,9 +349,6 @@ export class ProfilePlayerPage implements OnInit {
     }
   }
 
-  trackById(index: number, post: Post): string {
-    return post.id;
-  }
 
   getDisplayRole(role: Profile['role'] | undefined): string {
     if (role === 'CLUBE') {

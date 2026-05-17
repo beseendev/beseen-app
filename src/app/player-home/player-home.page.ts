@@ -136,7 +136,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
 
-  // Arrays for display with ads interleaved
   myVideosWithAds: PlayerFeedItem[] = [];
   rankingVideosWithAds: PlayerFeedItem[] = [];
   newVideosWithAds: PlayerFeedItem[] = [];
@@ -198,7 +197,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
       this.featuredVideo = allRanking[0] ?? null;
 
-      // Inclui todos os vídeos na lista de ranking para o feed TikTok
       this.rankingVideos = allRanking.slice(0, 10);
       this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
 
@@ -206,7 +204,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .map(p => this.mapPostToVideo(p));
 
-      // Inclui todos os vídeos na lista de novos
       this.newVideos = allNew.slice(0, 10);
       this.newVideosWithAds = await this.interleaveAds(this.newVideos);
     });
@@ -282,7 +279,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     }, {
-      threshold: 0.6 // Video must be 60% visible to play
+      threshold: 0.6
     });
 
     this.videoElements.forEach(videoRef => {

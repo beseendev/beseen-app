@@ -38,8 +38,6 @@ export class PostService {
   private apiService = inject(ApiService);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
-  private userPostsNextCursor: string | null = null;
-  private userPostsHasMore = true;
 
   constructor() { }
 
@@ -149,7 +147,6 @@ export class PostService {
   sendInvite(postId: string): Observable<void> {
     return this.apiService.post<void>(`/posts/${postId}/invite`, {}).pipe(
       tap(() => {
-        // Find and update the post in the homePosts observable
         const currentPosts = this.homePosts.getValue();
         const updatedPosts = currentPosts.map(post =>
           post.id === postId ? { ...post, inviteStatus: 'PENDING' as any } : post
@@ -161,10 +158,6 @@ export class PostService {
 
   acceptInvite(inviteId: number): Observable<PostInviteResponse> {
     return this.apiService.patch<PostInviteResponse>(`/posts/invites/${inviteId}/accept`, {});
-  }
-
-  rejectInvite(inviteId: number): Observable<void> {
-    return this.apiService.patch<void>(`/posts/invites/${inviteId}/reject`, {});
   }
 
   getInvites(limit: number = 10, cursor?: string, postId?: string): Observable<PostInvitePageResponse> {
@@ -205,12 +198,6 @@ export class PostService {
     );
   }
 
-  /**
-   * Updates a post's like status and count in both home and user post BehaviorSubjects.
-   * @param postId The ID of the post to update.
-   * @param newLikedStatus The new isLiked status.
-   * @param newLikesCount The new likesCount.
-   */
   private updatePostInSubjects(postId: string, newLikedStatus: boolean, newLikesCount: number) {
     const updateSubject = (subject: BehaviorSubject<Post[]>) => {
       const currentPosts = subject.getValue();
@@ -221,13 +208,9 @@ export class PostService {
     };
 
     updateSubject(this.homePosts);
-    // If the post is also in userPostsSubject (profile page), update it there too
     updateSubject(this.userPostsSubject);
   }
 
-  /**
-   * Helper to find a post by ID across both BehaviorSubjects.
-   */
   private findPostInSubjects(postId: string): Post | undefined {
     let post = this.homePosts.getValue().find(p => p.id === postId);
     if (!post) {

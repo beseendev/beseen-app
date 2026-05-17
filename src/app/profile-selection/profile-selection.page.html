@@ -18,7 +18,7 @@
           <h2>Termos de Uso</h2>
           <p>Leia e aceite as diretrizes para continuar.</p>
         </div>
-        
+
         <div class="terms-container">
           <div class="terms-content-wrap">
             <ion-checkbox [checked]="profileForm.get('acceptedTerms')?.value" [disabled]="true" labelPlacement="end" justify="start" class="terms-checkbox">
@@ -27,7 +27,6 @@
               </span>
             </ion-checkbox>
           </div>
-          <!-- Camada invisível que captura o clique e abre o modal. Desaparece após aceito -->
           <div *ngIf="!profileForm.get('acceptedTerms')?.value" id="open-terms-modal" class="terms-click-overlay"></div>
         </div>
         <div *ngIf="profileForm.get('acceptedTerms')?.invalid && profileForm.get('acceptedTerms')?.touched" class="error-text">

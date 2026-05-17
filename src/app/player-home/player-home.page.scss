@@ -1,14 +1,72 @@
-:host{--bg:var(--be-color-bg);--card:var(--be-color-surface-2);--line:var(--be-color-line);--text:var(--be-color-text-1);--muted:var(--be-color-text-3)}
-.arena-content{--background:var(--bg)}
-.arena-shell{width:100%;max-width:460px;margin:0 auto;padding:28px 24px 40px;color:var(--text)}
-.section{margin-top:24px}
-.hero-topline{display:flex;justify-content:space-between;align-items:center}
-.arena-hero p{margin:0;color:var(--be-color-brand-500);font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-.chat-inbox-btn{position:relative;--color:var(--be-color-text-2);overflow:visible}
-.chat-inbox-btn::part(native){overflow:visible}
-.chat-inbox-btn ion-badge{position:absolute;top:2px;right:2px;transform:translate(32%,-32%);z-index:2}
-.player-profile-card,.surface{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(2,6,23,.26);overflow:hidden}
-.player-profile-card{padding:16px}
+:host {
+  --bg: var(--be-color-bg);
+  --card: var(--be-color-surface-2);
+  --line: var(--be-color-line);
+  --text: var(--be-color-text-1);
+  --muted: var(--be-color-text-3)
+}
+
+.arena-content {
+  --background: var(--bg)
+}
+
+.arena-shell {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  color: var(--text)
+}
+
+.section {
+  margin-top: 24px
+}
+
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center
+}
+
+.arena-hero p {
+  margin: 0;
+  color: var(--be-color-brand-500);
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase
+}
+
+.chat-inbox-btn {
+  position: relative;
+  --color: var(--be-color-text-2);
+  overflow: visible
+}
+
+.chat-inbox-btn::part(native) {
+  overflow: visible
+}
+
+.chat-inbox-btn ion-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  transform: translate(32%, -32%);
+  z-index: 2
+}
+
+.player-profile-card, .surface {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, .26);
+  overflow: hidden
+}
+
+.player-profile-card {
+  padding: 16px
+}
+
 .player-profile-head {
   display: flex !important;
   align-items: center;
@@ -49,7 +107,7 @@
 .options-popover {
   --background: var(--be-color-surface-2);
   --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  
+
   ion-list {
     background: var(--be-color-surface-2);
     padding: 8px 0;
@@ -74,6 +132,7 @@
       ion-icon {
         color: var(--be-color-danger);
       }
+
       ion-label {
         color: var(--be-color-danger);
       }
@@ -90,47 +149,233 @@
   }
 }
 
-.video-meta{justify-content:space-between}
-.player-profile-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--be-color-surface-1);border:1px solid rgba(var(--ion-color-primary-rgb),.24)}
-.player-profile-avatar img,.avatar-shell img{width:100%;height:100%;object-fit:cover}
-.player-profile-avatar ion-icon,.avatar-shell ion-icon{font-size:2rem;color:var(--be-color-text-2)}
-.player-profile-copy{display:flex;flex-direction:column}
-.player-profile-id p,.summary-copy p,.video-meta p,.meta-line,.empty-cta{color:var(--muted)}
-.player-profile-label{display:block;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase}
-.player-profile-id strong,.summary-copy strong,.video-meta h3{margin:0;color:var(--text)}
-.player-profile-id p,.summary-copy p,.video-meta p{margin:0;font-size:.82rem}
-.profile-link{padding:0;border:0;background:transparent;text-align:left}
-.player-edit-btn,.chat-cta{--color:var(--be-color-brand-500);--border-color:rgba(var(--ion-color-primary-rgb),.45);text-transform:none;font-weight:600}
-.player-logout-btn{--color:var(--be-color-danger);text-transform:none;font-weight:600}
-.my-plays-summary{padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background-color 0.2s ease;}.my-plays-summary:active{background-color:rgba(var(--ion-color-primary-rgb),0.05);}
-.status-tag{padding:3px 10px;border-radius:999px;background:var(--be-color-surface-1);color:var(--be-color-text-2);font-size:.72rem;font-weight:600;border:1px solid rgba(148,163,184,.12)}
-.arena-tabs{display:flex;gap:8px;margin:20px 0;overflow:auto;padding:4px;background:var(--be-color-surface-1);border:1px solid var(--line);border-radius:14px;position:sticky;top:0;z-index:100}
-.tab-btn{flex:1;min-height:44px;border:0;background:transparent;color:var(--muted);font:inherit;font-size:.9rem;font-weight:700;border-radius:10px}
-.tab-btn.active{color:var(--text);background:rgba(var(--ion-color-primary-rgb),.16)}
-.featured,.showcase-card{padding:0}
-.video-meta{padding:16px 16px 12px}
-.avatar-shell{width:52px;height:52px;border-radius:50%;background:var(--be-color-surface-1);display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--ion-color-primary-rgb),.24);overflow:hidden}
-.talent-video{width:100%;display:block;pointer-events:auto!important}
-.media-frame{position:relative;border-radius:0;overflow:hidden;aspect-ratio:16/9;background:#000}
+.video-meta {
+  justify-content: space-between
+}
+
+.player-profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--be-color-surface-1);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), .24)
+}
+
+.player-profile-avatar img, .avatar-shell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover
+}
+
+.player-profile-avatar ion-icon, .avatar-shell ion-icon {
+  font-size: 2rem;
+  color: var(--be-color-text-2)
+}
+
+.player-profile-copy {
+  display: flex;
+  flex-direction: column
+}
+
+.player-profile-id p, .summary-copy p, .video-meta p, .meta-line, .empty-cta {
+  color: var(--muted)
+}
+
+.player-profile-label {
+  display: block;
+  font-size: .74rem;
+  letter-spacing: .06em;
+  text-transform: uppercase
+}
+
+.player-profile-id strong, .summary-copy strong, .video-meta h3 {
+  margin: 0;
+  color: var(--text)
+}
+
+.player-profile-id p, .summary-copy p, .video-meta p {
+  margin: 0;
+  font-size: .82rem
+}
+
+.profile-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left
+}
+
+.player-edit-btn, .chat-cta {
+  --color: var(--be-color-brand-500);
+  --border-color: rgba(var(--ion-color-primary-rgb), .45);
+  text-transform: none;
+  font-weight: 600
+}
+
+.player-logout-btn {
+  --color: var(--be-color-danger);
+  text-transform: none;
+  font-weight: 600
+}
+
+.my-plays-summary {
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.my-plays-summary:active {
+  background-color: rgba(var(--ion-color-primary-rgb), 0.05);
+}
+
+.status-tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--be-color-surface-1);
+  color: var(--be-color-text-2);
+  font-size: .72rem;
+  font-weight: 600;
+  border: 1px solid rgba(148, 163, 184, .12)
+}
+
+.arena-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+  overflow: auto;
+  padding: 4px;
+  background: var(--be-color-surface-1);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100
+}
+
+.tab-btn {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: 10px
+}
+
+.tab-btn.active {
+  color: var(--text);
+  background: rgba(var(--ion-color-primary-rgb), .16)
+}
+
+.featured, .showcase-card {
+  padding: 0
+}
+
+.video-meta {
+  padding: 16px 16px 12px
+}
+
+.avatar-shell {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--be-color-surface-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), .24);
+  overflow: hidden
+}
+
+.talent-video {
+  width: 100%;
+  display: block;
+  pointer-events: auto !important
+}
+
+.media-frame {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  background: #000
+}
+
 .video-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 80%; /* Cobre a parte superior e o meio, onde o usuário clica */
+  height: 80%;
   z-index: 5;
   background: transparent;
 }
-.talent-video{height:100%;object-fit:cover;pointer-events:auto!important}
-.interest-badge{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;background:rgba(var(--ion-color-primary-rgb),.16);border:1px solid rgba(var(--ion-color-primary-rgb),.24);color:#dcfce7;font-size:.68rem;font-weight:700}
-.meta-line{margin:0;font-size:.82rem}
-.showcase-body{padding:12px 16px 16px}
-.showcase-description{margin:0;line-height:1.5;color:#e2e8f0;font-size:.9rem}
-.arena-footer ion-toolbar{--background:rgba(7,22,39,.82);--border-width:0;padding:8px 14px}
-.footer-buttons{display:flex;justify-content:center;align-items:center}
-.post-fab{width:54px;height:54px;--border-radius:999px;--background:var(--be-color-brand-500);--color:#052e16}
+
+.talent-video {
+  height: 100%;
+  object-fit: cover;
+  pointer-events: auto !important
+}
+
+.interest-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(var(--ion-color-primary-rgb), .16);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), .24);
+  color: #dcfce7;
+  font-size: .68rem;
+  font-weight: 700
+}
+
+.meta-line {
+  margin: 0;
+  font-size: .82rem
+}
+
+.showcase-body {
+  padding: 12px 16px 16px
+}
+
+.showcase-description {
+  margin: 0;
+  line-height: 1.5;
+  color: #e2e8f0;
+  font-size: .9rem
+}
+
+.arena-footer ion-toolbar {
+  --background: rgba(7, 22, 39, .82);
+  --border-width: 0;
+  padding: 8px 14px
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.post-fab {
+  width: 54px;
+  height: 54px;
+  --border-radius: 999px;
+  --background: var(--be-color-brand-500);
+  --color: #052e16
+}
+
 .video-stack.be-tiktok-container {
-  --tiktok-height: calc(100vh - 140px); /* Taller height for player home too */
+  --tiktok-height: calc(100vh - 140px);
   margin-top: 16px;
   width: 100%;
   height: var(--tiktok-height);
@@ -140,7 +385,7 @@
 
 @media (min-width: 600px) {
   .video-stack.be-tiktok-container {
-    --tiktok-height: clamp(400px, 70vh, 700px); /* More flexible height on desktop */
+    --tiktok-height: clamp(400px, 70vh, 700px);
     margin-left: 0;
     margin-right: 0;
     width: 100%;
@@ -154,24 +399,21 @@
     overflow: visible;
     background: transparent;
   }
-  
+
   .be-tiktok-card {
-     height: var(--tiktok-height);
-     scroll-snap-align: none;
-     border-radius: 16px;
-     margin-bottom: 14px;
+    height: var(--tiktok-height);
+    scroll-snap-align: none;
+    border-radius: 16px;
+    margin-bottom: 14px;
   }
 }
 
-
-/* Garante que o card de resumo também tenha um afastamento do topo */
 .my-plays-summary {
   margin-bottom: 8px;
 }
 
-/* Ajuste opcional para as outras abas que usam showcase-card */
 .showcase-card {
-  margin-bottom: 8px; /* Margem de segurança inferior */
+  margin-bottom: 8px;
 }
 
 .talent-id {
@@ -182,16 +424,14 @@
   cursor: pointer;
 }
 
-/* Evita que o avatar seja esmagado se o nome for muito longo */
 .avatar-shell {
   flex-shrink: 0;
 }
 
-/* Importante para que o avatar não diminua de tamanho se o nome for muito longo */
 .player-profile-avatar, .be-skeleton-avatar {
   flex-shrink: 0;
 }
-/* Garante que o botão ocupe o espaço necessário para o flexbox funcionar */
+
 .profile-link.talent-id {
   display: flex;
   align-items: center;
@@ -202,7 +442,6 @@
   text-align: left;
 }
 
-/* Ajuste para o texto dentro do botão não ter margens estranhas */
 .talent-id h3 {
   margin: 0;
   line-height: 1.2;
@@ -212,4 +451,6 @@
   margin: 0;
 }
 
-.video-meta{justify-content:space-between}
+.video-meta {
+  justify-content: space-between
+}

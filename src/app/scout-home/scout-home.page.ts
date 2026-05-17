@@ -16,7 +16,6 @@ import {
   locationOutline,
   cardOutline,
   helpCircleOutline,
-  menuOutline
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -270,8 +269,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get favoriteVideoCards(): FavoriteAthleteVideoCard[] {
-    // Na aba de favoritos, todos os cards já são favoritos,
-    // mas mantemos o filtro por segurança ou para cards individuais na vitrine
     return this.allVideoCards.filter(card => card.favorito);
   }
 
@@ -330,7 +327,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (card.inviteStatus !== 'ACCEPTED') return;
 
     const threads = await firstValueFrom(this.chatService.threads$);
-    // Tenta encontrar a thread pelo nome do atleta (já que não temos o threadId no card)
     const thread = threads.find(t => t.counterpartName === card.athleteName);
 
     if (thread) {
@@ -352,7 +348,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       });
       await modal.present();
     } else {
-      // Se não encontrou no cache, abre a inbox para o usuário selecionar
       this.openChatInbox();
     }
   }
@@ -405,14 +400,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       handle: true
     });
     await modal.present();
-  }
-
-  toggleFullScreen(video: HTMLVideoElement) {
-    if (video.requestFullscreen) {
-      video.requestFullscreen();
-    } else if ((video as any).webkitEnterFullscreen) {
-      (video as any).webkitEnterFullscreen();
-    }
   }
 
   private toVideoCard(post: Post): FavoriteAthleteVideoCard {

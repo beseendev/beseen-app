@@ -130,15 +130,13 @@ export class PlansModalComponent implements OnInit {
     this.purchasing = true;
     try {
       await this.subscriptionService.purchasePlan(plan);
-      
-      // Forçar atualização do token para refletir a nova assinatura
+
       this.authService.refreshToken().subscribe({
         next: () => {
           this.showToast('Assinatura realizada com sucesso!', 'success');
           this.modalCtrl.dismiss(true);
         },
         error: () => {
-          // Mesmo se falhar o refresh, fechamos o modal para o usuário tentar navegar
           this.showToast('Assinatura realizada! Por favor, recarregue a página se necessário.', 'success');
           this.modalCtrl.dismiss(true);
         }

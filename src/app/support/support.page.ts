@@ -14,7 +14,6 @@ import {
   IonTextarea,
   ToastController
 } from '@ionic/angular/standalone';
-import { take } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
