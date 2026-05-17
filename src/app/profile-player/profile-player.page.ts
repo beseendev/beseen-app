@@ -37,19 +37,14 @@ import {SubscriptionService} from "../services/subscription.service";
     IonCol,
     IonRefresher,
     IonRefresherContent,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
     IonItem,
     IonList,
     IonText,
-    IonSegment,
-    IonSegmentButton,
     IonInput,
     IonTextarea,
     IonSelect,
     IonSelectOption,
-    IonSpinner,
-    PostCardComponent
+    IonSpinner
   ],
 })
 export class ProfilePlayerPage implements OnInit {
