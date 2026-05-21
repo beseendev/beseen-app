@@ -10,7 +10,7 @@ import { megaphoneOutline, openOutline, starOutline } from 'ionicons/icons';
   templateUrl: './ad-card.component.html',
   styleUrls: ['./ad-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge]
+  imports: [CommonModule, IonIcon, IonButton, IonBadge]
 })
 export class AdCardComponent {
   @Input() ad!: Advertisement;
