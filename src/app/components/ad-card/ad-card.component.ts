@@ -11,7 +11,7 @@ import { ViewportVideoPlayerDirective } from '../../shared/directives/viewport-v
   templateUrl: './ad-card.component.html',
   styleUrls: ['./ad-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonIcon, IonButton, IonBadge, ViewportVideoPlayerDirective]
 })
 export class AdCardComponent {
   @Input() ad!: Advertisement;
