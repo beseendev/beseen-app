@@ -131,7 +131,7 @@ export class CreateProfileScoutPage implements OnInit {
       documentoVerificado: [false],
       documentoUploadId: [''],
       linkReferencia: ['', [optionalUrlValidator()]],
-      aceitouTermos: [false, [requiredTrueValidator()]],
+      aceitouTermos: [true, [requiredTrueValidator()]],
       bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       oQueBuscaNoBeSeen: ['', [Validators.maxLength(500)]]
     });
@@ -141,7 +141,7 @@ export class CreateProfileScoutPage implements OnInit {
     this.profileForm.reset({
       pais: 'Brasil',
       documentoVerificado: false,
-      aceitouTermos: false,
+      aceitouTermos: true,
       categoriasIdadeAlvo: [],
       posicoesInteresse: []
     });

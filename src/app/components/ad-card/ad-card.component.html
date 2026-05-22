@@ -1,7 +1,16 @@
 <article class="ad-card-tiktok be-fade-in" (click)="goToSite()">
   <!-- Mídia de Fundo -->
   <div class="be-tiktok-media-container">
-    <video *ngIf="ad.videoLink" [src]="ad.videoLink" class="be-tiktok-video" autoplay muted loop playsinline></video>
+    <video
+      *ngIf="ad.videoLink"
+      appViewportVideoPlayer
+      [src]="ad.videoLink"
+      class="be-tiktok-video"
+      muted
+      loop
+      playsinline
+      preload="metadata">
+    </video>
     <img *ngIf="!ad.videoLink && ad.thumbnailLink" [src]="ad.thumbnailLink" class="be-tiktok-video" />
     <div *ngIf="!ad.videoLink && !ad.thumbnailLink" class="ad-media-placeholder">
        <ion-icon name="megaphone-outline"></ion-icon>

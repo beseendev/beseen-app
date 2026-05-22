@@ -1,79 +1,172 @@
-.error-text {
-  color: var(--ion-color-warning);
-  font-size: 0.8em;
-  margin-top: -10px;
-  margin-bottom: 15px;
-  text-align: left;
-  padding-left: 15px;
+.account-confirmation-screen {
+  --background: var(--be-color-bg);
+  font-family: var(--ion-font-family);
 }
 
-.divider-text {
-  display: flex;
-  align-items: center;
-  text-align: center;
+.account-confirmation-container {
+  min-height: 100%;
   width: 100%;
-  max-width: 400px;
-  margin: 30px auto;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.divider-text .line {
-  flex-grow: 1;
-  height: 1px;
-  background-color: var(--ion-color-light);
-  opacity: 0.5;
+.brand-wrap {
+  margin-bottom: 38px;
+  text-align: center;
 }
 
-.divider-text .text {
-  padding: 0 10px;
-  white-space: nowrap;
-  font-size: 0.9em;
-  color: var(--ion-color-light);
+.brand-title {
+  margin: 0;
+  line-height: 1;
+  font-size: clamp(2.45rem, 8vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
-.gradient-background {
-  --background: linear-gradient(135deg, #2c2c2c, #000000);
+.brand-be {
+  color: var(--be-color-text-1);
 }
 
-.gradient-background h1 {
-  color: var(--ion-color-tertiary) !important;
-  font-weight: bold;
+.brand-seen {
+  color: var(--be-color-brand-500);
 }
 
-.gradient-background p {
-  color: var(--ion-color-light) !important;
+.brand-tagline {
+  margin: 12px 0 0;
+  color: var(--be-color-text-3);
+  font-size: clamp(0.9rem, 3.2vw, 1rem);
 }
 
-.gradient-background ion-item {
-  --background: rgba(255, 255, 255, 0.1);
-  --border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  --inner-border-width: 0 0 0 0 !important;
-  --border-width: 0 !important;
+.confirmation-header {
+  margin-bottom: 28px;
+  text-align: center;
 }
 
-.gradient-background ion-input {
-  --color: var(--ion-color-light);
-  --placeholder-color: rgba(255, 255, 255, 0.7);
+.confirmation-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--be-color-brand-500);
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.28);
 }
 
-.gradient-background ion-icon[slot="start"] {
-  color: var(--ion-color-light);
+.confirmation-icon ion-icon {
+  font-size: 1.65rem;
 }
 
-.gradient-background ion-button[fill="clear"] {
-  color: var(--ion-color-light) !important;
-  font-size: 0.9em;
+.confirmation-header h2 {
+  margin: 0;
+  color: var(--be-color-text-1);
+  font-size: clamp(1.45rem, 5.5vw, 1.75rem);
+  font-weight: 800;
 }
 
-.gradient-background ion-button[type="submit"] {
-  --background: var(--ion-color-primary);
-  --background-activated: var(--ion-color-primary-shade);
-  --color: var(--ion-color-primary-contrast);
-  --border-radius: 10px;
-  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  height: 50px;
-  font-weight: bold;
-  font-size: 1.1em;
+.confirmation-header p {
+  margin: 12px auto 0;
+  max-width: 360px;
+  color: var(--be-color-text-2);
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+.confirmation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.input-field {
+  --background: var(--be-color-surface-2);
+  --border-radius: var(--be-radius-md);
+  --inner-border-width: 0;
+  --border-width: 0;
+  --min-height: 56px;
+  border: 1px solid var(--be-color-line);
+  box-shadow: var(--be-shadow-card);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+}
+
+.input-field ion-input {
+  --color: var(--be-color-text-1);
+  --placeholder-color: var(--be-color-text-3);
+  font-size: 0.98rem;
+  letter-spacing: 0.08em;
+}
+
+.input-field ion-icon {
+  color: var(--be-color-text-2);
+  font-size: 1.1rem;
+}
+
+.input-field:focus-within {
+  border-color: rgba(var(--ion-color-primary-rgb), 0.6);
+  background-color: var(--be-color-surface-1);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.14), 0 12px 28px rgba(2, 6, 23, 0.42);
+}
+
+.error-text {
+  margin-top: -10px;
+  margin-bottom: -4px;
+  padding-left: 10px;
+  color: var(--be-color-danger);
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.confirm-button {
+  height: 56px;
+  margin-top: 4px;
+  --border-radius: var(--be-radius-lg);
+  --background: var(--be-color-brand-500);
+  --background-hover: var(--be-color-brand-600);
+  --background-activated: var(--be-color-brand-700);
+  --color: var(--be-color-text-1);
+  --box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.secondary-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.text-action {
+  --color: var(--be-color-brand-500);
+  --color-hover: var(--be-color-brand-600);
+  --color-activated: var(--be-color-brand-700);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.text-action.muted {
+  --color: var(--be-color-text-3);
+}
+
+.text-action ion-spinner {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 360px) {
+  .account-confirmation-container {
+    padding: 20px 18px;
+  }
+
+  .brand-wrap {
+    margin-bottom: 30px;
+  }
 }

@@ -4,13 +4,14 @@ import { IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge } f
 import { Advertisement } from '../../models/advertisement.model';
 import { addIcons } from 'ionicons';
 import { megaphoneOutline, openOutline, starOutline } from 'ionicons/icons';
+import { ViewportVideoPlayerDirective } from '../../shared/directives/viewport-video-player.directive';
 
 @Component({
   selector: 'app-ad-card',
   templateUrl: './ad-card.component.html',
   styleUrls: ['./ad-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge]
+  imports: [CommonModule, IonCard, IonAvatar, IonIcon, IonButton, IonLabel, IonItem, IonBadge, ViewportVideoPlayerDirective]
 })
 export class AdCardComponent {
   @Input() ad!: Advertisement;

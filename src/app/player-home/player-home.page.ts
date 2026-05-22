@@ -35,7 +35,9 @@ import {
   logOutOutline,
   personCircleOutline,
   starOutline,
-  menuOutline
+  menuOutline,
+  volumeHighOutline,
+  volumeMuteOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -54,6 +56,7 @@ import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { environment } from '../../environments/environment';
 import {IonicModule} from "@ionic/angular";
+import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
 
 interface ArenaAthlete {
   post: Post;
@@ -101,6 +104,7 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonIcon,
     IonContent,
     IonFooter,
+    IonSpinner,
     IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
@@ -113,7 +117,8 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     ProfileDrawerComponent,
-    AdCardComponent
+    AdCardComponent,
+    ViewportVideoPlayerDirective
   ],
 })
 export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
@@ -168,7 +173,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       logOutOutline,
       personCircleOutline,
       starOutline,
-      helpCircleOutline
+      helpCircleOutline,
+      volumeHighOutline,
+      volumeMuteOutline
     });
   }
 
@@ -270,16 +277,20 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const video = entry.target as HTMLVideoElement;
-        if (entry.isIntersecting) {
+      const activeEntry = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      this.videoElements.forEach(videoRef => {
+        const video = videoRef.nativeElement;
+        if (activeEntry?.target === video) {
           video.play().catch(e => console.log('Autoplay blocked:', e));
         } else {
           video.pause();
         }
       });
     }, {
-      threshold: 0.6
+      threshold: [0, 0.35, 0.65, 0.85]
     });
 
     this.videoElements.forEach(videoRef => {
@@ -423,6 +434,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   private mapPostToVideo(post: Post, isMine: boolean = false): PlayerShowcaseVideo {
     const rawAvatar = post.user.urlPerfil || (post.user as any).urlProfileImage || null;
+    const profilePosition = isMine
+      ? this.userProfile?.position || this.userProfile?.posicao || this.userProfile?.cargoOuFuncao
+      : null;
+
     return {
       id: post.id,
       athleteId: String(post.athleteId || post.user.id),
@@ -430,7 +445,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       athleteAvatarUrl: this.normalizeAvatarUrl(rawAvatar),
       mediaUrl: post.mediaUrl,
       modality: (post.user as any).modality || (post.user as any).modalidade,
-      position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao,
+      position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao || profilePosition,
       region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,

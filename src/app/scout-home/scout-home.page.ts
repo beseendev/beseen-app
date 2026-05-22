@@ -8,14 +8,15 @@ import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
   logOutOutline,
-  heart,
-  heartOutline,
   createOutline,
   personCircleOutline,
+  star,
   starOutline,
   locationOutline,
   cardOutline,
   helpCircleOutline,
+  volumeHighOutline,
+  volumeMuteOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -34,6 +35,7 @@ import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
 import { ModalStateService } from '../services/modal-state.service';
+import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
 
 export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
 
@@ -42,7 +44,7 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent]
+  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, ViewportVideoPlayerDirective]
 })
 export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
@@ -91,14 +93,15 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     addIcons({
       chatbubbleEllipsesOutline,
       logOutOutline,
-      heart,
-      heartOutline,
       createOutline,
       personCircleOutline,
+      star,
       starOutline,
       locationOutline,
       cardOutline,
-      helpCircleOutline
+      helpCircleOutline,
+      volumeHighOutline,
+      volumeMuteOutline
     });
   }
 
@@ -143,16 +146,20 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const video = entry.target as HTMLVideoElement;
-        if (entry.isIntersecting) {
+      const activeEntry = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      this.videoElements.forEach(videoRef => {
+        const video = videoRef.nativeElement;
+        if (activeEntry?.target === video) {
           video.play().catch(e => console.log('Autoplay blocked:', e));
         } else {
           video.pause();
         }
       });
     }, {
-      threshold: 0.6
+      threshold: [0, 0.35, 0.65, 0.85]
     });
 
     this.videoElements.forEach(videoRef => {
@@ -272,6 +279,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   get favoriteVideoCards(): FavoriteAthleteVideoCard[] {
     return this.allVideoCards.filter(card => card.favorito);
+  }
+
+  shouldShowConversationAction(card: FavoriteAthleteVideoCard): boolean {
+    return card.inviteStatus === 'ACCEPTED' || this.subscriptionService.canSendInvites();
   }
 
   async toggleFavoriteFromCard(card: FavoriteAthleteVideoCard): Promise<void> {
@@ -414,6 +425,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       mediaUrl: post.mediaUrl,
       caption: post.caption,
       modalidade: (post.user as any).modality,
+      position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao,
       localidade: (post.user as any).region,
       destaque: post.caption,
       favorito: post.isLiked,
