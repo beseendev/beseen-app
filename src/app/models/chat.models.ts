@@ -72,6 +72,7 @@ export interface FavoriteAthleteVideoCard {
   mediaUrl: string;
   caption: string;
   modalidade: string;
+  position?: string;
   localidade: string;
   destaque: string;
   favorito: boolean;

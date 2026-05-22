@@ -116,19 +116,80 @@
       <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
         <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-            <video #vVitrine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            <video
+              #vVitrine
+              #vitrinePlayer="appViewportVideoPlayer"
+              appViewportVideoPlayer
+              [src]="item.video.mediaUrl"
+              muted
+              loop
+              playsinline
+              controlsList="nodownload nopictureinpicture"
+              preload="metadata"
+              class="be-tiktok-video">
+            </video>
+
+            <div class="video-player-state loading" *ngIf="vitrinePlayer.isLoading && !vitrinePlayer.hasError">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <div class="video-player-state pulse" *ngIf="vitrinePlayer.showPulse">
+              <ion-icon [name]="vitrinePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="video-player-error" *ngIf="vitrinePlayer.hasError">
+              <strong>Video indisponivel</strong>
+              <ion-button size="small" fill="solid" (click)="vitrinePlayer.retry($event)">Tentar novamente</ion-button>
+            </div>
+
+            <ion-button fill="clear" class="video-mute-btn" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            </ion-button>
             
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-                  <h3>@{{ item.video.athleteName }}</h3>
+                  <h3 class="athlete-heading">
+                    <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
+                    <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
+                  </h3>
                 </button>
-                <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
+                <p class="showcase-description" [class.single-line]="shouldShowConversationAction(item.video)" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
                 <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
                     <span *ngIf="item.video.modalidade">{{ item.video.modalidade }}</span>
                     <span *ngIf="item.video.modalidade && item.video.localidade"> • </span>
                     <span *ngIf="item.video.localidade">{{ item.video.localidade }}</span>
                 </p>
+              </div>
+
+              <div class="chat-state-panel" *ngIf="shouldShowConversationAction(item.video)">
+                <ng-container [ngSwitch]="item.video.inviteStatus">
+                  <div *ngSwitchCase="null" class="state-block">
+                    <ion-button size="small" fill="solid" color="primary" (click)="sendInvite(item.video)" [disabled]="item.video.isInviting">
+                      <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
+                      {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
+                    </ion-button>
+                  </div>
+
+                  <div *ngSwitchCase="'PENDING'" class="state-block">
+                    <span class="status-tag" style="background: var(--be-color-warning); color: #000; border: none;">Aguardando confirmação</span>
+                  </div>
+
+                  <div *ngSwitchCase="'ACCEPTED'" class="state-block">
+                    <ion-button size="small" fill="solid" color="success" (click)="openChat(item.video)">
+                      Abrir chat
+                    </ion-button>
+                  </div>
+
+                  <div *ngSwitchCase="'REJECTED'" class="state-block">
+                    <span class="status-tag" style="background: var(--be-color-danger); color: #fff; border: none;">Convite rejeitado</span>
+                  </div>
+
+                  <div *ngSwitchDefault class="state-block">
+                    <ion-button *ngIf="!item.video.inviteStatus" size="small" fill="solid" color="primary" (click)="sendInvite(item.video)" [disabled]="item.video.isInviting">
+                      <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
+                      {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
+                    </ion-button>
+                  </div>
+                </ng-container>
               </div>
             </div>
 
@@ -141,11 +202,12 @@
                <ion-button
                 fill="clear"
                 class="favorite-btn"
+                [class.active]="item.video.favorito"
                 (click)="toggleFavoriteFromCard(item.video)"
-                style="--color: #fff; margin-bottom: 8px;"
-                [attr.aria-label]="'Favoritar ' + item.video.athleteName">
-                <ion-icon [name]="item.video.favorito ? 'heart' : 'heart-outline'" style="font-size: 32px; color: {{ item.video.favorito ? 'var(--be-color-brand-500)' : '#fff' }}"></ion-icon>
+                [attr.aria-label]="(item.video.favorito ? 'Remover do Radar ' : 'Adicionar ao Radar ') + item.video.athleteName">
+                <ion-icon [name]="item.video.favorito ? 'star' : 'star-outline'"></ion-icon>
               </ion-button>
+
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

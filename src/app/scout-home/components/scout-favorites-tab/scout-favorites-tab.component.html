@@ -11,14 +11,43 @@
   <div class="video-list be-tiktok-container" *ngIf="items.length > 0">
     <ng-container *ngFor="let item of items; trackBy: trackByCard">
       <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-        <video #vFav [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+        <video
+          #vFav
+          #favoritePlayer="appViewportVideoPlayer"
+          appViewportVideoPlayer
+          [src]="item.video.mediaUrl"
+          muted
+          loop
+          playsinline
+          controlsList="nodownload nopictureinpicture"
+          preload="metadata"
+          class="be-tiktok-video">
+        </video>
+
+        <div class="video-player-state loading" *ngIf="favoritePlayer.isLoading && !favoritePlayer.hasError">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+        <div class="video-player-state pulse" *ngIf="favoritePlayer.showPulse">
+          <ion-icon [name]="favoritePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+        </div>
+        <div class="video-player-error" *ngIf="favoritePlayer.hasError">
+          <strong>Video indisponivel</strong>
+          <ion-button size="small" fill="solid" (click)="favoritePlayer.retry($event)">Tentar novamente</ion-button>
+        </div>
+
+        <ion-button fill="clear" class="video-mute-btn" (click)="favoritePlayer.toggleMute($event)" [attr.aria-label]="favoritePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+          <ion-icon [name]="favoritePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+        </ion-button>
         
         <div class="be-tiktok-overlay">
           <div class="be-tiktok-info">
             <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-              <h3>@{{ item.video.athleteName }}</h3>
+              <h3 class="athlete-heading">
+                <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
+                <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
+              </h3>
             </button>
-            <p class="showcase-description" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
+            <p class="showcase-description" [class.single-line]="shouldShowConversationAction(item.video)" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
             <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
                 <span *ngIf="item.video.modalidade">{{ item.video.modalidade }}</span>
                 <span *ngIf="item.video.modalidade && item.video.localidade"> • </span>
@@ -26,7 +55,7 @@
             </p>
           </div>
 
-          <div class="chat-state-panel" *ngIf="subscriptionService.canSendInvites()">
+          <div class="chat-state-panel" *ngIf="shouldShowConversationAction(item.video)">
             <ng-container [ngSwitch]="item.video.inviteStatus">
               <div *ngSwitchCase="null" class="state-block">
                 <ion-button size="small" fill="solid" color="primary" (click)="invite(item.video)" [disabled]="item.video.isInviting">
@@ -67,11 +96,12 @@
            
            <ion-button
             fill="clear"
-            class="favorite-btn"
+            class="favorite-btn active"
             (click)="toggleFavorite(item.video)"
-            style="--color: #fff; margin-bottom: 8px;">
-            <ion-icon name="heart" style="font-size: 32px; color: var(--be-color-brand-500)"></ion-icon>
+            [attr.aria-label]="'Remover do Radar ' + item.video.athleteName">
+            <ion-icon name="star"></ion-icon>
           </ion-button>
+
         </div>
       </article>
       <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

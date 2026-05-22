@@ -215,7 +215,11 @@
   font: inherit;
   font-size: .9rem;
   font-weight: 700;
-  border-radius: 10px
+  border-radius: 10px;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tab-btn.active {
@@ -238,33 +242,38 @@
 }
 
 .video-list.be-tiktok-container {
-  --tiktok-height: calc(100vh - 100px);
+  --tiktok-height: 100svh;
   width: 100%;
-  height: var(--tiktok-height);
+  height: auto;
+}
+
+.scout-home-content .be-tiktok-overlay {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.scout-home-content .be-tiktok-actions {
+  bottom: calc(32px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 600px) {
   .video-list.be-tiktok-container {
-    --tiktok-height: clamp(400px, 75vh, 700px);
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
+    --tiktok-height: min(820px, 100svh);
+    margin-left: auto;
+    margin-right: auto;
+    width: min(100%, 460px);
     height: auto;
-    min-height: var(--tiktok-height);
+    min-height: 0;
     border-radius: 16px;
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    scroll-snap-type: none;
+    display: block !important;
     overflow: visible;
-    background: transparent;
+    background: #000;
   }
 
   .be-tiktok-card {
     height: var(--tiktok-height);
-    scroll-snap-align: none;
+    scroll-snap-align: start;
     border-radius: 16px;
-    margin-bottom: 14px;
+    margin-bottom: 0;
   }
 }
 
@@ -320,17 +329,6 @@
 .avatar-shell ion-icon {
   color: var(--be-color-text-2);
   font-size: 2rem
-}
-
-.favorite-btn {
-  --color: var(--be-color-brand-500);
-  --padding-start: 0;
-  --padding-end: 0;
-  margin: 0
-}
-
-.favorite-btn ion-icon {
-  font-size: 1.45rem
 }
 
 .talent-video, .media-frame video {

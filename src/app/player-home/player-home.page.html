@@ -112,7 +112,7 @@
         [class.active]="activeTab === 'ranking'"
         (click)="setActiveTab('ranking')"
       >
-        Subindo no Ranking
+        Ranking
       </button>
       <button
         type="button"
@@ -136,22 +136,49 @@
       <div class="video-stack be-tiktok-container" *ngIf="myVideosWithAds.length > 0">
         <ng-container *ngFor="let item of myVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-            <video #vMine [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            <video
+              #vMine
+              #minePlayer="appViewportVideoPlayer"
+              appViewportVideoPlayer
+              [src]="item.video.mediaUrl"
+              muted
+              loop
+              playsinline
+              controlsList="nodownload nopictureinpicture"
+              preload="metadata"
+              class="be-tiktok-video">
+            </video>
+
+            <div class="video-player-state loading" *ngIf="minePlayer.isLoading && !minePlayer.hasError">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <div class="video-player-state pulse" *ngIf="minePlayer.showPulse">
+              <ion-icon [name]="minePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="video-player-error" *ngIf="minePlayer.hasError">
+              <strong>Video indisponivel</strong>
+              <ion-button size="small" fill="solid" (click)="minePlayer.retry($event)">Tentar novamente</ion-button>
+            </div>
+
+            <ion-button fill="clear" class="video-mute-btn" (click)="minePlayer.toggleMute($event)" [attr.aria-label]="minePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="minePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            </ion-button>
             
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-                  <h3>@{{ item.video.athleteName }}</h3>
+                  <h3 class="athlete-heading">
+                    <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
+                    <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
+                  </h3>
                 </button>
-                <p class="showcase-description">{{ item.video.description }}</p>
-                <p class="meta-line" *ngIf="item.video.modality || item.video.position">
+                <p class="showcase-description" [class.single-line]="hasIncomingInvite(item.video)">{{ item.video.description }}</p>
+                <p class="meta-line" *ngIf="item.video.modality">
                     <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
-                    <span *ngIf="item.video.modality && item.video.position"> • </span>
-                    <span *ngIf="item.video.position">{{ item.video.position }}</span>
                 </p>
               </div>
 
-              <div class="showcase-actions" *ngIf="hasIncomingInvite(item.video)" style="margin-top: 12px; pointer-events: auto;">
+              <div class="showcase-actions" *ngIf="hasIncomingInvite(item.video)">
                 <ion-button
                   size="small"
                   fill="solid"
@@ -160,20 +187,6 @@
                   {{ getChatButtonLabel(item.video) }}
                 </ion-button>
               </div>
-            </div>
-
-            <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
-               </div>
-               
-               <ng-container *ngIf="hasIncomingInvite(item.video); else noInviteBadge">
-                  <span class="status-tag" style="background: var(--be-color-brand-500); color: white; border: none;">Convite</span>
-               </ng-container>
-               <ng-template #noInviteBadge>
-                  <span class="status-tag" style="background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(4px);">Sem convite</span>
-               </ng-template>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -185,18 +198,45 @@
       <div class="video-stack be-tiktok-container" *ngIf="rankingVideosWithAds.length > 0">
         <ng-container *ngFor="let item of rankingVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-            <video #vRanking [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            <video
+              #vRanking
+              #rankingPlayer="appViewportVideoPlayer"
+              appViewportVideoPlayer
+              [src]="item.video.mediaUrl"
+              muted
+              loop
+              playsinline
+              controlsList="nodownload nopictureinpicture"
+              preload="metadata"
+              class="be-tiktok-video">
+            </video>
+
+            <div class="video-player-state loading" *ngIf="rankingPlayer.isLoading && !rankingPlayer.hasError">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <div class="video-player-state pulse" *ngIf="rankingPlayer.showPulse">
+              <ion-icon [name]="rankingPlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="video-player-error" *ngIf="rankingPlayer.hasError">
+              <strong>Video indisponivel</strong>
+              <ion-button size="small" fill="solid" (click)="rankingPlayer.retry($event)">Tentar novamente</ion-button>
+            </div>
+
+            <ion-button fill="clear" class="video-mute-btn" (click)="rankingPlayer.toggleMute($event)" [attr.aria-label]="rankingPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="rankingPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            </ion-button>
             
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-                  <h3>@{{ item.video.athleteName }}</h3>
+                  <h3 class="athlete-heading">
+                    <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
+                    <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
+                  </h3>
                 </button>
                 <p class="showcase-description">{{ item.video.description }}</p>
-                <p class="meta-line" *ngIf="item.video.modality || item.video.position">
+                <p class="meta-line" *ngIf="item.video.modality">
                     <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
-                    <span *ngIf="item.video.modality && item.video.position"> • </span>
-                    <span *ngIf="item.video.position">{{ item.video.position }}</span>
                 </p>
               </div>
             </div>
@@ -218,18 +258,45 @@
       <div class="video-stack be-tiktok-container" *ngIf="newVideosWithAds.length > 0">
         <ng-container *ngFor="let item of newVideosWithAds; trackBy: trackByFeedItem">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-            <video #vNew [src]="item.video.mediaUrl" autoplay muted loop playsinline controlsList="nodownload nopictureinpicture" preload="metadata" class="be-tiktok-video"></video>
+            <video
+              #vNew
+              #newPlayer="appViewportVideoPlayer"
+              appViewportVideoPlayer
+              [src]="item.video.mediaUrl"
+              muted
+              loop
+              playsinline
+              controlsList="nodownload nopictureinpicture"
+              preload="metadata"
+              class="be-tiktok-video">
+            </video>
+
+            <div class="video-player-state loading" *ngIf="newPlayer.isLoading && !newPlayer.hasError">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <div class="video-player-state pulse" *ngIf="newPlayer.showPulse">
+              <ion-icon [name]="newPlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="video-player-error" *ngIf="newPlayer.hasError">
+              <strong>Video indisponivel</strong>
+              <ion-button size="small" fill="solid" (click)="newPlayer.retry($event)">Tentar novamente</ion-button>
+            </div>
+
+            <ion-button fill="clear" class="video-mute-btn" (click)="newPlayer.toggleMute($event)" [attr.aria-label]="newPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="newPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            </ion-button>
             
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-                  <h3>@{{ item.video.athleteName }}</h3>
+                  <h3 class="athlete-heading">
+                    <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
+                    <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
+                  </h3>
                 </button>
                 <p class="showcase-description">{{ item.video.description }}</p>
-                <p class="meta-line" *ngIf="item.video.modality || item.video.position">
+                <p class="meta-line" *ngIf="item.video.modality">
                     <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
-                    <span *ngIf="item.video.modality && item.video.position"> • </span>
-                    <span *ngIf="item.video.position">{{ item.video.position }}</span>
                 </p>
               </div>
             </div>

@@ -4,19 +4,20 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { heart, heartOutline, locationOutline, starOutline } from 'ionicons/icons';
+import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat.service';
 import { ScoutFeedItem } from '../../scout-home.page';
 import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
 import { SubscriptionService } from "../../../services/subscription.service";
+import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewport-video-player.directive';
 
 @Component({
   selector: 'app-scout-favorites-tab',
   templateUrl: './scout-favorites-tab.component.html',
   styleUrls: ['./scout-favorites-tab.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, AdCardComponent]
+  imports: [CommonModule, IonicModule, AdCardComponent, ViewportVideoPlayerDirective]
 })
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
@@ -35,10 +36,11 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   constructor() {
     addIcons({
-      heart,
-      heartOutline,
       locationOutline,
-      starOutline
+      star,
+      starOutline,
+      volumeHighOutline,
+      volumeMuteOutline
     });
   }
 
@@ -58,16 +60,20 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
     }
 
     this.videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const video = entry.target as HTMLVideoElement;
-        if (entry.isIntersecting) {
+      const activeEntry = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      this.videoElements.forEach(videoRef => {
+        const video = videoRef.nativeElement;
+        if (activeEntry?.target === video) {
           video.play().catch(e => console.log('Autoplay blocked:', e));
         } else {
           video.pause();
         }
       });
     }, {
-      threshold: 0.6
+      threshold: [0, 0.35, 0.65, 0.85]
     });
 
     this.videoElements.forEach(videoRef => {
@@ -104,6 +110,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       return;
     }
     this.router.navigate(['/profile-player', card.athleteId]);
+  }
+
+  shouldShowConversationAction(card: FavoriteAthleteVideoCard): boolean {
+    return card.inviteStatus === 'ACCEPTED' || this.subscriptionService.canSendInvites();
   }
 
   trackByCard(_: number, item: ScoutFeedItem): string {
