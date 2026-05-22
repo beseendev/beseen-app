@@ -1,172 +1,53 @@
-# Beseen App
+# BeSeen App - Guia de Execução
 
-Beseen é uma plataforma de rede social projetada para conectar atletas a olheiros, criando um espaço onde talentos podem ser descobertos e oportunidades podem surgir.
+Este projeto utiliza Ionic + Angular + Capacitor e possui configurações separadas para Desenvolvimento (Local) e Produção.
 
-## ✨ Funcionalidades
+## 🚀 Como Rodar o App
 
-*   **Autenticação de Usuários:**
-    *   Login com Email e Senha.
-    *   Login social com Google (via Firebase).
-*   **Proteção de Rotas:** Acesso seguro às páginas da aplicação, redirecionando usuários não autenticados para a página de login.
-*   **Comunicação com Backend:** Arquitetura de serviços para se comunicar com uma API externa para validação de credenciais e outras operações.
-*   **Pronto para Mobile:** Construído com Capacitor para ser executado nativamente em dispositivos Android e iOS.
-
-## 🚀 Tecnologias Utilizadas
-
-*   **[Ionic/Angular](https://ionicframework.com/docs/angular/overview):** Framework principal para a construção da interface e da lógica do aplicativo.
-*   **[Capacitor](https://capacitorjs.com/):** Ferramenta para executar o aplicativo web como um aplicativo nativo em diferentes plataformas.
-*   **[Firebase](https://firebase.google.com/):** Utilizado para o serviço de autenticação com Google.
-*   **[TypeScript](https://www.typescriptlang.org/):** Linguagem principal do projeto.
-*   **[RxJS](https://rxjs.dev/):** Usado para lidar com operações assíncronas e gerenciamento de estado.
-
-## 📂 Estrutura do Projeto
-
-O projeto segue a estrutura padrão de um aplicativo Angular, com algumas pastas chave:
-
-```
-src/
-├── app/
-│   ├── guards/         # Guardas de rota (ex: auth.guard.ts)
-│   ├── home/           # Página principal da aplicação
-│   ├── interceptors/   # Interceptadores HTTP (ex: auth.interceptor.ts)
-│   ├── login/          # Página de login
-│   └── services/       # Serviços de lógica de negócio (auth.service.ts, api.service.ts)
-├── assets/             # Arquivos estáticos como imagens e ícones
-└── environments/       # Arquivos de configuração de ambiente (dev, prod)
-```
-
-## ⚙️ Configuração de Ambiente
-
-O projeto utiliza arquivos de ambiente (`src/environments/environment.ts` para desenvolvimento e `src/environments/environment.prod.ts` para produção) para gerenciar configurações como a URL da API e credenciais do Firebase.
-
-### URL da API (`apiUrl`)
-
-A `apiUrl` precisa ser ajustada dependendo de onde você está executando o aplicativo:
-
-*   **Para Emuladores Android:** A URL `http://10.0.2.2:8080/beseen/api` (ou similar) é usada para que o emulador possa acessar o `localhost` da sua máquina de desenvolvimento.
-*   **Para Navegador (Desenvolvimento Web):** Ao rodar o projeto no navegador (`npm start`), você deve alterar a `apiUrl` em `src/environments/environment.ts` para apontar diretamente para o seu `localhost` ou para a URL da sua API de desenvolvimento. Por exemplo:
-    ```typescript
-    export const environment = {
-      production: false,
-      apiUrl: 'http://localhost:8080/beseen/api', // Ou a URL correta da sua API
-      // ...
-    };
-    ```
-*   **Para Produção:** A `apiUrl` em `src/environments/environment.prod.ts` deve ser a URL da sua API em produção.
-
-### Atenção ao Build para Emulador/Dispositivo
-
-Ao executar o aplicativo em um emulador ou dispositivo Android, é crucial garantir que a `apiUrl` correta para o ambiente de **desenvolvimento** seja utilizada.
-
-*   O comando `npm run build` (sem configurações adicionais) por padrão compila o aplicativo para **produção**, utilizando a `apiUrl` de `environment.prod.ts`.
-*   Para testar no emulador/dispositivo com a `apiUrl` de desenvolvimento (`environment.ts`), você tem duas opções:
-    1.  **Recomendado para Desenvolvimento:** Use o comando `ionic capacitor run android -l --external`. Este comando geralmente já faz o build para desenvolvimento e sincroniza automaticamente.
-    2.  **Build Explícito para Desenvolvimento:** Se você preferir usar `npm run build` e `npx cap sync`, certifique-se de compilar para o ambiente de desenvolvimento:
-        ```bash
-        npm run build -- --configuration=development
-        npx cap sync android
-        ```
-
-Certifique-se de que a `apiUrl` esteja configurada corretamente no arquivo de ambiente apropriado antes de compilar ou executar o projeto.
-
-## 🏁 Como Executar o Projeto
-
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
-
-### Pré-requisitos
-
-*   [Node.js](https://nodejs.org/en/) (versão LTS recomendada)
-*   NPM (geralmente instalado com o Node.js)
-*   [Android Studio](https://developer.android.com/studio) para desenvolvimento Android.
-
-### 1. Instalação
-
-Clone o repositório e instale as dependências do projeto:
-
-```bash
-npm install
-```
-
-### 2. Executando em Desenvolvimento (Web)
-
-Para iniciar o servidor de desenvolvimento e abrir o aplicativo em seu navegador:
-
+### 1. Web (Local)
+Para rodar no navegador usando a API local e configurações de teste:
 ```bash
 npm start
 ```
 
-O aplicativo estará disponível em `http://localhost:4200`.
+---
 
-### 3. Build para Produção
-
-Para compilar o aplicativo para produção, execute:
+### 2. Android (Ambiente Local)
+Para rodar no emulador ou dispositivo físico usando as chaves de teste e API local:
 
 ```bash
-npm run build
+# 1. Prepara o build e injeta as chaves de DEV
+./scripts/prepare-mobile.sh dev
+
+# 2. Abre o Android Studio
+npx cap open android
 ```
+*No Android Studio, basta clicar em "Run".*
 
-Os arquivos otimizados serão gerados no diretório `www/`.
+---
 
-### 4. Configurando a Plataforma Android (Primeira Vez)
+### 3. Android (Ambiente de Produção)
+**⚠️ Atenção:** Use este comando apenas quando for gerar a versão final para a loja ou testar com a infraestrutura oficial.
 
-Se esta é a primeira vez que você está configurando o projeto para Android, siga estes passos para garantir que a plataforma seja criada e configurada corretamente com as dependências do Firebase.
+```bash
+# 1. Prepara o build e injeta as chaves de PROD
+./scripts/prepare-mobile.sh prod
 
-1.  **Instale as dependências do Node.js:**
-    ```bash
-    npm install
-    ```
+# 2. Abre o Android Studio
+npx cap open android
+```
+*O script irá trocar automaticamente o Package ID para `com.beseen.app` e injetar o Firebase de produção.*
 
-2.  **Adicione a plataforma Android:**
-    *(Este comando cria a pasta `android`. Se ela já existir de um setup anterior, remova-a para garantir uma configuração limpa).*
-    ```bash
-    npx cap add android
-    ```
+---
 
-3.  **Execute o script de configuração do Android:**
-    *(Este comando copia os arquivos de configuração do Firebase e ajusta as configurações do projeto nativo).*
-    ```bash
-    npm run android:setup
-    ```
+## 🛠 Scripts Úteis
 
-4.  **Sincronize o projeto:**
-    *(Copia os arquivos da sua aplicação web para o projeto Android).*
-    ```bash
-    npx cap sync
-    ```
+- `./scripts/prepare-mobile.sh [prod|dev]`: Limpa o build, compila o Angular e sincroniza os arquivos do Firebase corretos.
+- `npx cap sync`: Sincroniza plugins do Capacitor (já incluso no script acima).
 
-### 5. Executando em Dispositivos Nativos (Desenvolvimento Diário)
+---
 
-Após a configuração inicial, você tem algumas opções para executar o aplicativo em um dispositivo ou emulador Android:
-
-#### Opção 1: Usando o Ionic CLI (com Live Reload)
-
-Esta é a forma recomendada para desenvolvimento, pois inclui live reload e permite acesso externo.
-
-1.  **Sincronize suas alterações:**
-    *(Após qualquer mudança no código da aplicação web, execute este comando para atualizar o projeto nativo).*
-    ```bash
-    npx cap sync
-    ```
-
-2.  **Execute o aplicativo com live reload:**
-    ```bash
-    ionic capacitor run android -l --external
-    ```
-
-#### Opção 2: Via Android Studio
-
-Você também pode executar o aplicativo diretamente pelo Android Studio.
-
-1.  **Sincronize suas alterações:**
-    *(Após qualquer mudança no código da aplicação web, execute este comando para atualizar o projeto nativo).*
-    ```bash
-    npx cap sync
-    ```
-
-2.  **Abra o projeto no Android Studio:**
-    *Você pode abrir a pasta `android` diretamente no Android Studio ou usar o comando:*
-    ```bash
-    npx cap open android
-    ```
-
-3.  Dentro do Android Studio, selecione o dispositivo/emulador e execute o aplicativo.
+## 📌 Pendências de Produção
+As seguintes configurações devem ser feitas após a ativação da Google Play Console:
+- Gerar SHA-1 da chave de assinatura e adicionar no Firebase.
+- Configurar API Keys reais do RevenueCat no `environment.prod.ts`.

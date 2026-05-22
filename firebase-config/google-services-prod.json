@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "950779319104",
+    "project_id": "beseen-app-prod",
+    "storage_bucket": "beseen-app-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950779319104:android:db5c11b33682e02e0320a5",
+        "android_client_info": {
+          "package_name": "com.beseen.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUmRM33gDq6-gbkQg-pvBLRXWN4eNENGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
