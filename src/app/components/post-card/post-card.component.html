@@ -8,7 +8,8 @@
 
   <div class="media-container">
     <img *ngIf="post.mediaType === FileType.IMAGE" [src]="post.mediaUrl" class="post-image" />
-    <video *ngIf="post.mediaType === FileType.VIDEO" [src]="post.mediaUrl" class="post-video" controls controlsList="nodownload nopictureinpicture" loop></video>  </div>
+    <video *ngIf="post.mediaType === FileType.VIDEO" [src]="post.mediaUrl" class="post-video" controls controlsList="nodownload nopictureinpicture" loop></video>
+  </div>
 
   <div class="actions">
     <ion-button fill="clear" (click)="toggleLike()">
@@ -24,7 +25,11 @@
   </div>
 
   <div class="caption">
-    <ion-label><b>{{ post.user.username }}</b> {{ post.caption }}</ion-label>
+    <div class="caption-user-name"><b>{{ post.user.username }}</b></div>
+    <div class="caption-position" *ngIf="post.user.position || post.position">
+      {{ post.user.position || post.position }}
+    </div>
+    <div class="caption-text">{{ post.caption }}</div>
   </div>
 
   <div class="comments-link">

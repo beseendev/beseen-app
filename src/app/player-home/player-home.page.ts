@@ -184,6 +184,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     return decodedToken?.name || 'Clube';
   }
 
+  get userPosition(): string {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.position || 'JOGADOR';
+  }
+
   openSupport() {
     this.router.navigate(['/suporte']);
   }

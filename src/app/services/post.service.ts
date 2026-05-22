@@ -18,6 +18,7 @@ interface PostResponseDto {
     id?: number;
     username: string;
     urlPerfil?: string;
+    position?: string;
   };
   mediaUrl: string;
   mediaType: FileType;
@@ -26,6 +27,7 @@ interface PostResponseDto {
   commentsCount: number;
   isLiked: boolean;
   createdAt: string;
+  position?: string;
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
   scoutId?: number | null;
   athleteId?: number | null;
@@ -45,7 +47,8 @@ export class PostService {
     const user: UserInfo = {
       id: String(postResponse.user.id || postResponse.athleteId || ''),
       username: postResponse.user.username,
-      urlPerfil: postResponse.user.urlPerfil
+      urlPerfil: postResponse.user.urlPerfil,
+      position: postResponse.user.position || postResponse.position
     };
 
     return {
@@ -58,6 +61,7 @@ export class PostService {
       commentsCount: postResponse.commentsCount,
       isLiked: postResponse.isLiked,
       createdAt: postResponse.createdAt,
+      position: postResponse.position || postResponse.user.position,
       inviteStatus: postResponse.inviteStatus,
       scoutId: postResponse.scoutId,
       athleteId: postResponse.athleteId

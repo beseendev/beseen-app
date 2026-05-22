@@ -4,6 +4,7 @@ export interface UserInfo {
   id: string;
   username: string;
   urlPerfil?: string;
+  position?: string;
 }
 
 export interface Post {
@@ -16,6 +17,7 @@ export interface Post {
   commentsCount: number;
   isLiked: boolean;
   createdAt: string;
+  position?: string;
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
   scoutId?: number | null;
   athleteId?: number | null;

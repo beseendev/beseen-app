@@ -63,6 +63,27 @@
 
   .caption {
     padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+
+    .caption-user-name {
+      font-size: 14px;
+      color: var(--ion-color-light);
+    }
+
+    .caption-position {
+      font-size: 12px;
+      color: var(--ion-color-primary);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin: 2px 0;
+    }
+
+    .caption-text {
+      font-size: 14px;
+      color: var(--ion-color-light);
+      margin-top: 2px;
+    }
   }
 
   .comments-link {

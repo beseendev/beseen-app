@@ -28,6 +28,7 @@ export interface JwtPayload {
   subscriptionStatus: string | null;
   planName: string | null;
   acceptedTerms?: boolean;
+  position?: string | null;
   exp?: number;
   iat?: number;
 }
