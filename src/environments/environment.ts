@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/beseen/api',
+  apiUrl: 'http://localhost:8080/api',
   googleClientId: '519718200969-u4evpl00k57u3pc0fe2t05hj312nr1s6.apps.googleusercontent.com',
   firebase: {
     apiKey: "AIzaSyDkXld2ipHGKWMa6TCzyfq_UsBatpw4i9w",
