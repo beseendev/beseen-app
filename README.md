@@ -45,9 +45,4 @@ npx cap open android
 - `./scripts/prepare-mobile.sh [prod|dev]`: Limpa o build, compila o Angular e sincroniza os arquivos do Firebase corretos.
 - `npx cap sync`: Sincroniza plugins do Capacitor (já incluso no script acima).
 
----
 
-## 📌 Pendências de Produção
-As seguintes configurações devem ser feitas após a ativação da Google Play Console:
-- Gerar SHA-1 da chave de assinatura e adicionar no Firebase.
-- Configurar API Keys reais do RevenueCat no `environment.prod.ts`.
