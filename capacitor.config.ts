@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const IS_PROD = process.argv.includes('prod');
 
 const config: CapacitorConfig = {
-  appId: IS_PROD ? 'com.beseen.app' : 'io.ionic.starter',
+  appId: IS_PROD ? 'com.beseen.app.official' : 'io.ionic.starter',
   appName: 'BeSeen',
   webDir: 'www',
   plugins: {

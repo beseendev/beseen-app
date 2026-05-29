@@ -36,7 +36,7 @@ npx cap open android
 # 2. Abre o Android Studio
 npx cap open android
 ```
-*O script irá trocar automaticamente o Package ID para `com.beseen.app` e injetar o Firebase de produção.*
+*O script irá trocar automaticamente o Package ID para `com.beseen.app.official` e injetar o Firebase de produção.*
 
 ---
 

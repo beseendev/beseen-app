@@ -8,8 +8,8 @@ export const environment = {
     projectId: "beseen-app-prod",
     storageBucket: "beseen-app-prod.firebasestorage.app",
     messagingSenderId: "950779319104",
-    appId: "1:950779319104:web:efeb2753370317990320a5",
-    measurementId: "G-YEXB9ZQNRK"
+    appId: "1:950779319104:web:64e88824ef9ac6990320a5",
+    measurementId: "G-6HBY8J8VSX"
   },
   revenueCatIosKey: 'appl_sua_chave_ios_producao_aqui',
   revenueCatAndroidKey: 'goog_sua_chave_android_producao_aqui'
