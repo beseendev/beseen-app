@@ -72,8 +72,13 @@ Thumbs.db
 # Gemini
 GEMINI.md
 
-# Capacitor
+# Capacitor & Firebase
+/android/app/google-services.json
+/ios/App/App/GoogleService-Info.plist
 /android
 /ios
-google-services.json
 .aider*
+
+# Production Keys
+*.jks
+*.keystore
