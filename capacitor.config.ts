@@ -1,4 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import * as dotenv from 'dotenv';
+
+// Carrega as variáveis do arquivo .env
+dotenv.config();
 
 const config: CapacitorConfig = {
   appId: process.env['APP_ID'] || 'io.ionic.starter',

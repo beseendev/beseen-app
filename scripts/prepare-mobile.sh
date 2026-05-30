@@ -35,13 +35,15 @@ if [ -d "android" ]; then
         echo "⚠️  Aviso: $FIREBASE_SRC não encontrado"
     fi
 
-    # Injeta variáveis de ambiente para o capacitor.config.ts
+    # Gera arquivo .env para o capacitor.config.ts
     if [ "$ENV" == "prod" ]; then
-        export APP_ID="com.beseen.app.official"
-        export GOOGLE_WEB_CLIENT_ID="950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com"
+        echo "APP_ID=com.beseen.app.official" > .env
+        echo "GOOGLE_WEB_CLIENT_ID=950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com" >> .env
+        echo "✅ .env criado para PRODUÇÃO"
     else
-        export APP_ID="io.ionic.starter"
-        export GOOGLE_WEB_CLIENT_ID="304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com"
+        echo "APP_ID=io.ionic.starter" > .env
+        echo "GOOGLE_WEB_CLIENT_ID=304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com" >> .env
+        echo "✅ .env criado para DESENVOLVIMENTO"
     fi
 
     npx cap sync android
@@ -60,13 +62,13 @@ if [ -d "ios" ]; then
         echo "⚠️  Aviso: $FIREBASE_SRC não encontrado"
     fi
 
-    # Injeta variáveis de ambiente para o capacitor.config.ts
+    # Gera arquivo .env para o capacitor.config.ts
     if [ "$ENV" == "prod" ]; then
-        export APP_ID="com.beseen.app.official"
-        export GOOGLE_WEB_CLIENT_ID="950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com"
+        echo "APP_ID=com.beseen.app.official" > .env
+        echo "GOOGLE_WEB_CLIENT_ID=950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com" >> .env
     else
-        export APP_ID="io.ionic.starter"
-        export GOOGLE_WEB_CLIENT_ID="304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com"
+        echo "APP_ID=io.ionic.starter" > .env
+        echo "GOOGLE_WEB_CLIENT_ID=304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com" >> .env
     fi
 
     npx cap sync ios
