@@ -12,5 +12,5 @@ export const environment = {
     measurementId: "G-6HBY8J8VSX"
   },
   revenueCatIosKey: 'appl_sua_chave_ios_producao_aqui',
-  revenueCatAndroidKey: 'goog_sua_chave_android_producao_aqui'
+  revenueCatAndroidKey: 'goog_dFKPjSEiYlMCpWCedSLcUMUwhbm'
 };
