@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "950779319104-5oqqmmq23ehbhvqto9a4mdkc8gtq2ghn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beseen.app.official",
+            "certificate_hash": "68f26dc6f254597c386acf6811e2803ee755f4be"
+          }
+        },
+        {
           "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -31,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "950779319104-vfnkr38lvigdjkbekppso06jk77eothn.apps.googleusercontent.com",
+              "client_id": "950779319104-udjb4i72hp7g4kdahagt35v984k9jr7v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.beseen.app"
+                "bundle_id": "com.beseen.app.official"
               }
             }
           ]
