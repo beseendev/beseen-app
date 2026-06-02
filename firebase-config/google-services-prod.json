@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "950779319104-s9r7kljo2shn4lhcc8taf1j4gntc2a1h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beseen.app.official",
+            "certificate_hash": "21163a3509064f79309b5835a47926638c9dd0f5"
+          }
+        },
+        {
           "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
           "client_type": 3
         }
