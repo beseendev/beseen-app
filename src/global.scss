@@ -768,3 +768,97 @@ video::-webkit-media-controls-panel {
   --width: fit-content;
   --border-radius: 12px;
 }
+
+/* BeSeen Action Sheet & Alert Styles */
+.be-action-sheet {
+  --background: var(--be-color-surface-1);
+  --button-background-selected: var(--be-color-surface-2);
+  --color: var(--be-color-text-1);
+  --button-color: var(--be-color-text-2);
+
+  .action-sheet-group {
+    border-radius: var(--be-radius-lg);
+    background: var(--be-color-surface-1);
+    border: 1px solid var(--be-color-line);
+    margin-bottom: 8px;
+  }
+
+  .action-sheet-title {
+    color: var(--be-color-brand-500);
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--be-color-line);
+  }
+
+  .action-sheet-button {
+    color: var(--be-color-text-2);
+    font-weight: 600;
+  }
+
+  .action-sheet-destructive {
+    color: var(--be-color-danger);
+  }
+
+  .action-sheet-cancel {
+    color: var(--be-color-text-3);
+    font-weight: 700;
+  }
+}
+
+.be-alert, .be-alert-confirm {
+  --background: var(--be-color-surface-1);
+  --color: var(--be-color-text-1);
+
+  .alert-wrapper {
+    border-radius: var(--be-radius-lg);
+    border: 1px solid var(--be-color-line);
+    box-shadow: var(--be-shadow-card);
+  }
+
+  .alert-head {
+    padding-bottom: 12px;
+  }
+
+  .alert-title {
+    color: var(--be-color-brand-500);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .alert-message {
+    color: var(--be-color-text-2);
+  }
+
+  .alert-input-group {
+    background: var(--be-color-surface-2);
+    border-radius: var(--be-radius-md);
+    margin: 8px 16px;
+    border: 1px solid var(--be-color-line);
+  }
+
+  .alert-input {
+    color: #fff;
+  }
+
+  .alert-button-group {
+    padding: 8px;
+  }
+
+  .alert-button {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .alert-button-role-cancel {
+    color: var(--be-color-text-3);
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    color: var(--be-color-brand-500);
+  }
+
+  .alert-button-role-destructive {
+    color: var(--be-color-danger) !important;
+  }
+}

@@ -310,33 +310,55 @@
         </div>
       </section>
 
-    <!-- Seção de conteúdo desabilitada para atualização futura
-    <section class="section-card posts-section">
-      <div class="section-header posts-header">
-        <h2>Conteudo</h2>
-        <p>Os mesmos posts continuam visiveis aqui, separados por tipo.</p>
+    <section class="section-card videos-section" *ngIf="hasFullAccess">
+      <div class="section-header">
+        <h2>Vídeos</h2>
+        <p>Minhas jogadas em destaque.</p>
       </div>
 
-      <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)" mode="md">
-        <ion-segment-button value="videos">
-          <ion-icon name="videocam-outline"></ion-icon>
-          <ion-label>Videos</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6" *ngFor="let post of (filteredUserPosts$ | async); trackBy: trackById">
-            <app-post-card [post]="post"></app-post-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <div class="video-grid">
+        <div class="video-item" *ngFor="let post of (filteredUserPosts$ | async)" (click)="openVideo(post)">
+          <div class="video-thumbnail-container">
+            <!-- Usando o próprio vídeo como thumbnail para simplificar, com preload metadata -->
+            <video [src]="post.mediaUrl" preload="metadata" playsinline muted class="video-thumbnail"></video>
+            <div class="play-overlay">
+              <ion-icon name="play-outline"></ion-icon>
+            </div>
+            <ion-button fill="clear" class="options-btn" *ngIf="isEditing" (click)="openVideoOptions($event, post)">
+              <ion-icon name="ellipsis-vertical-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
 
       <ion-infinite-scroll (ionInfinite)="loadMoreUserPosts($event)">
-        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais posts..."></ion-infinite-scroll-content>
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais vídeos..."></ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </section>
-    -->
+
+    <div class="video-modal-overlay" *ngIf="isVideoModalOpen && selectedVideo" (click)="closeVideo()">
+      <div class="video-modal-container" (click)="$event.stopPropagation()">
+        <ion-button fill="clear" class="close-modal-btn" (click)="closeVideo()">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+
+        <video 
+          [src]="selectedVideo.mediaUrl" 
+          controls 
+          autoplay 
+          playsinline 
+          class="full-screen-video">
+        </video>
+
+        <div class="video-modal-info">
+          <p class="video-caption">{{ selectedVideo.caption }}</p>
+          <ion-button fill="outline" color="danger" *ngIf="isEditing" (click)="deleteVideo(selectedVideo)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Remover vídeo
+          </ion-button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <ng-template #loadingState>

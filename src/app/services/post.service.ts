@@ -78,10 +78,32 @@ export class PostService {
       map(response => {
         const mappedPosts = response.items.map(postDto => this.mapPostResponseToPost(postDto));
         return { posts: mappedPosts, nextCursor: response.nextCursor };
-      }),
-      tap(response => {
       })
     );
+  }
+
+  getPostsByProfileId(profileId: string, limit: number, cursor?: string): Observable<{ posts: Post[], nextCursor: string | null }> {
+    let params = new HttpParams().set('limit', limit.toString());
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+
+    return this.apiService.get<PostPageResponseDto>(`/posts/profile/${profileId}`, { params }).pipe(
+      map(response => {
+        const mappedPosts = response.items.map(postDto => this.mapPostResponseToPost(postDto));
+        return { posts: mappedPosts, nextCursor: response.nextCursor };
+      })
+    );
+  }
+
+  updatePostCaption(postId: string, caption: string): Observable<Post> {
+    return this.apiService.patch<PostResponseDto>(`/posts/${postId}`, { caption }).pipe(
+      map(postDto => this.mapPostResponseToPost(postDto))
+    );
+  }
+
+  deletePost(postId: string): Observable<void> {
+    return this.apiService.delete<void>(`/posts/${postId}`);
   }
 
   private homePosts = new BehaviorSubject<Post[]>([]);

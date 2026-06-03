@@ -68,7 +68,7 @@ interface ArenaAthlete {
   likes: string;
 }
 
-type ArenaTab = 'mine' | 'ranking' | 'new';
+type ArenaTab = 'ranking' | 'new';
 
 interface PlayerShowcaseVideo {
   id: string;
@@ -124,7 +124,7 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
 export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
-  @ViewChildren('vMine, vRanking, vNew') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
+  @ViewChildren('vRanking, vNew') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
 
   private videoObserver?: IntersectionObserver;
 
@@ -132,21 +132,18 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   avatarLoadFailed = false;
   isLoading = true;
   userRole: string | null = null;
-  activeTab: ArenaTab = 'mine';
+  activeTab: ArenaTab = 'new';
 
   posts$: Observable<Post[]>;
   showcaseVideos: PlayerShowcaseVideo[] = [];
   rankingVideos: PlayerShowcaseVideo[] = [];
   newVideos: PlayerShowcaseVideo[] = [];
-  myVideos: PlayerShowcaseVideo[] = [];
   featuredVideo: PlayerShowcaseVideo | null = null;
 
-  myVideosWithAds: PlayerFeedItem[] = [];
   rankingVideosWithAds: PlayerFeedItem[] = [];
   newVideosWithAds: PlayerFeedItem[] = [];
 
   private rankingCurrentPage = 0;
-  private myPostsNextCursor: string | null = null;
   activeChatCount = 0;
 
   private threadsSubscription!: Subscription;
@@ -255,8 +252,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         this.userProfile = profile;
         this.avatarLoadFailed = false;
         this.isLoading = false;
-
-        this.loadMyPosts(true);
       },
       error: (err) => {
         console.error('Failed to load user profile', err);
@@ -300,33 +295,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     this.videoElements.forEach(videoRef => {
       this.videoObserver?.observe(videoRef.nativeElement);
-    });
-  }
-
-  private loadMyPosts(isRefresh = true, event?: any): void {
-    if (isRefresh) {
-      this.myPostsNextCursor = null;
-    }
-
-    this.postService.getPostsForAuthenticatedUser(10, this.myPostsNextCursor || undefined).subscribe({
-      next: async (res) => {
-        const mapped = res.posts
-          .filter(p => p.mediaType === FileType.VIDEO)
-          .map(p => this.mapPostToVideo(p, true));
-
-        if (isRefresh) {
-          this.myVideos = mapped;
-        } else {
-          const filtered = mapped.filter(newVideo => !this.myVideos.some(existing => existing.id === newVideo.id));
-          this.myVideos = [...this.myVideos, ...filtered];
-        }
-
-        this.myVideosWithAds = await this.interleaveAds(this.myVideos);
-
-        this.myPostsNextCursor = res.nextCursor;
-        this.finalizeLoad(event, !res.nextCursor);
-      },
-      error: () => this.finalizeLoad(event)
     });
   }
 
@@ -386,8 +354,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
           }
         }, 300);
       });
-    } else if (tab === 'mine') {
-      this.loadMyPosts(true);
     }
   }
 
@@ -401,8 +367,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         },
         error: () => this.finalizeLoad(event)
       });
-    } else if (this.activeTab === 'mine') {
-      this.loadMyPosts(false, event);
     } else {
       this.finalizeLoad(event, true);
     }
@@ -423,8 +387,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         },
         error: () => this.finalizeLoad(event)
       });
-    } else {
-      this.loadMyPosts(true, event);
     }
   }
 
@@ -512,10 +474,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       return 'Abrir chat';
     }
     return 'Ver convite';
-  }
-
-  get myInviteCount(): number {
-    return this.myVideos.filter((video) => this.hasIncomingInvite(video)).length;
   }
 
   async openScoutChat(video: PlayerShowcaseVideo): Promise<void> {

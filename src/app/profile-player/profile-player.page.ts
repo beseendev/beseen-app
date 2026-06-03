@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, playOutline, trashOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
@@ -36,6 +36,8 @@ import {SubscriptionService} from "../services/subscription.service";
     IonCol,
     IonRefresher,
     IonRefresherContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     IonItem,
     IonList,
     IonText,
@@ -52,10 +54,15 @@ export class ProfilePlayerPage implements OnInit {
   isMyProfile = false;
   isEditing = false;
   isUploadingPhoto = false;
-  selectedSegment: 'images' | 'videos' = 'images';
+  selectedSegment: 'images' | 'videos' = 'videos';
   draftProfile: Partial<Profile> = {};
   isLoading = false;
-  private readonly DEFAULT_POST_LIMIT = 10;
+
+  // Video management
+  selectedVideo: Post | null = null;
+  isVideoModalOpen = false;
+
+  private readonly DEFAULT_POST_LIMIT = 12;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
   readonly stateOptions = BR_STATE_OPTIONS;
   readonly footOptions = [
@@ -70,9 +77,11 @@ export class ProfilePlayerPage implements OnInit {
   public subscriptionService = inject(SubscriptionService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private actionSheetCtrl = inject(ActionSheetController);
+  private alertCtrl = inject(AlertController);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
-  private selectedSegmentSubject = new BehaviorSubject<'images' | 'videos'>('images');
+  private selectedSegmentSubject = new BehaviorSubject<'images' | 'videos'>('videos');
   filteredUserPosts$: Observable<Post[]>;
   private userPostsCurrentCursor: string | undefined;
   private userPostsHasMore = true;
@@ -82,7 +91,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, playOutline, trashOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -286,13 +295,11 @@ export class ProfilePlayerPage implements OnInit {
       return;
     }
 
-    if (!this.isMyProfile) {
-        event.target.complete();
-        event.target.disabled = true;
-        return;
-    }
+    const load$ = this.isMyProfile
+      ? this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor)
+      : this.postService.getPostsByProfileId(this.profileId, this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor);
 
-    this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor).subscribe({
+    load$.subscribe({
       next: response => {
         const newPosts = response.posts;
         this.userPostsSubject.next([...this.userPostsSubject.getValue(), ...newPosts]);
@@ -326,8 +333,12 @@ export class ProfilePlayerPage implements OnInit {
       (infiniteScroll as any).disabled = false;
     }
 
-    if (this.profileId && this.isMyProfile) {
-      this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor).subscribe({
+    if (this.profileId && this.hasFullAccess) {
+      const load$ = this.isMyProfile
+        ? this.postService.getPostsForAuthenticatedUser(this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor)
+        : this.postService.getPostsByProfileId(this.profileId, this.DEFAULT_POST_LIMIT, this.userPostsCurrentCursor);
+
+      load$.subscribe({
         next: response => {
           this.userPostsSubject.next(response.posts);
           this.userPostsCurrentCursor = response.nextCursor || undefined;
@@ -361,6 +372,114 @@ export class ProfilePlayerPage implements OnInit {
   getDominantFootLabel(foot: string | undefined): string {
     const option = this.footOptions.find(o => o.value === foot);
     return option ? option.label : (foot ?? '');
+  }
+
+  openVideo(post: Post) {
+    this.selectedVideo = post;
+    this.isVideoModalOpen = true;
+  }
+
+  closeVideo() {
+    this.isVideoModalOpen = false;
+    this.selectedVideo = null;
+  }
+
+  async openVideoOptions(event: Event, post: Post) {
+    event.stopPropagation();
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Opções do Vídeo',
+      cssClass: 'be-action-sheet',
+      buttons: [
+        {
+          text: 'Editar descrição',
+          icon: createOutline,
+          handler: () => {
+            this.editVideoCaption(post);
+          }
+        },
+        {
+          text: 'Remover',
+          role: 'destructive',
+          icon: trashOutline,
+          handler: () => {
+            this.deleteVideo(post);
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: closeOutline
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async editVideoCaption(post: Post) {
+    const alert = await this.alertCtrl.create({
+      header: 'Editar descrição',
+      cssClass: 'be-alert',
+      inputs: [
+        {
+          name: 'caption',
+          type: 'textarea',
+          placeholder: 'Descrição do vídeo',
+          value: post.caption
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Salvar',
+          handler: (data) => {
+            this.postService.updatePostCaption(post.id, data.caption).subscribe({
+              next: () => {
+                this.resetAndLoadUserPosts();
+              },
+              error: (err) => {
+                console.error('Error updating caption', err);
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async deleteVideo(post: Post) {
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja remover este vídeo?',
+      cssClass: 'be-alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Remover',
+          role: 'destructive',
+          handler: () => {
+            this.postService.deletePost(post.id).subscribe({
+              next: () => {
+                this.resetAndLoadUserPosts();
+                if (this.selectedVideo?.id === post.id) {
+                  this.closeVideo();
+                }
+              },
+              error: (err) => {
+                console.error('Error deleting post', err);
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private syncDraftProfile(): void {
