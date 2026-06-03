@@ -145,8 +145,15 @@ export class PlansModalComponent implements OnInit {
       if (error.userCancelled) {
         return;
       }
-      console.error('Erro ao realizar assinatura', error);
-      this.showToast('Erro ao processar assinatura. Verifique seus dados.', 'danger');
+      
+      console.error('--- ERRO NA ASSINATURA ---', error);
+      
+      const msg = error.message || 'Erro desconhecido';
+      const code = error.code || 'Sem código';
+      // Mostra uma versão resumida do objeto de erro no Toast
+      const details = JSON.stringify(error).substring(0, 120);
+
+      this.showToast(`Erro: ${msg} | Código: ${code} | Detalhes: ${details}`, 'danger');
     } finally {
       this.purchasing = false;
     }

@@ -138,6 +138,7 @@ export class AuthService {
           scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
+        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.authState.next(false);
@@ -164,6 +165,7 @@ export class AuthService {
           scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
+        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.authState.next(false);
