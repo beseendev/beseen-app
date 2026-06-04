@@ -60,10 +60,16 @@
 
 <ion-footer class="ion-no-border chat-sheet-footer">
   <div class="footer-container waiting" *ngIf="status === 'PENDING' && isPlayer">
-    <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite">
-      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-      Aceitar
-    </ion-button>
+    <div class="invite-actions">
+      <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite" class="accept-btn">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Aceitar
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="danger" (click)="rejectInvite()" aria-label="Rejeitar convite" class="reject-btn">
+        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+        Rejeitar
+      </ion-button>
+    </div>
   </div>
 
   <div class="footer-container" *ngIf="status === 'ACCEPTED'">

@@ -112,6 +112,23 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  async rejectInvite(): Promise<void> {
+    if (!this.inviteId) return;
+
+    this.postService.rejectInvite(this.inviteId).subscribe({
+      next: () => {
+        this.toastController.create({
+          message: 'Convite recusado.',
+          duration: 1800,
+          color: 'medium',
+          position: 'top'
+        }).then(t => t.present());
+        this.close();
+      },
+      error: (err) => console.error('Error rejecting', err)
+    });
+  }
+
   sendMessage(): void {
     if (this.status !== 'ACCEPTED' || !this.threadId) return;
 

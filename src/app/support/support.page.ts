@@ -46,7 +46,7 @@ type SupportType = 'Sugestão' | 'Reclamação' | 'Problema técnico' | 'Dúvida
   ]
 })
 export class SupportPage implements OnInit {
-  readonly supportEmail = 'suporte@beseen.com.br';
+  readonly supportEmail = 'beseensuporte@gmail.com';
   readonly typeOptions: SupportType[] = ['Sugestão', 'Reclamação', 'Problema técnico', 'Dúvida'];
 
   private readonly fb = inject(FormBuilder);
