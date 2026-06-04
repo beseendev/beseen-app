@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
-import { ChatThreadSummaryDTO, ChatMessageResponse } from '../models/player-chat.models';
+import {ChatThreadSummaryDTO, ChatMessageResponse, ChatThreadPageResponse} from '../models/player-chat.models';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +13,33 @@ export class ChatService {
   private threadsSubject = new BehaviorSubject<ChatThreadSummaryDTO[]>([]);
   threads$ = this.threadsSubject.asObservable();
 
+  private activeChatsCountSubject = new BehaviorSubject<number>(0);
+  activeChatsCount$ = this.activeChatsCountSubject.asObservable();
+
+  private pendingInvitesCountSubject = new BehaviorSubject<number>(0);
+  pendingInvitesCount$ = this.pendingInvitesCountSubject.asObservable();
+
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
 
-  loadThreads(): Observable<ChatThreadSummaryDTO[]> {
+  loadThreads(limit: number = 10, page: number = 0): Observable<ChatThreadPageResponse> {
     this.isLoadingSubject.next(true);
-    return this.apiService.get<ChatThreadSummaryDTO[]>('/chat/threads').pipe(
-      tap(threads => {
-        this.threadsSubject.next(threads);
+    let params = new HttpParams()
+      .set('limit', limit.toString())
+      .set('page', page.toString());
+
+    return this.apiService.get<ChatThreadPageResponse>('/chat/threads', { params }).pipe(
+      tap(response => {
+        this.activeChatsCountSubject.next(response.totalElements);
+        this.threadsSubject.next(response.items);
         this.isLoadingSubject.next(false);
       })
+    );
+  }
+
+  refreshInviteCount(): Observable<{ count: number }> {
+    return this.apiService.get<{ count: number }>('/posts/invites/count').pipe(
+      tap(res => this.pendingInvitesCountSubject.next(res.count))
     );
   }
 

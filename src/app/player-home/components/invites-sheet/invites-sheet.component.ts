@@ -17,6 +17,7 @@ import { closeOutline, personCircleOutline, mailOutline, checkmarkCircleOutline 
 import { PostService } from '../../../services/post.service';
 import { PostInviteResponse } from '../../../models/player-chat.models';
 import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.component';
+import { ChatService } from '../../../services/chat.service';
 
 @Component({
   selector: 'app-invites-sheet',
@@ -38,12 +39,13 @@ import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.co
 export class InvitesSheetComponent implements OnInit {
   @Input() postId?: string;
   invites: PostInviteResponse[] = [];
-  nextCursor: string | null = null;
   isLoading = false;
   hasMore = true;
+  private readonly LIMIT = 10;
 
   private readonly modalController = inject(ModalController);
   private readonly postService = inject(PostService);
+  private readonly chatService = inject(ChatService);
   private readonly toastController = inject(ToastController);
 
   constructor() {
@@ -56,7 +58,6 @@ export class InvitesSheetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('InvitesSheetComponent initialized with postId:', this.postId);
     this.loadInvites();
   }
 
@@ -67,13 +68,14 @@ export class InvitesSheetComponent implements OnInit {
     }
 
     this.isLoading = true;
+    const page = Math.floor(this.invites.length / this.LIMIT);
 
-    this.postService.getInvites(10, this.nextCursor || undefined, this.postId).subscribe({
+    this.postService.getInvites(this.LIMIT, page, this.postId).subscribe({
       next: (response) => {
         this.invites = [...this.invites, ...response.items];
-        this.nextCursor = response.nextCursor;
-        this.hasMore = !!response.nextCursor;
+        this.hasMore = this.invites.length < response.totalElements;
         this.isLoading = false;
+        this.chatService.refreshInviteCount().subscribe(); // Atualiza contador global
 
         if (event) {
           event.target.complete();
@@ -102,6 +104,8 @@ export class InvitesSheetComponent implements OnInit {
       next: async (acceptedInvite) => {
         invite.status = 'ACCEPTED';
         invite.chatThreadId = acceptedInvite.chatThreadId;
+        this.chatService.loadThreads().subscribe();
+        this.chatService.refreshInviteCount().subscribe();
       },
       error: (err) => {
         console.error('Error accepting invite', err);

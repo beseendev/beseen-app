@@ -1,9 +1,9 @@
-<ion-content class="invites-sheet-content">
+<ion-content class="invites-sheet-content" [scrollEvents]="true">
   <div class="sheet-shell">
     <div class="sheet-header">
       <div class="header-title">
         <ion-icon name="mail-outline"></ion-icon>
-        <strong>Meus Convites</strong>
+        <strong>{{ postId ? 'Convites deste vídeo' : 'Meus Convites' }}</strong>
       </div>
 
       <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar convites">
@@ -18,7 +18,7 @@
 
       <ion-list lines="none" *ngIf="invites.length > 0">
         <ion-item *ngFor="let invite of invites" class="invite-item">
-          <div class="invite-card">
+          <div class="invite-card" [class.clickable]="invite.status === 'ACCEPTED'">
             <div class="invite-header">
               <div class="scout-avatar">
                 <img *ngIf="invite.scoutProfile.urlProfileImage" [src]="invite.scoutProfile.urlProfileImage" [alt]="invite.scoutProfile.fullName">

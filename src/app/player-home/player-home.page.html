@@ -3,6 +3,7 @@
     <app-profile-drawer
       [profile]="userProfile"
       (myVideos)="onDrawerMyVideos()"
+      (invites)="onDrawerInvites()"
       (editProfile)="onDrawerEditProfile()"
       (signOut)="onDrawerSignOut()"
     ></app-profile-drawer>
@@ -18,10 +19,16 @@
     <header class="arena-hero section">
       <div class="hero-topline">
         <p>Minha Vitrine</p>
-        <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
-          <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-          <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
-        </ion-button>
+        <div class="header-actions">
+          <ion-button fill="clear" class="invites-btn" (click)="openInvitesSheet()" aria-label="Ver convites">
+            <ion-icon slot="icon-only" name="mail-outline"></ion-icon>
+            <ion-badge color="danger" *ngIf="pendingInvitesCount > 0">{{ pendingInvitesCount }}</ion-badge>
+          </ion-button>
+          <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
+            <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
+            <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
+          </ion-button>
+        </div>
       </div>
     </header>
 

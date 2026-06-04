@@ -8,7 +8,7 @@
 
 .chat-inbox-shell {
   min-height: 100%;
-  padding: 24px;
+  padding: 0 24px 24px;
   background: linear-gradient(180deg, var(--be-color-bg-elevated) 0%, var(--be-color-bg) 100%);
   color: var(--be-color-text-1);
 }
@@ -18,7 +18,12 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 18px;
+  padding: 24px 0 18px;
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--be-color-bg-elevated);
 }
 
 .chat-inbox-header p {

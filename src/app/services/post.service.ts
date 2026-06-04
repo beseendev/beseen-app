@@ -186,11 +186,11 @@ export class PostService {
     return this.apiService.patch<PostInviteResponse>(`/posts/invites/${inviteId}/accept`, {});
   }
 
-  getInvites(limit: number = 10, cursor?: string, postId?: string): Observable<PostInvitePageResponse> {
-    let params = new HttpParams().set('limit', limit.toString());
-    if (cursor) {
-      params = params.set('cursor', cursor);
-    }
+  getInvites(limit: number = 10, page: number = 0, postId?: string): Observable<PostInvitePageResponse> {
+    let params = new HttpParams()
+      .set('limit', limit.toString())
+      .set('page', page.toString());
+
     if (postId) {
       params = params.set('postId', postId);
     }
