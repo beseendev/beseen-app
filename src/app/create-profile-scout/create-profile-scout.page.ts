@@ -387,8 +387,7 @@ export class CreateProfileScoutPage implements OnInit {
         })
       ).subscribe({
         next: async () => {
-          this.authService.logout();
-          this.router.navigate(['/login']);
+          window.location.href = '/scout-home';
         }
       });
     } catch (error) {
