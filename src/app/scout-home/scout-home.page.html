@@ -148,6 +148,10 @@
               <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
             </ion-button>
 
+            <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
+              <ion-icon name="flag-outline"></ion-icon>
+            </ion-button>
+
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
@@ -209,7 +213,8 @@
       [items]="feedItems"
       (favoriteToggled)="toggleFavoriteFromCard($event)"
       (inviteRequested)="sendInvite($event)"
-      (chatRequested)="openChat($event)">
+      (chatRequested)="openChat($event)"
+      (reportRequested)="reportVideo($event)">
     </app-scout-favorites-tab>
 
     <section class="content-section section" *ngIf="selectedTab === 'favoritos' && isLoadingContent">

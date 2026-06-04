@@ -154,6 +154,10 @@
             <ion-button fill="clear" class="video-mute-btn" (click)="rankingPlayer.toggleMute($event)" [attr.aria-label]="rankingPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
               <ion-icon [name]="rankingPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
             </ion-button>
+
+            <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
+              <ion-icon name="flag-outline"></ion-icon>
+            </ion-button>
             
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
@@ -213,6 +217,10 @@
 
             <ion-button fill="clear" class="video-mute-btn" (click)="newPlayer.toggleMute($event)" [attr.aria-label]="newPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
               <ion-icon [name]="newPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            </ion-button>
+
+            <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
+              <ion-icon name="flag-outline"></ion-icon>
             </ion-button>
             
             <div class="be-tiktok-overlay">

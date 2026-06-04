@@ -106,6 +106,10 @@ export class PostService {
     return this.apiService.delete<void>(`/posts/${postId}`);
   }
 
+  reportPost(postId: string, reason: string): Observable<void> {
+    return this.apiService.post<void>(`/posts/${postId}/report`, { reason });
+  }
+
   private homePosts = new BehaviorSubject<Post[]>([]);
   homePosts$ = this.homePosts.asObservable();
 
