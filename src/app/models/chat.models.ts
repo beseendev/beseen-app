@@ -20,7 +20,10 @@ export interface PostInviteResponse {
 
 export interface PostInvitePageResponse {
   items: PostInviteResponse[];
-  nextCursor: string | null;
+  nextCursor?: string | null;
+  totalElements: number;
+  totalPages: number;
+  pageNumber: number;
 }
 
 export interface ChatThreadSummaryDTO {

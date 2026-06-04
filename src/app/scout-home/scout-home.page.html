@@ -143,7 +143,7 @@
             <ion-button fill="clear" class="video-mute-btn" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
               <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
             </ion-button>
-            
+
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
@@ -159,38 +159,6 @@
                     <span *ngIf="item.video.localidade">{{ item.video.localidade }}</span>
                 </p>
               </div>
-
-              <div class="chat-state-panel" *ngIf="shouldShowConversationAction(item.video)">
-                <ng-container [ngSwitch]="item.video.inviteStatus">
-                  <div *ngSwitchCase="null" class="state-block">
-                    <ion-button size="small" fill="solid" color="primary" (click)="sendInvite(item.video)" [disabled]="item.video.isInviting">
-                      <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
-                      {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
-                    </ion-button>
-                  </div>
-
-                  <div *ngSwitchCase="'PENDING'" class="state-block">
-                    <span class="status-tag" style="background: var(--be-color-warning); color: #000; border: none;">Aguardando confirmação</span>
-                  </div>
-
-                  <div *ngSwitchCase="'ACCEPTED'" class="state-block">
-                    <ion-button size="small" fill="solid" color="success" (click)="openChat(item.video)">
-                      Abrir chat
-                    </ion-button>
-                  </div>
-
-                  <div *ngSwitchCase="'REJECTED'" class="state-block">
-                    <span class="status-tag" style="background: var(--be-color-danger); color: #fff; border: none;">Convite rejeitado</span>
-                  </div>
-
-                  <div *ngSwitchDefault class="state-block">
-                    <ion-button *ngIf="!item.video.inviteStatus" size="small" fill="solid" color="primary" (click)="sendInvite(item.video)" [disabled]="item.video.isInviting">
-                      <ion-spinner name="crescent" *ngIf="item.video.isInviting" style="margin-right: 8px; --color: #fff;"></ion-spinner>
-                      {{ item.video.isInviting ? 'Processando...' : 'Convidar para conversar' }}
-                    </ion-button>
-                  </div>
-                </ng-container>
-              </div>
             </div>
 
             <div class="be-tiktok-actions">
@@ -198,7 +166,7 @@
                   <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
                   <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
                </div>
-               
+
                <ion-button
                 fill="clear"
                 class="favorite-btn"

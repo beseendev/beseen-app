@@ -37,17 +37,24 @@
   text-transform: uppercase
 }
 
-.chat-inbox-btn {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-inbox-btn, .invites-btn {
   position: relative;
   --color: var(--be-color-text-2);
-  overflow: visible
+  overflow: visible;
+  margin: 0;
 }
 
-.chat-inbox-btn::part(native) {
-  overflow: visible
+.chat-inbox-btn::part(native), .invites-btn::part(native) {
+  overflow: visible;
 }
 
-.chat-inbox-btn ion-badge {
+.chat-inbox-btn ion-badge, .invites-btn ion-badge {
   position: absolute;
   top: 2px;
   right: 2px;

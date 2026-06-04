@@ -16,6 +16,7 @@ export class ProfileDrawerComponent implements OnChanges {
   avatarLoadFailed = false;
 
   @Output() myVideos = new EventEmitter<void>();
+  @Output() invites = new EventEmitter<void>();
   @Output() editProfile = new EventEmitter<void>();
   @Output() signOut = new EventEmitter<void>();
 
@@ -51,6 +52,10 @@ export class ProfileDrawerComponent implements OnChanges {
 
   onMyVideos(): void {
     this.myVideos.emit();
+  }
+
+  onInvites(): void {
+    this.invites.emit();
   }
 
   onEditProfile(): void {

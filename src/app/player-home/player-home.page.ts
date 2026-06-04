@@ -37,7 +37,8 @@ import {
   starOutline,
   menuOutline,
   volumeHighOutline,
-  volumeMuteOutline
+  volumeMuteOutline,
+  mailOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -145,6 +146,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   private rankingCurrentPage = 0;
   activeChatCount = 0;
+  pendingInvitesCount = 0;
 
   private threadsSubscription!: Subscription;
 
@@ -172,7 +174,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       starOutline,
       helpCircleOutline,
       volumeHighOutline,
-      volumeMuteOutline
+      volumeMuteOutline,
+      mailOutline
     });
   }
 
@@ -192,7 +195,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.threadsSubscription = this.chatService.threads$.subscribe(threads => {
-      this.activeChatCount = threads.length;
+      this.activeChatCount = threads.filter(t => t.status === 'ACCEPTED').length;
+      this.pendingInvitesCount = threads.filter(t => t.status === 'PENDING').length;
     });
 
     this.chatService.loadThreads().subscribe();
@@ -437,6 +441,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigateByUrl('/profile-player');
   }
 
+  onDrawerInvites(): void {
+    this.menuController.close('profileMenu');
+    this.openInvitesSheet();
+  }
+
   onDrawerEditProfile(): void {
     this.menuController.close('profileMenu');
     this.router.navigateByUrl('/profile-player');
@@ -512,7 +521,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     await modal.present();
   }
 
-  async openInvitesSheet(postId: string): Promise<void> {
+  async openInvitesSheet(postId?: string): Promise<void> {
     const modal = await this.modalController.create({
       component: InvitesSheetComponent,
       componentProps: {
