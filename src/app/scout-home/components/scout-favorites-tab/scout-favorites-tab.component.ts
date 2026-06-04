@@ -4,7 +4,7 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons';
+import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline, flagOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat.service';
 import { ScoutFeedItem } from '../../scout-home.page';
@@ -24,6 +24,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() reportRequested = new EventEmitter<FavoriteAthleteVideoCard>();
 
   @ViewChildren('vFav') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
   private videoObserver?: IntersectionObserver;
@@ -40,7 +41,8 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       star,
       starOutline,
       volumeHighOutline,
-      volumeMuteOutline
+      volumeMuteOutline,
+      flagOutline
     });
   }
 
@@ -97,6 +99,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   toggleFavorite(card: FavoriteAthleteVideoCard): void {
     this.favoriteToggled.emit(card);
+  }
+
+  report(card: FavoriteAthleteVideoCard): void {
+    this.reportRequested.emit(card);
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {

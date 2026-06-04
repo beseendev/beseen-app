@@ -25,7 +25,8 @@ import {
   MenuController,
   ModalController,
   PopoverController,
-  ToastController
+  ToastController,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -38,7 +39,8 @@ import {
   menuOutline,
   volumeHighOutline,
   volumeMuteOutline,
-  mailOutline
+  mailOutline,
+  flagOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -158,6 +160,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private modalController = inject(ModalController);
+  private alertController = inject(AlertController);
   public popoverController = inject(PopoverController);
   private toastController = inject(ToastController);
 
@@ -175,8 +178,62 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       helpCircleOutline,
       volumeHighOutline,
       volumeMuteOutline,
-      mailOutline
+      mailOutline,
+      flagOutline
     });
+  }
+
+  async reportVideo(video: PlayerShowcaseVideo) {
+    const alert = await this.alertController.create({
+      header: 'Denunciar Vídeo',
+      message: 'Por favor, informe o motivo da denúncia para análise de nossa equipe.',
+      cssClass: 'be-alert',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Ex: Conteúdo impróprio, spam, etc.'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Denunciar',
+          cssClass: 'be-danger-btn',
+          handler: (data: { reason: string }) => {
+            if (!data.reason?.trim()) {
+              this.showToast('Por favor, descreva o motivo da denúncia.', 'warning');
+              return false;
+            }
+
+            this.postService.reportPost(video.id, data.reason).subscribe({
+              next: () => {
+                this.showToast('Denúncia enviada com sucesso. Obrigado por nos ajudar a manter a comunidade segura!', 'success');
+              },
+              error: (err) => {
+                console.error('Error reporting post', err);
+                this.showToast('Erro ao enviar denúncia. Tente novamente mais tarde.', 'danger');
+              }
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 3000,
+      color: color,
+      position: 'top'
+    });
+    toast.present();
   }
 
   get userName(): string {

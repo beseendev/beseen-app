@@ -473,6 +473,36 @@ ion-segment-button {
   backdrop-filter: blur(8px);
 }
 
+.video-report-btn {
+  --color: #fff;
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: rgba(2, 6, 23, 0.22);
+  --background-hover: rgba(2, 6, 23, 0.34);
+  --background-activated: rgba(2, 6, 23, 0.46);
+  --border-radius: 999px;
+  position: absolute;
+  top: calc(142px + env(safe-area-inset-top));
+  right: 18px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  pointer-events: auto;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.48));
+}
+
+.video-report-btn ion-icon {
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.video-report-btn::part(native) {
+  min-width: 48px;
+  min-height: 48px;
+  backdrop-filter: blur(8px);
+}
+
 .status-tag {
   display: inline-flex;
   padding: 4px 12px;

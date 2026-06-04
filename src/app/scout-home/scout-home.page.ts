@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll } from '@ionic/angular';
+import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import {
   cardOutline,
   helpCircleOutline,
   volumeHighOutline,
-  volumeMuteOutline,
+  volumeMuteOutline, flagOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -84,6 +84,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private readonly subscriptionService = inject(SubscriptionService);
   private readonly modalService = inject(ModalStateService);
   private readonly modalController = inject(ModalController);
+  private readonly alertController = inject(AlertController);
   public readonly popoverController = inject(PopoverController);
   private readonly toastController = inject(ToastController);
   private readonly router = inject(Router);
@@ -101,8 +102,53 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       cardOutline,
       helpCircleOutline,
       volumeHighOutline,
-      volumeMuteOutline
+      volumeMuteOutline,
+      flagOutline
+
     });
+  }
+
+  async reportVideo(card: FavoriteAthleteVideoCard) {
+    const alert = await this.alertController.create({
+      header: 'Denunciar Vídeo',
+      message: 'Por favor, informe o motivo da denúncia para análise de nossa equipe.',
+      cssClass: 'be-alert',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Ex: Conteúdo impróprio, spam, etc.'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Denunciar',
+          cssClass: 'be-danger-btn',
+          handler: (data: { reason: string }) => {
+            if (!data.reason?.trim()) {
+              this.showToast('Por favor, descreva o motivo da denúncia.', 'warning');
+              return false;
+            }
+
+            this.postService.reportPost(card.postId, data.reason).subscribe({
+              next: () => {
+                this.showToast('Denúncia enviada com sucesso. Obrigado por nos ajudar a manter a comunidade segura!', 'success');
+              },
+              error: (err) => {
+                console.error('Error reporting post', err);
+                this.showToast('Erro ao enviar denúncia. Tente novamente mais tarde.', 'danger');
+              }
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   async openPlans() {

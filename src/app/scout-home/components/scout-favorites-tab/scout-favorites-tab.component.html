@@ -38,6 +38,10 @@
         <ion-button fill="clear" class="video-mute-btn" (click)="favoritePlayer.toggleMute($event)" [attr.aria-label]="favoritePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
           <ion-icon [name]="favoritePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
         </ion-button>
+
+        <ion-button fill="clear" class="video-report-btn" (click)="report(item.video)" aria-label="Denunciar video">
+          <ion-icon name="flag-outline"></ion-icon>
+        </ion-button>
         
         <div class="be-tiktok-overlay">
           <div class="be-tiktok-info">
