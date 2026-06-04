@@ -196,10 +196,14 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.threadsSubscription = this.chatService.threads$.subscribe(threads => {
       this.activeChatCount = threads.filter(t => t.status === 'ACCEPTED').length;
-      this.pendingInvitesCount = threads.filter(t => t.status === 'PENDING').length;
+    });
+
+    this.chatService.pendingInvitesCount$.subscribe(count => {
+      this.pendingInvitesCount = count;
     });
 
     this.chatService.loadThreads().subscribe();
+    this.chatService.refreshInviteCount().subscribe();
 
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);

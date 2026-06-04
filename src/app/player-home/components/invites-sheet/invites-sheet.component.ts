@@ -75,6 +75,7 @@ export class InvitesSheetComponent implements OnInit {
         this.invites = [...this.invites, ...response.items];
         this.hasMore = this.invites.length < response.totalElements;
         this.isLoading = false;
+        this.chatService.refreshInviteCount().subscribe(); // Atualiza contador global
 
         if (event) {
           event.target.complete();
@@ -103,6 +104,8 @@ export class InvitesSheetComponent implements OnInit {
       next: async (acceptedInvite) => {
         invite.status = 'ACCEPTED';
         invite.chatThreadId = acceptedInvite.chatThreadId;
+        this.chatService.loadThreads().subscribe();
+        this.chatService.refreshInviteCount().subscribe();
       },
       error: (err) => {
         console.error('Error accepting invite', err);

@@ -13,6 +13,9 @@ export class ChatService {
   private threadsSubject = new BehaviorSubject<ChatThreadSummaryDTO[]>([]);
   threads$ = this.threadsSubject.asObservable();
 
+  private pendingInvitesCountSubject = new BehaviorSubject<number>(0);
+  pendingInvitesCount$ = this.pendingInvitesCountSubject.asObservable();
+
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
 
@@ -23,6 +26,12 @@ export class ChatService {
         this.threadsSubject.next(threads);
         this.isLoadingSubject.next(false);
       })
+    );
+  }
+
+  refreshInviteCount(): Observable<{ count: number }> {
+    return this.apiService.get<{ count: number }>('/posts/invites/count').pipe(
+      tap(res => this.pendingInvitesCountSubject.next(res.count))
     );
   }
 
