@@ -149,6 +149,12 @@
       color: var(--be-color-brand-500);
     }
 
+    a {
+      color: var(--be-color-brand-500);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
     .scroll-finish-indicator {
       display: flex;
       flex-direction: column;

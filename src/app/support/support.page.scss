@@ -133,3 +133,20 @@ ion-select::part(text) {
   --color: #052e16;
   font-weight: 700;
 }
+
+.legal-links {
+  margin-top: 24px;
+  
+  .privacy-link {
+    color: var(--be-color-text-3);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+
+    &:hover, &:active {
+      color: var(--be-color-brand-500);
+      text-decoration: underline;
+    }
+  }
+}

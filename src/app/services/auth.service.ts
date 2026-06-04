@@ -48,15 +48,43 @@ export class AuthService {
   private chatService = inject(ChatService);
 
   constructor(private apiService: ApiService) {
+    this.initializeAuth();
+  }
+
+  private initializeAuth() {
     if (this.hasToken()) {
-      this.getCurrentUser().subscribe({
-        next: (user) => {
-          this.checkSubscriptionIfNeeded(user);
-        },
-        error: () => {
+      const token = this.getAccessToken();
+      if (token && this.isTokenExpired(token)) {
+        this.refreshToken().subscribe({
+          next: () => this.loadInitialUserData(),
+          error: () => this.logout()
+        });
+      } else {
+        this.loadInitialUserData();
+      }
+    }
+  }
+
+  private loadInitialUserData() {
+    this.getCurrentUser().subscribe({
+      next: (user) => {
+        this.checkSubscriptionIfNeeded(user);
+      },
+      error: (err) => {
+        if (err.status === 401 || err.status === 403) {
           this.logout();
         }
-      });
+      }
+    });
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      if (!decoded.exp) return false;
+      return (Math.floor(Date.now() / 1000) + 30) >= decoded.exp;
+    } catch {
+      return true;
     }
   }
 
@@ -86,10 +114,6 @@ export class AuthService {
         this.currentUserSubject.next(user);
         this.authState.next(true);
         this.checkSubscriptionIfNeeded(user);
-      }),
-      catchError(err => {
-        this.logout();
-        return throwError(() => err);
       })
     );
   }
@@ -138,6 +162,7 @@ export class AuthService {
           scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
+        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.authState.next(false);
@@ -164,6 +189,7 @@ export class AuthService {
           scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
+        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.authState.next(false);

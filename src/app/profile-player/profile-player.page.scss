@@ -320,3 +320,148 @@ ion-item {
 .readonly-item p {
   user-select: none;
 }
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 10px;
+}
+
+.video-item {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  background: #000;
+  cursor: pointer;
+}
+
+.video-thumbnail-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #fff;
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+
+.options-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  --color: #fff;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: rgba(0, 0, 0, 0.4);
+  --border-radius: 50%;
+  backdrop-filter: blur(4px);
+  z-index: 5;
+}
+
+.options-btn ion-icon {
+  font-size: 1.2rem;
+}
+
+.options-btn::part(native) {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.video-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-modal-container {
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  --color: #fff;
+  z-index: 1001;
+}
+
+.full-screen-video {
+  width: 100%;
+  flex: 1;
+  background: #000;
+}
+
+.video-modal-info {
+  padding: 20px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+  color: #fff;
+}
+
+.video-caption {
+  font-size: 1rem;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.upgrade-banner {
+  background: var(--be-color-surface-2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--be-color-brand-500);
+
+  .upgrade-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 3rem;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--be-color-text-2);
+      line-height: 1.5;
+
+      b {
+        color: var(--be-color-brand-500);
+      }
+    }
+  }
+}
