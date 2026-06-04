@@ -57,66 +57,38 @@ export class SubscriptionService {
   }
 
   hasActiveSubscription(): boolean {
-    const token = localStorage.getItem('access_token');
-    if (!token) return false;
-    try {
-      const decoded = jwtDecode<any>(token);
-      const status = decoded.subscriptionStatus;
-      const endDateStr = decoded.subscriptionEndDate;
-
-      if (status !== SubscriptionStatus.ACTIVE) return false;
-
-      if (endDateStr) {
-        return new Date(endDateStr) > new Date();
-      }
-
-      return true;
-    } catch {
-      return false;
-    }
+    return true; // MOCK: Acesso liberado para todos
   }
 
   getPlanName(): string | null {
     const token = localStorage.getItem('access_token');
-    if (!token) return null;
+    if (!token) return 'Clube'; // MOCK: Assume o plano mais alto
     try {
       const decoded = jwtDecode<any>(token);
-      return decoded.planName;
+      return decoded.planName || 'Clube';
     } catch {
-      return null;
+      return 'Clube';
     }
   }
 
   canViewProfiles(): boolean {
-    if (!this.hasActiveSubscription()) return false;
-    const plan = this.getPlanName();
-    return plan === 'Clube' || plan === 'Contato';
+    return true; // MOCK
   }
 
   canSendInvites(): boolean {
-    if (!this.hasActiveSubscription()) return false;
-    const plan = this.getPlanName();
-    return plan === 'Clube' || plan === 'Contato';
+    return true; // MOCK
   }
 
   canSendMoreInvites(currentThreadsCount: number): boolean {
-    if (!this.hasActiveSubscription()) return false;
-    const plan = this.getPlanName();
-    if (plan === 'Clube') return true;
-    if (plan === 'Contato') return currentThreadsCount < 2;
-    return false;
+    return true; // MOCK
   }
 
   canAccessChat(): boolean {
-    if (!this.hasActiveSubscription()) return false;
-    const plan = this.getPlanName();
-    return plan === 'Clube' || plan === 'Contato';
+    return true; // MOCK
   }
 
   hasFullProfileAccess(): boolean {
-    if (!this.hasActiveSubscription()) return false;
-    const plan = this.getPlanName();
-    return plan === 'Clube';
+    return true; // MOCK
   }
 
   getPlans(): Observable<Plan[]> {

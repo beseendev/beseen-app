@@ -83,6 +83,7 @@ const handle401Error = (
         refreshTokenSubject.next(response.accessToken);
 
         const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
+        /* MOCK: Desabilitado temporariamente para acesso total
         if (decodedToken.role === 'CLUBE') {
           const isStatusActive = decodedToken.subscriptionStatus === SubscriptionStatus.ACTIVE;
           const isDateExpired = decodedToken.subscriptionEndDate
@@ -96,6 +97,7 @@ const handle401Error = (
             modalService.openPlansModal();
           }
         }
+        */
 
         return next(addToken(req, response.accessToken));
       }),
