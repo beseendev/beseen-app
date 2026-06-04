@@ -37,6 +37,13 @@ export interface ChatThreadSummaryDTO {
   unreadCount: number;
 }
 
+export interface ChatThreadPageResponse {
+  items: ChatThreadSummaryDTO[];
+  totalElements: number;
+  totalPages: number;
+  pageNumber: number;
+}
+
 export interface ChatMessageResponse {
   id: number;
   senderId: number;

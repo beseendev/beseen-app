@@ -15,18 +15,18 @@ import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
   standalone: true,
   imports: [CommonModule, IonicModule]
 })
-export class ChatInboxComponent implements OnInit, OnDestroy {
+export class ChatInboxComponent implements OnInit {
   @Input() isPlayer = false;
 
   threads: ChatThreadSummaryDTO[] = [];
-  isLoading$: Observable<boolean>;
+  isLoading = false;
+  hasMore = true;
+  private readonly LIMIT = 10;
 
   private readonly modalController = inject(ModalController);
   private readonly chatService = inject(ChatService);
-  private threadsSubscription?: Subscription;
 
   constructor() {
-    this.isLoading$ = this.chatService.isLoading$;
     addIcons({
       closeOutline,
       personCircleOutline
@@ -34,14 +34,36 @@ export class ChatInboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.threadsSubscription = this.chatService.threads$.subscribe((threads) => {
-      this.threads = threads;
-    });
-    this.chatService.loadThreads().subscribe();
+    this.loadThreads();
   }
 
-  ngOnDestroy(): void {
-    this.threadsSubscription?.unsubscribe();
+  async loadThreads(event?: any): Promise<void> {
+    if (this.isLoading || (!this.hasMore && event)) {
+      if (event) event.target.complete();
+      return;
+    }
+
+    this.isLoading = true;
+    const page = Math.floor(this.threads.length / this.LIMIT);
+
+    this.chatService.loadThreads(this.LIMIT, page).subscribe({
+      next: (response) => {
+        this.threads = [...this.threads, ...response.items];
+        this.hasMore = this.threads.length < response.totalElements;
+        this.isLoading = false;
+
+        if (event) {
+          event.target.complete();
+        }
+      },
+      error: (err) => {
+        console.error('Error loading threads', err);
+        this.isLoading = false;
+        if (event) {
+          event.target.complete();
+        }
+      }
+    });
   }
 
   async close(): Promise<void> {
