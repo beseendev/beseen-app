@@ -5,7 +5,7 @@
 
 ENV=${1:-prod}
 
-set -e 
+set -e
 
 echo "🚀 Iniciando preparação MOBILE para: ${ENV^^}..."
 
@@ -27,7 +27,7 @@ if [ -d "android" ]; then
     echo "🤖 Configurando Android..."
     FIREBASE_SRC="firebase-config/google-services-${ENV}.json"
     FIREBASE_DEST="android/app/google-services.json"
-    
+
     if [ -f "$FIREBASE_SRC" ]; then
         cp "$FIREBASE_SRC" "$FIREBASE_DEST"
         echo "✅ Firebase Android atualizado ($ENV)"
@@ -47,6 +47,15 @@ if [ -d "android" ]; then
     fi
 
     npx cap sync android
+
+    # NOVO: GERAÇÃO AUTOMÁTICA DE ÍCONES E SPLASH DO ANDROID
+    if [ -d "assets" ]; then
+        echo "🎨 Gerando ícones e splash screen para Android..."
+        npx capacitor-assets generate --android
+        echo "✅ Recursos visuais do Android atualizados!"
+    else
+        echo "⚠️  Aviso: Pasta 'assets' raiz não encontrada. Pulando geração de ícones."
+    fi
 fi
 
 # --- 4. iOS CONFIG ---
@@ -54,7 +63,7 @@ if [ -d "ios" ]; then
     echo "🍎 Configurando iOS..."
     FIREBASE_SRC="firebase-config/GoogleService-Info-${ENV}.plist"
     FIREBASE_DEST="ios/App/App/GoogleService-Info.plist"
-    
+
     if [ -f "$FIREBASE_SRC" ]; then
         cp "$FIREBASE_SRC" "$FIREBASE_DEST"
         echo "✅ Firebase iOS atualizado ($ENV)"
@@ -72,6 +81,13 @@ if [ -d "ios" ]; then
     fi
 
     npx cap sync ios
+
+    # NOVO: GERAÇÃO AUTOMÁTICA DE ÍCONES E SPLASH DO iOS (Para o futuro!)
+    if [ -d "assets" ]; then
+        echo "🎨 Gerando ícones e splash screen para iOS..."
+          npx capacitor-assets generate --ios
+          echo "✅ Recursos visuais do iOS atualizados!"
+    fi
 fi
 
 echo ""
