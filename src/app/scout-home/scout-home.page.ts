@@ -64,6 +64,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
+  private tabLoadSub?: Subscription;
 
   feedItems: ScoutFeedItem[] = [];
   userRole: string | null = null;
@@ -290,12 +291,16 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async refreshCurrentTab(): Promise<void> {
+    if (this.tabLoadSub) {
+      this.tabLoadSub.unsubscribe();
+    }
+
     this.isLoadingContent = true;
     if (this.selectedTab === 'vitrine') {
-      this.postService.refreshHomePosts().subscribe();
+      this.tabLoadSub = this.postService.refreshHomePosts().subscribe();
     } else {
       this.favoritesNextCursor = null;
-      this.postService.getFavoritePosts(10).subscribe({
+      this.tabLoadSub = this.postService.getFavoritePosts(10).subscribe({
         next: async (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
@@ -490,8 +495,12 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   refreshPosts(event: any): void {
+    if (this.tabLoadSub) {
+      this.tabLoadSub.unsubscribe();
+    }
+
     if (this.selectedTab === 'vitrine') {
-      this.postService.refreshHomePosts().subscribe({
+      this.tabLoadSub = this.postService.refreshHomePosts().subscribe({
         next: async () => {
           this.finalizeLoad(event);
           if (this.infiniteScroll) {
@@ -503,7 +512,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       });
     } else {
       this.favoritesNextCursor = null;
-      this.postService.getFavoritePosts(10).subscribe({
+      this.tabLoadSub = this.postService.getFavoritePosts(10).subscribe({
         next: async (response) => {
           this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
@@ -513,6 +522,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
         error: (err) => {
           console.error('Error loading favorite posts', err);
           this.isLoadingContent = false;
+          this.finalizeLoad(event);
         }
       });
     }
@@ -520,7 +530,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   loadMorePosts(event: any): void {
     if (this.selectedTab === 'vitrine') {
-      this.postService.loadHomePosts().subscribe({
+      this.tabLoadSub = this.postService.loadHomePosts().subscribe({
         next: async (res) => {
           this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
           await this.updateFeedItems();
@@ -528,10 +538,13 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
         error: () => this.finalizeLoad(event)
       });
     } else if (this.selectedTab === 'favoritos' && this.favoritesNextCursor) {
-      this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
+      this.tabLoadSub = this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
         next: async (response) => {
           const newVideos = response.posts.filter(p => p.mediaType === FileType.VIDEO);
-          this.videoPosts = [...this.videoPosts, ...newVideos];
+          const existingIds = new Set(this.videoPosts.map(p => p.id));
+          const filteredNew = newVideos.filter(p => !existingIds.has(p.id));
+
+          this.videoPosts = [...this.videoPosts, ...filteredNew];
           this.favoritesNextCursor = response.nextCursor;
           this.finalizeLoad(event, !response.nextCursor);
           await this.updateFeedItems();

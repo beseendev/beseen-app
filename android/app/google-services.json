@@ -1,42 +1,57 @@
 {
   "project_info": {
-    "project_number": "304753853961",
-    "project_id": "beseen-app-android",
-    "storage_bucket": "beseen-app-android.firebasestorage.app"
+    "project_number": "950779319104",
+    "project_id": "beseen-app-prod",
+    "storage_bucket": "beseen-app-prod.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:304753853961:android:20b1c242d5958802ae1ad8",
+        "mobilesdk_app_id": "1:950779319104:android:58c2bb704fb9249a0320a5",
         "android_client_info": {
-          "package_name": "io.ionic.starter"
+          "package_name": "com.beseen.app.official"
         }
       },
       "oauth_client": [
         {
-          "client_id": "304753853961-8asuu2v10elk8mk4v0kacipk0025upf6.apps.googleusercontent.com",
+          "client_id": "950779319104-5oqqmmq23ehbhvqto9a4mdkc8gtq2ghn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "io.ionic.starter",
-            "certificate_hash": "7829229ea3d44893d7162881911d31bb3a816701"
+            "package_name": "com.beseen.app.official",
+            "certificate_hash": "68f26dc6f254597c386acf6811e2803ee755f4be"
           }
         },
         {
-          "client_id": "304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com",
+          "client_id": "950779319104-s9r7kljo2shn4lhcc8taf1j4gntc2a1h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beseen.app.official",
+            "certificate_hash": "21163a3509064f79309b5835a47926638c9dd0f5"
+          }
+        },
+        {
+          "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB8ZmArYU6aP5MeAOzYus9qMZeVwTZ5Fmw"
+          "current_key": "AIzaSyCUmRM33gDq6-gbkQg-pvBLRXWN4eNENGk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com",
+              "client_id": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "950779319104-udjb4i72hp7g4kdahagt35v984k9jr7v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.beseen.app.official"
+              }
             }
           ]
         }

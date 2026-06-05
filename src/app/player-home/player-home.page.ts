@@ -151,6 +151,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   pendingInvitesCount = 0;
 
   private threadsSubscription!: Subscription;
+  private tabLoadSub?: Subscription;
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
@@ -265,21 +266,25 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
 
-      const allRanking = [...videos]
-        .sort((a, b) => b.likesCount - a.likesCount)
-        .map(p => this.mapPostToVideo(p));
-
-      this.featuredVideo = allRanking[0] ?? null;
-
-      this.rankingVideos = allRanking.slice(0, 10);
-      this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
-
+      // Update "Novos" tab - let it grow with infinite scroll
       const allNew = [...videos]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .map(p => this.mapPostToVideo(p));
 
-      this.newVideos = allNew.slice(0, 10);
+      this.newVideos = allNew;
       this.newVideosWithAds = await this.interleaveAds(this.newVideos);
+
+      // Update "Ranking" tab only if not currently active or if empty
+      // to avoid conflicting with loadRankingPosts() which uses a specialized API
+      if (this.activeTab !== 'ranking' || this.rankingVideos.length === 0) {
+        const allRanking = [...videos]
+          .sort((a, b) => b.likesCount - a.likesCount)
+          .map(p => this.mapPostToVideo(p));
+
+        this.featuredVideo = allRanking[0] ?? null;
+        this.rankingVideos = allRanking.slice(0, 10);
+        this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
+      }
     });
   }
 
@@ -364,6 +369,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadRankingPosts(isRefresh = true, event?: any): void {
+    if (isRefresh && this.tabLoadSub) {
+      this.tabLoadSub.unsubscribe();
+    }
+
     if (isRefresh) {
       this.rankingCurrentPage = 0;
       if (this.infiniteScroll) {
@@ -374,7 +383,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     const pageParam: any = this.rankingCurrentPage;
     const limit = isRefresh ? 11 : 10;
 
-    this.postService.getRankingPosts(limit, pageParam).subscribe({
+    const sub = this.postService.getRankingPosts(limit, pageParam).subscribe({
       next: async (res) => {
         const mapped = res.posts
           .filter(p => p.mediaType === FileType.VIDEO)
@@ -400,10 +409,19 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       },
       error: () => this.finalizeLoad(event)
     });
+
+    if (isRefresh) {
+      this.tabLoadSub = sub;
+    }
   }
 
   setActiveTab(tab: ArenaTab): void {
+    if (this.activeTab === tab) return;
     this.activeTab = tab;
+
+    if (this.tabLoadSub) {
+      this.tabLoadSub.unsubscribe();
+    }
 
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
@@ -412,7 +430,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (tab === 'ranking') {
       this.loadRankingPosts(true);
     } else if (tab === 'new') {
-      this.postService.refreshHomePosts().subscribe(() => {
+      this.tabLoadSub = this.postService.refreshHomePosts().subscribe(() => {
         setTimeout(() => {
           if (this.infiniteScroll) {
             this.infiniteScroll.disabled = false;
@@ -426,7 +444,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.activeTab === 'ranking') {
       this.loadRankingPosts(false, event);
     } else if (this.activeTab === 'new') {
-      this.postService.loadHomePosts().subscribe({
+      this.tabLoadSub = this.postService.loadHomePosts().subscribe({
         next: (res) => {
           this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
         },
@@ -438,10 +456,14 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   refreshPosts(event: any): void {
+    if (this.tabLoadSub) {
+      this.tabLoadSub.unsubscribe();
+    }
+
     if (this.activeTab === 'ranking') {
       this.loadRankingPosts(true, event);
     } else if (this.activeTab === 'new') {
-      this.postService.refreshHomePosts().subscribe({
+      this.tabLoadSub = this.postService.refreshHomePosts().subscribe({
         next: () => {
           this.finalizeLoad(event);
           setTimeout(() => {

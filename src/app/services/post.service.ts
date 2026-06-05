@@ -116,13 +116,13 @@ export class PostService {
   private homeNextCursor: string | null = null;
   private homeHasMorePosts = true;
 
-  loadHomePosts(limit: number = 10): Observable<any> {
-    if (!this.homeHasMorePosts) {
+  loadHomePosts(limit: number = 10, isRefresh: boolean = false): Observable<any> {
+    if (!isRefresh && !this.homeHasMorePosts) {
       return of({ posts: [], nextCursor: null });
     }
 
     let params = new HttpParams().set('limit', limit.toString());
-    if (this.homeNextCursor) {
+    if (this.homeNextCursor && !isRefresh) {
       params = params.set('cursor', this.homeNextCursor);
     }
 
@@ -132,8 +132,14 @@ export class PostService {
         return { posts: mappedPosts, nextCursor: response.nextCursor };
       }),
       tap(response => {
-        const currentPosts = this.homePosts.getValue();
-        this.homePosts.next([...currentPosts, ...response.posts]); // response.posts are already mapped
+        if (isRefresh) {
+          this.homePosts.next(response.posts);
+        } else {
+          const currentPosts = this.homePosts.getValue();
+          const existingIds = new Set(currentPosts.map(p => p.id));
+          const newPosts = response.posts.filter(p => !existingIds.has(p.id));
+          this.homePosts.next([...currentPosts, ...newPosts]);
+        }
         this.homeNextCursor = response.nextCursor;
         this.homeHasMorePosts = !!response.nextCursor;
       }),
@@ -142,10 +148,9 @@ export class PostService {
   }
 
   refreshHomePosts(limit: number = 10): Observable<any> {
-    this.homePosts.next([]);
     this.homeNextCursor = null;
     this.homeHasMorePosts = true;
-    return this.loadHomePosts(limit);
+    return this.loadHomePosts(limit, true);
   }
 
   shouldLoadInitialHomePosts(): boolean {
