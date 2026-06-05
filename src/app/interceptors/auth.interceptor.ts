@@ -23,7 +23,10 @@ export const authInterceptor: HttpInterceptorFn = (
   const subscriptionService = inject(SubscriptionService);
   const accessToken = authService.getAccessToken();
 
-  if (accessToken && req.url.startsWith(environment.apiUrl)) {
+  if (accessToken && req.url.startsWith(environment.apiUrl) && !req.url.includes('/auth/refresh')) {
+    if (authService.isTokenExpired(accessToken)) {
+      return handleTokenRefresh(req, next, authService, subscriptionService, modalService);
+    }
     req = addToken(req, accessToken);
   }
 
@@ -34,7 +37,7 @@ export const authInterceptor: HttpInterceptorFn = (
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh')
       ) {
-        return handle401Error(req, next, authService, subscriptionService, modalService);
+        return handleTokenRefresh(req, next, authService, subscriptionService, modalService);
       }
 
       if (error.status === 0) {
@@ -66,7 +69,7 @@ const addToken = (req: HttpRequest<any>, token: string) => {
   });
 };
 
-const handle401Error = (
+const handleTokenRefresh = (
   req: HttpRequest<any>,
   next: HttpHandlerFn,
   authService: AuthService,
