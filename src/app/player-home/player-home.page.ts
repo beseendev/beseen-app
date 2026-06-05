@@ -124,12 +124,9 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     ViewportVideoPlayerDirective
   ],
 })
-export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
+export class PlayerHomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
-  @ViewChildren('vRanking, vNew') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
-
-  private videoObserver?: IntersectionObserver;
 
   userProfile: any | null = null;
   avatarLoadFailed = false;
@@ -263,23 +260,22 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.chatService.refreshInviteCount().subscribe();
 
     this.posts$.subscribe(async posts => {
-      const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
+      if (this.activeTab === 'new') {
+        const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
+        
+        // De-duplication check
+        const uniqueVideos: Post[] = [];
+        const seenIds = new Set<string>();
+        for (const post of videos) {
+          if (!seenIds.has(post.id)) {
+            uniqueVideos.push(post);
+            seenIds.add(post.id);
+          }
+        }
 
-      const allRanking = [...videos]
-        .sort((a, b) => b.likesCount - a.likesCount)
-        .map(p => this.mapPostToVideo(p));
-
-      this.featuredVideo = allRanking[0] ?? null;
-
-      this.rankingVideos = allRanking.slice(0, 10);
-      this.rankingVideosWithAds = await this.interleaveAds(this.rankingVideos);
-
-      const allNew = [...videos]
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .map(p => this.mapPostToVideo(p));
-
-      this.newVideos = allNew.slice(0, 10);
-      this.newVideosWithAds = await this.interleaveAds(this.newVideos);
+        this.newVideos = uniqueVideos.map(p => this.mapPostToVideo(p));
+        this.newVideosWithAds = await this.interleaveAds(this.newVideos);
+      }
     });
   }
 
@@ -329,40 +325,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    this.setupVideoObserver();
-    this.videoElements.changes.subscribe(() => {
-      this.setupVideoObserver();
-    });
-  }
-
-  private setupVideoObserver(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
-    }
-
-    this.videoObserver = new IntersectionObserver((entries) => {
-      const activeEntry = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      this.videoElements.forEach(videoRef => {
-        const video = videoRef.nativeElement;
-        if (activeEntry?.target === video) {
-          video.play().catch(e => console.log('Autoplay blocked:', e));
-        } else {
-          video.pause();
-        }
-      });
-    }, {
-      threshold: [0, 0.35, 0.65, 0.85]
-    });
-
-    this.videoElements.forEach(videoRef => {
-      this.videoObserver?.observe(videoRef.nativeElement);
-    });
-  }
-
   private loadRankingPosts(isRefresh = true, event?: any): void {
     if (isRefresh) {
       this.rankingCurrentPage = 0;
@@ -403,6 +365,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setActiveTab(tab: ArenaTab): void {
+    if (this.activeTab === tab) return;
     this.activeTab = tab;
 
     if (this.infiniteScroll) {
@@ -412,13 +375,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (tab === 'ranking') {
       this.loadRankingPosts(true);
     } else if (tab === 'new') {
-      this.postService.refreshHomePosts().subscribe(() => {
-        setTimeout(() => {
-          if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = false;
-          }
-        }, 300);
-      });
+      this.postService.refreshHomePosts().subscribe();
     }
   }
 
@@ -724,9 +681,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     if (this.threadsSubscription) {
       this.threadsSubscription.unsubscribe();
-    }
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
     }
   }
 }

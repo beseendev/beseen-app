@@ -19,15 +19,12 @@ import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewpor
   standalone: true,
   imports: [CommonModule, IonicModule, AdCardComponent, ViewportVideoPlayerDirective]
 })
-export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ScoutFavoritesTabComponent implements OnInit, OnDestroy {
   @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() reportRequested = new EventEmitter<FavoriteAthleteVideoCard>();
-
-  @ViewChildren('vFav') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
-  private videoObserver?: IntersectionObserver;
 
   private readonly chatService = inject(ChatService);
   private readonly modalController = inject(ModalController);
@@ -49,44 +46,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
   ngOnInit(): void {
   }
 
-  ngAfterViewInit(): void {
-    this.setupVideoObserver();
-    this.videoElements.changes.subscribe(() => {
-      this.setupVideoObserver();
-    });
-  }
-
-  private setupVideoObserver(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
-    }
-
-    this.videoObserver = new IntersectionObserver((entries) => {
-      const activeEntry = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      this.videoElements.forEach(videoRef => {
-        const video = videoRef.nativeElement;
-        if (activeEntry?.target === video) {
-          video.play().catch(e => console.log('Autoplay blocked:', e));
-        } else {
-          video.pause();
-        }
-      });
-    }, {
-      threshold: [0, 0.35, 0.65, 0.85]
-    });
-
-    this.videoElements.forEach(videoRef => {
-      this.videoObserver?.observe(videoRef.nativeElement);
-    });
-  }
-
   ngOnDestroy(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
-    }
   }
 
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {

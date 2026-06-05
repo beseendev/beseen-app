@@ -319,9 +319,22 @@
       <div class="video-grid">
         <div class="video-item" *ngFor="let post of (filteredUserPosts$ | async)" (click)="openVideo(post)">
           <div class="video-thumbnail-container">
-            <!-- Usando o próprio vídeo como thumbnail para simplificar, com preload metadata -->
-            <video [src]="post.mediaUrl" preload="metadata" playsinline muted class="video-thumbnail"></video>
-            <div class="play-overlay">
+            <!-- Usando o próprio vídeo como thumbnail para simplificar, com preload metadata e fragmento para forçar frame -->
+            <video 
+              [src]="post.mediaUrl + '#t=0.001'" 
+              preload="metadata" 
+              playsinline 
+              muted 
+              class="video-thumbnail"
+              [class.is-loaded]="loadedVideos[post.id]"
+              (loadeddata)="onVideoLoaded(post.id)">
+            </video>
+            
+            <div class="video-loading-placeholder" *ngIf="!loadedVideos[post.id]">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+
+            <div class="play-overlay" *ngIf="loadedVideos[post.id]">
               <ion-icon name="play-outline"></ion-icon>
             </div>
             <ion-button fill="clear" class="options-btn" *ngIf="isEditing" (click)="openVideoOptions($event, post)">

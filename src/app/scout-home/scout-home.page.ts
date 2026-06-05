@@ -46,13 +46,12 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   standalone: true,
   imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, ViewportVideoPlayerDirective]
 })
-export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
+export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
-  @ViewChildren('vVitrine') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
 
-  private videoObserver?: IntersectionObserver;
+  vitrinePosts: Post[] = [];
+  favoritePosts: Post[] = [];
 
-  videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
@@ -65,7 +64,9 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
 
-  feedItems: ScoutFeedItem[] = [];
+  vitrineItems: ScoutFeedItem[] = [];
+  favoritesItems: ScoutFeedItem[] = [];
+  loadedVideos: { [key: string]: boolean } = {};
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -161,10 +162,22 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     this.homePostsSub = this.postService.homePosts$.subscribe(async posts => {
+      const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
+      
+      // De-duplication check
+      const uniqueVideos: Post[] = [];
+      const seenIds = new Set<string>();
+      for (const post of videos) {
+        if (!seenIds.has(post.id)) {
+          uniqueVideos.push(post);
+          seenIds.add(post.id);
+        }
+      }
+
+      this.vitrinePosts = uniqueVideos;
       if (this.selectedTab === 'vitrine') {
-        this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);
         this.isLoadingContent = false;
-        await this.updateFeedItems();
+        await this.updateFeedItems('vitrine');
       }
     });
 
@@ -179,43 +192,16 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.refreshCurrentTab();
   }
 
-  ngAfterViewInit(): void {
-    this.setupVideoObserver();
-    this.videoElements.changes.subscribe(() => {
-      this.setupVideoObserver();
-    });
-  }
-
-  private setupVideoObserver(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
+  private async updateFeedItems(tab: 'vitrine' | 'favoritos') {
+    const posts = tab === 'vitrine' ? this.vitrinePosts : this.favoritePosts;
+    const cards = posts.map(post => this.toVideoCard(post));
+    const items = await this.interleaveAds(cards);
+    
+    if (tab === 'vitrine') {
+      this.vitrineItems = items;
+    } else {
+      this.favoritesItems = items;
     }
-
-    this.videoObserver = new IntersectionObserver((entries) => {
-      const activeEntry = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      this.videoElements.forEach(videoRef => {
-        const video = videoRef.nativeElement;
-        if (activeEntry?.target === video) {
-          video.play().catch(e => console.log('Autoplay blocked:', e));
-        } else {
-          video.pause();
-        }
-      });
-    }, {
-      threshold: [0, 0.35, 0.65, 0.85]
-    });
-
-    this.videoElements.forEach(videoRef => {
-      this.videoObserver?.observe(videoRef.nativeElement);
-    });
-  }
-
-  private async updateFeedItems() {
-    const cards = this.selectedTab === 'vitrine' ? this.allVideoCards : this.favoriteVideoCards;
-    this.feedItems = await this.interleaveAds(cards);
   }
 
   private async interleaveAds(cards: FavoriteAthleteVideoCard[]): Promise<ScoutFeedItem[]> {
@@ -242,9 +228,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
-    }
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
     }
   }
 
@@ -292,10 +275,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.favoritesNextCursor = null;
       this.postService.getFavoritePosts(10).subscribe({
         next: async (response) => {
-          this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.favoritePosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
           this.isLoadingContent = false;
-          await this.updateFeedItems();
+          await this.updateFeedItems('favoritos');
         },
         error: (err) => {
           console.error('Error loading favorite posts', err);
@@ -319,14 +302,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     return baseApiUrl ? `${baseApiUrl}/${url.replace(/^\/+/, '')}` : url;
   }
 
-  get allVideoCards(): FavoriteAthleteVideoCard[] {
-    return this.videoPosts.map(post => this.toVideoCard(post));
-  }
-
-  get favoriteVideoCards(): FavoriteAthleteVideoCard[] {
-    return this.allVideoCards.filter(card => card.favorito);
-  }
-
   shouldShowConversationAction(card: FavoriteAthleteVideoCard): boolean {
     return card.inviteStatus === 'ACCEPTED' || this.subscriptionService.canSendInvites();
   }
@@ -342,9 +317,12 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     action.subscribe({
       next: async () => {
         if (isCurrentlyFavorite && this.selectedTab === 'favoritos') {
-          this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
+          this.favoritePosts = this.favoritePosts.filter(p => p.id !== postId);
+          await this.updateFeedItems('favoritos');
+        } else if (this.selectedTab === 'vitrine') {
+          // No need to remove from vitrine, just update UI state if needed
+          // The vitrinePosts comes from postService.homePosts$ which is updated by likePost/unlikePost
         }
-        await this.updateFeedItems();
       },
       error: (err) => console.error('Error toggling favorite', err)
     });
@@ -369,7 +347,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe({
       next: () => {
         card.inviteStatus = 'PENDING';
-        const post = this.videoPosts.find(p => p.id === card.postId);
+        const post = (this.selectedTab === 'vitrine' ? this.vitrinePosts : this.favoritePosts).find(p => p.id === card.postId);
         if (post) {
           post.inviteStatus = 'PENDING';
         }
@@ -492,7 +470,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
           if (this.infiniteScroll) {
             this.infiniteScroll.disabled = false;
           }
-          await this.updateFeedItems();
+          await this.updateFeedItems('vitrine');
         },
         error: () => this.finalizeLoad(event)
       });
@@ -500,10 +478,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.favoritesNextCursor = null;
       this.postService.getFavoritePosts(10).subscribe({
         next: async (response) => {
-          this.videoPosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
+          this.favoritePosts = response.posts.filter(p => p.mediaType === FileType.VIDEO);
           this.favoritesNextCursor = response.nextCursor;
           this.isLoadingContent = false;
-          await this.updateFeedItems();
+          await this.updateFeedItems('favoritos');
         },
         error: (err) => {
           console.error('Error loading favorite posts', err);
@@ -518,7 +496,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.postService.loadHomePosts().subscribe({
         next: async (res) => {
           this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
-          await this.updateFeedItems();
+          await this.updateFeedItems('vitrine');
         },
         error: () => this.finalizeLoad(event)
       });
@@ -526,10 +504,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
         next: async (response) => {
           const newVideos = response.posts.filter(p => p.mediaType === FileType.VIDEO);
-          this.videoPosts = [...this.videoPosts, ...newVideos];
+          this.favoritePosts = [...this.favoritePosts, ...newVideos];
           this.favoritesNextCursor = response.nextCursor;
           this.finalizeLoad(event, !response.nextCursor);
-          await this.updateFeedItems();
+          await this.updateFeedItems('favoritos');
         },
         error: () => this.finalizeLoad(event)
       });

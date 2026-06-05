@@ -117,14 +117,14 @@
     </nav>
 
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
-      <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
-        <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
+      <div class="video-list be-tiktok-container" *ngIf="vitrineItems.length > 0">
+        <ng-container *ngFor="let item of vitrineItems; trackBy: trackByVideoCard">
           <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
             <video
               #vVitrine
               #vitrinePlayer="appViewportVideoPlayer"
               appViewportVideoPlayer
-              [src]="item.video.mediaUrl"
+              [src]="item.video.mediaUrl + '#t=0.001'"
               muted
               loop
               playsinline
@@ -210,7 +210,7 @@
 
     <app-scout-favorites-tab
       *ngIf="selectedTab === 'favoritos' && !isLoadingContent"
-      [items]="feedItems"
+      [items]="favoritesItems"
       (favoriteToggled)="toggleFavoriteFromCard($event)"
       (inviteRequested)="sendInvite($event)"
       (chatRequested)="openChat($event)"

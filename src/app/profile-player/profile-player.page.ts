@@ -61,6 +61,7 @@ export class ProfilePlayerPage implements OnInit {
   // Video management
   selectedVideo: Post | null = null;
   isVideoModalOpen = false;
+  loadedVideos: { [key: string]: boolean } = {};
 
   private readonly DEFAULT_POST_LIMIT = 12;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
@@ -377,6 +378,10 @@ export class ProfilePlayerPage implements OnInit {
   openVideo(post: Post) {
     this.selectedVideo = post;
     this.isVideoModalOpen = true;
+  }
+
+  onVideoLoaded(postId: string) {
+    this.loadedVideos[postId] = true;
   }
 
   closeVideo() {
