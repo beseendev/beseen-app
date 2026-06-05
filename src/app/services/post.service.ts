@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, of, Observable, EMPTY } from 'rxjs';
+import { BehaviorSubject, of, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { Post, UserInfo } from '../models/post.model';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
 import { FileType } from '../models/upload.model';
-import { PostInvitePageResponse, PostInviteResponse } from '../models/player-chat.models';
+import { InvitePageResponse, InviteResponse } from '../models/player-chat.models';
 
 interface PostPageResponseDto {
   items: PostResponseDto[];
@@ -175,7 +175,7 @@ export class PostService {
   }
 
   sendInvite(postId: string): Observable<void> {
-    return this.apiService.post<void>(`/posts/${postId}/invite`, {}).pipe(
+    return this.apiService.post<void>(`/invites/post/${postId}`, {}).pipe(
       tap(() => {
         const currentPosts = this.homePosts.getValue();
         const updatedPosts = currentPosts.map(post =>
@@ -186,11 +186,15 @@ export class PostService {
     );
   }
 
-  acceptInvite(inviteId: number): Observable<PostInviteResponse> {
-    return this.apiService.patch<PostInviteResponse>(`/posts/invites/${inviteId}/accept`, {});
+  acceptInvite(inviteId: number): Observable<InviteResponse> {
+    return this.apiService.patch<InviteResponse>(`/invites/${inviteId}/accept`, {});
   }
 
-  getInvites(limit: number = 10, page: number = 0, postId?: string): Observable<PostInvitePageResponse> {
+  rejectInvite(inviteId: number): Observable<InviteResponse> {
+    return this.apiService.patch<InviteResponse>(`/invites/${inviteId}/reject`, {});
+  }
+
+  getInvites(limit: number = 10, page: number = 0, postId?: string): Observable<InvitePageResponse> {
     let params = new HttpParams()
       .set('limit', limit.toString())
       .set('page', page.toString());
@@ -198,7 +202,7 @@ export class PostService {
     if (postId) {
       params = params.set('postId', postId);
     }
-    return this.apiService.get<PostInvitePageResponse>(`/posts/invites`, { params });
+    return this.apiService.get<InvitePageResponse>(`/invites`, { params });
   }
 
   getFavoritePosts(limit: number = 10, cursor?: string): Observable<{ posts: Post[], nextCursor: string | null }> {

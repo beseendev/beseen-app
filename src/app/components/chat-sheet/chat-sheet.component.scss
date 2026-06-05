@@ -174,6 +174,24 @@ ion-content {
   color: var(--be-color-text-3);
   font-size: 0.86rem;
   text-align: center;
+
+  .invite-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+
+    .accept-btn {
+      --background: var(--be-color-brand-500);
+      --color: #052e16;
+    }
+
+    .reject-btn {
+      --border-color: rgba(239, 68, 68, 0.4);
+      --color: #ef4444;
+      font-weight: 500;
+    }
+  }
 }
 
 .footer-container ion-button {

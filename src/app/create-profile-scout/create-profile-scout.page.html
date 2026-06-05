@@ -72,23 +72,23 @@
         <div class="input-group-container">
           <ion-item class="input-field" color="none">
             <ion-icon name="calendar-outline" slot="start" id="open-date-picker-scout"></ion-icon>
-            <ion-input 
+            <ion-input
               class="date-input"
-              [label]="getDateLabel()" 
-              labelPlacement="stacked" 
-              [placeholder]="isTipoClubeSelected ? 'Data de fundação da organização' : 'DD/MM/AAAA'" 
-              [value]="dateOfBirthDisplayValue" 
-              (ionInput)="onDateInput($event)" 
+              [label]="getDateLabel()"
+              labelPlacement="stacked"
+              [placeholder]="isTipoClubeSelected ? 'Data de fundação da organização' : 'DD/MM/AAAA'"
+              [value]="dateOfBirthDisplayValue"
+              (ionInput)="onDateInput($event)"
               maxlength="10"
               autocomplete="off">
             </ion-input>
             <ion-modal trigger="open-date-picker-scout" [keepContentsMounted]="true" class="be-date-modal">
               <ng-template>
-                <ion-datetime 
-                  presentation="date" 
+                <ion-datetime
+                  presentation="date"
                   preferWheel="true"
                   min="1700"
-                  [value]="profileForm.get('dateOfBirth')?.value" 
+                  [value]="profileForm.get('dateOfBirth')?.value"
                   (ionChange)="onDateSelected($event)"
                   [showDefaultButtons]="true"
                   doneText="Confirmar"
@@ -142,9 +142,6 @@
               <ion-select-option *ngFor="let option of ageCategoryOptions" [value]="option">{{ option }}</ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="chip-list" *ngIf="selectedCategorias.length > 0">
-            <ion-chip *ngFor="let categoria of selectedCategorias" color="success"><ion-label>{{ categoria }}</ion-label></ion-chip>
-          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="list-outline" slot="start"></ion-icon>
@@ -152,9 +149,6 @@
               <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="chip-list" *ngIf="selectedPosicoes.length > 0">
-            <ion-chip *ngFor="let posicao of selectedPosicoes" color="success"><ion-label>{{ posicao }}</ion-label></ion-chip>
-          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="search-outline" slot="start"></ion-icon>

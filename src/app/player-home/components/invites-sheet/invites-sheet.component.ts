@@ -15,7 +15,7 @@ import {
 import { addIcons } from 'ionicons';
 import { closeOutline, personCircleOutline, mailOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { PostService } from '../../../services/post.service';
-import { PostInviteResponse } from '../../../models/player-chat.models';
+import { InviteResponse } from '../../../models/player-chat.models';
 import { ChatSheetComponent } from '../../../components/chat-sheet/chat-sheet.component';
 import { ChatService } from '../../../services/chat.service';
 
@@ -38,7 +38,7 @@ import { ChatService } from '../../../services/chat.service';
 })
 export class InvitesSheetComponent implements OnInit {
   @Input() postId?: string;
-  invites: PostInviteResponse[] = [];
+  invites: InviteResponse[] = [];
   isLoading = false;
   hasMore = true;
   private readonly LIMIT = 10;
@@ -95,11 +95,11 @@ export class InvitesSheetComponent implements OnInit {
     await this.modalController.dismiss();
   }
 
-  getInviteMessage(invite: PostInviteResponse): string {
+  getInviteMessage(invite: InviteResponse): string {
     return `O olheiro ${invite.scoutProfile.fullName} enviou um convite de interesse em um de seus vídeos!`;
   }
 
-  async acceptAndOpenChat(invite: PostInviteResponse): Promise<void> {
+  async acceptAndOpenChat(invite: InviteResponse): Promise<void> {
     this.postService.acceptInvite(invite.id).subscribe({
       next: async (acceptedInvite) => {
         invite.status = 'ACCEPTED';
@@ -113,7 +113,7 @@ export class InvitesSheetComponent implements OnInit {
     });
   }
 
-  async openChat(invite: PostInviteResponse): Promise<void> {
+  async openChat(invite: InviteResponse): Promise<void> {
     if (invite.status !== 'ACCEPTED' || !invite.chatThreadId) {
       return;
     }

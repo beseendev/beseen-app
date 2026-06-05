@@ -38,7 +38,7 @@ export class ChatService {
   }
 
   refreshInviteCount(): Observable<{ count: number }> {
-    return this.apiService.get<{ count: number }>('/posts/invites/count').pipe(
+    return this.apiService.get<{ count: number }>('/invites/count').pipe(
       tap(res => this.pendingInvitesCountSubject.next(res.count))
     );
   }

@@ -8,9 +8,9 @@ export interface ProfileSummaryResponse {
   urlProfileImage?: string | null;
 }
 
-export interface PostInviteResponse {
+export interface InviteResponse {
   id: number;
-  postId: number;
+  postId?: number | null;
   scoutProfile: ProfileSummaryResponse;
   playerProfile: ProfileSummaryResponse;
   status: InviteStatus;
@@ -18,8 +18,8 @@ export interface PostInviteResponse {
   chatThreadId?: number | null;
 }
 
-export interface PostInvitePageResponse {
-  items: PostInviteResponse[];
+export interface InvitePageResponse {
+  items: InviteResponse[];
   nextCursor?: string | null;
   totalElements: number;
   totalPages: number;

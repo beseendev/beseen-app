@@ -78,11 +78,12 @@ export class AuthService {
     });
   }
 
-  private isTokenExpired(token: string): boolean {
+  public isTokenExpired(token: string): boolean {
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       if (!decoded.exp) return false;
-      return (Math.floor(Date.now() / 1000) + 30) >= decoded.exp;
+      // Buffer de 5 minutos (300 segundos) para garantir que o token não expire durante a requisição
+      return (Math.floor(Date.now() / 1000) + 300) >= decoded.exp;
     } catch {
       return true;
     }
