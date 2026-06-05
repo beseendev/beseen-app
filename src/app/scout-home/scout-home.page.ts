@@ -66,6 +66,7 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private threadsSub!: Subscription;
 
   feedItems: ScoutFeedItem[] = [];
+  userRole: string | null = null;
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -160,6 +161,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.authService.userRole$.subscribe(role => {
+      this.userRole = role;
+    });
+
     this.homePostsSub = this.postService.homePosts$.subscribe(async posts => {
       if (this.selectedTab === 'vitrine') {
         this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);

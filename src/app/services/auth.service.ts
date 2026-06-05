@@ -40,6 +40,10 @@ export class AuthService {
   private authState = new BehaviorSubject<boolean>(this.hasToken());
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser: Observable<User | null> = this.currentUserSubject.asObservable();
+  
+  private userRoleSubject = new BehaviorSubject<string | null>(this.getRoleFromToken());
+  public userRole$ = this.userRoleSubject.asObservable();
+
   private readonly authEndpoint = '/auth';
   private readonly authSocial = '/auth/social';
 
@@ -98,10 +102,18 @@ export class AuthService {
     }
   }
 
+  private getRoleFromToken(): string | null {
+    const decoded = this.getDecodedToken<JwtPayload>();
+    return decoded?.role || null;
+  }
+
   getCurrentUser(): Observable<User> {
     return this.apiService.get<any>('/profile/me').pipe(
       map(response => {
         const decodedToken = this.getDecodedToken<JwtPayload>();
+        const role = decodedToken?.role || null;
+        this.userRoleSubject.next(role);
+        
         const user: User = {
           id: response.id?.toString(),
           email: response.email,
@@ -155,6 +167,8 @@ export class AuthService {
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
         const decodedToken = this.getDecodedToken<JwtPayload>();
+        this.userRoleSubject.next(decodedToken?.role || null);
+        
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
@@ -182,6 +196,8 @@ export class AuthService {
         localStorage.setItem('refresh_token', response.refreshToken);
         this.authState.next(true);
         const decodedToken = this.getDecodedToken<JwtPayload>();
+        this.userRoleSubject.next(decodedToken?.role || null);
+        
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
@@ -205,6 +221,7 @@ export class AuthService {
     this.subscriptionService.clearSubscription();
     this.chatService.clearThreads();
     this.authState.next(false);
+    this.userRoleSubject.next(null);
     this.currentUserSubject.next(null);
     this.showToast('Você foi desconectado. Faça login novamente.', 'success');
   }

@@ -51,7 +51,8 @@
             </div>
 
             <div class="player-profile-copy">
-              <span class="player-profile-label">Perfil do jogador</span>
+              <span class="player-profile-label" *ngIf="userRole === 'JOGADOR'">Perfil do jogador</span>
+              <span class="player-profile-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
               <strong>{{userName}}</strong>
               <p>{{ userPosition }}</p>
             </div>
@@ -257,7 +258,7 @@
   </ion-infinite-scroll>
 </ion-content>
 
-<ion-footer class="ion-no-border arena-footer">
+<ion-footer class="ion-no-border arena-footer" *ngIf="userRole === 'JOGADOR'">
   <ion-toolbar>
     <div class="footer-buttons">
       <ion-button (click)="goToCreatePost()" class="post-fab" aria-label="Publicar">

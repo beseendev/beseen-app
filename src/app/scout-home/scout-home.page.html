@@ -24,7 +24,8 @@
             <ion-icon *ngIf="!userProfile?.urlPerfil" name="person-circle-outline"></ion-icon>
           </div>
           <div class="profile-copy">
-            <span class="summary-label">Perfil do olheiro</span>
+            <span class="summary-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
+            <span class="summary-label" *ngIf="userRole === 'JOGADOR'">Perfil do jogador</span>
             <strong>{{ userName }}</strong>
             <p>
               {{ scoutType || 'Tipo não informado' }}

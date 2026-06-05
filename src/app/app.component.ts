@@ -81,6 +81,20 @@ export class AppComponent implements OnInit {
         this.checkSubscription(user);
       }
     });
+
+    this.enforceRoleBasedRouting();
+  }
+
+  private enforceRoleBasedRouting() {
+    this.authService.userRole$.subscribe(role => {
+      const currentUrl = this.router.url;
+      
+      if (role === 'CLUBE' && (currentUrl === '/player-home' || currentUrl === '/')) {
+        this.router.navigate(['/scout-home']);
+      } else if (role === 'JOGADOR' && currentUrl === '/scout-home') {
+        this.router.navigate(['/player-home']);
+      }
+    });
   }
 
   private async checkSubscription(user: User) {
