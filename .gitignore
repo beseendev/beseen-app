@@ -83,6 +83,3 @@ GEMINI.md
 *.jks
 *.keystore
 
-# Environment files
-.env
-

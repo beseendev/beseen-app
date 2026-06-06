@@ -161,6 +161,7 @@ ion-segment-button {
 .arena-tabs {
   scroll-snap-align: start;
   scroll-snap-stop: normal;
+  scroll-margin-top: env(safe-area-inset-top, 0px);
 }
 
 .be-tiktok-card {
