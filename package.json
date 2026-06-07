@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@capacitor-community/apple-sign-in": "^6.0.0",
     "@capacitor-firebase/authentication": "^6.3.1",
     "@capacitor/android": "6.0.0",
     "@capacitor/app": "^6.0.0",
