@@ -192,27 +192,43 @@ export class AuthService {
   loginWithFirebaseToken(idToken: string): Observable<any> {
     return this.apiService.post<any>(`${this.authSocial}/google`, { idToken }).pipe(
       tap(response => {
-        localStorage.setItem('access_token', response.accessToken);
-        localStorage.setItem('refresh_token', response.refreshToken);
-        this.authState.next(true);
-        const decodedToken = this.getDecodedToken<JwtPayload>();
-        this.userRoleSubject.next(decodedToken?.role || null);
-        
-        const user: User = {
-          id: response.userId.toString(),
-          email: response.userEmail,
-          hasProfile: response.hasProfile,
-          profileId: null,
-          scoutType: decodedToken?.scoutType
-        };
-        this.currentUserSubject.next(user);
-        this.checkSubscriptionIfNeeded(user);
+        this.handleAuthResponse(response);
       }),
       catchError(err => {
         this.authState.next(false);
         throw err;
       })
     );
+  }
+
+  loginWithAppleToken(idToken: string, name?: string): Observable<any> {
+    return this.apiService.post<any>(`${this.authSocial}/apple`, { idToken, name }).pipe(
+      tap(response => {
+        this.handleAuthResponse(response);
+      }),
+      catchError(err => {
+        this.authState.next(false);
+        throw err;
+      })
+    );
+  }
+
+  private handleAuthResponse(response: any) {
+    localStorage.setItem('access_token', response.accessToken);
+    localStorage.setItem('refresh_token', response.refreshToken);
+    this.authState.next(true);
+    const decodedToken = this.getDecodedToken<JwtPayload>();
+    this.userRoleSubject.next(decodedToken?.role || null);
+    
+    const user: User = {
+      id: response.userId.toString(),
+      email: response.userEmail,
+      hasProfile: response.hasProfile,
+      profileId: null,
+      scoutType: decodedToken?.scoutType
+    };
+    this.currentUserSubject.next(user);
+    this.checkSubscriptionIfNeeded(user);
   }
 
   logout() {

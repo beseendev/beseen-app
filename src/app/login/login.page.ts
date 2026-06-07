@@ -4,10 +4,23 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService, User, JwtPayload } from '../services/auth.service';
-import { Auth, GoogleAuthProvider, signInWithCredential } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, OAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { SignInWithApple, SignInWithAppleResponse } from '@capacitor-community/apple-sign-in';
+import { Capacitor } from '@capacitor/core';
 import { NavController } from '@ionic/angular';
 import { take, finalize } from 'rxjs/operators';
+import { addIcons } from 'ionicons';
+import {
+  personOutline,
+  lockClosedOutline,
+  eyeOutline,
+  eyeOffOutline,
+  logoFacebook,
+  logoGoogle,
+  logoTwitter,
+  logoApple
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-login',
@@ -33,6 +46,8 @@ export class LoginPage implements AfterViewInit {
   showPassword = false;
   isLoading = false;
   isGoogleLoading = false;
+  isAppleLoading = false;
+  isIos = Capacitor.getPlatform() === 'ios';
 
   constructor(
     private fb: FormBuilder,
@@ -42,6 +57,16 @@ export class LoginPage implements AfterViewInit {
     private auth: Auth,
     private navCtrl: NavController
   ) {
+    addIcons({
+      personOutline,
+      lockClosedOutline,
+      eyeOutline,
+      eyeOffOutline,
+      logoFacebook,
+      logoGoogle,
+      logoTwitter,
+      logoApple
+    });
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -79,23 +104,7 @@ export class LoginPage implements AfterViewInit {
         this.authService.loginWithFirebaseToken(idToken).pipe(
           finalize(() => this.isGoogleLoading = false)
         ).subscribe({
-          next: () => {
-            this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
-              const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-              const role = decodedToken?.role;
-              if (user && user.hasProfile) {
-                if (role === 'CLUBE') {
-                  this.navCtrl.navigateRoot('/scout-home');
-                } else if (role === 'JOGADOR') {
-                  this.navCtrl.navigateRoot('/player-home');
-                }
-              } else {
-                this.navCtrl.navigateRoot('/profile-selection', {
-                  queryParams: { idToken, loginMethod: 'instagram' }
-                });
-              }
-            });
-          },
+          next: () => this.handlePostLogin(idToken),
           error: (err) => this.handleAuthError(err, 'google')
         });
       } else {
@@ -107,6 +116,65 @@ export class LoginPage implements AfterViewInit {
       console.error('Erro no plugin de login com Google:', error);
       this.showToast('Erro ao iniciar o login com Google.', 'danger');
     }
+  }
+
+  async signInWithApple() {
+    this.isAppleLoading = true;
+    try {
+      const res: SignInWithAppleResponse = await SignInWithApple.authorize({
+        clientId: 'com.beseen.official.app',
+        redirectURI: '',
+        scopes: 'email name',
+      });
+
+      if (res.response && res.response.identityToken) {
+        const provider = new OAuthProvider('apple.com');
+        const credential = provider.credential({
+          idToken: res.response.identityToken
+        });
+
+        const userCredential = await signInWithCredential(this.auth, credential);
+        const idToken = await userCredential.user.getIdToken(true);
+        let fullName = '';
+        if (res.response.givenName) {
+          fullName = `${res.response.givenName} ${res.response.familyName || ''}`.trim();
+        } else if (userCredential.user.displayName) {
+          fullName = userCredential.user.displayName;
+        }
+
+        this.authService.loginWithAppleToken(idToken, fullName).pipe(
+          finalize(() => this.isAppleLoading = false)
+        ).subscribe({
+          next: () => this.handlePostLogin(idToken),
+          error: (err) => this.handleAuthError(err, 'google')
+        });
+      } else {
+        this.isAppleLoading = false;
+        this.showToast('Login com Apple cancelado ou falhou.', 'warning');
+      }
+    } catch (error) {
+      this.isAppleLoading = false;
+      console.error('Erro no login com Apple:', error);
+      this.showToast('Erro ao iniciar o login com Apple.', 'danger');
+    }
+  }
+
+  private handlePostLogin(idToken: string) {
+    this.authService.currentUser.pipe(take(1)).subscribe((user: User | null) => {
+      const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+      const role = decodedToken?.role;
+      if (user && user.hasProfile) {
+        if (role === 'CLUBE') {
+          this.navCtrl.navigateRoot('/scout-home');
+        } else if (role === 'JOGADOR') {
+          this.navCtrl.navigateRoot('/player-home');
+        }
+      } else {
+        this.navCtrl.navigateRoot('/profile-selection', {
+          queryParams: { idToken, loginMethod: 'social' }
+        });
+      }
+    });
   }
 
   async socialLoginComingSoon(platform: string) {
