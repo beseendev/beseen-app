@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Adicionar Plataforma Android
-        run: npx cap add android
+        run: npx cap sync android
 
       - name: Rodar Script de Preparação (Firebase, .env, Assets)
         run: |
@@ -77,7 +77,7 @@ jobs:
         run: npm ci
 
       - name: Adicionar Plataforma iOS
-        run: npx cap add ios
+        run: npx cap sync ios
 
       - name: Rodar Script de Preparação (Firebase, .env, Assets)
         run: |
