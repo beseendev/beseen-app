@@ -1,0 +1,24 @@
+{
+	"appId": "com.beseen.app.official",
+	"appName": "BeSeen",
+	"webDir": "www",
+	"plugins": {
+		"FirebaseAuthentication": {
+			"skipNativeAuth": false,
+			"providers": [
+				"google.com"
+			],
+			"webClientId": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com"
+		}
+	},
+	"packageClassList": [
+		"SignInWithApple",
+		"FirebaseAuthenticationPlugin",
+		"AppPlugin",
+		"CAPCameraPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"StatusBarPlugin",
+		"PurchasesPlugin"
+	]
+}
