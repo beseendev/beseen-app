@@ -73,17 +73,17 @@ jobs:
       - name: Instalar Dependências
         run: npm install --legacy-peer-deps
 
+      - name: Rodar Script de Preparação Completo
+        run: |
+          chmod +x ./scripts/prepare-mobile.sh
+          ./scripts/prepare-mobile.sh prod
+
       - name: Forçar Atualização dos Pods do RevenueCat
         run: |
           npx cap sync ios
           cd ios/App
           pod repo update
           pod update RevenueCat PurchasesHybridCommon --no-repo-update
-
-      - name: Rodar Script de Preparação Completo
-        run: |
-          chmod +x ./scripts/prepare-mobile.sh
-          ./scripts/prepare-mobile.sh prod
 
       - name: Aplicar Versão Automática (iOS)
         run: |
