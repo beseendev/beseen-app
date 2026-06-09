@@ -117,16 +117,20 @@ jobs:
           security import distribution.p12 -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
 
-          # 3. Instalar Perfil de Provisionamento
+          # 3. Instalar Perfil de Provisionamento com extração de UUID
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo $PROFILE_BASE64 | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          echo $PROFILE_BASE64 | base64 --decode > profile.mobileprovision
+          UUID=$(grep -aA1 "UUID" profile.mobileprovision | grep -o "[-A-Z0-9]\{36\}")
+          echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
+          echo "✅ Perfil instalado: $UUID"
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # 1. Garante que o arquivo exista e limpa a estrutura de perfis para começar do zero
+          # 1. Configurar ExportOptions.plist com UUID dinâmico
           /usr/libexec/PlistBuddy -c "Delete :provisioningProfiles" ios/App/App/ExportOptions.plist || true
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" ios/App/App/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.beseen.app.official string ${{ secrets.PROVISIONING_PROFILE_NAME }}" ios/App/App/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.beseen.app.official string $PROVISIONING_PROFILE_UUID" ios/App/App/ExportOptions.plist
 
           # 2. Archive
           xcodebuild archive -workspace ios/App/App.xcworkspace \
@@ -136,7 +140,7 @@ jobs:
                      -archivePath ios/App/App.xcarchive \
                      CODE_SIGN_STYLE=Manual \
                      CODE_SIGN_IDENTITY="Apple Distribution" \
-                     PROVISIONING_PROFILE_SPECIFIER="${{ secrets.PROVISIONING_PROFILE_NAME }}" \
+                     PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_UUID" \
                      DEVELOPMENT_TEAM="HJR4R6DQV4" \
                      COMPILER_INDEX_STORE_ENABLE=NO \
                      SKIP_INSTALL=NO
