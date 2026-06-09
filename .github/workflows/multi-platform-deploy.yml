@@ -26,6 +26,9 @@ jobs:
       - name: Instalar Dependências
         run: npm ci
 
+      - name: Compilar Projeto Web (Gerar pasta www)
+        run: npm run build -- --configuration=production
+
       - name: Adicionar Plataforma Android
         run: npx cap sync android
 
@@ -75,6 +78,9 @@ jobs:
 
       - name: Instalar Dependências
         run: npm ci
+
+      - name: Compilar Projeto Web (Gerar pasta www)
+        run: npm run build -- --configuration=production
 
       - name: Adicionar Plataforma iOS
         run: npx cap sync ios
