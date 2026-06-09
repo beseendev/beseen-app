@@ -2,24 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>destination</key>
-    <string>export</string>
-    <key>manageAppVersionAndBuildNumber</key>
-    <true/>
     <key>method</key>
     <string>app-store</string>
+    <key>teamID</key>
+    <string>HJR4R6DQV4</string>
     <key>signingStyle</key>
     <string>manual</string>
     <key>stripSwiftSymbols</key>
     <true/>
-    <key>teamID</key>
-    <string>HJR4R6DQV4</string>
     <key>uploadSymbols</key>
     <true/>
     <key>provisioningProfiles</key>
     <dict>
         <key>com.beseen.app.official</key>
-        <string>af979755-a46a-498a-b14f-c3913d8d72a2</string>
+        <string>PROVISIONING_PROFILE_NAME_PLACEHOLDER</string>
     </dict>
 </dict>
 </plist>

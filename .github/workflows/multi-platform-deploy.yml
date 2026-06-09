@@ -123,6 +123,9 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
+          # Atualizar o ExportOptions.plist com o nome do perfil correto
+          plutil -replace provisioningProfiles."com.beseen.app.official" -string "${{ secrets.PROVISIONING_PROFILE_NAME }}" ios/App/App/ExportOptions.plist
+
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
@@ -139,7 +142,6 @@ jobs:
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
                      -exportPath ios/App/build \
-                     -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
