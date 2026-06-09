@@ -95,7 +95,7 @@ jobs:
         run: |
           xcodebuild -workspace ios/App/App.xcworkspace \
                      -scheme App \
-                     -sdk iphoneos \
+                     -destination "generic/platform=iOS" \
                      -configuration Release \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
