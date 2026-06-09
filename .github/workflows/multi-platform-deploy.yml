@@ -63,6 +63,9 @@ jobs:
       - name: Instalar Dependências
         run: npm install --legacy-peer-deps
 
+      - name: Build do Projeto Frontend
+        run: npm run build
+
       - name: Sincronizar e Pods
         run: |
           npx cap sync ios
