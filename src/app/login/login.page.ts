@@ -122,7 +122,7 @@ export class LoginPage implements AfterViewInit {
     this.isAppleLoading = true;
     try {
       const res: SignInWithAppleResponse = await SignInWithApple.authorize({
-        clientId: 'com.beseen.official.app',
+        clientId: 'com.beseen.app.official',
         redirectURI: '',
         scopes: 'email name',
       });
@@ -146,7 +146,7 @@ export class LoginPage implements AfterViewInit {
           finalize(() => this.isAppleLoading = false)
         ).subscribe({
           next: () => this.handlePostLogin(idToken),
-          error: (err) => this.handleAuthError(err, 'google')
+          error: (err) => this.handleAuthError(err, 'apple')
         });
       } else {
         this.isAppleLoading = false;
@@ -232,7 +232,7 @@ export class LoginPage implements AfterViewInit {
     toast.present();
   }
 
-  private async handleAuthError(err: any, context: 'google' | 'email') {
+  private async handleAuthError(err: any, context: 'google' | 'email' | 'apple') {
     let errorMessage = err.error?.message || err.error || 'Erro na autenticação.';
     this.showToast(errorMessage, 'danger');
   }
