@@ -125,16 +125,16 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $PROFILE_BASE64 | base64 --decode > profile.mobileprovision
           security cms -D -i profile.mobileprovision > profile_decoded.plist
-          
+
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" profile_decoded.plist)
           TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print TeamIdentifier:0" profile_decoded.plist)
-          
+
           echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
-          
+
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
           echo "✅ Perfil Instalado: $UUID | Team ID: $TEAM_ID"
-          
+
           echo "--- DIAGNÓSTICO DE IDENTIDADES ---"
           security find-identity -v -p codesigning build.keychain
           echo "--- PROVISIONING PROFILE NO DISCO ---"
@@ -169,7 +169,7 @@ jobs:
           </dict>
           </plist>
           EOF
-          
+
           echo "--- DEBUG: ExportOptions.plist ---"
           cat ios/App/App/ExportOptions.plist
           echo "----------------------------------"
@@ -186,6 +186,9 @@ jobs:
                      PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_UUID" \
                      DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
                      SKIP_INSTALL=NO
+
+          # Force a limpeza do cache de assinatura
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
           # 3. Export
           xcodebuild -exportArchive \
