@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">950779319104</string>
+    <string name="google_api_key" translatable="false">AIzaSyCUmRM33gDq6-gbkQg-pvBLRXWN4eNENGk</string>
+    <string name="google_app_id" translatable="false">1:950779319104:android:58c2bb704fb9249a0320a5</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCUmRM33gDq6-gbkQg-pvBLRXWN4eNENGk</string>
+    <string name="google_storage_bucket" translatable="false">beseen-app-prod.firebasestorage.app</string>
+    <string name="project_id" translatable="false">beseen-app-prod</string>
+</resources>

@@ -1,0 +1,418 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.beseen.app.official"
+4    android:versionCode="24"
+5    android:versionName="1.0.1" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="22"
+9        android:targetSdkVersion="35" />
+10
+11    <!-- Permissions -->
+12
+13    <uses-permission android:name="android.permission.INTERNET" />
+13-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:34:5-67
+13-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:34:22-64
+14
+15    <queries>
+15-->[:capacitor-camera] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/camera/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:5-11:15
+16        <intent>
+16-->[:capacitor-camera] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/camera/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:8:9-10:18
+17            <action android:name="android.media.action.IMAGE_CAPTURE" />
+17-->[:capacitor-camera] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/camera/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:9:13-73
+17-->[:capacitor-camera] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/camera/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:9:21-70
+18        </intent>
+19        <intent>
+19-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:13:9-15:18
+20            <action android:name="com.android.vending.billing.InAppBillingService.BIND" />
+20-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:14:13-91
+20-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:14:21-88
+21        </intent>
+22    </queries>
+23
+24    <uses-permission android:name="android.permission.VIBRATE" />
+24-->[:capacitor-haptics] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/haptics/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:5-66
+24-->[:capacitor-haptics] /home/emerson/Documentos/beseen/beseen-app/node_modules/@capacitor/haptics/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:22-63
+25    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+25-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:26:5-79
+25-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:26:22-76
+26    <uses-permission android:name="com.android.vending.BILLING" />
+26-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:10:5-67
+26-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:10:22-64
+27    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+27-->[com.google.android.recaptcha:recaptcha:18.4.0] /home/emerson/.gradle/caches/transforms-4/0d05a25173891bbef091682933ec8a6f/transformed/recaptcha-18.4.0/AndroidManifest.xml:9:5-98
+27-->[com.google.android.recaptcha:recaptcha:18.4.0] /home/emerson/.gradle/caches/transforms-4/0d05a25173891bbef091682933ec8a6f/transformed/recaptcha-18.4.0/AndroidManifest.xml:9:22-95
+28
+29    <permission
+29-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+30        android:name="com.beseen.app.official.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+30-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+31        android:protectionLevel="signature" />
+31-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+32
+33    <uses-permission android:name="com.beseen.app.official.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+33-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+33-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+34
+35    <application
+35-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:3:5-30:19
+36        android:allowBackup="true"
+36-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:4:9-35
+37        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+37-->[androidx.core:core:1.13.1] /home/emerson/.gradle/caches/transforms-4/4df02219a02cf7f200979667839bf280/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+38        android:extractNativeLibs="true"
+39        android:icon="@mipmap/ic_launcher"
+39-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:5:9-43
+40        android:label="@string/app_name"
+40-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:6:9-41
+41        android:roundIcon="@mipmap/ic_launcher_round"
+41-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:7:9-54
+42        android:supportsRtl="true"
+42-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:8:9-35
+43        android:theme="@style/AppTheme" >
+43-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:9:9-40
+44        <activity
+44-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:10:9-21:20
+45            android:name="com.beseen.app.official.MainActivity"
+45-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:12:13-41
+46            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+46-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:11:13-129
+47            android:exported="true"
+47-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:16:13-36
+48            android:label="@string/title_activity_main"
+48-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:13:13-56
+49            android:launchMode="singleTask"
+49-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:15:13-44
+50            android:theme="@style/AppTheme.NoActionBarLaunch" >
+50-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:14:13-62
+51            <intent-filter>
+51-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:17:13-20:29
+52                <action android:name="android.intent.action.MAIN" />
+52-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:18:17-69
+52-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:18:25-66
+53
+54                <category android:name="android.intent.category.LAUNCHER" />
+54-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:19:17-77
+54-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:19:27-74
+55            </intent-filter>
+56        </activity>
+57
+58        <provider
+59            android:name="androidx.core.content.FileProvider"
+59-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:24:13-62
+60            android:authorities="com.beseen.app.official.fileprovider"
+60-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:25:13-64
+61            android:exported="false"
+61-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:26:13-37
+62            android:grantUriPermissions="true" >
+62-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:27:13-47
+63            <meta-data
+63-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:28:13-112
+64                android:name="android.support.FILE_PROVIDER_PATHS"
+64-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:28:24-74
+65                android:resource="@xml/file_paths" />
+65-->/home/emerson/Documentos/beseen/beseen-app/android/app/src/main/AndroidManifest.xml:28:75-109
+66        </provider>
+67
+68        <activity
+68-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:29:9-46:20
+69            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+69-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:30:13-80
+70            android:excludeFromRecents="true"
+70-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:31:13-46
+71            android:exported="true"
+71-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:32:13-36
+72            android:launchMode="singleTask"
+72-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:33:13-44
+73            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+73-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:34:13-72
+74            <intent-filter>
+74-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:35:13-45:29
+75                <action android:name="android.intent.action.VIEW" />
+75-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:17-69
+75-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:25-66
+76
+77                <category android:name="android.intent.category.DEFAULT" />
+77-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:17-76
+77-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:27-73
+78                <category android:name="android.intent.category.BROWSABLE" />
+78-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:17-78
+78-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:27-75
+79
+80                <data
+80-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:41:17-44:51
+81                    android:host="firebase.auth"
+81-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:42:21-49
+82                    android:path="/"
+82-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:43:21-37
+83                    android:scheme="genericidp" />
+83-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:44:21-48
+84            </intent-filter>
+85        </activity>
+86        <activity
+86-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:47:9-64:20
+87            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+87-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:48:13-79
+88            android:excludeFromRecents="true"
+88-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:49:13-46
+89            android:exported="true"
+89-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:50:13-36
+90            android:launchMode="singleTask"
+90-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:51:13-44
+91            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+91-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:52:13-72
+92            <intent-filter>
+92-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:53:13-63:29
+93                <action android:name="android.intent.action.VIEW" />
+93-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:17-69
+93-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:36:25-66
+94
+95                <category android:name="android.intent.category.DEFAULT" />
+95-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:17-76
+95-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:38:27-73
+96                <category android:name="android.intent.category.BROWSABLE" />
+96-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:17-78
+96-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:39:27-75
+97
+98                <data
+98-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:41:17-44:51
+99                    android:host="firebase.auth"
+99-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:42:21-49
+100                    android:path="/"
+100-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:43:21-37
+101                    android:scheme="recaptcha" />
+101-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:44:21-48
+102            </intent-filter>
+103        </activity>
+104
+105        <service
+105-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:66:9-72:19
+106            android:name="com.google.firebase.components.ComponentDiscoveryService"
+106-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:67:13-84
+107            android:directBootAware="true"
+107-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:32:13-43
+108            android:exported="false" >
+108-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:68:13-37
+109            <meta-data
+109-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:69:13-71:85
+110                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+110-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:70:17-109
+111                android:value="com.google.firebase.components.ComponentRegistrar" />
+111-->[com.google.firebase:firebase-auth:22.3.1] /home/emerson/.gradle/caches/transforms-4/86dea9cb4bea62d62316b250193ac6a6/transformed/firebase-auth-22.3.1/AndroidManifest.xml:71:17-82
+112            <meta-data
+112-->[com.google.firebase:firebase-common-ktx:20.4.2] /home/emerson/.gradle/caches/transforms-4/cb6d179cd2bbbef902d02be1b365bf16/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:12:13-14:85
+113                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+113-->[com.google.firebase:firebase-common-ktx:20.4.2] /home/emerson/.gradle/caches/transforms-4/cb6d179cd2bbbef902d02be1b365bf16/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:13:17-116
+114                android:value="com.google.firebase.components.ComponentRegistrar" />
+114-->[com.google.firebase:firebase-common-ktx:20.4.2] /home/emerson/.gradle/caches/transforms-4/cb6d179cd2bbbef902d02be1b365bf16/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:14:17-82
+115            <meta-data
+115-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:35:13-37:85
+116                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+116-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:36:17-109
+117                android:value="com.google.firebase.components.ComponentRegistrar" />
+117-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:37:17-82
+118        </service>
+119
+120        <activity
+120-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:23:9-27:75
+121            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+121-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:24:13-93
+122            android:excludeFromRecents="true"
+122-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:25:13-46
+123            android:exported="false"
+123-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:26:13-37
+124            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+124-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:27:13-72
+125        <!--
+126            Service handling Google Sign-In user revocation. For apps that do not integrate with
+127            Google Sign-In, this service will never be started.
+128        -->
+129        <service
+129-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:33:9-37:51
+130            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+130-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:34:13-89
+131            android:exported="true"
+131-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:35:13-36
+132            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+132-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:36:13-107
+133            android:visibleToInstantApps="true" />
+133-->[com.google.android.gms:play-services-auth:21.0.0] /home/emerson/.gradle/caches/transforms-4/195bc52f7a3584b48112825d286afe28/transformed/play-services-auth-21.0.0/AndroidManifest.xml:37:13-48
+134
+135        <receiver
+135-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:8:9-15:20
+136            android:name="com.amazon.device.iap.ResponseReceiver"
+136-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:9:13-66
+137            android:exported="true"
+137-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:10:13-36
+138            android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" >
+138-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:11:13-79
+139            <intent-filter>
+139-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:12:13-14:29
+140                <action android:name="com.amazon.inapp.purchasing.NOTIFY" />
+140-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:13:17-77
+140-->[com.revenuecat.purchases:purchases-store-amazon:8.3.1] /home/emerson/.gradle/caches/transforms-4/80b91ba79b801624518c7d2dec94bb01/transformed/purchases-store-amazon-8.3.1/AndroidManifest.xml:13:25-74
+141            </intent-filter>
+142        </receiver>
+143
+144        <activity
+144-->[com.revenuecat.purchases:purchases:8.3.1] /home/emerson/.gradle/caches/transforms-4/58bad7d353bbfdefca423cef0a5151fb/transformed/purchases-8.3.1/AndroidManifest.xml:10:9-13:75
+145            android:name="com.revenuecat.purchases.amazon.purchasing.ProxyAmazonBillingActivity"
+145-->[com.revenuecat.purchases:purchases:8.3.1] /home/emerson/.gradle/caches/transforms-4/58bad7d353bbfdefca423cef0a5151fb/transformed/purchases-8.3.1/AndroidManifest.xml:11:13-97
+146            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+146-->[com.revenuecat.purchases:purchases:8.3.1] /home/emerson/.gradle/caches/transforms-4/58bad7d353bbfdefca423cef0a5151fb/transformed/purchases-8.3.1/AndroidManifest.xml:12:13-96
+147            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+147-->[com.revenuecat.purchases:purchases:8.3.1] /home/emerson/.gradle/caches/transforms-4/58bad7d353bbfdefca423cef0a5151fb/transformed/purchases-8.3.1/AndroidManifest.xml:13:13-72
+148
+149        <meta-data
+149-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:19:9-21:37
+150            android:name="com.google.android.play.billingclient.version"
+150-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:20:13-73
+151            android:value="7.0.0" />
+151-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:21:13-34
+152
+153        <activity
+153-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:23:9-27:75
+154            android:name="com.android.billingclient.api.ProxyBillingActivity"
+154-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:24:13-78
+155            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+155-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:25:13-96
+156            android:exported="false"
+156-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:26:13-37
+157            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+157-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:27:13-72
+158        <activity
+158-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:28:9-32:75
+159            android:name="com.android.billingclient.api.ProxyBillingActivityV2"
+159-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:29:13-80
+160            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+160-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:30:13-96
+161            android:exported="false"
+161-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:31:13-37
+162            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+162-->[com.android.billingclient:billing:7.0.0] /home/emerson/.gradle/caches/transforms-4/b20fad27872376af10b9ddc5537b67ef/transformed/billing-7.0.0/AndroidManifest.xml:32:13-72
+163        <activity
+163-->[com.google.android.gms:play-services-base:18.3.0] /home/emerson/.gradle/caches/transforms-4/e11f53b06273dd7010922351f0c4b035/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+164            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+164-->[com.google.android.gms:play-services-base:18.3.0] /home/emerson/.gradle/caches/transforms-4/e11f53b06273dd7010922351f0c4b035/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+165            android:exported="false"
+165-->[com.google.android.gms:play-services-base:18.3.0] /home/emerson/.gradle/caches/transforms-4/e11f53b06273dd7010922351f0c4b035/transformed/play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+166            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+166-->[com.google.android.gms:play-services-base:18.3.0] /home/emerson/.gradle/caches/transforms-4/e11f53b06273dd7010922351f0c4b035/transformed/play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+167
+168        <provider
+168-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:23:9-28:39
+169            android:name="com.google.firebase.provider.FirebaseInitProvider"
+169-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:24:13-77
+170            android:authorities="com.beseen.app.official.firebaseinitprovider"
+170-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:25:13-72
+171            android:directBootAware="true"
+171-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:26:13-43
+172            android:exported="false"
+172-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:27:13-37
+173            android:initOrder="100" />
+173-->[com.google.firebase:firebase-common:20.4.2] /home/emerson/.gradle/caches/transforms-4/43f590d9734df6083332502d31f3b7b2/transformed/firebase-common-20.4.2/AndroidManifest.xml:28:13-36
+174        <provider
+174-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+175            android:name="androidx.startup.InitializationProvider"
+175-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+176            android:authorities="com.beseen.app.official.androidx-startup"
+176-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+177            android:exported="false" >
+177-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+178            <meta-data
+178-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+179                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+179-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+180                android:value="androidx.startup" />
+180-->[androidx.emoji2:emoji2:1.3.0] /home/emerson/.gradle/caches/transforms-4/b834b1955377637ee4e3847fb04d33e6/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+181            <meta-data
+181-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/emerson/.gradle/caches/transforms-4/b8d315166012e040e3ba5f9578e7784f/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+182                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+182-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/emerson/.gradle/caches/transforms-4/b8d315166012e040e3ba5f9578e7784f/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+183                android:value="androidx.startup" />
+183-->[androidx.lifecycle:lifecycle-process:2.6.2] /home/emerson/.gradle/caches/transforms-4/b8d315166012e040e3ba5f9578e7784f/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+184            <meta-data
+184-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+185                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+185-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+186                android:value="androidx.startup" />
+186-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+187        </provider>
+188
+189        <meta-data
+189-->[com.google.android.gms:play-services-basement:18.3.0] /home/emerson/.gradle/caches/transforms-4/7ae422b9d03d47ed486326043db3f530/transformed/play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+190            android:name="com.google.android.gms.version"
+190-->[com.google.android.gms:play-services-basement:18.3.0] /home/emerson/.gradle/caches/transforms-4/7ae422b9d03d47ed486326043db3f530/transformed/play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+191            android:value="@integer/google_play_services_version" />
+191-->[com.google.android.gms:play-services-basement:18.3.0] /home/emerson/.gradle/caches/transforms-4/7ae422b9d03d47ed486326043db3f530/transformed/play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+192
+193        <receiver
+193-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+194            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+194-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+195            android:directBootAware="false"
+195-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+196            android:enabled="true"
+196-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+197            android:exported="true"
+197-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+198            android:permission="android.permission.DUMP" >
+198-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+199            <intent-filter>
+199-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+200                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+200-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+200-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+201            </intent-filter>
+202            <intent-filter>
+202-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+203                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+203-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+203-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+204            </intent-filter>
+205            <intent-filter>
+205-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+206                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+206-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+206-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+207            </intent-filter>
+208            <intent-filter>
+208-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+209                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+209-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+209-->[androidx.profileinstaller:profileinstaller:1.3.1] /home/emerson/.gradle/caches/transforms-4/cae26c623eeae846cbe90ecafc4748c6/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+210            </intent-filter>
+211        </receiver>
+212
+213        <service
+213-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:28:9-34:19
+214            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+214-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:29:13-103
+215            android:exported="false" >
+215-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:30:13-37
+216            <meta-data
+216-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:31:13-33:39
+217                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+217-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:32:17-94
+218                android:value="cct" />
+218-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/emerson/.gradle/caches/transforms-4/e09e3ce905672d19b81f119afffe442d/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:33:17-36
+219        </service>
+220        <service
+220-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:26:9-30:19
+221            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+221-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:27:13-117
+222            android:exported="false"
+222-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:28:13-37
+223            android:permission="android.permission.BIND_JOB_SERVICE" >
+223-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:29:13-69
+224        </service>
+225
+226        <receiver
+226-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:32:9-34:40
+227            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+227-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:33:13-132
+228            android:exported="false" />
+228-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/emerson/.gradle/caches/transforms-4/f8f7bf47ad7a5a83159657e772222c6f/transformed/transport-runtime-3.1.8/AndroidManifest.xml:34:13-37
+229    </application>
+230
+231</manifest>
