@@ -88,10 +88,10 @@ jobs:
           # Altera globalmente o estilo de assinatura para Automático
           sed -i '' 's/ProvisioningStyle = Manual;/ProvisioningStyle = Automatic;/g' ios/App/App.xcodeproj/project.pbxproj
 
-          # Remove e limpa qualquer configuração antiga de perfis manuais que possa confundir o Xcode
+          # Remove e limpa qualquer configuração antiga de perfis manuais residuais
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = ".*";//g' ios/App/App.xcodeproj/project.pbxproj
 
-          # Injeta o ID da sua conta de desenvolvedor da Apple (Team ID) em todas as diretivas vazias
+          # Injeta o seu Team ID em todas as diretivas vazias do Xcode
           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = HJR4R6DQV4;/g' ios/App/App.xcodeproj/project.pbxproj
 
       - name: Configurar Assinatura Apple
