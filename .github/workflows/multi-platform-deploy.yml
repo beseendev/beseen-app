@@ -1,0 +1,123 @@
+name: CI/CD BeSeen (Versão Automática)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # ==================== BUILD ANDROID ====================
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Adicionar Plataforma Android
+        run: npx cap add android
+
+      - name: Rodar Script de Preparação (Firebase, .env, Assets)
+        run: |
+          chmod +x ./scripts/prepare-mobile.sh
+          ./scripts/prepare-mobile.sh prod
+
+      - name: Aplicar Versão Automática (Android)
+        run: |
+          VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
+          echo "ANDROID_VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE ./android
+
+      - name: Compilar Bundle (.aab)
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Assinar Arquivo Digitalmente
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload Artifact (Android)
+        uses: actions/upload-artifact@v4
+        with:
+          name: beseen-android-v${{ env.ANDROID_VERSION_CODE }}
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+  # ==================== BUILD iOS ====================
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Adicionar Plataforma iOS
+        run: npx cap add ios
+
+      - name: Rodar Script de Preparação (Firebase, .env, Assets)
+        run: |
+          chmod +x ./scripts/prepare-mobile.sh
+          ./scripts/prepare-mobile.sh prod
+
+      - name: Aplicar Versão Automática (iOS)
+        # Corrigido: Agora também soma 24 para bater com o Android
+        run: |
+          VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
+          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE ./ios
+
+      - name: Configurar Assinatura Apple
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.APPLE_AUTHENTICATION_KEY_BASE64 }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+
+      - name: Compilar e Enviar para TestFlight
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+                     -scheme App \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                     -authenticationKeyIssuer "${{ secrets.APPLE_API_ISSUER }}" \
+                     archive -archivePath ios/App/App.xcarchive
+
+          xcodebuild -exportArchive \
+                     -archivePath ios/App/App.xcarchive \
+                     -exportOptionsPlist ios/App/App/ExportOptions.plist \
+                     -exportPath ios/App/build \
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                     -authenticationKeyIssuer "${{ secrets.APPLE_API_ISSUER }}"
+
+      - name: Upload para App Store Connect (TestFlight)
+        # Corrigido: Substituído o altool com usuário/senha pelo método oficial moderno usando a API Key que você já configurou acima
+        run: |
+          xcrun altool --upload-package ios/App/build/App.ipa \
+                       --type ios \
+                       --apiKey "${{ secrets.APPLE_API_KEY_ID }}" \
+                       --apiIssuer "${{ secrets.APPLE_API_ISSUER }}"
