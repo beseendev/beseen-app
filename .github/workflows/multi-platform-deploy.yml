@@ -35,7 +35,7 @@ jobs:
         run: |
           VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
           echo "ANDROID_VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
-          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE ./android
+          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE
 
       - name: Compilar Bundle (.aab)
         run: |
@@ -81,7 +81,7 @@ jobs:
       - name: Aplicar Versão Automática (iOS)
         run: |
           VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
-          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE ./ios
+          npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE
 
       - name: Configurar Assinatura Apple
         run: |
