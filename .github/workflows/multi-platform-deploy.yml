@@ -112,32 +112,38 @@ jobs:
           security unlock-keychain -p "" build.keychain
           security set-keychain-settings -lut 21600 build.keychain
 
-          # 2. Decodificar e importar certificado
+          # 2. Decodificar e importar certificado de distribuição
           echo $CERT_BASE64 | base64 --decode > distribution.p12
           security import distribution.p12 -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
 
-          # 3. Instalar Perfil de Provisionamento (Decodificação Robusta)
+          # 3. Baixar e instalar Certificado Intermediário da Apple (WWDR) - Crucial para exportação
+          curl -s https://developer.apple.com/certificationauthority/AppleWWDRCA.cer -o AppleWWDRCA.cer
+          security import AppleWWDRCA.cer -k build.keychain -T /usr/bin/codesign
+
+          # 4. Instalar Perfil de Provisionamento e extrair UUID real
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-          
-          # Decodifica o perfil para XML legível antes de extrair os dados
           security cms -D -i profile.mobileprovision > profile_decoded.plist
           
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" profile_decoded.plist)
           TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print TeamIdentifier:0" profile_decoded.plist)
-          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" profile_decoded.plist)
           
           echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
-          echo "PROVISIONING_PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
-          echo "✅ Perfil: $PROFILE_NAME ($UUID) | Team: $TEAM_ID"
+          echo "✅ Perfil Instalado: $UUID | Team ID: $TEAM_ID"
+          
+          echo "--- DIAGNÓSTICO DE IDENTIDADES ---"
+          security find-identity -v -p codesigning build.keychain
+          echo "--- PROVISIONING PROFILE NO DISCO ---"
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "------------------------------------"
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # 1. Gerar ExportOptions.plist ultra-robusto
+          # 1. Gerar ExportOptions.plist usando o UUID (mais robusto no CI)
           cat <<EOF > ios/App/App/ExportOptions.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -149,18 +155,16 @@ jobs:
               <string>$APPLE_TEAM_ID</string>
               <key>signingStyle</key>
               <string>manual</string>
-              <key>signingCertificate</key>
-              <string>Apple Distribution</string>
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.beseen.app.official</key>
-                  <string>$PROVISIONING_PROFILE_NAME</string>
+                  <string>$PROVISIONING_PROFILE_UUID</string>
               </dict>
-              <key>destination</key>
-              <string>export</string>
               <key>compileBitcode</key>
               <false/>
               <key>uploadSymbols</key>
+              <true/>
+              <key>manageAppVersionAndBuildNumber</key>
               <true/>
           </dict>
           </plist>
@@ -170,7 +174,7 @@ jobs:
           cat ios/App/App/ExportOptions.plist
           echo "----------------------------------"
 
-          # 2. Archive (Forçando arquitetura arm64)
+          # 2. Archive (arm64 e sem geração de plist extra)
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
