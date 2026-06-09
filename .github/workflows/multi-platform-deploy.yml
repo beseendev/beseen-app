@@ -24,7 +24,7 @@ jobs:
           java-version: '17'
 
       - name: Instalar Dependências
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Rodar Script de Preparação Completo (Build, Firebase, Sync)
         run: |
@@ -71,7 +71,7 @@ jobs:
           node-version: '20'
 
       - name: Instalar Dependências
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Rodar Script de Preparação Completo (Build, Firebase, Sync)
         run: |

@@ -130,7 +130,7 @@ export class SubscriptionService {
       const syncRequest: SubscriptionSyncRequest = {
         revenueCatCustomerId: purchaseResult.customerInfo.originalAppUserId,
         productId: plan.revenueCatProductId,
-        transactionId: purchaseResult.transaction.transactionIdentifier
+        transactionId: (purchaseResult as any).transaction?.transactionIdentifier || 'unknown'
       };
 
       return this.syncWithBackend(syncRequest).toPromise() as Promise<Subscription>;
