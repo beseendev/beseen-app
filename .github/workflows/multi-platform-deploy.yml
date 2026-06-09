@@ -41,6 +41,7 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   # ==================== BUILD iOS ====================
+  # ==================== BUILD iOS ====================
   build-ios:
     runs-on: macos-latest
     steps:
@@ -52,26 +53,20 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup Ruby (para Fastlane)
+      - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler-cache: true
           working-directory: ios/App
 
-      - name: Instalar Dependências NPM
+      - name: Instalar Dependências
         run: npm install --legacy-peer-deps
 
-      - name: Rodar Script de Preparação
-        run: |
-          chmod +x ./scripts/prepare-mobile.sh
-          ./scripts/prepare-mobile.sh prod
-
-      - name: Sincronizar e Preparar Pods
+      - name: Sincronizar e Pods
         run: |
           npx cap sync ios
-          cd ios/App
-          pod install
+          cd ios/App && pod install
 
       - name: Instalar Certificado e Perfil
         env:
@@ -79,37 +74,42 @@ jobs:
           CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
           PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
-          # 1. Preparar o Keychain de Login (mais estável no CI)
-          security unlock-keychain -p "" login.keychain
-          security set-keychain-settings -lut 21600 login.keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PWD="build"
+          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
 
-          # 2. Importar Certificado e WWDR Intermediate
           echo $CERT_BASE64 | base64 --decode > distribution.p12
-          security import distribution.p12 -k login.keychain -P "$CERT_PASSWORD" -A
-          
-          curl -s https://developer.apple.com/certificationauthority/AppleWWDRCA.cer -o AppleWWDRCA.cer
-          security import AppleWWDRCA.cer -k login.keychain -A
-          
-          # Permitir acesso total ao codesign para evitar pop-ups
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" login.keychain
+          security import distribution.p12 -k "$KEYCHAIN_PATH" -P "$CERT_PASSWORD" -A
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
 
-          # 3. Instalar Perfil e extrair UUID real (Usando método robusto)
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-          
-          # Extração via security cms para evitar erro de binário
           security cms -D -i profile.mobileprovision > decoded.plist
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" decoded.plist)
-          
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
           echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
-          echo "✅ Perfil Instalado e Validado: $UUID"
 
       - name: Build e Deploy via Fastlane
         env:
           PROVISIONING_PROFILE_UUID: ${{ env.PROVISIONING_PROFILE_UUID }}
           API_KEY_PATH: ${{ github.workspace }}/ios/App/auth_key.p8
         run: |
+          gem install fastlane
+          mkdir -p ios/App/fastlane
+          cat <<EOF > ios/App/fastlane/Appfile
+          app_identifier("com.beseen.app.official")
+          itc_team_id("HJR4R6DQV4")
+          team_id("HJR4R6DQV4")
+          EOF
+          cat <<EOF > ios/App/fastlane/Fastfile
+          default_platform(:ios)
+          platform :ios do
+            lane :deploy do
+              build_app(workspace: "App.xcworkspace", scheme: "App", export_method: "app-store", export_options: { signingStyle: "manual", provisioningProfiles: { "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"] } }, build_settings: { "CODE_SIGN_IDENTITY" => "Apple Distribution", "PROVISIONING_PROFILE_SPECIFIER" => ENV["PROVISIONING_PROFILE_UUID"] })
+              upload_to_testflight(api_key_path: ENV["API_KEY_PATH"], skip_waiting_for_build_processing: true)
+            end
+          end
+          EOF
           echo "${{ secrets.APPLE_AUTHENTICATION_KEY_BASE64 }}" | base64 --decode > $API_KEY_PATH
-          cd ios/App
-          bundle exec fastlane deploy
+          cd ios/App && fastlane deploy
