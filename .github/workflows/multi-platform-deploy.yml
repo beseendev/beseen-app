@@ -26,7 +26,7 @@ jobs:
       - name: Instalar Dependências
         run: npm install --legacy-peer-deps
 
-      - name: Rodar Script de Preparação Completo (Build, Firebase, Sync)
+      - name: Rodar Script de Preparação Completo
         run: |
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
@@ -78,11 +78,11 @@ jobs:
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
 
-      - name: Sincronizar e Preparar Pods (Limpeza Profunda)
+      - name: Sincronizar e Preparar Pods
         run: |
           npx cap sync ios
           cd ios/App
-          pod cache clean --all
+          # O patch do Podfile já está lá, basta instalar
           rm -rf Pods
           rm -rf Podfile.lock
           pod install
@@ -101,7 +101,6 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # Archive com flags de ignorar cache e desabilitar Previews
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
@@ -116,7 +115,6 @@ jobs:
                      COMPILER_INDEX_STORE_ENABLE=NO \
                      SKIP_INSTALL=NO
 
-          # Export
           xcodebuild -exportArchive \
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \

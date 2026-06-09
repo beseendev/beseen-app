@@ -28,4 +28,24 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+
+  # Correção para o erro de ambiguidade 'SubscriptionPeriod' no Xcode 16 / StoreKit 2
+  installer.pods_project.targets.each do |target|
+    if target.name == 'PurchasesHybridCommon'
+      target.build_configurations.each do |config|
+        # Opcional: Adicionar flags se necessário
+      end
+
+      # Patch direto no código fonte do Pod para resolver ambiguidade entre RevenueCat e StoreKit
+      path = "Pods/PurchasesHybridCommon/ios/PurchasesHybridCommon/PurchasesHybridCommon/StoreProduct+HybridAdditions.swift"
+      if File.exist?(path)
+        content = File.read(path)
+        if content.include?("(subscriptionPeriod: SubscriptionPeriod)")
+          puts "Applying RevenueCat SubscriptionPeriod patch..."
+          content.gsub!("SubscriptionPeriod", "RevenueCat.SubscriptionPeriod")
+          File.open(path, "w") { |file| file.puts content }
+        end
+      end
+    end
+  end
 end
