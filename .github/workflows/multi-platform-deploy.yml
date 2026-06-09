@@ -102,6 +102,7 @@ jobs:
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
                      DEVELOPMENT_TEAM="HJR4R6DQV4" \
+                     CODE_SIGN_STYLE="Manual" \
                      archive -archivePath ios/App/App.xcarchive
 
           xcodebuild -exportArchive \
