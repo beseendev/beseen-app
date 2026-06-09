@@ -7,7 +7,8 @@ ENV=${1:-prod}
 
 set -e
 
-echo "🚀 Iniciando preparação MOBILE para: ${ENV^^}..."
+ENV_UPPER=$(echo "$ENV" | tr '[:lower:]' '[:upper:]') 
+echo "🚀 Iniciando preparação MOBILE para: $ENV_UPPER..."
 
 # --- 1. LIMPEZA ---
 echo "🧹 Limpando build antigo..."
@@ -92,7 +93,7 @@ fi
 
 echo ""
 echo "=========================================================="
-echo "✅ TUDO PRONTO PARA ${ENV^^}!"
+echo "✅ TUDO PRONTO PARA $ENV_UPPER!"
 echo "Android: npx cap open android"
 echo "iOS: npx cap open ios"
 echo "=========================================================="
