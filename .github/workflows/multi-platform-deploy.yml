@@ -26,13 +26,7 @@ jobs:
       - name: Instalar Dependências
         run: npm ci
 
-      - name: Compilar Projeto Web (Gerar pasta www)
-        run: npm run build -- --configuration=production
-
-      - name: Adicionar Plataforma Android
-        run: npx cap sync android
-
-      - name: Rodar Script de Preparação (Firebase, .env, Assets)
+      - name: Rodar Script de Preparação Completo (Build, Firebase, Sync)
         run: |
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
@@ -79,19 +73,12 @@ jobs:
       - name: Instalar Dependências
         run: npm ci
 
-      - name: Compilar Projeto Web (Gerar pasta www)
-        run: npm run build -- --configuration=production
-
-      - name: Adicionar Plataforma iOS
-        run: npx cap sync ios
-
-      - name: Rodar Script de Preparação (Firebase, .env, Assets)
+      - name: Rodar Script de Preparação Completo (Build, Firebase, Sync)
         run: |
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
 
       - name: Aplicar Versão Automática (iOS)
-        # Corrigido: Agora também soma 24 para bater com o Android
         run: |
           VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
           npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE ./ios
@@ -121,7 +108,6 @@ jobs:
                      -authenticationKeyIssuer "${{ secrets.APPLE_API_ISSUER }}"
 
       - name: Upload para App Store Connect (TestFlight)
-        # Corrigido: Substituído o altool com usuário/senha pelo método oficial moderno usando a API Key que você já configurou acima
         run: |
           xcrun altool --upload-package ios/App/build/App.ipa \
                        --type ios \

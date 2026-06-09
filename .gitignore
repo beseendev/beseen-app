@@ -1,6 +1,3 @@
-# Specifies intentionally untracked files to ignore when using Git
-# http://git-scm.com/docs/gitignore
-
 *~
 *.sw[mnpcod]
 .tmp
@@ -11,7 +8,6 @@ $RECYCLE.BIN/
 
 *.log
 log.txt
-
 
 /.sourcemaps
 /.versions
@@ -52,7 +48,6 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-
 # Miscellaneous
 /.angular
 /.angular/cache
@@ -75,14 +70,19 @@ GEMINI.md
 # Capacitor & Firebase
 /android/app/google-services.json
 /ios/App/App/GoogleService-Info.plist
-/android
-/ios
 .aider*
-!/ios/App/App/
+
+# Proteção de arquivos temporários locais, mantendo a estrutura nativa do Git
+/android/build/
+/android/app/build/
+/android/.gradle/
+/ios/App/Pods/
+/ios/App/DerivedData/
+
+# Garante que o ExportOptions e Entitlements entrem com certeza absoluta
 !/ios/App/App/App.entitlements
 !/ios/App/App/ExportOptions.plist
 
 # Production Keys
 *.jks
 *.keystore
-
