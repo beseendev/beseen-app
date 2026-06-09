@@ -7,7 +7,7 @@ ENV=${1:-prod}
 
 set -e
 
-ENV_UPPER=$(echo "$ENV" | tr '[:lower:]' '[:upper:]') 
+ENV_UPPER=$(echo "$ENV" | tr '[:lower:]' '[:upper:]')
 echo "🚀 Iniciando preparação MOBILE para: $ENV_UPPER..."
 
 # --- 1. LIMPEZA ---
@@ -86,8 +86,23 @@ if [ -d "ios" ]; then
     # NOVO: GERAÇÃO AUTOMÁTICA DE ÍCONES E SPLASH DO iOS (Para o futuro!)
     if [ -d "assets" ]; then
         echo "🎨 Gerando ícones e splash screen para iOS..."
-          npx capacitor-assets generate --ios
-          echo "✅ Recursos visuais do iOS atualizados!"
+        npx capacitor-assets generate --ios
+        echo "✅ Recursos visuais do iOS atualizados!"
+    fi
+
+    # NOVO: Injeta o Development Team ID diretamente no projeto do Xcode (Compatível com Mac e Linux)
+    XCODE_PROJ_PATH="ios/App/App.xcodeproj/project.pbxproj"
+    if [ -f "$XCODE_PROJ_PATH" ]; then
+        echo "✍️ Configurando Development Team no Xcode..."
+
+        # Altera o arquivo criando um backup temporário (.bak) para funcionar no Mac e no Linux
+        sed -i.bak 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = HJR4R6DQV4;/g' "$XCODE_PROJ_PATH"
+        sed -i.bak 's/TargetAttributes = {/TargetAttributes = {\n\t\t\t\t\t\t\t\tDevelopmentTeam = HJR4R6DQV4;/g' "$XCODE_PROJ_PATH"
+
+        # Remove o arquivo de backup gerado
+        rm -f "${XCODE_PROJ_PATH}.bak"
+
+        echo "✅ Development Team (HJR4R6DQV4) injetado com sucesso!"
     fi
 fi
 
