@@ -85,10 +85,13 @@ jobs:
 
       - name: Forçar Assinatura Automática e TeamID no Projeto
         run: |
-          # Garante que o Xcode use o gerenciamento automático de perfis
+          # Altera globalmente o estilo de assinatura para Automático
           sed -i '' 's/ProvisioningStyle = Manual;/ProvisioningStyle = Automatic;/g' ios/App/App.xcodeproj/project.pbxproj
 
-          # Injeta o ID da sua conta de desenvolvedor da Apple (Team ID)
+          # Remove e limpa qualquer configuração antiga de perfis manuais que possa confundir o Xcode
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = ".*";//g' ios/App/App.xcodeproj/project.pbxproj
+
+          # Injeta o ID da sua conta de desenvolvedor da Apple (Team ID) em todas as diretivas vazias
           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = HJR4R6DQV4;/g' ios/App/App.xcodeproj/project.pbxproj
 
       - name: Configurar Assinatura Apple
@@ -108,6 +111,8 @@ jobs:
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
+                     DEVELOPMENT_TEAM="HJR4R6DQV4" \
+                     CODE_SIGN_STYLE="Automatic" \
                      archive -archivePath ios/App/App.xcarchive
 
           xcodebuild -exportArchive \
@@ -117,7 +122,8 @@ jobs:
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
-                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
+                     DEVELOPMENT_TEAM="HJR4R6DQV4"
 
       - name: Upload para App Store Connect (TestFlight)
         run: |
