@@ -110,7 +110,7 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          xcodebuild -workspace ios/App/App.xcworkspace \
+          xcodebuild clean -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
                      -configuration Release \
