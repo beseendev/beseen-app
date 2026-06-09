@@ -120,12 +120,10 @@ jobs:
           # 3. Instalar Perfil de Provisionamento (Decodificação Robusta)
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $PROFILE_BASE64 | base64 --decode > profile.mobileprovision
-          
-          # Decodifica o perfil para XML legível antes de extrair os dados
           security cms -D -i profile.mobileprovision > profile_decoded.plist
           
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" profile_decoded.plist)
-          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print ApplicationIdentifierPrefix:0" profile_decoded.plist)
+          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print ApplicationIdentifierPrefix:0" profile_decoded.plist || /usr/libexec/PlistBuddy -c "Print ApplicationIdentifierPrefix" profile_decoded.plist)
           
           echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
@@ -135,11 +133,32 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # 1. Configurar ExportOptions.plist com dados extraídos
-          /usr/libexec/PlistBuddy -c "Set :teamID $APPLE_TEAM_ID" ios/App/App/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Delete :provisioningProfiles" ios/App/App/ExportOptions.plist || true
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" ios/App/App/ExportOptions.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.beseen.app.official string $PROVISIONING_PROFILE_UUID" ios/App/App/ExportOptions.plist
+          # 1. Gerar ExportOptions.plist limpo
+          cat <<EOF > ios/App/App/ExportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>$APPLE_TEAM_ID</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.beseen.app.official</key>
+                  <string>$PROVISIONING_PROFILE_UUID</string>
+              </dict>
+              <key>compileBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>manageAppVersionAndBuildNumber</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
 
           # 2. Archive
           xcodebuild archive -workspace ios/App/App.xcworkspace \
@@ -159,6 +178,7 @@ jobs:
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
                      -exportPath ios/App/build \
+                     -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
