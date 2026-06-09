@@ -4,7 +4,7 @@ Este projeto utiliza Ionic + Angular + Capacitor e possui configurações separa
 
 ## 🚀 Como Rodar o App
 
-### 1. Web (Local)
+### 1. Web (Local.)
 Para rodar no navegador usando a API local e configurações de teste:
 ```bash
 npm start
