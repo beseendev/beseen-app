@@ -78,10 +78,14 @@ jobs:
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
 
-      - name: Sincronizar e Preparar Pods
+      - name: Sincronizar e Preparar Pods (Limpeza Profunda)
         run: |
           npx cap sync ios
-          cd ios/App && rm -rf Pods && pod install
+          cd ios/App
+          pod cache clean --all
+          rm -rf Pods
+          rm -rf Podfile.lock
+          pod install
 
       - name: Aplicar Versão Automática (iOS)
         run: |
@@ -97,6 +101,7 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
+          # Archive com flags de ignorar cache e desabilitar Previews
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
@@ -107,8 +112,11 @@ jobs:
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
                      CODE_SIGN_STYLE="Automatic" \
-                     DEVELOPMENT_TEAM="HJR4R6DQV4"
+                     DEVELOPMENT_TEAM="HJR4R6DQV4" \
+                     COMPILER_INDEX_STORE_ENABLE=NO \
+                     SKIP_INSTALL=NO
 
+          # Export
           xcodebuild -exportArchive \
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
