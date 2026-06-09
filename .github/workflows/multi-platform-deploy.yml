@@ -83,11 +83,18 @@ jobs:
           VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
           npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE
 
+      - name: Forçar Assinatura Automática e TeamID no Projeto
+        run: |
+          # Garante que o Xcode use o gerenciamento automático de perfis
+          sed -i '' 's/ProvisioningStyle = Manual;/ProvisioningStyle = Automatic;/g' ios/App/App.xcodeproj/project.pbxproj
+
+          # Injeta o ID da sua conta de desenvolvedor da Apple (Team ID)
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = HJR4R6DQV4;/g' ios/App/App.xcodeproj/project.pbxproj
+
       - name: Configurar Assinatura Apple
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           echo "${{ secrets.APPLE_AUTHENTICATION_KEY_BASE64 }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
-          # Link simbólico extra porque o altool às vezes busca na raiz da home
           mkdir -p ~/.private_keys
           cp ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8 ~/.private_keys/
 
@@ -101,8 +108,6 @@ jobs:
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
-                     DEVELOPMENT_TEAM="HJR4R6DQV4" \
-                     CODE_SIGN_STYLE="Manual" \
                      archive -archivePath ios/App/App.xcarchive
 
           xcodebuild -exportArchive \
@@ -112,8 +117,7 @@ jobs:
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
-                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
-                     DEVELOPMENT_TEAM="HJR4R6DQV4"
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
 
       - name: Upload para App Store Connect (TestFlight)
         run: |
