@@ -123,9 +123,12 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # Atualizar o ExportOptions.plist com o nome do perfil correto
-          plutil -replace provisioningProfiles."com.beseen.app.official" -string "${{ secrets.PROVISIONING_PROFILE_NAME }}" ios/App/App/ExportOptions.plist
+          # 1. Garante que o arquivo exista e limpa a estrutura de perfis para começar do zero
+          /usr/libexec/PlistBuddy -c "Delete :provisioningProfiles" ios/App/App/ExportOptions.plist || true
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" ios/App/App/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.beseen.app.official string ${{ secrets.PROVISIONING_PROFILE_NAME }}" ios/App/App/ExportOptions.plist
 
+          # 2. Archive
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
@@ -138,6 +141,7 @@ jobs:
                      COMPILER_INDEX_STORE_ENABLE=NO \
                      SKIP_INSTALL=NO
 
+          # 3. Export
           xcodebuild -exportArchive \
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
