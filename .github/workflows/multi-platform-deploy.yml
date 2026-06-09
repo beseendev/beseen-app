@@ -77,40 +77,55 @@ jobs:
         run: |
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
+
       - name: Sincronizar e Limpar Pods do RevenueCat
         run: |
           npx cap sync ios
           cd ios/App
           rm -rf Pods
           pod install
+
       - name: Aplicar Versão Automática (iOS)
         run: |
           VERSION_CODE=$(( ${{ github.run_number }} + 24 ))
           npx capacitor-set-version -v "$(node -p "require('./package.json').version")" -b $VERSION_CODE
+
       - name: Configurar Assinatura Apple
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           echo "${{ secrets.APPLE_AUTHENTICATION_KEY_BASE64 }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
           mkdir -p ~/.private_keys
           cp ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8 ~/.private_keys/
+
       - name: Compilar e Enviar para TestFlight
         run: |
-          xcodebuild archive -workspace ios/App/App.xcworkspace \
-                     -scheme App \
-                     -destination "generic/platform=iOS" \
-                     -configuration Release \
-                     -archivePath ios/App/App.xcarchive \
-                     CODE_SIGN_STYLE="Automatic" \
-                     DEVELOPMENT_TEAM="HJR4R6DQV4" \
-                     -allowProvisioningUpdates \
-                     SKIP_INSTALL=NO \
-                     BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
+            # Limpeza de cache de build para evitar conflitos residuais
+            rm -rf ios/App/Pods
+            pod install
 
-          xcodebuild -exportArchive \
-                     -archivePath ios/App/App.xcarchive \
-                     -exportOptionsPlist ios/App/App/ExportOptions.plist \
-                     -exportPath ios/App/build \
-                     -allowProvisioningUpdates
+            # Comando de archive corrigido e reforçado
+            xcodebuild archive -workspace ios/App/App.xcworkspace \
+                       -scheme App \
+                       -destination "generic/platform=iOS" \
+                       -configuration Release \
+                       -archivePath ios/App/App.xcarchive \
+                       -allowProvisioningUpdates \
+                       -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                       -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                       -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
+                       CODE_SIGN_STYLE="Automatic" \
+                       DEVELOPMENT_TEAM="HJR4R6DQV4"
+
+            # Comando de exportação
+            xcodebuild -exportArchive \
+                       -archivePath ios/App/App.xcarchive \
+                       -exportOptionsPlist ios/App/App/ExportOptions.plist \
+                       -exportPath ios/App/build \
+                       -allowProvisioningUpdates \
+                       -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                       -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                       -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+
       - name: Upload para App Store Connect (TestFlight)
         run: |
           xcrun altool --upload-package ios/App/build/App.ipa \
