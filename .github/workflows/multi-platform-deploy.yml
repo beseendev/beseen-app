@@ -87,6 +87,9 @@ jobs:
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           echo "${{ secrets.APPLE_AUTHENTICATION_KEY_BASE64 }}" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+          # Link simbólico extra porque o altool às vezes busca na raiz da home
+          mkdir -p ~/.private_keys
+          cp ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8 ~/.private_keys/
 
       - name: Compilar e Enviar para TestFlight
         run: |
@@ -96,7 +99,7 @@ jobs:
                      -configuration Release \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
-                     -authenticationKeyIssuer "${{ secrets.APPLE_API_ISSUER }}" \
+                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      archive -archivePath ios/App/App.xcarchive
 
           xcodebuild -exportArchive \
@@ -105,7 +108,7 @@ jobs:
                      -exportPath ios/App/build \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
-                     -authenticationKeyIssuer "${{ secrets.APPLE_API_ISSUER }}"
+                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}"
 
       - name: Upload para App Store Connect (TestFlight)
         run: |
