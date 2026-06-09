@@ -134,7 +134,7 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # 1. Gerar ExportOptions.plist ultra-específico
+          # 1. Gerar ExportOptions.plist minimalista e robusto
           cat <<EOF > ios/App/App/ExportOptions.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -146,8 +146,6 @@ jobs:
               <string>$APPLE_TEAM_ID</string>
               <key>signingStyle</key>
               <string>manual</string>
-              <key>signingCertificate</key>
-              <string>Apple Distribution</string>
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.beseen.app.official</key>
@@ -157,25 +155,28 @@ jobs:
               <false/>
               <key>uploadSymbols</key>
               <true/>
-              <key>manageAppVersionAndBuildNumber</key>
-              <true/>
           </dict>
           </plist>
           EOF
+          
+          echo "--- DEBUG: ExportOptions.plist ---"
+          cat ios/App/App/ExportOptions.plist
+          echo "----------------------------------"
 
-          # 2. Archive
+          # 2. Archive (Forçando arquitetura arm64)
           xcodebuild archive -workspace ios/App/App.xcworkspace \
                      -scheme App \
                      -destination "generic/platform=iOS" \
                      -configuration Release \
                      -archivePath ios/App/App.xcarchive \
+                     ARCHS=arm64 \
                      CODE_SIGN_STYLE=Manual \
                      CODE_SIGN_IDENTITY="Apple Distribution" \
                      PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_UUID" \
                      DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
                      SKIP_INSTALL=NO
 
-          # 3. Export (Sem allowProvisioningUpdates para evitar conflito manual)
+          # 3. Export
           xcodebuild -exportArchive \
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
