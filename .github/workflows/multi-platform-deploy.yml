@@ -100,6 +100,7 @@ jobs:
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                     DEVELOPMENT_TEAM="HJR4R6DQV4" \
                      archive -archivePath ios/App/App.xcarchive
 
           xcodebuild -exportArchive \
@@ -108,7 +109,8 @@ jobs:
                      -exportPath ios/App/build \
                      -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
-                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}"
+                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                     DEVELOPMENT_TEAM="HJR4R6DQV4"
 
       - name: Upload para App Store Connect (TestFlight)
         run: |
