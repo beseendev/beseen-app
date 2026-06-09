@@ -29,13 +29,17 @@ end
 post_install do |installer|
   assertDeploymentTarget(installer)
 
-  # Correção para o erro de ambiguidade 'SubscriptionPeriod' no Xcode 16 / StoreKit 2
   installer.pods_project.targets.each do |target|
-    if target.name == 'PurchasesHybridCommon'
-      target.build_configurations.each do |config|
-        # Opcional: Adicionar flags se necessário
-      end
+    target.build_configurations.each do |config|
+      # Resolve o erro "does not support provisioning profiles" no CI
+      # ao impedir que os Pods herdem a assinatura manual do comando xcodebuild
+      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''
+      config.build_settings['CODE_SIGN_STYLE'] = 'Automatic'
+    end
 
+    if target.name == 'PurchasesHybridCommon'
       # Patch direto no código fonte do Pod para resolver ambiguidade entre RevenueCat e StoreKit
       path = "Pods/PurchasesHybridCommon/ios/PurchasesHybridCommon/PurchasesHybridCommon/StoreProduct+HybridAdditions.swift"
       if File.exist?(path)
