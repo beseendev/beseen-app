@@ -78,6 +78,8 @@ GEMINI.md
 /android
 /ios
 .aider*
+!/ios/App/App/ 
+!/ios/App/App/App.entitlements
 
 # Production Keys
 *.jks
