@@ -78,12 +78,10 @@ jobs:
           chmod +x ./scripts/prepare-mobile.sh
           ./scripts/prepare-mobile.sh prod
 
-      - name: Sincronizar e Limpar Pods do RevenueCat
+      - name: Sincronizar e Preparar Pods
         run: |
           npx cap sync ios
-          cd ios/App
-          rm -rf Pods
-          pod install
+          cd ios/App && rm -rf Pods && pod install
 
       - name: Aplicar Versão Automática (iOS)
         run: |
@@ -99,32 +97,26 @@ jobs:
 
       - name: Compilar e Enviar para TestFlight
         run: |
-            # Limpeza de cache de build para evitar conflitos residuais
-            rm -rf ios/App/Pods
-            pod install
+          xcodebuild archive -workspace ios/App/App.xcworkspace \
+                     -scheme App \
+                     -destination "generic/platform=iOS" \
+                     -configuration Release \
+                     -archivePath ios/App/App.xcarchive \
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
+                     CODE_SIGN_STYLE="Automatic" \
+                     DEVELOPMENT_TEAM="HJR4R6DQV4"
 
-            # Comando de archive corrigido e reforçado
-            xcodebuild archive -workspace ios/App/App.xcworkspace \
-                       -scheme App \
-                       -destination "generic/platform=iOS" \
-                       -configuration Release \
-                       -archivePath ios/App/App.xcarchive \
-                       -allowProvisioningUpdates \
-                       -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
-                       -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
-                       -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8" \
-                       CODE_SIGN_STYLE="Automatic" \
-                       DEVELOPMENT_TEAM="HJR4R6DQV4"
-
-            # Comando de exportação
-            xcodebuild -exportArchive \
-                       -archivePath ios/App/App.xcarchive \
-                       -exportOptionsPlist ios/App/App/ExportOptions.plist \
-                       -exportPath ios/App/build \
-                       -allowProvisioningUpdates \
-                       -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
-                       -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
-                       -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
+          xcodebuild -exportArchive \
+                     -archivePath ios/App/App.xcarchive \
+                     -exportOptionsPlist ios/App/App/ExportOptions.plist \
+                     -exportPath ios/App/build \
+                     -allowProvisioningUpdates \
+                     -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
+                     -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
+                     -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
 
       - name: Upload para App Store Connect (TestFlight)
         run: |
