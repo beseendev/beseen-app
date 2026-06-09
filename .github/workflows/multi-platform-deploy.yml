@@ -123,17 +123,18 @@ jobs:
           security cms -D -i profile.mobileprovision > profile_decoded.plist
           
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" profile_decoded.plist)
-          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print ApplicationIdentifierPrefix:0" profile_decoded.plist || /usr/libexec/PlistBuddy -c "Print ApplicationIdentifierPrefix" profile_decoded.plist)
+          # Busca o Team ID de forma mais robusta no campo TeamIdentifier
+          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print TeamIdentifier:0" profile_decoded.plist)
           
           echo "PROVISIONING_PROFILE_UUID=$UUID" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
           
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
-          echo "✅ Perfil Instalado: $UUID | Team ID: $TEAM_ID"
+          echo "✅ Perfil: $UUID | Team: $TEAM_ID"
 
       - name: Compilar e Enviar para TestFlight
         run: |
-          # 1. Gerar ExportOptions.plist limpo
+          # 1. Gerar ExportOptions.plist ultra-específico
           cat <<EOF > ios/App/App/ExportOptions.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -145,6 +146,8 @@ jobs:
               <string>$APPLE_TEAM_ID</string>
               <key>signingStyle</key>
               <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.beseen.app.official</key>
@@ -155,7 +158,7 @@ jobs:
               <key>uploadSymbols</key>
               <true/>
               <key>manageAppVersionAndBuildNumber</key>
-              <false/>
+              <true/>
           </dict>
           </plist>
           EOF
@@ -170,15 +173,13 @@ jobs:
                      CODE_SIGN_IDENTITY="Apple Distribution" \
                      PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_UUID" \
                      DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-                     COMPILER_INDEX_STORE_ENABLE=NO \
                      SKIP_INSTALL=NO
 
-          # 3. Export
+          # 3. Export (Sem allowProvisioningUpdates para evitar conflito manual)
           xcodebuild -exportArchive \
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
                      -exportPath ios/App/build \
-                     -allowProvisioningUpdates \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
