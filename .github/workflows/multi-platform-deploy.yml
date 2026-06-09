@@ -197,7 +197,6 @@ jobs:
                      -archivePath ios/App/App.xcarchive \
                      -exportOptionsPlist ios/App/App/ExportOptions.plist \
                      -exportPath ios/App/build \
-                     -exportMethod app-store \
                      -authenticationKeyID "${{ secrets.APPLE_API_KEY_ID }}" \
                      -authenticationKeyIssuerID "${{ secrets.APPLE_API_ISSUER }}" \
                      -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
