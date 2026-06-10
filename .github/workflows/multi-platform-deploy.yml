@@ -100,17 +100,26 @@ jobs:
         run: |
           gem install fastlane
           mkdir -p ios/App/fastlane
-          cat <<EOF > ios/App/fastlane/Appfile
-          app_identifier("com.beseen.app.official")
-          itc_team_id("HJR4R6DQV4")
-          team_id("HJR4R6DQV4")
-          EOF
           cat <<EOF > ios/App/fastlane/Fastfile
           default_platform(:ios)
           platform :ios do
             lane :deploy do
-              build_app(workspace: "App.xcworkspace", scheme: "App", export_method: "app-store", export_options: { signingStyle: "manual", provisioningProfiles: { "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"] } }, build_settings: { "CODE_SIGN_IDENTITY" => "Apple Distribution", "PROVISIONING_PROFILE_SPECIFIER" => ENV["PROVISIONING_PROFILE_UUID"] })
-              upload_to_testflight(api_key_path: ENV["API_KEY_PATH"], skip_waiting_for_build_processing: true)
+              build_app(
+                workspace: "App.xcworkspace",
+                scheme: "App",
+                export_method: "app-store",
+                export_options: {
+                  signingStyle: "manual",
+                  provisioningProfiles: {
+                    "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"]
+                  }
+                },
+                xcargs: "CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER='#{ENV['PROVISIONING_PROFILE_UUID']}'"
+              )
+              upload_to_testflight(
+                api_key_path: ENV["API_KEY_PATH"],
+                skip_waiting_for_build_processing: true
+              )
             end
           end
           EOF
