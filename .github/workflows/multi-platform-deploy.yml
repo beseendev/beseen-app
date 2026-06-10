@@ -108,6 +108,7 @@ jobs:
                 workspace: "App.xcworkspace",
                 scheme: "App",
                 export_method: "app-store",
+                suppress_xcode_output: false,
                 export_options: {
                   signingStyle: "manual",
                   provisioningProfiles: {
