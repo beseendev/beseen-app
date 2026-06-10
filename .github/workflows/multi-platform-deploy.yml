@@ -115,7 +115,7 @@ jobs:
                     "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"]
                   }
                 },
-                xcargs: "CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER='#{ENV['PROVISIONING_PROFILE_UUID']}'"
+                xcargs: "CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER='#{ENV['PROVISIONING_PROFILE_UUID']}' DEVELOPMENT_TEAM='HJR4R6DQV4'"
               )
               upload_to_testflight(
                 api_key_path: ENV["API_KEY_PATH"],
