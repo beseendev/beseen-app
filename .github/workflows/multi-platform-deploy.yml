@@ -104,6 +104,15 @@ jobs:
           default_platform(:ios)
           platform :ios do
             lane :deploy do
+              # 1. Força o projeto a usar Assinatura Manual
+              update_code_signing_settings(
+                use_automatic_signing: false,
+                path: "App.xcodeproj",
+                team_id: "HJR4R6DQV4",
+                bundle_identifier: "com.beseen.app.official"
+              )
+
+              # 2. Executa o build
               build_app(
                 workspace: "App.xcworkspace",
                 scheme: "App",
@@ -114,8 +123,7 @@ jobs:
                   provisioningProfiles: {
                     "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"]
                   }
-                },
-                xcargs: "CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER='#{ENV['PROVISIONING_PROFILE_UUID']}' DEVELOPMENT_TEAM='HJR4R6DQV4'"
+                }
               )
               upload_to_testflight(
                 api_key_path: ENV["API_KEY_PATH"],
