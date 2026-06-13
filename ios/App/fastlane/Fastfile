@@ -11,18 +11,11 @@ platform :ios do
       is_key_content_base64: true
     )
 
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "App.xcodeproj",
-      team_id: "HJR4R6DQV4"
-    )
-
     build_app(
       workspace: "App.xcworkspace",
       scheme: "App",
       export_method: "app-store",
-      clean: true,
-      xcargs: "DEVELOPMENT_TEAM=HJR4R6DQV4"
+      clean: true
     )
 
     upload_to_testflight(
