@@ -360,6 +360,10 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_STYLE = Automatic;
+        DEVELOPMENT_TEAM = HJR4R6DQV4;
+        CURRENT_PROJECT_VERSION = 1;
+        INFOPLIST_FILE = App/Info.plist;
 			};
 			name = Debug;
 		};
@@ -380,6 +384,10 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_STYLE = Automatic;
+        DEVELOPMENT_TEAM = HJR4R6DQV4;
+        CURRENT_PROJECT_VERSION = 1;
+        INFOPLIST_FILE = App/Info.plist;
 			};
 			name = Release;
 		};
