@@ -1,4 +1,3 @@
 app_identifier("com.beseen.app.official")
-apple_id("cardosoemerson591@gmail.com") # Apenas para referência
-itc_team_id("HJR4R6DQV4")
+apple_id("emerson.cardoso.trindade@gmail.com")
 team_id("HJR4R6DQV4")

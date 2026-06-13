@@ -1,34 +1,20 @@
 default_platform(:ios)
 
 platform :ios do
-  lane :deploy do
+
+  lane :beta do
+
     build_app(
-      workspace: "App.xcworkspace",
+      workspace: "ios/App/App.xcworkspace",
       scheme: "App",
-      configuration: "Release",
-      output_directory: "./build",
-      output_name: "App.ipa",
       export_method: "app-store",
-      include_bitcode: false,
-      export_options: {
-        signingStyle: "manual",
-        provisioningProfiles: {
-          "com.beseen.app.official" => ENV["PROVISIONING_PROFILE_UUID"]
-        }
-      },
-      build_settings: {
-        "ARCHS" => "arm64",
-        "CODE_SIGN_STYLE" => "Manual",
-        "CODE_SIGN_IDENTITY" => "Apple Distribution",
-        "PROVISIONING_PROFILE_SPECIFIER" => ENV["PROVISIONING_PROFILE_UUID"],
-        "DEVELOPMENT_TEAM" => "HJR4R6DQV4"
-      }
+      clean: true
     )
 
     upload_to_testflight(
-      ipa: "./build/App.ipa",
-      api_key_path: ENV["API_KEY_PATH"],
       skip_waiting_for_build_processing: true
     )
+
   end
+
 end
