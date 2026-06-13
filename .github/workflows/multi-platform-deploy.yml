@@ -140,6 +140,10 @@ jobs:
         run: |
           security find-identity -v -p codesigning
 
+      - name: Set Team ID
+        run: |
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = HJR4R6DQV4;/g' ios/App/App.xcodeproj/project.pbxproj
+
       - name: Executar Fastlane
         env:
           APPSTORE_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
