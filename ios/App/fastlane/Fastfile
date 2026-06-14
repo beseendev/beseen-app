@@ -20,8 +20,12 @@ platform :ios do
     build_app(
       workspace: "App.xcworkspace",
       scheme: "App",
+      configuration: "Release",
       export_method: "app-store",
-      clean: true
+      clean: true,
+      export_options: {
+        signingStyle: "automatic"
+      }
     )
 
     upload_to_testflight(
