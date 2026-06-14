@@ -101,20 +101,6 @@ jobs:
         run: |
           git config --global url."git@github.com:".insteadOf "https://github.com/"
 
-      - name: Verificar Signing
-        run: |
-          cd ios/App
-          xcodebuild -showBuildSettings -workspace App.xcworkspace -scheme App | grep -E "CODE_SIGN|PROVISIONING|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER"
-
-      - name: Mostrar Signing Release Completo
-        run: |
-          cd ios/App
-          xcodebuild \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -showBuildSettings | grep -E "CODE_SIGN|PROVISIONING|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER"
-
       - name: Executar Fastlane (Build IPA)
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -124,10 +110,3 @@ jobs:
         run: |
           cd ios/App
           bundle exec fastlane beta
-
-      - name: Upload iOS App (.ipa)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-app-release
-          path: ios/App/*.ipa
-          retention-days: 7
