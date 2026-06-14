@@ -24,7 +24,9 @@ platform :ios do
       export_method: "app-store",
       clean: true,
       export_options: {
-        signingStyle: "automatic"
+        provisioningProfiles: {
+          "com.beseen.app.official" => "match AppStore com.beseen.app.official 1781462997"
+        }
       }
     )
 
