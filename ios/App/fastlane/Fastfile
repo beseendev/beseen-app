@@ -23,7 +23,7 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       clean: true,
-      xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=HJR4R6DQV4 CODE_SIGN_IDENTITY='Apple Distribution'",
+      xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=HJR4R6DQV4 CODE_SIGN_IDENTITY='Apple Distribution' PROVISIONING_PROFILE_SPECIFIER='#{ENV["sigh_com.beseen.app.official_appstore_profile-name"]}'",
       export_options: {
         provisioningProfiles: {
           "com.beseen.app.official" => ENV["sigh_com.beseen.app.official_appstore_profile-name"]
