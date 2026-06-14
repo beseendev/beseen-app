@@ -26,7 +26,7 @@ platform :ios do
       xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=HJR4R6DQV4 CODE_SIGN_IDENTITY='Apple Distribution'",
       export_options: {
         provisioningProfiles: {
-          "com.beseen.app.official" => "match AppStore com.beseen.app.official 1781462997"
+          "com.beseen.app.official" => ENV["sigh_com.beseen.app.official_appstore_profile-name"]
         }
       }
     )
