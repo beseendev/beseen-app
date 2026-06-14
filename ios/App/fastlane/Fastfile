@@ -4,8 +4,9 @@ platform :ios do
   lane :beta do
     match(
       type: "appstore",
-      readonly: true,
+      readonly: false,
       git_url: "git@github.com:beseendev/ios-certificates.git",
+      app_identifier: "com.beseen.app.official",
       verbose: true
     )
 
