@@ -102,6 +102,15 @@ jobs:
           cd ios/App
           xcodebuild -showBuildSettings -workspace App.xcworkspace -scheme App | grep -E "CODE_SIGN|PROVISIONING|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER"
 
+      - name: Mostrar Signing Release Completo
+        run: |
+          cd ios/App
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -showBuildSettings | grep -E "CODE_SIGN|PROVISIONING|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER"
+
       - name: Executar Fastlane (TestFlight)
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
