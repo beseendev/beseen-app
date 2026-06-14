@@ -78,6 +78,7 @@ GEMINI.md
 /android/.gradle/
 /ios/App/Pods/
 /ios/App/DerivedData/
+ios/App/vendor/bundle/
 
 # Garante que o ExportOptions e Entitlements entrem com certeza absoluta
 !/ios/App/App/App.entitlements

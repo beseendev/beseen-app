@@ -1,32 +1,23 @@
 default_platform(:ios)
 
 platform :ios do
-
   lane :beta do
-
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APPSTORE_KEY_ID"],
-      issuer_id: ENV["APPSTORE_ISSUER_ID"],
-      key_content: ENV["APPSTORE_PRIVATE_KEY"],
-      is_key_content_base64: true
+    match(
+      type: "appstore",
+      readonly: true,
+      git_url: "git@github.com:beseendev/ios-certificates.git",
+      verbose: true
     )
 
     build_app(
       workspace: "App.xcworkspace",
       scheme: "App",
       export_method: "app-store",
-      clean: true,
-      xcargs: "
-          DEVELOPMENT_TEAM=HJR4R6DQV4
-          CODE_SIGN_STYLE=Manual
-        "
+      clean: true
     )
 
     upload_to_testflight(
-      api_key: api_key,
       skip_waiting_for_build_processing: true
     )
-
   end
-
 end
