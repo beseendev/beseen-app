@@ -43,15 +43,11 @@ jobs:
   # ==================== BUILD iOS ====================
   # ==================== BUILD iOS ====================
   build-ios:
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - name: Checkout do Código
         uses: actions/checkout@v4
-
-      - name: Selecionar Xcode 16.0
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
