@@ -100,6 +100,9 @@ jobs:
       - name: Executar Fastlane (TestFlight)
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPSTORE_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER }}
+          APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
           cd ios/App
           bundle exec fastlane beta
