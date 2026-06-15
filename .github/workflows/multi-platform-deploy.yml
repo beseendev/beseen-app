@@ -4,11 +4,23 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Selecione a plataforma para build'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - android
+          - ios
+          - both
 
 jobs:
   # ==================== BUILD ANDROID ====================
   build-android:
-    if: github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' && 
+      (inputs.platform == 'android' || inputs.platform == 'both')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código
@@ -44,7 +56,9 @@ jobs:
 
   # ==================== BUILD iOS ====================
   build-ios:
-    if: github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' && 
+      (inputs.platform == 'ios' || inputs.platform == 'both')
     runs-on: macos-latest
 
     steps:
