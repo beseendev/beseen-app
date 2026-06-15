@@ -1,7 +1,8 @@
 name: CI/CD BeSeen (Versão Automática)
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   # ==================== BUILD ANDROID ====================
