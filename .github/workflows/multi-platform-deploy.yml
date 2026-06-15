@@ -1,11 +1,14 @@
 name: CI/CD BeSeen (Versão Automática)
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   # ==================== BUILD ANDROID ====================
   build-android:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código
@@ -40,8 +43,8 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
   # ==================== BUILD iOS ====================
-  # ==================== BUILD iOS ====================
   build-ios:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
 
     steps:
