@@ -6,6 +6,7 @@ import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon, Ion
 import { AuthService, User, JwtPayload } from '../services/auth.service';
 import { Auth, GoogleAuthProvider, OAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
 import { SignInWithApple, SignInWithAppleResponse } from '@capacitor-community/apple-sign-in';
 import { Capacitor } from '@capacitor/core';
 import { NavController } from '@ionic/angular';
@@ -91,12 +92,18 @@ export class LoginPage implements AfterViewInit {
   }
 
   async signInWithGoogle() {
+    if (Capacitor.isNativePlatform()) {
+      await FirebaseCrashlytics.log({ message: 'Iniciando fluxo de login com Google' });
+    }
     this.isGoogleLoading = true;
     try {
       await FirebaseAuthentication.signOut().catch(() => {});
       const result = await FirebaseAuthentication.signInWithGoogle();
 
       if (result.credential) {
+        if (Capacitor.isNativePlatform()) {
+          await FirebaseCrashlytics.log({ message: 'Google Auth sucesso, iniciando troca de credencial' });
+        }
         const credential = GoogleAuthProvider.credential(result.credential.idToken, result.credential.accessToken);
         const userCredential = await signInWithCredential(this.auth, credential);
         const idToken = await userCredential.user.getIdToken(true);
@@ -109,16 +116,25 @@ export class LoginPage implements AfterViewInit {
         });
       } else {
         this.isGoogleLoading = false;
+        if (Capacitor.isNativePlatform()) {
+          await FirebaseCrashlytics.log({ message: 'Login com Google cancelado ou falhou no plugin' });
+        }
         this.showToast('Login com Google cancelado ou falhou.', 'warning');
       }
     } catch (error) {
       this.isGoogleLoading = false;
+      if (Capacitor.isNativePlatform()) {
+        await FirebaseCrashlytics.log({ message: 'Erro crítico no fluxo de login Google: ' + JSON.stringify(error) });
+      }
       console.error('Erro no plugin de login com Google:', error);
       this.showToast('Erro ao iniciar o login com Google.', 'danger');
     }
   }
 
   async signInWithApple() {
+    if (Capacitor.isNativePlatform()) {
+      await FirebaseCrashlytics.log({ message: 'Iniciando fluxo de login com Apple' });
+    }
     this.isAppleLoading = true;
     try {
       const res: SignInWithAppleResponse = await SignInWithApple.authorize({
@@ -128,6 +144,9 @@ export class LoginPage implements AfterViewInit {
       });
 
       if (res.response && res.response.identityToken) {
+        if (Capacitor.isNativePlatform()) {
+          await FirebaseCrashlytics.log({ message: 'Apple Auth sucesso, iniciando troca de credencial' });
+        }
         const provider = new OAuthProvider('apple.com');
         const credential = provider.credential({
           idToken: res.response.identityToken
@@ -150,10 +169,16 @@ export class LoginPage implements AfterViewInit {
         });
       } else {
         this.isAppleLoading = false;
+        if (Capacitor.isNativePlatform()) {
+          await FirebaseCrashlytics.log({ message: 'Login com Apple cancelado ou falhou no plugin' });
+        }
         this.showToast('Login com Apple cancelado ou falhou.', 'warning');
       }
     } catch (error) {
       this.isAppleLoading = false;
+      if (Capacitor.isNativePlatform()) {
+        await FirebaseCrashlytics.log({ message: 'Erro crítico no fluxo de login Apple: ' + JSON.stringify(error) });
+      }
       console.error('Erro no login com Apple:', error);
       this.showToast('Erro ao iniciar o login com Apple.', 'danger');
     }

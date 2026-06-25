@@ -13,6 +13,9 @@ const config: CapacitorConfig = {
       skipNativeAuth: false,
       providers: ['google.com'],
       webClientId: process.env['GOOGLE_WEB_CLIENT_ID'] || '304753853961-jp8gqjgmtltheqn16nvell5i3os6k4aq.apps.googleusercontent.com'
+    },
+    FirebaseCrashlytics: {
+      enabled: true
     }
   }
 };

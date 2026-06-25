@@ -1,5 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
+import { Capacitor } from '@capacitor/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { AuthService, JwtPayload, User } from './services/auth.service';
@@ -76,6 +78,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (Capacitor.isNativePlatform()) {
+      FirebaseCrashlytics.setEnabled({ enabled: true });
+    }
     this.authService.currentUser.subscribe(user => {
       if (user && user.hasProfile) {
         this.checkSubscription(user);
