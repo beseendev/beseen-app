@@ -47,6 +47,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.950779319104-udjb4i72hp7g4kdahagt35v984k9jr7v</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>O BeSeen precisa de acesso à sua câmera para que você possa tirar fotos e gravar vídeos dos seus lances e perfil.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
