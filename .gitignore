@@ -69,7 +69,6 @@ GEMINI.md
 
 # Capacitor & Firebase
 /android/app/google-services.json
-/ios/App/App/GoogleService-Info.plist
 .aider*
 
 # Proteção de arquivos temporários locais, mantendo a estrutura nativa do Git
