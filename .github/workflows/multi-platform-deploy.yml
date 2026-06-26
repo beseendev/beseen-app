@@ -39,6 +39,11 @@ jobs:
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      - name: Disponibilizar arquivo para Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-assinado
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
 
   # ==================== BUILD iOS ====================
   build-ios:
