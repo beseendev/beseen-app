@@ -349,29 +349,6 @@
       </ion-infinite-scroll>
     </section>
 
-    <div class="video-modal-overlay" *ngIf="isVideoModalOpen && selectedVideo" (click)="closeVideo()">
-      <div class="video-modal-container" (click)="$event.stopPropagation()">
-        <ion-button fill="clear" class="close-modal-btn" (click)="closeVideo()">
-          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-
-        <video 
-          [src]="selectedVideo.mediaUrl" 
-          controls 
-          autoplay 
-          playsinline 
-          class="full-screen-video">
-        </video>
-
-        <div class="video-modal-info">
-          <p class="video-caption">{{ selectedVideo.caption }}</p>
-          <ion-button fill="outline" color="danger" *ngIf="isEditing" (click)="deleteVideo(selectedVideo)">
-            <ion-icon name="trash-outline" slot="start"></ion-icon>
-            Remover vídeo
-          </ion-button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <ng-template #loadingState>
@@ -380,3 +357,28 @@
     </div>
   </ng-template>
 </ion-content>
+
+<div class="video-modal-overlay" *ngIf="isVideoModalOpen && selectedVideo" (click)="closeVideo()">
+  <div class="video-modal-container" (click)="$event.stopPropagation()">
+    <ion-button fill="clear" class="close-modal-btn" (click)="closeVideo()">
+      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+
+    <video 
+      [src]="selectedVideo.mediaUrl" 
+      controls 
+      autoplay 
+      playsinline 
+      muted
+      class="full-screen-video">
+    </video>
+
+    <div class="video-modal-info">
+      <p class="video-caption">{{ selectedVideo.caption }}</p>
+      <ion-button fill="outline" color="danger" *ngIf="isEditing" (click)="deleteVideo(selectedVideo)">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Remover vídeo
+      </ion-button>
+    </div>
+  </div>
+</div>

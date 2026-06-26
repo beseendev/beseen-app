@@ -420,9 +420,8 @@ ion-item {
 }
 
 .video-modal-container {
-  width: 100%;
-  max-width: 500px;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
