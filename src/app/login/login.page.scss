@@ -220,6 +220,16 @@
   font-weight: 600;
   --padding-start: 4px;
   --padding-end: 4px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  height: auto;
+  line-height: normal;
+}
+
+.signup-button::part(native) {
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 360px) {

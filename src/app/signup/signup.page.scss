@@ -286,6 +286,16 @@
   font-weight: 600;
   --padding-start: 4px;
   --padding-end: 4px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  height: auto;
+  line-height: normal;
+}
+
+.login-link::part(native) {
+  padding: 0;
+  align-items: center;
+  display: flex;
 }
 
 @media (max-width: 360px) {
