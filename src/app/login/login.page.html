@@ -39,31 +39,20 @@
       ESQUECEU A SENHA?
     </ion-button>
 
-    <div class="divider-text">
-      <span class="line"></span>
-      <span class="text">Ou faça login com</span>
-      <span class="line"></span>
-    </div>
+    <ng-container *ngIf="!isIos">
+      <div class="divider-text">
+        <span class="line"></span>
+        <span class="text">Ou faça login com</span>
+        <span class="line"></span>
+      </div>
 
-    <div class="social-actions">
-      <button *ngIf="!isIos" type="button" class="social-btn" aria-label="Facebook" (click)="socialLoginComingSoon('Facebook')">
-        <ion-icon name="logo-facebook"></ion-icon>
-      </button>
-
-      <button type="button" class="social-btn social-btn-google" aria-label="Google" [disabled]="isGoogleLoading" (click)="signInWithGoogle()">
-        <ion-spinner *ngIf="isGoogleLoading" name="crescent"></ion-spinner>
-        <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
-      </button>
-
-      <button *ngIf="isIos" type="button" class="social-btn social-btn-apple" aria-label="Apple" [disabled]="isAppleLoading" (click)="signInWithApple()">
-        <ion-spinner *ngIf="isAppleLoading" name="crescent"></ion-spinner>
-        <ion-icon *ngIf="!isAppleLoading" name="logo-apple"></ion-icon>
-      </button>
-
-      <button *ngIf="!isIos" type="button" class="social-btn" aria-label="Twitter" (click)="socialLoginComingSoon('Twitter')">
-        <ion-icon name="logo-twitter"></ion-icon>
-      </button>
-    </div>
+      <div class="social-actions">
+        <button type="button" class="social-btn social-btn-google" aria-label="Google" [disabled]="isGoogleLoading" (click)="signInWithGoogle()">
+          <ion-spinner *ngIf="isGoogleLoading" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
+        </button>
+      </div>
+    </ng-container>
 
     <div class="signup-prompt">
       <span class="signup-text">Não tem uma conta?</span>

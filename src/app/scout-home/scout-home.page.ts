@@ -48,9 +48,6 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
 })
 export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
-  @ViewChildren('vVitrine') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
-
-  private videoObserver?: IntersectionObserver;
 
   videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
@@ -186,37 +183,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.setupVideoObserver();
-    this.videoElements.changes.subscribe(() => {
-      this.setupVideoObserver();
-    });
-  }
-
-  private setupVideoObserver(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
-    }
-
-    this.videoObserver = new IntersectionObserver((entries) => {
-      const activeEntry = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      this.videoElements.forEach(videoRef => {
-        const video = videoRef.nativeElement;
-        if (activeEntry?.target === video) {
-          video.play().catch(e => console.log('Autoplay blocked:', e));
-        } else {
-          video.pause();
-        }
-      });
-    }, {
-      threshold: [0, 0.35, 0.65, 0.85]
-    });
-
-    this.videoElements.forEach(videoRef => {
-      this.videoObserver?.observe(videoRef.nativeElement);
-    });
   }
 
   private async updateFeedItems() {
@@ -248,9 +214,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
-    }
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
     }
   }
 

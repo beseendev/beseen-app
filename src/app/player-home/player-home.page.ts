@@ -127,9 +127,6 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
 export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
-  @ViewChildren('vRanking, vNew') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
-
-  private videoObserver?: IntersectionObserver;
 
   userProfile: any | null = null;
   avatarLoadFailed = false;
@@ -335,38 +332,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.setupVideoObserver();
-    this.videoElements.changes.subscribe(() => {
-      this.setupVideoObserver();
-    });
   }
 
-  private setupVideoObserver(): void {
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
-    }
-
-    this.videoObserver = new IntersectionObserver((entries) => {
-      const activeEntry = entries
-        .filter(entry => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-      this.videoElements.forEach(videoRef => {
-        const video = videoRef.nativeElement;
-        if (activeEntry?.target === video) {
-          video.play().catch(e => console.log('Autoplay blocked:', e));
-        } else {
-          video.pause();
-        }
-      });
-    }, {
-      threshold: [0, 0.35, 0.65, 0.85]
-    });
-
-    this.videoElements.forEach(videoRef => {
-      this.videoObserver?.observe(videoRef.nativeElement);
-    });
-  }
 
   private loadRankingPosts(isRefresh = true, event?: any): void {
     if (isRefresh && this.tabLoadSub) {
@@ -746,9 +713,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     if (this.threadsSubscription) {
       this.threadsSubscription.unsubscribe();
-    }
-    if (this.videoObserver) {
-      this.videoObserver.disconnect();
     }
   }
 }
