@@ -184,7 +184,7 @@
 
 .player-profile-copy {
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 .player-profile-id p, .summary-copy p, .video-meta p, .meta-line, .empty-cta {
@@ -192,7 +192,7 @@
 }
 
 .player-profile-label {
-  display: block;
+  white-space: nowrap;
   font-size: .74rem;
   letter-spacing: .06em;
   text-transform: uppercase
