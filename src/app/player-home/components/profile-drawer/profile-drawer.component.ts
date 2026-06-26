@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { IonAvatar, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { personCircleOutline } from 'ionicons/icons';
+import { AuthService, JwtPayload } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -14,6 +15,7 @@ import { personCircleOutline } from 'ionicons/icons';
 export class ProfileDrawerComponent implements OnChanges {
   @Input() profile: any | null = null;
   avatarLoadFailed = false;
+  private authService = inject(AuthService);
 
   @Output() myVideos = new EventEmitter<void>();
   @Output() invites = new EventEmitter<void>();
@@ -35,11 +37,8 @@ export class ProfileDrawerComponent implements OnChanges {
   }
 
   get displayPosition(): string {
-    return this.profile?.position || 'Posição não definida';
-  }
-
-  get displayAbout(): string {
-    return this.profile?.bio || 'Sem informações adicionais no momento.';
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.position || this.profile?.position || 'Posição não definida';
   }
 
   get avatarUrl(): string | null {
