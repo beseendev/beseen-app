@@ -8,7 +8,7 @@ android {
         applicationId "com.beseen.app.official"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 28
+        versionCode 29
         versionName "1.0.5" +
           ""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,13 +34,13 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    
+
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
-    
+
     // Add the dependency for the Crashlytics library
     implementation 'com.google.firebase:firebase-crashlytics'
-    
+
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
