@@ -181,7 +181,7 @@ ion-segment-button {
 
 .be-tiktok-video {
   position: absolute;
-  top: 0;
+  top: env(safe-area-inset-bottom, 0px);
   left: 0;
   width: 100% !important;
   height: 100% !important;

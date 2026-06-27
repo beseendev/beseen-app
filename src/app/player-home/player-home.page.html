@@ -51,7 +51,7 @@
             </div>
 
             <div class="player-profile-copy">
-              <span class="player-profile-label" *ngIf="userRole === 'JOGADOR'">Perfil do jogador</span>
+              <span class="player-profile-label" *ngIf="userRole === 'JOGADOR'">Perfil jogador(a)</span>
               <span class="player-profile-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
               <strong>{{userName}}</strong>
               <p>{{ userPosition }}</p>
@@ -159,7 +159,7 @@
             <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
               <ion-icon name="flag-outline"></ion-icon>
             </ion-button>
-            
+
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
@@ -223,7 +223,7 @@
             <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
               <ion-icon name="flag-outline"></ion-icon>
             </ion-button>
-            
+
             <div class="be-tiktok-overlay">
               <div class="be-tiktok-info">
                 <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">

@@ -8,7 +8,7 @@
       <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
-      <span class="top-bar-title">Perfil do Jogador</span>
+      <span class="top-bar-title">Perfil Jogador(a)</span>
     </div>
 
     <div class="page-intro">
@@ -320,16 +320,16 @@
         <div class="video-item" *ngFor="let post of (filteredUserPosts$ | async)" (click)="openVideo(post)">
           <div class="video-thumbnail-container">
             <!-- Usando o próprio vídeo como thumbnail para simplificar, com preload metadata e fragmento para forçar frame -->
-            <video 
-              [src]="post.mediaUrl + '#t=0.001'" 
-              preload="metadata" 
-              playsinline 
-              muted 
+            <video
+              [src]="post.mediaUrl + '#t=0.001'"
+              preload="metadata"
+              playsinline
+              muted
               class="video-thumbnail"
               [class.is-loaded]="loadedVideos[post.id]"
               (loadeddata)="onVideoLoaded(post.id)">
             </video>
-            
+
             <div class="video-loading-placeholder" *ngIf="!loadedVideos[post.id]">
               <ion-spinner name="crescent"></ion-spinner>
             </div>
@@ -364,11 +364,11 @@
       <ion-icon name="close-outline" slot="icon-only"></ion-icon>
     </ion-button>
 
-    <video 
-      [src]="selectedVideo.mediaUrl" 
-      controls 
-      autoplay 
-      playsinline 
+    <video
+      [src]="selectedVideo.mediaUrl"
+      controls
+      autoplay
+      playsinline
       muted
       class="full-screen-video">
     </video>
