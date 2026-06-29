@@ -8,6 +8,7 @@ import { SubscriptionService } from './subscription.service';
 import { ChatService } from './chat.service';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 export interface User {
   id: string;
@@ -54,7 +55,11 @@ export class AuthService {
   private chatService = inject(ChatService);
   private httpNoInterceptors: HttpClient;
 
-  constructor(private apiService: ApiService, private httpBackend: HttpBackend) {
+  constructor(
+    private apiService: ApiService,
+    private httpBackend: HttpBackend,
+    private router: Router
+  ) {
     this.httpNoInterceptors = new HttpClient(httpBackend);
     this.initializeAuth();
   }
@@ -245,6 +250,7 @@ export class AuthService {
   }
 
   logout() {
+    console.log('AuthService: Executando logout.');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     this.subscriptionService.clearSubscription();
@@ -253,6 +259,8 @@ export class AuthService {
     this.userRoleSubject.next(null);
     this.currentUserSubject.next(null);
     this.showToast('Você foi desconectado. Faça login novamente.', 'success');
+    console.log('AuthService: Redirecionando para /login.');
+    this.router.navigate(['/login']);
   }
 
   register(userData: any): Observable<any> {
@@ -293,7 +301,9 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token');
+    console.log('AuthService: Lendo access_token do LS. Valor:', token ? 'Token presente' : 'Nulo');
+    return token;
   }
 
   getDecodedToken<T>(): T | null {
@@ -315,6 +325,8 @@ export class AuthService {
 
   refreshToken(): Observable<{ accessToken: string }> {
     const refreshToken = this.getRefreshToken();
+    console.log('AuthService: Tentando renovar token. RefreshToken presente:', !!refreshToken);
+
     if (!refreshToken) {
       this.logout();
       return throwError(() => new Error('No refresh token available'));
@@ -325,12 +337,14 @@ export class AuthService {
       { refreshToken }
     ).pipe(
       tap(tokens => {
+        console.log('AuthService: Token renovado com sucesso.');
         localStorage.setItem('access_token', tokens.accessToken);
         if (tokens.refreshToken) {
           localStorage.setItem('refresh_token', tokens.refreshToken);
         }
       }),
       catchError(err => {
+        console.error('AuthService: Falha na renovação do token.', err);
         this.logout();
         return throwError(() => err);
       })
@@ -341,4 +355,3 @@ export class AuthService {
     return !!localStorage.getItem('access_token');
   }
 }
-

@@ -79,25 +79,34 @@ const handleTokenRefresh = (
   if (!isRefreshing) {
     isRefreshing = true;
     refreshTokenSubject.next(null);
+    console.log('Interceptor: Iniciando renovação de token para requisição:', req.url);
 
     return authService.refreshToken().pipe(
       switchMap((response: any) => {
         isRefreshing = false;
-        refreshTokenSubject.next(response.accessToken);
-        return next(addToken(req, response.accessToken));
+        const newToken = response.accessToken;
+        refreshTokenSubject.next(newToken);
+
+        console.log('Interceptor: Token renovado com sucesso. Retentando requisição original:', req.url);
+
+        // Retenta a requisição original com o token novo
+        return next(addToken(req, newToken));
       }),
       catchError((err) => {
         isRefreshing = false;
+        console.error('Interceptor: Falha crítica na renovação, deslogando.', err);
         authService.logout();
         return throwError(() => err);
       })
     );
   } else {
-    // Se já está renovando, espera o novo token emitido pelo Subject e tenta de novo
+    // Requisições paralelas esperam o novo token
+    console.log('Interceptor: Renovação em andamento, aguardando novo token para:', req.url);
     return refreshTokenSubject.pipe(
       filter(token => token !== null),
       take(1),
       switchMap(token => {
+        console.log('Interceptor: Token recebido, retentando requisição paralela:', req.url);
         return next(addToken(req, token!));
       })
     );
