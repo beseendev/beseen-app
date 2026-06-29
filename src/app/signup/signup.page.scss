@@ -279,25 +279,9 @@
 }
 
 .login-link {
-  --color: var(--be-color-brand-500);
-  --color-hover: var(--be-color-brand-600);
-  --color-activated: var(--be-color-brand-700);
-  text-transform: none;
+  color: var(--be-color-brand-500);
+  cursor: pointer;
   font-weight: 600;
-  --padding-start: 4px;
-  --padding-end: 4px;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  height: auto;
-  line-height: normal;
-  margin: 0;
-}
-
-.login-link::part(native) {
-  padding: 0;
-  align-items: center;
-  display: flex;
-  line-height: 1;
 }
 
 @media (max-width: 360px) {
