@@ -145,6 +145,7 @@ ion-segment-button {
   -webkit-overflow-scrolling: touch;
   background: #000;
   border-radius: 20px;
+  top: env(safe-area-inset-bottom, 0px);
 }
 
 .arena-content::part(scroll),
@@ -177,6 +178,7 @@ ion-segment-button {
   border-radius: 20px;
   border: none !important;
   box-shadow: none !important;
+  top: env(safe-area-inset-bottom, 0px);
 }
 
 .be-tiktok-video {
