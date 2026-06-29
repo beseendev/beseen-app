@@ -84,24 +84,6 @@ const handleTokenRefresh = (
       switchMap((response: any) => {
         isRefreshing = false;
         refreshTokenSubject.next(response.accessToken);
-
-        const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
-        /* MOCK: Desabilitado temporariamente para acesso total
-        if (decodedToken.role === 'CLUBE') {
-          const isStatusActive = decodedToken.subscriptionStatus === SubscriptionStatus.ACTIVE;
-          const isDateExpired = decodedToken.subscriptionEndDate
-            ? new Date(decodedToken.subscriptionEndDate) < new Date()
-            : false;
-
-          if (!isStatusActive || isDateExpired) {
-            if (isDateExpired) {
-              subscriptionService.expireExpired().subscribe();
-            }
-            modalService.openPlansModal();
-          }
-        }
-        */
-
         return next(addToken(req, response.accessToken));
       }),
       catchError((err) => {
@@ -111,11 +93,12 @@ const handleTokenRefresh = (
       })
     );
   } else {
+    // Se já está renovando, espera o novo token emitido pelo Subject e tenta de novo
     return refreshTokenSubject.pipe(
-      filter(token => token != null),
+      filter(token => token !== null),
       take(1),
       switchMap(token => {
-        return next(addToken(req, token));
+        return next(addToken(req, token!));
       })
     );
   }
