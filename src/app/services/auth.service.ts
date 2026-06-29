@@ -6,6 +6,8 @@ import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { SubscriptionService } from './subscription.service';
 import { ChatService } from './chat.service';
+import { HttpBackend, HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: string;
@@ -40,7 +42,7 @@ export class AuthService {
   private authState = new BehaviorSubject<boolean>(this.hasToken());
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser: Observable<User | null> = this.currentUserSubject.asObservable();
-  
+
   private userRoleSubject = new BehaviorSubject<string | null>(this.getRoleFromToken());
   public userRole$ = this.userRoleSubject.asObservable();
 
@@ -50,22 +52,33 @@ export class AuthService {
   private toastController = inject(ToastController);
   private subscriptionService = inject(SubscriptionService);
   private chatService = inject(ChatService);
+  private httpNoInterceptors: HttpClient;
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private httpBackend: HttpBackend) {
+    this.httpNoInterceptors = new HttpClient(httpBackend);
     this.initializeAuth();
   }
 
   private initializeAuth() {
-    if (this.hasToken()) {
-      const token = this.getAccessToken();
-      if (token && this.isTokenExpired(token)) {
+    const token = this.getAccessToken();
+
+    if (token) {
+      const expired = this.isTokenExpired(token);
+
+      if (expired) {
         this.refreshToken().subscribe({
-          next: () => this.loadInitialUserData(),
-          error: () => this.logout()
+          next: () => {
+            this.loadInitialUserData();
+          },
+          error: (err) => {
+            this.logout();
+          }
         });
       } else {
         this.loadInitialUserData();
       }
+    } else {
+      this.authState.next(false);
     }
   }
 
@@ -96,7 +109,7 @@ export class AuthService {
   private checkSubscriptionIfNeeded(user: User) {
     const decodedToken = this.getDecodedToken<JwtPayload>();
     const isPayableRole = decodedToken?.role === 'CLUBE' || decodedToken?.role === 'SCOUT';
-    
+
     if (isPayableRole) {
       this.subscriptionService.initializeRevenueCat(user.id);
     }
@@ -113,7 +126,7 @@ export class AuthService {
         const decodedToken = this.getDecodedToken<JwtPayload>();
         const role = decodedToken?.role || null;
         this.userRoleSubject.next(role);
-        
+
         const user: User = {
           id: response.id?.toString(),
           email: response.email,
@@ -168,7 +181,7 @@ export class AuthService {
         this.authState.next(true);
         const decodedToken = this.getDecodedToken<JwtPayload>();
         this.userRoleSubject.next(decodedToken?.role || null);
-        
+
         const user: User = {
           id: response.userId.toString(),
           email: response.userEmail,
@@ -219,7 +232,7 @@ export class AuthService {
     this.authState.next(true);
     const decodedToken = this.getDecodedToken<JwtPayload>();
     this.userRoleSubject.next(decodedToken?.role || null);
-    
+
     const user: User = {
       id: response.userId.toString(),
       email: response.userEmail,
@@ -307,8 +320,8 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.apiService.post<{ accessToken: string, refreshToken: string }>(
-      `${this.authEndpoint}/refresh-token`,
+    return this.httpNoInterceptors.post<{ accessToken: string, refreshToken: string }>(
+      `${environment.apiUrl}${this.authEndpoint}/refresh-token`,
       { refreshToken }
     ).pipe(
       tap(tokens => {
