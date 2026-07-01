@@ -229,7 +229,6 @@
 
 .content-section {
   margin-bottom: 24px;
-  margin-top: env(safe-area-inset-top, 0px);
 }
 
 .section-heading {
@@ -246,7 +245,6 @@
   --tiktok-height: 100svh;
   width: 100%;
   height: auto;
-  margin-top: env(safe-area-inset-top, 0px);
 }
 
 .scout-home-content .be-tiktok-overlay {
