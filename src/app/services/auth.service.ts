@@ -302,7 +302,6 @@ export class AuthService {
 
   getAccessToken(): string | null {
     const token = localStorage.getItem('access_token');
-    console.log('AuthService: Lendo access_token do LS. Valor:', token ? 'Token presente' : 'Nulo');
     return token;
   }
 
@@ -345,6 +344,7 @@ export class AuthService {
       }),
       catchError(err => {
         console.error('AuthService: Falha na renovação do token.', err);
+        console.error('AuthService: Detalhes do erro:', JSON.stringify(err));
         this.logout();
         return throwError(() => err);
       })
