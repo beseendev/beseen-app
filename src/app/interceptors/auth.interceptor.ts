@@ -76,30 +76,7 @@ const handleTokenRefresh = (
   subscriptionService: SubscriptionService,
   modalService: ModalStateService
 ): Observable<HttpEvent<any>> => {
-  if (!isRefreshing) {
-    isRefreshing = true;
-    refreshTokenSubject.next(null);
-    console.log('Interceptor: Iniciando renovação de token para requisição:', req.url);
-
-    return authService.refreshToken().pipe(
-      switchMap((response: any) => {
-        isRefreshing = false;
-        const newToken = response.accessToken;
-        refreshTokenSubject.next(newToken);
-
-        console.log('Interceptor: Token renovado com sucesso. Retentando requisição original:', req.url);
-
-        // Retenta a requisição original com o token novo
-        return next(addToken(req, newToken));
-      }),
-      catchError((err) => {
-        isRefreshing = false;
-        console.error('Interceptor: Falha crítica na renovação, deslogando.', err);
-        authService.logout();
-        return throwError(() => err);
-      })
-    );
-  } else {
+  if (isRefreshing) {
     // Requisições paralelas esperam o novo token
     console.log('Interceptor: Renovação em andamento, aguardando novo token para:', req.url);
     return refreshTokenSubject.pipe(
@@ -111,4 +88,28 @@ const handleTokenRefresh = (
       })
     );
   }
+
+  isRefreshing = true;
+  refreshTokenSubject.next(null);
+  console.log('Interceptor: Iniciando renovação de token para requisição:', req.url);
+
+  return authService.refreshToken().pipe(
+    switchMap((response: any) => {
+      isRefreshing = false;
+      const newToken = response.accessToken;
+      refreshTokenSubject.next(newToken);
+
+      console.log('Interceptor: Token renovado com sucesso. Retentando requisição original:', req.url);
+
+      // Retenta a requisição original com o token novo
+      return next(addToken(req, newToken));
+    }),
+    catchError((err) => {
+      isRefreshing = false;
+      refreshTokenSubject.next(null); // Reset para garantir que futuras tentativas sejam limpas
+      console.error('Interceptor: Falha crítica na renovação, deslogando.', err);
+      authService.logout();
+      return throwError(() => err);
+    })
+  );
 };
