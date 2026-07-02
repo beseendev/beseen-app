@@ -419,6 +419,8 @@ ion-item {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .video-modal-container {
@@ -427,6 +429,7 @@ ion-item {
   display: flex;
   flex-direction: column;
   position: relative;
+  padding-top: env(safe-area-inset-top);
 }
 
 .close-modal-btn {
@@ -441,6 +444,8 @@ ion-item {
   width: 100%;
   flex: 1;
   background: #000;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  object-fit: contain;
 }
 
 .video-modal-info {
