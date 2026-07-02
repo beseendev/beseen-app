@@ -10,9 +10,6 @@ import { jwtDecode } from 'jwt-decode';
 import { SubscriptionStatus } from '../models/subscription.model';
 import { ModalStateService } from '../services/modal-state.service';
 
-let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<any>(null);
-
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
   next: HttpHandlerFn
@@ -25,7 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (
 
   if (accessToken && req.url.startsWith(environment.apiUrl) && !req.url.includes('/auth/refresh')) {
     if (authService.isTokenExpired(accessToken)) {
-      return handleTokenRefresh(req, next, authService, subscriptionService, modalService);
+      return handleTokenRefresh(req, next, authService);
     }
     req = addToken(req, accessToken);
   }
@@ -37,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh')
       ) {
-        return handleTokenRefresh(req, next, authService, subscriptionService, modalService);
+        return handleTokenRefresh(req, next, authService);
       }
 
       if (error.status === 0) {
@@ -72,43 +69,17 @@ const addToken = (req: HttpRequest<any>, token: string) => {
 const handleTokenRefresh = (
   req: HttpRequest<any>,
   next: HttpHandlerFn,
-  authService: AuthService,
-  subscriptionService: SubscriptionService,
-  modalService: ModalStateService
+  authService: AuthService
 ): Observable<HttpEvent<any>> => {
-  if (isRefreshing) {
-    // Requisições paralelas esperam o novo token
-    console.log('Interceptor: Renovação em andamento, aguardando novo token para:', req.url);
-    return refreshTokenSubject.pipe(
-      filter(token => token !== null),
-      take(1),
-      switchMap(token => {
-        console.log('Interceptor: Token recebido, retentando requisição paralela:', req.url);
-        return next(addToken(req, token!));
-      })
-    );
-  }
-
-  isRefreshing = true;
-  refreshTokenSubject.next(null);
-  console.log('Interceptor: Iniciando renovação de token para requisição:', req.url);
+  console.log('Interceptor: Iniciando ou aguardando renovação de token para requisição:', req.url);
 
   return authService.refreshToken().pipe(
     switchMap((response: any) => {
-      isRefreshing = false;
-      const newToken = response.accessToken;
-      refreshTokenSubject.next(newToken);
-
-      console.log('Interceptor: Token renovado com sucesso. Retentando requisição original:', req.url);
-
-      // Retenta a requisição original com o token novo
-      return next(addToken(req, newToken));
+      console.log('Interceptor: Token renovado com sucesso. Retentando requisição:', req.url);
+      return next(addToken(req, response.accessToken));
     }),
     catchError((err) => {
-      isRefreshing = false;
-      refreshTokenSubject.next(null); // Reset para garantir que futuras tentativas sejam limpas
       console.error('Interceptor: Falha crítica na renovação, deslogando.', err);
-      authService.logout();
       return throwError(() => err);
     })
   );

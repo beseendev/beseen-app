@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import {tap, catchError, map} from 'rxjs/operators';
+import {tap, catchError, map, filter, take} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { SubscriptionService } from './subscription.service';
@@ -54,6 +54,8 @@ export class AuthService {
   private subscriptionService = inject(SubscriptionService);
   private chatService = inject(ChatService);
   private httpNoInterceptors: HttpClient;
+  private isRefreshing = false;
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor(
     private apiService: ApiService,
@@ -302,6 +304,7 @@ export class AuthService {
 
   getAccessToken(): string | null {
     const token = localStorage.getItem('access_token');
+    console.log('AuthService: Lendo access_token do LS. Valor:', token ? 'Token presente' : 'Nulo');
     return token;
   }
 
@@ -323,10 +326,22 @@ export class AuthService {
   }
 
   refreshToken(): Observable<{ accessToken: string }> {
+    if (this.isRefreshing) {
+      return this.refreshTokenSubject.pipe(
+        filter(token => token !== null),
+        take(1),
+        map(token => ({ accessToken: token! }))
+      );
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenSubject.next(null);
+
     const refreshToken = this.getRefreshToken();
     console.log('AuthService: Tentando renovar token. RefreshToken presente:', !!refreshToken);
 
     if (!refreshToken) {
+      this.isRefreshing = false;
       this.logout();
       return throwError(() => new Error('No refresh token available'));
     }
@@ -341,10 +356,14 @@ export class AuthService {
         if (tokens.refreshToken) {
           localStorage.setItem('refresh_token', tokens.refreshToken);
         }
+        this.isRefreshing = false;
+        this.refreshTokenSubject.next(tokens.accessToken);
       }),
       catchError(err => {
         console.error('AuthService: Falha na renovação do token.', err);
         console.error('AuthService: Detalhes do erro:', JSON.stringify(err));
+        this.isRefreshing = false;
+        this.refreshTokenSubject.next(null);
         this.logout();
         return throwError(() => err);
       })
