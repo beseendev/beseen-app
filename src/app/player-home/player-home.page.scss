@@ -19,7 +19,7 @@
 }
 
 .section {
-  margin-top: env(safe-area-inset-top, 0px);
+  margin-top: 24px;
 }
 
 .hero-topline {
@@ -404,7 +404,7 @@
   height: auto;
   background: #000;
   border-radius: 20px;
-  margin-top: env(safe-area-inset-top, 0px);
+  margin-top: 16px;
 }
 
 .arena-content .be-tiktok-overlay {
