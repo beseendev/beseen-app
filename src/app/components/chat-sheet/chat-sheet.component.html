@@ -12,9 +12,14 @@
       </div>
     </div>
 
-    <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
-      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-    </ion-button>
+    <div class="header-actions">
+      <ion-button fill="clear" class="options-btn" *ngIf="canBlock" (click)="openChatOptions()" aria-label="Mais opções">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="close-btn" (click)="close()" aria-label="Fechar chat">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
   </div>
 
   <div class="safety-banners">
@@ -32,11 +37,22 @@
 
 <ion-content class="chat-sheet-content">
   <div class="sheet-body" #messagesViewport>
-    <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status === 'ACCEPTED'">
+    <div class="blocked-banner" *ngIf="isBlocked">
+      <div class="blocked-banner-icon">
+        <ion-icon name="ban-outline"></ion-icon>
+      </div>
+      <strong>{{ isPlayer ? 'Olheiro bloqueado' : 'Jogador bloqueado' }}</strong>
+      <p>Ele não poderá mais enviar mensagens para você. Ele não será avisado.</p>
+      <ion-button fill="outline" class="unblock-btn" (click)="unblockCounterpart()">
+        Desbloquear
+      </ion-button>
+    </div>
+
+    <div class="empty-chat" *ngIf="!isBlocked && !isLoading && messages.length === 0 && status === 'ACCEPTED'">
       Nenhuma mensagem nesta conversa ainda.
     </div>
 
-    <div class="empty-chat" *ngIf="!isLoading && messages.length === 0 && status !== 'ACCEPTED'">
+    <div class="empty-chat" *ngIf="!isBlocked && !isLoading && messages.length === 0 && status !== 'ACCEPTED'">
       <ng-container *ngIf="isPlayer; else scoutWaiting">
         O olheiro demonstrou interesse no seu perfil. Aceite para liberar o chat.
       </ng-container>
@@ -49,17 +65,19 @@
       <ion-spinner name="bubbles"></ion-spinner>
     </div>
 
-    <div
-      class="chat-bubble"
-      *ngFor="let message of messages"
-      [class.own]="message.isMine">
-      {{ message.text }}
-    </div>
+    <ng-container *ngIf="!isBlocked">
+      <div
+        class="chat-bubble"
+        *ngFor="let message of messages"
+        [class.own]="message.isMine">
+        {{ message.text }}
+      </div>
+    </ng-container>
   </div>
 </ion-content>
 
 <ion-footer class="ion-no-border chat-sheet-footer">
-  <div class="footer-container waiting" *ngIf="status === 'PENDING' && isPlayer">
+  <div class="footer-container waiting" *ngIf="status === 'PENDING' && isPlayer && !isBlocked">
     <div class="invite-actions">
       <ion-button expand="block" (click)="acceptInvite()" aria-label="Aceitar convite" class="accept-btn">
         <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
@@ -72,7 +90,7 @@
     </div>
   </div>
 
-  <div class="footer-container" *ngIf="status === 'ACCEPTED'">
+  <div class="footer-container" *ngIf="status === 'ACCEPTED' && !isBlocked">
     <ion-item lines="none" class="chat-input">
       <ion-input
         [(ngModel)]="draftMessage"

@@ -20,6 +20,7 @@ export class ProfileDrawerComponent implements OnChanges {
   @Output() myVideos = new EventEmitter<void>();
   @Output() invites = new EventEmitter<void>();
   @Output() editProfile = new EventEmitter<void>();
+  @Output() blockedUsers = new EventEmitter<void>();
   @Output() signOut = new EventEmitter<void>();
 
   constructor() {
@@ -59,6 +60,10 @@ export class ProfileDrawerComponent implements OnChanges {
 
   onEditProfile(): void {
     this.editProfile.emit();
+  }
+
+  onBlockedUsers(): void {
+    this.blockedUsers.emit();
   }
 
   onSignOut(): void {

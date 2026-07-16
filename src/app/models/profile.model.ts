@@ -35,6 +35,9 @@ export interface Profile {
   oQueBuscaNoBeSeen?: string | null;
   documentoVerificado?: boolean;
   aceitouTermos?: boolean;
+
+  /** Indica se o usuário logado bloqueou este perfil (retornado pelo backend). */
+  blockedByMe?: boolean;
 }
 
 export interface ProfilePlayerCreationRequest {

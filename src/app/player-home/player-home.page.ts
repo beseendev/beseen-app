@@ -40,7 +40,8 @@ import {
   volumeHighOutline,
   volumeMuteOutline,
   mailOutline,
-  flagOutline
+  flagOutline,
+  banOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -177,7 +178,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       volumeHighOutline,
       volumeMuteOutline,
       mailOutline,
-      flagOutline
+      flagOutline,
+      banOutline
     });
   }
 
@@ -499,6 +501,15 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   onDrawerEditProfile(): void {
     this.menuController.close('profileMenu');
     this.router.navigateByUrl('/profile-player');
+  }
+
+  onDrawerBlockedUsers(): void {
+    this.menuController.close('profileMenu');
+    this.router.navigateByUrl('/usuarios-bloqueados');
+  }
+
+  openBlockedUsers(): void {
+    this.router.navigateByUrl('/usuarios-bloqueados');
   }
 
   onDrawerSignOut(): void {

@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController, ToastController, IonContent } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController, IonContent, ActionSheetController, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, closeOutline, personCircleOutline, sendOutline, shieldHalfOutline } from 'ionicons/icons';
+import { banOutline, checkmarkCircleOutline, closeOutline, ellipsisHorizontal, personCircleOutline, sendOutline, shieldHalfOutline } from 'ionicons/icons';
 import { ChatMessageResponse, InviteStatus } from '../../models/player-chat.models';
 import { ChatService } from '../../services/chat.service';
 import { PostService } from '../../services/post.service';
+import { BlockService } from '../../services/block.service';
 
 @Component({
   selector: 'app-chat-sheet',
@@ -19,9 +20,13 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   @Input() threadId?: number | null;
   @Input({ required: true }) counterpartName!: string;
   @Input() counterpartAvatarUrl?: string | null;
+  @Input() counterpartProfileId?: string | number | null;
+  @Input() counterpartBlocked = false;
   @Input() inviteId?: number;
   @Input() status: InviteStatus = 'PENDING';
   @Input() isPlayer = false;
+
+  isBlocked = false;
 
   @ViewChild(IonContent, { static: false }) content?: IonContent;
 
@@ -32,13 +37,18 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
 
   private readonly chatService = inject(ChatService);
   private readonly postService = inject(PostService);
+  private readonly blockService = inject(BlockService);
   private readonly modalController = inject(ModalController);
   private readonly toastController = inject(ToastController);
+  private readonly actionSheetController = inject(ActionSheetController);
+  private readonly alertController = inject(AlertController);
 
   constructor() {
     addIcons({
+      banOutline,
       checkmarkCircleOutline,
       closeOutline,
+      ellipsisHorizontal,
       personCircleOutline,
       sendOutline,
       shieldHalfOutline
@@ -46,10 +56,99 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    if (this.threadId && this.status === 'ACCEPTED') {
+    this.isBlocked = this.counterpartBlocked;
+    if (this.threadId && this.status === 'ACCEPTED' && !this.isBlocked) {
       this.loadMessages();
     }
     this.shouldScrollToBottom = true;
+  }
+
+  get canBlock(): boolean {
+    return !this.isBlocked;
+  }
+
+  /** Papel do outro participante: o jogador conversa com um olheiro e vice-versa. */
+  get counterpartRoleLabel(): string {
+    return this.isPlayer ? 'olheiro' : 'jogador';
+  }
+
+  async openChatOptions(): Promise<void> {
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'be-action-sheet',
+      buttons: [
+        {
+          text: 'Bloquear usuário',
+          role: 'destructive',
+          icon: banOutline,
+          handler: () => {
+            this.confirmBlock();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: closeOutline
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async confirmBlock(): Promise<void> {
+    const firstName = this.counterpartName?.split(' ')[0] || 'usuário';
+    const alert = await this.alertController.create({
+      header: `Bloquear ${firstName}?`,
+      message: `Você não verá mais mensagens, convites ou interações deste ${this.counterpartRoleLabel}. Ele não será avisado sobre o bloqueio.`,
+      cssClass: 'be-alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Bloquear',
+          role: 'destructive',
+          handler: () => {
+            this.blockCounterpart();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private blockCounterpart(): void {
+    if (!this.counterpartProfileId) {
+      this.toastController.create({
+        message: 'Não foi possível identificar o usuário para bloqueio.',
+        duration: 2200,
+        color: 'danger',
+        position: 'top'
+      }).then(t => t.present());
+      return;
+    }
+
+    this.blockService.blockUser(String(this.counterpartProfileId)).subscribe({
+      next: () => {
+        this.isBlocked = true;
+        this.draftMessage = '';
+      },
+      error: (err) => console.error('Error blocking user', err)
+    });
+  }
+
+  unblockCounterpart(): void {
+    if (!this.counterpartProfileId) return;
+
+    this.blockService.unblockUser(String(this.counterpartProfileId)).subscribe({
+      next: () => {
+        this.isBlocked = false;
+        if (this.threadId && this.status === 'ACCEPTED') {
+          this.loadMessages();
+        }
+      },
+      error: (err) => console.error('Error unblocking user', err)
+    });
   }
 
   ngAfterViewChecked(): void {
@@ -130,7 +229,7 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   }
 
   sendMessage(): void {
-    if (this.status !== 'ACCEPTED' || !this.threadId) return;
+    if (this.status !== 'ACCEPTED' || !this.threadId || this.isBlocked) return;
 
     const text = this.draftMessage.trim();
     if (!text) return;

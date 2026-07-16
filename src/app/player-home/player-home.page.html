@@ -5,6 +5,7 @@
       (myVideos)="onDrawerMyVideos()"
       (invites)="onDrawerInvites()"
       (editProfile)="onDrawerEditProfile()"
+      (blockedUsers)="onDrawerBlockedUsers()"
       (signOut)="onDrawerSignOut()"
     ></app-profile-drawer>
   </ion-content>
@@ -71,6 +72,11 @@
               Suporte
             </ion-button>
 
+            <ion-button fill="clear" class="blocked-users-btn" (click)="openBlockedUsers()" aria-label="Usuários bloqueados">
+              <ion-icon slot="start" name="ban-outline"></ion-icon>
+              Usuários bloqueados
+            </ion-button>
+
             <ion-button fill="clear" class="player-logout-btn" (click)="logout()" aria-label="Sair da conta">
               <ion-icon slot="start" name="log-out-outline"></ion-icon>
               Sair
@@ -92,6 +98,10 @@
                   <ion-item button (click)="openSupport(); popoverController.dismiss()">
                     <ion-icon slot="start" name="help-circle-outline"></ion-icon>
                     <ion-label>Suporte</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openBlockedUsers(); popoverController.dismiss()">
+                    <ion-icon slot="start" name="ban-outline"></ion-icon>
+                    <ion-label>Usuários bloqueados</ion-label>
                   </ion-item>
                   <ion-item button (click)="logout(); popoverController.dismiss()" class="logout-item">
                     <ion-icon slot="start" name="log-out-outline"></ion-icon>

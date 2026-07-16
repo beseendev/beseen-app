@@ -306,3 +306,64 @@ ion-item {
   flex-wrap: wrap;
   gap: 4px;
 }
+
+/* Bloqueio de usuário */
+.options-button {
+  --color: var(--be-color-text-2);
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  margin-left: auto;
+  margin-top: env(safe-area-inset-top);
+}
+
+.blocked-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 28px 20px;
+
+  .blocked-avatar {
+    width: 84px;
+    height: 84px;
+
+    ion-icon {
+      font-size: 84px;
+      color: var(--be-color-text-3);
+    }
+  }
+
+  .blocked-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon {
+      font-size: 1.4rem;
+      color: var(--be-color-danger);
+    }
+
+    h3 {
+      margin: 0;
+      font-weight: 700;
+      color: var(--be-color-text-1);
+    }
+  }
+
+  .blocked-copy {
+    margin: 0;
+    color: var(--be-color-text-3);
+    line-height: 1.45;
+    max-width: 300px;
+  }
+
+  .unblock-btn {
+    margin-top: 6px;
+    --border-color: var(--be-color-brand-500);
+    --color: var(--be-color-brand-500);
+    --border-radius: 12px;
+    font-weight: 700;
+  }
+}

@@ -29,12 +29,15 @@ export interface InvitePageResponse {
 export interface ChatThreadSummaryDTO {
   inviteId: number;
   chatThreadId: number | null;
+  counterpartProfileId?: string | number | null;
   counterpartName: string;
   counterpartAvatar: string | null;
   lastMessage: string | null;
   lastMessageAt: string | null;
   status: InviteStatus;
   unreadCount: number;
+  /** Indica se o usuário logado bloqueou o outro participante (retornado pelo backend). */
+  counterpartBlocked?: boolean;
 }
 
 export interface ChatThreadPageResponse {

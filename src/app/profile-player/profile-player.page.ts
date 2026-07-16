@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, playOutline, trashOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
@@ -17,6 +17,7 @@ import {AuthService, JwtPayload} from '../services/auth.service';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 import { environment } from '../../environments/environment';
 import {SubscriptionService} from "../services/subscription.service";
+import { BlockService } from '../services/block.service';
 
 @Component({
   selector: 'app-profile-player',
@@ -73,6 +74,7 @@ export class ProfilePlayerPage implements OnInit {
   ];
 
   private profileService = inject(ProfileService);
+  private blockService = inject(BlockService);
   private postService = inject(PostService);
   private authService = inject(AuthService);
   public subscriptionService = inject(SubscriptionService);
@@ -91,8 +93,12 @@ export class ProfilePlayerPage implements OnInit {
     return this.isMyProfile || this.subscriptionService.hasFullProfileAccess();
   }
 
+  get isBlockedByMe(): boolean {
+    return !this.isMyProfile && !!this.profile?.blockedByMe;
+  }
+
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, playOutline, trashOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -170,6 +176,102 @@ export class ProfilePlayerPage implements OnInit {
 
   openSupport() {
     this.router.navigate(['/suporte']);
+  }
+
+  async openProfileOptions() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      cssClass: 'be-action-sheet',
+      buttons: [
+        {
+          text: 'Bloquear usuário',
+          role: 'destructive',
+          icon: banOutline,
+          handler: () => {
+            this.confirmBlock();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: closeOutline
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async confirmBlock() {
+    if (!this.profile) {
+      return;
+    }
+
+    const firstName = this.profile.name?.split(' ')[0] || 'usuário';
+    const alert = await this.alertCtrl.create({
+      header: `Bloquear ${firstName}?`,
+      message: 'Você não verá mais vídeos, mensagens ou interações deste jogador. Ele não será avisado sobre o bloqueio.',
+      cssClass: 'be-alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Bloquear',
+          role: 'destructive',
+          handler: () => {
+            this.blockUser();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private blockUser() {
+    if (!this.profileId) {
+      return;
+    }
+
+    this.blockService.blockUser(this.profileId).subscribe({
+      next: () => {
+        this.reloadProfile();
+      },
+      error: (err) => {
+        console.error('Error blocking user', err);
+      }
+    });
+  }
+
+  unblockUser() {
+    if (!this.profileId) {
+      return;
+    }
+
+    this.blockService.unblockUser(this.profileId).subscribe({
+      next: () => {
+        this.reloadProfile();
+      },
+      error: (err) => {
+        console.error('Error unblocking user', err);
+      }
+    });
+  }
+
+  private reloadProfile() {
+    this.profileService.getProfile(this.profileId ?? undefined).subscribe({
+      next: (profile) => {
+        this.profile = profile;
+        if (this.profile) {
+          const rawAvatar = this.profile.urlProfileImage || this.profile.urlPerfil || null;
+          this.profile.urlProfileImage = this.normalizeAvatarUrl(rawAvatar);
+        }
+        this.syncDraftProfile();
+        this.resetAndLoadUserPosts();
+      },
+      error: (err) => {
+        console.error('Error reloading profile', err);
+      }
+    });
   }
 
 

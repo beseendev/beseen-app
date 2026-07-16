@@ -9,6 +9,9 @@
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
       <span class="top-bar-title">Perfil do Olheiro</span>
+      <ion-button fill="clear" class="options-button" *ngIf="!isMyProfile" (click)="openProfileOptions()" aria-label="Mais opções">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+      </ion-button>
     </div>
 
     <div class="page-intro">
@@ -16,6 +19,25 @@
       <p class="page-subtitle">{{ getDisplayRole(profile.role) }}</p>
     </div>
 
+    <section class="section-card blocked-card" *ngIf="isBlockedByMe">
+      <ion-avatar class="profile-avatar blocked-avatar">
+        <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
+        <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
+      </ion-avatar>
+
+      <div class="blocked-title">
+        <ion-icon name="ban-outline"></ion-icon>
+        <h3>Usuário bloqueado</h3>
+      </div>
+      <p class="blocked-copy">Você não verá mais mensagens, convites ou interações deste olheiro.</p>
+
+      <ion-button fill="outline" class="unblock-btn" (click)="unblockUser()">
+        <ion-icon slot="start" name="ban-outline"></ion-icon>
+        Desbloquear
+      </ion-button>
+    </section>
+
+    <ng-container *ngIf="!isBlockedByMe">
     <section class="section-card profile-card">
       <div class="profile-card-head">
         <div class="profile-identity">
@@ -290,6 +312,7 @@
         </ng-template>
       </ion-list>
     </section>
+    </ng-container>
   </div>
 
   <ng-template #loadingState>

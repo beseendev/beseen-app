@@ -122,8 +122,10 @@ export class InvitesSheetComponent implements OnInit {
       component: ChatSheetComponent,
       componentProps: {
         threadId: invite.chatThreadId,
+        inviteId: invite.id,
         counterpartName: invite.scoutProfile.fullName,
         counterpartAvatarUrl: invite.scoutProfile.urlProfileImage,
+        counterpartProfileId: invite.scoutProfile.id,
         status: 'ACCEPTED',
         isPlayer: true
       },

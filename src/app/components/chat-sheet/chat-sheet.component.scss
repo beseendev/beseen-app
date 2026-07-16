@@ -243,3 +243,66 @@ ion-content {
     max-width: 70%;
   }
 }
+
+/* Bloqueio de usuário */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.options-btn {
+  --color: var(--be-color-text-2);
+  --padding-start: 4px;
+  --padding-end: 4px;
+  margin: 0;
+}
+
+.blocked-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin: 24px auto;
+  padding: 24px 20px;
+  max-width: 320px;
+  background: var(--be-color-surface-1);
+  border: 1px solid var(--be-color-line);
+  border-radius: var(--be-radius-lg);
+
+  .blocked-banner-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.14);
+
+    ion-icon {
+      font-size: 1.7rem;
+      color: var(--be-color-danger);
+    }
+  }
+
+  strong {
+    color: var(--be-color-text-1);
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--be-color-text-3);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .unblock-btn {
+    margin-top: 4px;
+    --border-color: var(--be-color-brand-500);
+    --color: var(--be-color-brand-500);
+    --border-radius: 12px;
+    font-weight: 700;
+  }
+}

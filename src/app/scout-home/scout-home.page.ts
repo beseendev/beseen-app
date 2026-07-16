@@ -17,6 +17,7 @@ import {
   helpCircleOutline,
   volumeHighOutline,
   volumeMuteOutline, flagOutline,
+  banOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -102,7 +103,8 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       helpCircleOutline,
       volumeHighOutline,
       volumeMuteOutline,
-      flagOutline
+      flagOutline,
+      banOutline
 
     });
   }
@@ -152,6 +154,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   async openPlans() {
     return await this.modalService.openPlansModal();
+  }
+
+  openBlockedUsers() {
+    this.router.navigate(['/usuarios-bloqueados']);
   }
 
   openSupport() {
@@ -370,6 +376,8 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
           inviteId: thread.inviteId,
           counterpartName: thread.counterpartName,
           counterpartAvatarUrl: thread.counterpartAvatar,
+          counterpartProfileId: thread.counterpartProfileId ?? null,
+          counterpartBlocked: thread.counterpartBlocked ?? false,
           status: thread.status,
           isPlayer: false
         },

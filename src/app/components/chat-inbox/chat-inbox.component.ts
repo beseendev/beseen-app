@@ -78,6 +78,8 @@ export class ChatInboxComponent implements OnInit {
         inviteId: thread.inviteId,
         counterpartName: thread.counterpartName,
         counterpartAvatarUrl: thread.counterpartAvatar,
+        counterpartProfileId: thread.counterpartProfileId ?? null,
+        counterpartBlocked: thread.counterpartBlocked ?? false,
         status: thread.status,
         isPlayer: this.isPlayer
       },

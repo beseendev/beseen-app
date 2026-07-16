@@ -80,4 +80,9 @@ export const routes: Routes = [
     loadComponent: () => import('./support/support.page').then(m => m.SupportPage),
     canActivate: [authGuard]
   },
+  {
+    path: 'usuarios-bloqueados',
+    loadComponent: () => import('./blocked-users/blocked-users.page').then(m => m.BlockedUsersPage),
+    canActivate: [authGuard]
+  },
 ];
