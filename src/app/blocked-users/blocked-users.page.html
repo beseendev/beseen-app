@@ -1,0 +1,60 @@
+<ion-content [fullscreen]="true" class="blocked-users-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="blocked-users-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Usuários bloqueados</span>
+    </div>
+
+    <section class="hero-block">
+      <p class="be-eyebrow">Privacidade</p>
+      <h1>Bloqueados</h1>
+      <p class="hero-copy">Gerencie usuários que não podem aparecer para você em vídeos, mensagens ou interações.</p>
+    </section>
+
+    <div class="blocked-list" *ngIf="blockedUsers.length > 0">
+      <div class="blocked-item be-surface" *ngFor="let user of blockedUsers">
+        <ion-avatar class="blocked-avatar">
+          <img *ngIf="user.avatarUrl" [src]="user.avatarUrl" [alt]="user.name" />
+          <ion-icon *ngIf="!user.avatarUrl" name="person-circle-outline"></ion-icon>
+        </ion-avatar>
+
+        <div class="blocked-copy">
+          <strong>{{ user.name }}</strong>
+          <span>{{ getRoleLabel(user.role) }}</span>
+        </div>
+
+        <ion-button
+          fill="outline"
+          size="small"
+          class="unblock-btn"
+          (click)="unblock(user)"
+          [disabled]="isUnblocking(user)">
+          <ion-spinner *ngIf="isUnblocking(user)" name="crescent"></ion-spinner>
+          <ng-container *ngIf="!isUnblocking(user)">Desbloquear</ng-container>
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="empty-card be-surface" *ngIf="!isLoading && blockedUsers.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="ban-outline"></ion-icon>
+      </div>
+      <strong>Nenhum usuário bloqueado</strong>
+      <p>Quando você bloquear alguém, essa pessoa aparecerá aqui para desbloqueio.</p>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading && blockedUsers.length === 0">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-infinite-scroll [disabled]="!hasMore" (ionInfinite)="loadBlockedUsers($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais usuários..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>
