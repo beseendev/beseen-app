@@ -60,6 +60,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>O BeSeen precisa de acesso à sua câmera para que você possa tirar fotos e gravar vídeos dos seus lances e perfil.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O BeSeen precisa de acesso ao seu microfone para gravar o áudio dos vídeos dos seus lances.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>O BeSeen precisa de acesso à sua galeria para que você possa selecionar fotos e vídeos de perfil e lances.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
