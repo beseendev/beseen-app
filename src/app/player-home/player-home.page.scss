@@ -129,7 +129,8 @@
       color: var(--be-color-brand-500);
     }
 
-    &.logout-item {
+    &.logout-item,
+    &.delete-account-item {
       ion-icon {
         color: var(--be-color-danger);
       }

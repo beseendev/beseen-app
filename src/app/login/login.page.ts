@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonContent, IonItem, IonInput, IonButton, ToastController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonItem, IonInput, IonButton, ToastController, AlertController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService, User, JwtPayload } from '../services/auth.service';
 import { Auth, GoogleAuthProvider, OAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
@@ -55,6 +55,7 @@ export class LoginPage implements AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private toastController: ToastController,
+    private alertController: AlertController,
     private auth: Auth,
     private navCtrl: NavController
   ) {
@@ -258,8 +259,28 @@ export class LoginPage implements AfterViewInit {
   }
 
   private async handleAuthError(err: any, context: 'google' | 'email' | 'apple') {
+    if (err.status === 403 && err.error?.code === 'ACCOUNT_DELETION_IN_PROGRESS') {
+      await this.showAccountDeletionAlert();
+      return;
+    }
     let errorMessage = err.error?.message || err.error || 'Erro na autenticação.';
     this.showToast(errorMessage, 'danger');
+  }
+
+  private async showAccountDeletionAlert() {
+    const alert = await this.alertController.create({
+      header: 'Conta em processo de exclusão',
+      message: 'Sua conta está em processo de exclusão e não pode ser acessada no momento. Se você não solicitou a exclusão, entre em contato com o nosso suporte.',
+      cssClass: 'be-alert',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Entendi',
+          role: 'confirm'
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private renderStadiumLights(): void {

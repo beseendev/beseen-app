@@ -46,6 +46,10 @@ export const authInterceptor: HttpInterceptorFn = (
         return EMPTY;
       }
 
+      if (error.error?.code === 'ACCOUNT_DELETION_IN_PROGRESS') {
+        return throwError(() => error);
+      }
+
       const errorMessage = error.error?.message || 'Ocorreu um erro. Tente novamente.';
       toastController.create({
         message: errorMessage,

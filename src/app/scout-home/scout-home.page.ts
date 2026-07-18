@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController } from '@ionic/angular';
+import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -18,6 +18,8 @@ import {
   volumeHighOutline,
   volumeMuteOutline, flagOutline,
   banOutline,
+  trashOutline,
+  closeOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -26,6 +28,7 @@ import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
+import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { SubscriptionService } from '../services/subscription.service';
@@ -87,6 +90,8 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private readonly alertController = inject(AlertController);
   public readonly popoverController = inject(PopoverController);
   private readonly toastController = inject(ToastController);
+  private readonly actionSheetController = inject(ActionSheetController);
+  private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly apiService = inject(ApiService);
 
@@ -104,7 +109,9 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       volumeHighOutline,
       volumeMuteOutline,
       flagOutline,
-      banOutline
+      banOutline,
+      trashOutline,
+      closeOutline
 
     });
   }
@@ -411,6 +418,78 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  async openDeleteAccountOptions() {
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'be-action-sheet',
+      buttons: [
+        {
+          text: 'Excluir conta',
+          role: 'destructive',
+          icon: trashOutline,
+          handler: () => {
+            this.confirmDeleteAccount();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: closeOutline
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async confirmDeleteAccount() {
+    const alert = await this.alertController.create({
+      header: 'Excluir sua conta?',
+      message: 'Esta ação é permanente. Sua conta, favoritos, conversas e todos os seus dados serão removidos em um processamento que pode levar algum tempo para ser concluído.',
+      cssClass: 'be-alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Excluir conta',
+          role: 'destructive',
+          handler: () => {
+            this.deleteAccount();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private deleteAccount(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const userId = decodedToken?.userId;
+
+    if (!userId) {
+      this.showToast('Não foi possível identificar sua conta. Tente novamente.', 'danger');
+      return;
+    }
+
+    this.profileService.requestAccountDeletion(userId).subscribe({
+      next: async () => {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+        const toast = await this.toastController.create({
+          message: 'Recebemos sua solicitação. Sua conta e todos os seus dados serão excluídos em breve. Obrigado por ter feito parte da nossa comunidade!',
+          duration: 6000,
+          color: 'success',
+          position: 'bottom'
+        });
+        await toast.present();
+      },
+      error: (err) => {
+        console.error('Error requesting account deletion', err);
+        this.showToast('Não foi possível processar a exclusão da conta. Tente novamente mais tarde.', 'danger');
+      }
+    });
   }
 
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {

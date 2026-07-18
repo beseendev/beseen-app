@@ -7,6 +7,7 @@
       (editProfile)="onDrawerEditProfile()"
       (blockedUsers)="onDrawerBlockedUsers()"
       (signOut)="onDrawerSignOut()"
+      (deleteAccount)="onDrawerDeleteAccount()"
     ></app-profile-drawer>
   </ion-content>
 </ion-menu>
@@ -84,6 +85,10 @@
                   <ion-item button (click)="logout(); popoverController.dismiss()" class="logout-item">
                     <ion-icon slot="start" name="log-out-outline"></ion-icon>
                     <ion-label>Sair</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openDeleteAccountOptions(); popoverController.dismiss()" class="delete-account-item">
+                    <ion-icon slot="start" name="trash-outline"></ion-icon>
+                    <ion-label>Excluir conta</ion-label>
                   </ion-item>
                 </ion-list>
               </ng-template>

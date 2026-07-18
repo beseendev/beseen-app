@@ -22,6 +22,7 @@ export class ProfileDrawerComponent implements OnChanges {
   @Output() editProfile = new EventEmitter<void>();
   @Output() blockedUsers = new EventEmitter<void>();
   @Output() signOut = new EventEmitter<void>();
+  @Output() deleteAccount = new EventEmitter<void>();
 
   constructor() {
     addIcons({ personCircleOutline });
@@ -68,6 +69,10 @@ export class ProfileDrawerComponent implements OnChanges {
 
   onSignOut(): void {
     this.signOut.emit();
+  }
+
+  onDeleteAccount(): void {
+    this.deleteAccount.emit();
   }
 
   onAvatarError(): void {

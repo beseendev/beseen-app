@@ -26,7 +26,8 @@ import {
   ModalController,
   PopoverController,
   ToastController,
-  AlertController
+  AlertController,
+  ActionSheetController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -41,13 +42,15 @@ import {
   volumeMuteOutline,
   mailOutline,
   flagOutline,
-  banOutline
+  banOutline,
+  trashOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
+import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
 import { PostService } from '../services/post.service';
 import { AdvertisementService } from '../services/advertisement.service';
@@ -162,6 +165,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private alertController = inject(AlertController);
   public popoverController = inject(PopoverController);
   private toastController = inject(ToastController);
+  private actionSheetController = inject(ActionSheetController);
+  private profileService = inject(ProfileService);
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
@@ -179,7 +184,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       volumeMuteOutline,
       mailOutline,
       flagOutline,
-      banOutline
+      banOutline,
+      trashOutline
     });
   }
 
@@ -518,6 +524,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
+  onDrawerDeleteAccount(): void {
+    this.menuController.close('profileMenu');
+    this.openDeleteAccountOptions();
+  }
+
   editPlayerProfile(): void {
     this.router.navigateByUrl('/profile-player');
   }
@@ -525,6 +536,78 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  async openDeleteAccountOptions() {
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'be-action-sheet',
+      buttons: [
+        {
+          text: 'Excluir conta',
+          role: 'destructive',
+          icon: trashOutline,
+          handler: () => {
+            this.confirmDeleteAccount();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: closeOutline
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async confirmDeleteAccount() {
+    const alert = await this.alertController.create({
+      header: 'Excluir sua conta?',
+      message: 'Esta ação é permanente. Sua conta, vídeos, conversas e todos os seus dados serão removidos em um processamento que pode levar algum tempo para ser concluído.',
+      cssClass: 'be-alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Excluir conta',
+          role: 'destructive',
+          handler: () => {
+            this.deleteAccount();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private deleteAccount(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const userId = decodedToken?.userId;
+
+    if (!userId) {
+      this.showToast('Não foi possível identificar sua conta. Tente novamente.', 'danger');
+      return;
+    }
+
+    this.profileService.requestAccountDeletion(userId).subscribe({
+      next: async () => {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+        const toast = await this.toastController.create({
+          message: 'Recebemos sua solicitação. Sua conta e todos os seus dados serão excluídos em breve. Obrigado por ter feito parte da nossa comunidade!',
+          duration: 6000,
+          color: 'success',
+          position: 'bottom'
+        });
+        await toast.present();
+      },
+      error: (err) => {
+        console.error('Error requesting account deletion', err);
+        this.showToast('Não foi possível processar a exclusão da conta. Tente novamente mais tarde.', 'danger');
+      }
+    });
   }
 
   trackByFeedItem(index: number, item: PlayerFeedItem): string {
