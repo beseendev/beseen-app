@@ -55,6 +55,10 @@ export class ProfileService {
     return this.apiService.put<any>(`${this.profileEndpoint}/send-files`, {});
   }
 
+  requestAccountDeletion(userId: string | number): Observable<void> {
+    return this.apiService.delete<void>(`${this.profileEndpoint}/${userId}`);
+  }
+
   private async showToast(message: string, color: 'success' | 'danger' = 'success') {
     const toast = await this.toastController.create({
       message: message,

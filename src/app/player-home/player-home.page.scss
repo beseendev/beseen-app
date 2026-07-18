@@ -96,14 +96,8 @@
   min-width: 0;
 }
 
-.desktop-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mobile-actions {
-  display: none;
+.menu-actions {
+  display: block;
 }
 
 .menu-btn {
@@ -135,7 +129,8 @@
       color: var(--be-color-brand-500);
     }
 
-    &.logout-item {
+    &.logout-item,
+    &.delete-account-item {
       ion-icon {
         color: var(--be-color-danger);
       }
@@ -144,15 +139,6 @@
         color: var(--be-color-danger);
       }
     }
-  }
-}
-
-@media (max-width: 600px) {
-  .desktop-actions {
-    display: none;
-  }
-  .mobile-actions {
-    display: block;
   }
 }
 

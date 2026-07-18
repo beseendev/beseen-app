@@ -7,6 +7,7 @@
       (editProfile)="onDrawerEditProfile()"
       (blockedUsers)="onDrawerBlockedUsers()"
       (signOut)="onDrawerSignOut()"
+      (deleteAccount)="onDrawerDeleteAccount()"
     ></app-profile-drawer>
   </ion-content>
 </ion-menu>
@@ -61,29 +62,7 @@
         </div>
 
         <div class="player-profile-actions" *ngIf="!isLoading">
-          <div class="desktop-actions">
-            <ion-button fill="clear" class="player-edit-btn" (click)="editPlayerProfile()" aria-label="Editar perfil do jogador">
-              <ion-icon slot="start" name="create-outline"></ion-icon>
-              Editar perfil
-            </ion-button>
-
-            <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
-              <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-              Suporte
-            </ion-button>
-
-            <ion-button fill="clear" class="blocked-users-btn" (click)="openBlockedUsers()" aria-label="Usuários bloqueados">
-              <ion-icon slot="start" name="ban-outline"></ion-icon>
-              Usuários bloqueados
-            </ion-button>
-
-            <ion-button fill="clear" class="player-logout-btn" (click)="logout()" aria-label="Sair da conta">
-              <ion-icon slot="start" name="log-out-outline"></ion-icon>
-              Sair
-            </ion-button>
-          </div>
-
-          <div class="mobile-actions">
+          <div class="menu-actions">
             <ion-button fill="clear" id="player-options-trigger" class="menu-btn" aria-label="Opções">
               <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
             </ion-button>
@@ -106,6 +85,10 @@
                   <ion-item button (click)="logout(); popoverController.dismiss()" class="logout-item">
                     <ion-icon slot="start" name="log-out-outline"></ion-icon>
                     <ion-label>Sair</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openDeleteAccountOptions(); popoverController.dismiss()" class="delete-account-item">
+                    <ion-icon slot="start" name="trash-outline"></ion-icon>
+                    <ion-label>Excluir conta</ion-label>
                   </ion-item>
                 </ion-list>
               </ng-template>
