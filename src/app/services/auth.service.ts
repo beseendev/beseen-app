@@ -91,9 +91,7 @@ export class AuthService {
 
   private loadInitialUserData() {
     this.getCurrentUser().subscribe({
-      next: (user) => {
-        this.checkSubscriptionIfNeeded(user);
-      },
+      next: () => {},
       error: (err) => {
         if (err.status === 401 || err.status === 403) {
           this.logout();
@@ -110,15 +108,6 @@ export class AuthService {
       return (Math.floor(Date.now() / 1000) + 300) >= decoded.exp;
     } catch {
       return true;
-    }
-  }
-
-  private checkSubscriptionIfNeeded(user: User) {
-    const decodedToken = this.getDecodedToken<JwtPayload>();
-    const isPayableRole = decodedToken?.role === 'CLUBE' || decodedToken?.role === 'SCOUT';
-
-    if (isPayableRole) {
-      this.subscriptionService.initializeRevenueCat(user.id);
     }
   }
 
@@ -146,7 +135,6 @@ export class AuthService {
       tap(user => {
         this.currentUserSubject.next(user);
         this.authState.next(true);
-        this.checkSubscriptionIfNeeded(user);
       })
     );
   }
@@ -197,7 +185,6 @@ export class AuthService {
           scoutType: decodedToken?.scoutType
         };
         this.currentUserSubject.next(user);
-        this.checkSubscriptionIfNeeded(user);
       }),
       catchError(err => {
         this.authState.next(false);
@@ -248,7 +235,6 @@ export class AuthService {
       scoutType: decodedToken?.scoutType
     };
     this.currentUserSubject.next(user);
-    this.checkSubscriptionIfNeeded(user);
   }
 
   logout() {

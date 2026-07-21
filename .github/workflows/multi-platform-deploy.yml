@@ -20,6 +20,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+      - name: Garantir Android SDK Platform 36 e Build-Tools
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
       - name: Instalar Dependências
         run: npm install --legacy-peer-deps
       - name: Rodar Script de Preparação
