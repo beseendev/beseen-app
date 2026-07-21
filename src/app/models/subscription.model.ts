@@ -25,9 +25,3 @@ export interface Subscription {
   endDate: string;
   revenueCatCustomerId: string;
 }
-
-export interface SubscriptionSyncRequest {
-  revenueCatCustomerId: string;
-  productId: string;
-  transactionId?: string;
-}

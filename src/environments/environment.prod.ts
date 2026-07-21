@@ -10,7 +10,5 @@ export const environment = {
     messagingSenderId: "950779319104",
     appId: "1:950779319104:web:64e88824ef9ac6990320a5",
     measurementId: "G-6HBY8J8VSX"
-  },
-  revenueCatIosKey: 'appl_sua_chave_ios_producao_aqui',
-  revenueCatAndroidKey: 'goog_dFKPjSEiYlMCpWCedSLcUMUwhbm'
+  }
 };

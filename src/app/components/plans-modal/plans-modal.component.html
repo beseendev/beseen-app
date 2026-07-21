@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="scout-plans-content">
   <div class="scout-plans-container">
     <div class="top-bar">
-      <ion-button *ngIf="!isExpired" fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
       <span class="top-bar-title">Planos do Olheiro</span>
@@ -67,24 +67,7 @@
             <span>{{ restriction }}</span>
           </li>
         </ul>
-
-        <ion-button
-          expand="block"
-          [fill]="plan.featured ? 'solid' : 'outline'"
-          class="select-plan-btn"
-          [class.featured-button]="plan.featured"
-          (click)="selectPlan(plan)"
-          [disabled]="purchasing || isCurrentPlan(plan)">
-          <ion-icon slot="start" [name]="isCurrentPlan(plan) ? 'checkmark-circle-outline' : 'flash-outline'"></ion-icon>
-          {{ purchasing ? 'Processando...' : (isCurrentPlan(plan) ? 'Plano Ativo' : 'Escolher plano') }}
-        </ion-button>
       </article>
-    </section>
-
-    <section *ngIf="!loading" class="restore-container ion-text-center ion-padding-bottom">
-      <ion-button fill="clear" size="small" (click)="restorePurchases()" [disabled]="purchasing">
-        Já possui uma assinatura? Restaurar Compras
-      </ion-button>
     </section>
   </div>
 </ion-content>

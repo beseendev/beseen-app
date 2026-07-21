@@ -6,7 +6,6 @@ import {
   arrowBackOutline,
   cardOutline,
   checkmarkCircleOutline,
-  flashOutline,
   shieldCheckmarkOutline,
   starOutline
 } from 'ionicons/icons';
@@ -33,7 +32,6 @@ export class PlansModalComponent implements OnInit {
 
   plans: Plan[] = [];
   loading = true;
-  purchasing = false;
 
   isCurrentPlan(plan: Plan): boolean {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -53,7 +51,6 @@ export class PlansModalComponent implements OnInit {
       arrowBackOutline,
       cardOutline,
       checkmarkCircleOutline,
-      flashOutline,
       shieldCheckmarkOutline,
       starOutline
     });
@@ -61,18 +58,6 @@ export class PlansModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadPlans();
-  }
-
-  get isExpired(): boolean {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    if (decodedToken?.role !== 'CLUBE') return false;
-
-    const isStatusActive = decodedToken.subscriptionStatus === SubscriptionStatus.ACTIVE;
-    const isDateExpired = decodedToken.subscriptionEndDate
-      ? new Date(decodedToken.subscriptionEndDate) < new Date()
-      : false;
-
-    return !isStatusActive || isDateExpired;
   }
 
   get scoutType(): ScoutTypeOption | null {
@@ -124,60 +109,6 @@ export class PlansModalComponent implements OnInit {
         this.showToast('Erro ao carregar planos. Tente novamente.', 'danger');
       }
     });
-  }
-
-  async selectPlan(plan: Plan) {
-    this.purchasing = true;
-    try {
-      await this.subscriptionService.purchasePlan(plan);
-
-      this.authService.refreshToken().subscribe({
-        next: () => {
-          this.showToast('Assinatura ativada com sucesso!', 'success');
-          this.modalCtrl.dismiss(true);
-        },
-        error: () => {
-          this.showToast('Assinatura realizada! Por favor, recarregue a página se necessário.', 'success');
-          this.modalCtrl.dismiss(true);
-        }
-      });
-    } catch (error: any) {
-      if (error.userCancelled) {
-        return;
-      }
-      
-      console.error('--- ERRO NA ASSINATURA ---', error);
-      
-      const msg = error.message || 'Erro desconhecido';
-      const code = error.code || 'Sem código';
-      // Mostra uma versão resumida do objeto de erro no Toast
-      const details = JSON.stringify(error).substring(0, 120);
-
-      this.showToast(`Erro: ${msg} | Código: ${code} | Detalhes: ${details}`, 'danger');
-    } finally {
-      this.purchasing = false;
-    }
-  }
-
-  async restorePurchases() {
-    this.loading = true;
-    try {
-      const sub = await this.subscriptionService.restorePurchases();
-      if (sub) {
-        this.authService.refreshToken().subscribe({
-          next: () => {
-            this.showToast('Assinatura restaurada com sucesso!', 'success');
-            this.modalCtrl.dismiss(true);
-          }
-        });
-      } else {
-        this.showToast('Nenhuma assinatura ativa encontrada para restaurar.', 'warning');
-      }
-    } catch (error) {
-      this.showToast('Erro ao restaurar compras. Tente novamente.', 'danger');
-    } finally {
-      this.loading = false;
-    }
   }
 
   goBack() {

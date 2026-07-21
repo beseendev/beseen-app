@@ -8,6 +8,10 @@
 		"classpath": "io.capawesome.capacitorjs.plugins.firebase.authentication.FirebaseAuthenticationPlugin"
 	},
 	{
+		"pkg": "@capacitor-firebase/crashlytics",
+		"classpath": "io.capawesome.capacitorjs.plugins.firebase.crashlytics.FirebaseCrashlyticsPlugin"
+	},
+	{
 		"pkg": "@capacitor/app",
 		"classpath": "com.capacitorjs.plugins.app.AppPlugin"
 	},
@@ -26,9 +30,5 @@
 	{
 		"pkg": "@capacitor/status-bar",
 		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
-	},
-	{
-		"pkg": "@revenuecat/purchases-capacitor",
-		"classpath": "com.revenuecat.purchases.capacitor.PurchasesPlugin"
 	}
 ]
