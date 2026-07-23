@@ -1,4 +1,6 @@
 import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { App } from '@capacitor/app';
+import type { PluginListenerHandle } from '@capacitor/core';
 
 @Directive({
   selector: 'video[appViewportVideoPlayer]',
@@ -7,6 +9,8 @@ import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular
 })
 export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   private static instances = new Set<ViewportVideoPlayerDirective>();
+  private static appStateListenerRefCount = 0;
+  private static appStateListenerHandle?: Promise<PluginListenerHandle>;
 
   private observer?: IntersectionObserver;
   private pulseTimer?: ReturnType<typeof setTimeout>;
@@ -18,20 +22,11 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   isMuted = true;
   showPulse = false;
 
-  private readonly onVisibilityChange = (): void => {
-    if (document.visibilityState === 'visible') {
-      if (this.isActive) {
-        this.play();
-      }
-    } else {
-      this.pause();
-    }
-  };
-
   constructor(private readonly elementRef: ElementRef<HTMLVideoElement>) {}
 
   ngOnInit(): void {
     ViewportVideoPlayerDirective.instances.add(this);
+    ViewportVideoPlayerDirective.acquireAppStateListener();
 
     const video = this.video;
     video.muted = true;
@@ -53,14 +48,13 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
     });
 
     this.observer.observe(video);
-    document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   ngOnDestroy(): void {
     this.pause();
     this.observer?.disconnect();
-    document.removeEventListener('visibilitychange', this.onVisibilityChange);
     ViewportVideoPlayerDirective.instances.delete(this);
+    ViewportVideoPlayerDirective.releaseAppStateListener();
 
     if (this.pulseTimer) {
       clearTimeout(this.pulseTimer);
@@ -134,6 +128,25 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Chamado quando o app volta do background. O WKWebView do iOS costuma
+   * descartar o buffer decodificado do vídeo enquanto o app está minimizado,
+   * deixando o elemento "congelado" num frame cinza mesmo depois do play() -
+   * por isso força um reload antes de tocar quando o buffer não está mais válido.
+   */
+  private resume(): void {
+    if (!this.isActive || this.hasError) {
+      return;
+    }
+
+    if (this.video.readyState < 2) {
+      this.isLoading = true;
+      this.video.load();
+    }
+
+    this.play();
+  }
+
   private play(): void {
     if (this.hasError) {
       return;
@@ -174,5 +187,36 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
 
   private get video(): HTMLVideoElement {
     return this.elementRef.nativeElement;
+  }
+
+  private static acquireAppStateListener(): void {
+    ViewportVideoPlayerDirective.appStateListenerRefCount++;
+
+    if (ViewportVideoPlayerDirective.appStateListenerHandle) {
+      return;
+    }
+
+    ViewportVideoPlayerDirective.appStateListenerHandle = App.addListener('appStateChange', ({ isActive }) => {
+      ViewportVideoPlayerDirective.instances.forEach(instance => {
+        if (isActive) {
+          instance.resume();
+        } else {
+          instance.pause();
+        }
+      });
+    });
+  }
+
+  private static releaseAppStateListener(): void {
+    ViewportVideoPlayerDirective.appStateListenerRefCount--;
+
+    if (ViewportVideoPlayerDirective.appStateListenerRefCount > 0) {
+      return;
+    }
+
+    ViewportVideoPlayerDirective.appStateListenerRefCount = 0;
+    const handle = ViewportVideoPlayerDirective.appStateListenerHandle;
+    ViewportVideoPlayerDirective.appStateListenerHandle = undefined;
+    handle?.then(listener => listener.remove());
   }
 }
