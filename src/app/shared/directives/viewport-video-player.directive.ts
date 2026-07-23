@@ -1,5 +1,6 @@
 import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
 @Directive({
@@ -12,10 +13,13 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   private static appStateListenerRefCount = 0;
   private static appStateListenerHandle?: Promise<PluginListenerHandle>;
   private static gestureUnlockRegistered = false;
+  private static gestureUnlocked = false;
+  private static firstInstanceClaimed = false;
 
   private observer?: IntersectionObserver;
   private pulseTimer?: ReturnType<typeof setTimeout>;
   private isActive = false;
+  private isFirstInstance = false;
 
   isLoading = true;
   hasError = false;
@@ -25,10 +29,27 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
 
   constructor(private readonly elementRef: ElementRef<HTMLVideoElement>) {}
 
+  /**
+   * Só true para o primeiro card de vídeo montado depois de um cold start, no iOS,
+   * enquanto o primeiro gesto real do usuário na página ainda não aconteceu. Dá uma
+   * pista visual de que é preciso tocar - sem isso o usuário tende a rolar a tela
+   * primeiro, e rolar sozinho não conta como gesto pro WebKit liberar o vídeo.
+   */
+  get showTapGate(): boolean {
+    return this.isFirstInstance
+      && !ViewportVideoPlayerDirective.gestureUnlocked
+      && Capacitor.getPlatform() === 'ios';
+  }
+
   ngOnInit(): void {
     ViewportVideoPlayerDirective.instances.add(this);
     ViewportVideoPlayerDirective.acquireAppStateListener();
     ViewportVideoPlayerDirective.registerGestureUnlock();
+
+    if (!ViewportVideoPlayerDirective.firstInstanceClaimed) {
+      ViewportVideoPlayerDirective.firstInstanceClaimed = true;
+      this.isFirstInstance = true;
+    }
 
     const video = this.video;
     video.muted = true;
@@ -209,13 +230,12 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
 
     ViewportVideoPlayerDirective.gestureUnlockRegistered = true;
 
-    let unlocked = false;
     const unlock = () => {
-      if (unlocked) {
+      if (ViewportVideoPlayerDirective.gestureUnlocked) {
         return;
       }
 
-      unlocked = true;
+      ViewportVideoPlayerDirective.gestureUnlocked = true;
       document.removeEventListener('touchstart', unlock, true);
       document.removeEventListener('click', unlock, true);
 
