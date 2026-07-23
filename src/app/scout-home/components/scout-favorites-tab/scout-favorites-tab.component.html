@@ -31,7 +31,6 @@
           <ion-icon [name]="favoritePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
         </div>
         <div class="video-player-state tap-gate" *ngIf="favoritePlayer.showTapGate">
-          <ion-icon name="play"></ion-icon>
           <span>Toque para assistir</span>
         </div>
         <div class="video-player-error" *ngIf="favoritePlayer.hasError">

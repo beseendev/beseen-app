@@ -170,7 +170,7 @@ ion-segment-button {
   height: var(--tiktok-height);
   width: 100%;
   position: relative;
-  background: #000;
+  background: #c7c7cc;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -223,26 +223,12 @@ ion-segment-button {
 }
 
 .video-player-state.tap-gate {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   background: rgba(2, 6, 23, 0.18);
-}
-
-.video-player-state.tap-gate ion-icon {
-  width: 54px;
-  height: 54px;
-  padding: 14px;
-  border-radius: 999px;
-  color: #fff;
-  background: rgba(2, 6, 23, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.42));
 }
 
 .video-player-state.tap-gate span {
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 700;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
