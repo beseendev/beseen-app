@@ -11,6 +11,7 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   private static instances = new Set<ViewportVideoPlayerDirective>();
   private static appStateListenerRefCount = 0;
   private static appStateListenerHandle?: Promise<PluginListenerHandle>;
+  private static gestureUnlockRegistered = false;
 
   private observer?: IntersectionObserver;
   private pulseTimer?: ReturnType<typeof setTimeout>;
@@ -27,6 +28,7 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     ViewportVideoPlayerDirective.instances.add(this);
     ViewportVideoPlayerDirective.acquireAppStateListener();
+    ViewportVideoPlayerDirective.registerGestureUnlock();
 
     const video = this.video;
     video.muted = true;
@@ -187,6 +189,42 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
 
   private get video(): HTMLVideoElement {
     return this.elementRef.nativeElement;
+  }
+
+  /**
+   * No WKWebView do iOS (Capacitor), depois de um cold start o carregamento e a
+   * renderização de vídeo ficam suspensos até o primeiro gesto real do usuário na
+   * página - scroll não conta como gesto. Sem isso, play() chamado pelo
+   * IntersectionObserver fica preso em "waiting" mesmo com o vídeo em tela.
+   * Captura o primeiro toque em qualquer lugar do app (não precisa ser no vídeo)
+   * para destravar e tentar tocar o vídeo ativo no momento.
+   */
+  private static registerGestureUnlock(): void {
+    if (ViewportVideoPlayerDirective.gestureUnlockRegistered) {
+      return;
+    }
+
+    ViewportVideoPlayerDirective.gestureUnlockRegistered = true;
+
+    let unlocked = false;
+    const unlock = () => {
+      if (unlocked) {
+        return;
+      }
+
+      unlocked = true;
+      document.removeEventListener('touchend', unlock, true);
+      document.removeEventListener('click', unlock, true);
+
+      ViewportVideoPlayerDirective.instances.forEach(instance => {
+        if (instance.isActive) {
+          instance.play();
+        }
+      });
+    };
+
+    document.addEventListener('touchend', unlock, { capture: true, passive: true });
+    document.addEventListener('click', unlock, { capture: true });
   }
 
   private static acquireAppStateListener(): void {
