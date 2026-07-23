@@ -194,8 +194,11 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   /**
    * No WKWebView do iOS (Capacitor), depois de um cold start o carregamento e a
    * renderização de vídeo ficam suspensos até o primeiro gesto real do usuário na
-   * página - scroll não conta como gesto. Sem isso, play() chamado pelo
-   * IntersectionObserver fica preso em "waiting" mesmo com o vídeo em tela.
+   * página. Sem isso, play() chamado pelo IntersectionObserver fica preso em
+   * "waiting" mesmo com o vídeo em tela. Usa 'touchstart' (não 'touchend'): se o
+   * toque virar um gesto de scroll, o WebKit não considera o 'touchend' resultante
+   * como gesto válido para liberar mídia, então o destravamento precisa acontecer
+   * no instante em que o dedo encosta na tela, antes do gesto virar scroll.
    * Captura o primeiro toque em qualquer lugar do app (não precisa ser no vídeo)
    * para destravar e tentar tocar o vídeo ativo no momento.
    */
@@ -213,7 +216,7 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
       }
 
       unlocked = true;
-      document.removeEventListener('touchend', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
       document.removeEventListener('click', unlock, true);
 
       ViewportVideoPlayerDirective.instances.forEach(instance => {
@@ -223,7 +226,7 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
       });
     };
 
-    document.addEventListener('touchend', unlock, { capture: true, passive: true });
+    document.addEventListener('touchstart', unlock, { capture: true, passive: true });
     document.addEventListener('click', unlock, { capture: true });
   }
 
