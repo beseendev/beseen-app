@@ -794,6 +794,11 @@ video::-webkit-media-controls-panel {
   width: calc(100% + 30px) !important;
 }
 
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 .be-date-modal {
   --height: auto;
   --width: fit-content;
