@@ -302,6 +302,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
 
     profileCreation$.pipe(
       switchMap(() => this.handleImageUpload(this.selectedImageFile!)),
+      switchMap(() => this.authService.refreshToken()),
       switchMap(() => this.authService.refreshCurrentUser()),
       switchMap(() => {
         if (this.loginMethod === 'instagram' && this.idToken) {

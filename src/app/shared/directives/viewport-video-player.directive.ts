@@ -18,6 +18,16 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   isMuted = true;
   showPulse = false;
 
+  private readonly onVisibilityChange = (): void => {
+    if (document.visibilityState === 'visible') {
+      if (this.isActive) {
+        this.play();
+      }
+    } else {
+      this.pause();
+    }
+  };
+
   constructor(private readonly elementRef: ElementRef<HTMLVideoElement>) {}
 
   ngOnInit(): void {
@@ -43,11 +53,13 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
     });
 
     this.observer.observe(video);
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   ngOnDestroy(): void {
     this.pause();
     this.observer?.disconnect();
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
     ViewportVideoPlayerDirective.instances.delete(this);
 
     if (this.pulseTimer) {
