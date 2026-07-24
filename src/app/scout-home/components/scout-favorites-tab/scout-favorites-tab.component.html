@@ -24,11 +24,14 @@
           class="be-tiktok-video">
         </video>
 
-        <div class="video-player-state loading" *ngIf="favoritePlayer.isLoading && !favoritePlayer.hasError">
+        <div class="video-player-state loading" *ngIf="favoritePlayer.isLoading && !favoritePlayer.hasError && !favoritePlayer.showTapGate">
           <ion-spinner name="crescent"></ion-spinner>
         </div>
         <div class="video-player-state pulse" *ngIf="favoritePlayer.showPulse">
           <ion-icon [name]="favoritePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+        </div>
+        <div class="video-player-state tap-gate" *ngIf="favoritePlayer.showTapGate">
+          <span>Toque para assistir</span>
         </div>
         <div class="video-player-error" *ngIf="favoritePlayer.hasError">
           <strong>Video indisponivel</strong>
