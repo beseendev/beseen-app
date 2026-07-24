@@ -1,4 +1,4 @@
-name: CI/CD BeSeen (Versão Automática)
+name: CI/CD BeSeen
 
 on:
   push:
