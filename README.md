@@ -12,7 +12,7 @@ npm start
 
 ---
 
-### 2. Android (Ambiente Local)
+### 2. Android (Ambiente Local).
 Para rodar no emulador ou dispositivo físico usando as chaves de teste e API local:
 
 ```bash
