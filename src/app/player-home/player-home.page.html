@@ -17,6 +17,14 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <div slot="fixed" class="player-action-bar" aria-hidden="true"></div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="player-post-fab">
+    <ion-fab-button (click)="goToCreatePost()" class="post-fab-button" aria-label="Publicar">
+      <ion-icon name="star-outline" aria-hidden="true"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <div class="arena-shell">
     <header class="arena-hero section">
       <div class="hero-topline">
@@ -256,13 +264,3 @@
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais jogadas..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-
-<ion-footer class="ion-no-border arena-footer" *ngIf="userRole === 'JOGADOR'">
-  <ion-toolbar>
-    <div class="footer-buttons">
-      <ion-button (click)="goToCreatePost()" class="post-fab" aria-label="Publicar">
-        <ion-icon slot="icon-only" name="star-outline"></ion-icon>
-      </ion-button>
-    </div>
-  </ion-toolbar>
-</ion-footer>

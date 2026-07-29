@@ -46,6 +46,19 @@
       </div>
     </div>
 
+    <section class="skills-card" *ngIf="selectedMedia">
+      <div class="skills-header">
+        <strong>Habilidades demonstradas</strong>
+        <p>Selecione as habilidades demonstradas neste vídeo.</p>
+      </div>
+
+      <app-skill-selector
+        [skills]="availableSkills"
+        [selectedSkillIds]="postFormState.selectedSkillIds"
+        (selectedSkillIdsChange)="onSelectedSkillIdsChange($event)">
+      </app-skill-selector>
+    </section>
+
     <section class="guidelines-card">
       <div class="guidelines-header">
         <ion-icon name="alert-circle-outline"></ion-icon>

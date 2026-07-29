@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,6 +6,9 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline, alertCircleOutline } from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
+import { CreatePostFormState } from '../models/post-creation.model';
+import { SKILL_CATALOG } from '../models/skill.model';
+import { SkillSelectorComponent } from '../components/skill-selector/skill-selector.component';
 
 @Component({
   selector: 'app-create-post',
@@ -15,15 +18,20 @@ import { UploadPostService } from '../services/upload-post.service';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter
+    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter,
+    SkillSelectorComponent
   ]
 })
-export class CreatePostPage implements OnInit {
+export class CreatePostPage {
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
   selectedMedia: File | null = null;
   selectedMediaUrl: string | null = null;
   selectedMediaDuration: number | null = null;
-  caption: string = '';
+  postFormState: CreatePostFormState = {
+    caption: '',
+    selectedSkillIds: []
+  };
+  readonly availableSkills = SKILL_CATALOG;
   fileError: string | null = null;
   isSubmitting = false;
 
@@ -36,7 +44,22 @@ export class CreatePostPage implements OnInit {
     addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline, alertCircleOutline });
   }
 
-  ngOnInit() {
+  get caption(): string {
+    return this.postFormState.caption;
+  }
+
+  set caption(value: string) {
+    this.postFormState = {
+      ...this.postFormState,
+      caption: value
+    };
+  }
+
+  onSelectedSkillIdsChange(selectedSkillIds: string[]): void {
+    this.postFormState = {
+      ...this.postFormState,
+      selectedSkillIds
+    };
   }
 
   goBack() {
@@ -103,6 +126,7 @@ export class CreatePostPage implements OnInit {
     this.selectedMedia = null;
     this.selectedMediaUrl = null;
     this.selectedMediaDuration = null;
+    this.onSelectedSkillIdsChange([]);
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }

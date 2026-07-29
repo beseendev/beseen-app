@@ -1,4 +1,5 @@
 import { FileType } from './upload.model';
+import { Skill } from './skill.model';
 
 export interface UserInfo {
   id: string;
@@ -21,4 +22,5 @@ export interface Post {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
   scoutId?: number | null;
   athleteId?: number | null;
+  skills?: Skill[] | null;
 }

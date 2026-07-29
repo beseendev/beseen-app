@@ -30,7 +30,7 @@ import { Router } from '@angular/router';
 import { catchError, finalize, switchMap, tap, filter } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ProfilePlayerCreationRequest } from '../models/profile.model';
+import { AthleteGender, ProfilePlayerCreationRequest } from '../models/profile.model';
 import { ActivatedRoute } from '@angular/router';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 
@@ -48,6 +48,8 @@ import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profil
   ]
 })
 export class CreateProfilePlayerPage implements OnInit, OnDestroy {
+  readonly allPositionsValue = '__ALL_POSITIONS__';
+
   profileForm!: FormGroup;
   isRoleFromToken = false;
   isLoading = false;
@@ -69,6 +71,10 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     { label: 'Destro', value: 'RIGHT' },
     { label: 'Canhoto', value: 'LEFT' },
     { label: 'Ambidestro', value: 'BOTH' }
+  ];
+  readonly genderOptions: { label: string; value: AthleteGender }[] = [
+    { label: 'Masculino', value: 'MALE' },
+    { label: 'Feminino', value: 'FEMALE' }
   ];
 
   private fb = inject(FormBuilder);
@@ -164,10 +170,11 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private updateFormFields(role: string | null): void {
     if (role === 'JOGADOR') {
       this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
-      this.profileForm.addControl('position', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('position', this.fb.control<string[]>([], [Validators.required]));
       this.profileForm.addControl('height', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('weight', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('dominantFoot', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('gender', this.fb.control<AthleteGender | null>(null));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
   }
@@ -233,6 +240,18 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     event.target.value = finalValue;
   }
 
+  onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
+    const values = event.detail.value ?? [];
+    const positionControl = this.profileForm.get('position');
+
+    if (values.includes(this.allPositionsValue)) {
+      positionControl?.setValue([...this.positionOptions], { emitEvent: false });
+      return;
+    }
+
+    positionControl?.setValue(values, { emitEvent: false });
+  }
+
   private onlyDigits(input: string): string {
     return (input ?? '').replace(/\D+/g, '');
   }
@@ -291,14 +310,19 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     this.isLoading = true;
     const formValue = this.profileForm.getRawValue();
     const formattedDate = this.formatDate(formValue.dateOfBirth);
+    const selectedPositions = Array.isArray(formValue.position)
+      ? formValue.position.filter((position: string) => position !== this.allPositionsValue)
+      : [];
     const requestData = {
       ...formValue,
+      position: selectedPositions.join(', '),
       dateOfBirth: formattedDate,
       cidade: formValue.cidade?.trim(),
       pais: formValue.pais?.trim()
     };
+    const { gender: _gender, ...backendRequestData } = requestData;
 
-    const profileCreation$ = this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest);
+    const profileCreation$ = this.profileService.createPlayerProfile(backendRequestData as ProfilePlayerCreationRequest);
 
     profileCreation$.pipe(
       switchMap(() => this.handleImageUpload(this.selectedImageFile!)),

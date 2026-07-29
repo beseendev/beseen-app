@@ -1,5 +1,7 @@
 import { ScoutAgeCategory, ScoutPosition, ScoutTypeOption } from './scout-profile.model';
 
+export type AthleteGender = 'MALE' | 'FEMALE';
+
 export interface Profile {
   id: string;
   name: string;
@@ -19,6 +21,7 @@ export interface Profile {
   weight?: string;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 
   tipoOlheiro?: ScoutTypeOption;
   tipoOlheiroOutroTexto?: string | null;
@@ -54,6 +57,7 @@ export interface ProfilePlayerCreationRequest {
   weight?: string;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 }
 
 export interface ProfileScoutCreationRequest {
@@ -109,6 +113,7 @@ export interface ProfileResponse {
   weight?: string;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 
   tipoOlheiro?: string;
   tipoOlheiroOutroTexto?: string;

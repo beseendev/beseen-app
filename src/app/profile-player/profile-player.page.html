@@ -177,11 +177,14 @@
         <ion-item *ngIf="isEditing; else readPosition">
           <ion-icon slot="start" name="body-outline"></ion-icon>
           <ion-select
-            label="Posicao"
+            label="Posições"
             labelPlacement="stacked"
-            [(ngModel)]="draftProfile.position"
-            placeholder="Selecione sua posição"
-            interface="action-sheet">
+            [ngModel]="draftPositions"
+            (ionChange)="onPlayerPositionSelectionChange($event)"
+            placeholder="Selecione suas posições"
+            multiple="true"
+            interface="alert">
+            <ion-select-option [value]="allPositionsValue">Todos</ion-select-option>
             <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -212,6 +215,27 @@
             <ion-label>
               <h3>Pe Dominante</h3>
               <p>{{ getDominantFootLabel(profile.dominantFoot) }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-template>
+
+        <ion-item *ngIf="isEditing; else readGender">
+          <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+          <ion-select
+            label="Gênero"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.gender"
+            placeholder="Selecione"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ng-template #readGender>
+          <ion-item *ngIf="profile.gender">
+            <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+            <ion-label>
+              <h3>Gênero</h3>
+              <p>{{ getGenderLabel(profile.gender) }}</p>
             </ion-label>
           </ion-item>
         </ng-template>

@@ -364,24 +364,37 @@
   font-size: .9rem
 }
 
-.arena-footer ion-toolbar {
-  --background: rgba(7, 22, 39, .82);
-  --border-width: 0;
-  padding: 8px 14px
+.player-action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(45px + env(safe-area-inset-bottom, 0px));
+  background: rgba(7, 22, 39, .82);
+  border-top: 1px solid rgba(148, 163, 184, .16);
+  z-index: 9999;
+  pointer-events: none;
 }
 
-.footer-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center
+.player-post-fab {
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  z-index: 10000;
 }
 
-.post-fab {
-  width: 54px;
-  height: 54px;
-  --border-radius: 999px;
+.post-fab-button {
+  width: 33px;
+  height: 33px;
   --background: var(--be-color-brand-500);
-  --color: #052e16
+  --box-shadow: 0 12px 28px rgba(2, 6, 23, .36);
+  --border-radius: 999px;
+  --color: #052e16;
+
+  ion-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    color: #052e16;
+  }
 }
 
 .video-stack.be-tiktok-container {
@@ -394,11 +407,11 @@
 }
 
 .arena-content .be-tiktok-overlay {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  padding-bottom: calc(58px + env(safe-area-inset-bottom));
 }
 
 .arena-content .be-tiktok-actions {
-  bottom: calc(92px + env(safe-area-inset-bottom));
+  bottom: calc(52px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 600px) {

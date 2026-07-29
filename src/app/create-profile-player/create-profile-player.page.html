@@ -59,11 +59,14 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
             <ion-select
-              label="Posição principal"
+              label="Posições"
               labelPlacement="stacked"
               formControlName="position"
-              placeholder="Selecione sua posição"
-              interface="action-sheet">
+              placeholder="Selecione suas posições"
+              multiple="true"
+              interface="alert"
+              (ionChange)="onPlayerPositionSelectionChange($event)">
+              <ion-select-option [value]="allPositionsValue">Todos</ion-select-option>
               <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
             </ion-select>
           </ion-item>
@@ -111,6 +114,18 @@
           <div *ngIf="profileForm.get('dominantFoot')?.invalid && profileForm.get('dominantFoot')?.touched" class="error-text">
             Pé dominante é obrigatório.
           </div>
+
+          <ion-item class="input-field" color="none">
+            <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+            <ion-select
+              label="Gênero"
+              labelPlacement="stacked"
+              formControlName="gender"
+              placeholder="Selecione"
+              interface="action-sheet">
+              <ion-select-option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+            </ion-select>
+          </ion-item>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="list-outline" slot="start"></ion-icon>

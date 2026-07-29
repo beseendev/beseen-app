@@ -1,0 +1,157 @@
+<ion-content class="filter-modal-content" [fullscreen]="true">
+  <div class="filter-modal-shell">
+    <header class="filter-modal-header">
+      <div>
+        <p>Filtrar vídeos</p>
+        <h2>Filtros da vitrine</h2>
+      </div>
+
+      <ion-button fill="clear" class="close-btn" (click)="cancel()" aria-label="Fechar filtros">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </header>
+
+    <section class="filter-section">
+      <div class="section-heading">
+        <ion-icon name="funnel-outline"></ion-icon>
+        <h3>Características do atleta</h3>
+      </div>
+
+      <ion-item class="input-field" color="none">
+        <ion-select
+          label="Gênero"
+          labelPlacement="stacked"
+          [(ngModel)]="draftFilters.gender"
+          placeholder="Todos"
+          interface="action-sheet">
+          <ion-select-option [value]="null">Todos</ion-select-option>
+          <ion-select-option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <div class="range-grid">
+        <ion-item class="input-field" color="none">
+          <ion-input
+            label="Idade mínima"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            inputmode="numeric"
+            [(ngModel)]="draftFilters.minAge"
+            placeholder="Ex: 16">
+          </ion-input>
+        </ion-item>
+        <ion-item class="input-field" color="none">
+          <ion-input
+            label="Idade máxima"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            inputmode="numeric"
+            [(ngModel)]="draftFilters.maxAge"
+            placeholder="Ex: 20">
+          </ion-input>
+        </ion-item>
+      </div>
+      <p class="field-error" *ngIf="validation.ageRange">{{ validation.ageRange }}</p>
+
+      <ion-item class="input-field" color="none">
+        <ion-select
+          label="Pé dominante"
+          labelPlacement="stacked"
+          [(ngModel)]="draftFilters.dominantFoot"
+          placeholder="Todos"
+          interface="action-sheet">
+          <ion-select-option [value]="null">Todos</ion-select-option>
+          <ion-select-option *ngFor="let option of footOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="input-field" color="none">
+        <ion-select
+          label="Posição"
+          labelPlacement="stacked"
+          [ngModel]="draftFilters.positions"
+          (ionChange)="onPositionSelectionChange($event)"
+          placeholder="Selecione uma ou mais"
+          multiple="true"
+          interface="alert">
+          <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <div class="range-grid">
+        <ion-item class="input-field" color="none">
+          <ion-input
+            label="Altura mínima"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [(ngModel)]="draftFilters.minHeight"
+            placeholder="Ex: 1.70">
+          </ion-input>
+        </ion-item>
+        <ion-item class="input-field" color="none">
+          <ion-input
+            label="Altura máxima"
+            labelPlacement="stacked"
+            type="number"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [(ngModel)]="draftFilters.maxHeight"
+            placeholder="Ex: 1.90">
+          </ion-input>
+        </ion-item>
+      </div>
+      <p class="field-error" *ngIf="validation.heightRange">{{ validation.heightRange }}</p>
+    </section>
+
+    <section class="filter-section">
+      <div class="section-heading">
+        <h3>Localização</h3>
+      </div>
+
+      <ion-item class="input-field" color="none">
+        <ion-select
+          label="Estado"
+          labelPlacement="stacked"
+          [(ngModel)]="draftFilters.estado"
+          placeholder="Todos"
+          interface="action-sheet">
+          <ion-select-option [value]="null">Todos</ion-select-option>
+          <ion-select-option *ngFor="let estado of stateOptions" [value]="estado">{{ estado }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="input-field" color="none">
+        <ion-input
+          label="Cidade"
+          labelPlacement="stacked"
+          [(ngModel)]="draftFilters.cidade"
+          placeholder="Ex: Florianópolis"
+          maxlength="100">
+        </ion-input>
+      </ion-item>
+    </section>
+
+    <section class="filter-section">
+      <div class="section-heading">
+        <h3>Habilidades</h3>
+      </div>
+
+      <app-skill-selector
+        [skills]="skills"
+        [selectedSkillIds]="selectedSkillIds"
+        (selectedSkillIdsChange)="onSelectedSkillIdsChange($event)">
+      </app-skill-selector>
+    </section>
+
+    <div class="footer-actions" role="group" aria-label="Ações dos filtros">
+      <ion-button fill="clear" class="clear-btn" (click)="clearDraft()">Limpar</ion-button>
+      <ion-button class="apply-btn" (click)="apply()">Mostrar resultados</ion-button>
+    </div>
+  </div>
+</ion-content>

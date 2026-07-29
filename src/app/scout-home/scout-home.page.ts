@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject, ViewChild, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
 import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { filter, finalize, take } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
@@ -20,6 +20,9 @@ import {
   banOutline,
   trashOutline,
   closeOutline,
+  funnelOutline,
+  search,
+  searchOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -40,6 +43,13 @@ import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
 import { ModalStateService } from '../services/modal-state.service';
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
+import { ScoutSearchService } from '../services/scout-search.service';
+import { ScoutFilterModalComponent } from './components/scout-filter-modal/scout-filter-modal.component';
+import {
+  ScoutVideoFilterChip,
+  ScoutVideoFilters,
+  removeScoutVideoFilter
+} from '../models/scout-search.model';
 
 export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
 
@@ -50,7 +60,7 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   standalone: true,
   imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, ViewportVideoPlayerDirective]
 })
-export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
+export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   videoPosts: Post[] = [];
@@ -69,6 +79,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   feedItems: ScoutFeedItem[] = [];
   userRole: string | null = null;
+  activeFilterCount = 0;
+  activeFilterChips: ScoutVideoFilterChip[] = [];
+  isScoutSearchLoading = false;
+  scoutSearchHasMore = false;
 
   get userName(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
@@ -80,12 +94,18 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     return decodedToken?.scoutType || null;
   }
 
+  get isScoutUser(): boolean {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return this.userRole === 'CLUBE' || decodedToken?.role === 'CLUBE';
+  }
+
   private readonly postService = inject(PostService);
   private readonly chatService = inject(ChatService);
   private readonly authService = inject(AuthService);
   private readonly adService = inject(AdvertisementService);
   private readonly subscriptionService = inject(SubscriptionService);
   private readonly modalService = inject(ModalStateService);
+  private readonly scoutSearchService = inject(ScoutSearchService);
   private readonly modalController = inject(ModalController);
   private readonly alertController = inject(AlertController);
   public readonly popoverController = inject(PopoverController);
@@ -94,6 +114,11 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly apiService = inject(ApiService);
+  private scoutResultsSub?: Subscription;
+  private scoutLoadingSub?: Subscription;
+  private scoutHasMoreSub?: Subscription;
+  private scoutFilterCountSub?: Subscription;
+  private scoutFilterChipsSub?: Subscription;
 
   constructor() {
     addIcons({
@@ -111,7 +136,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
       flagOutline,
       banOutline,
       trashOutline,
-      closeOutline
+      closeOutline,
+      funnelOutline,
+      search,
+      searchOutline
 
     });
   }
@@ -171,17 +199,50 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/suporte']);
   }
 
+  goToAthleteSearch(): void {
+    this.router.navigateByUrl('/scout-athlete-search');
+  }
+
   async ngOnInit(): Promise<void> {
+    this.userRole = this.authService.getDecodedToken<JwtPayload>()?.role || null;
+
     this.authService.userRole$.subscribe(role => {
       this.userRole = role;
     });
 
     this.homePostsSub = this.postService.homePosts$.subscribe(async posts => {
-      if (this.selectedTab === 'vitrine') {
+      if (this.selectedTab === 'vitrine' && !this.hasActiveScoutFilters) {
         this.videoPosts = posts.filter(p => p.mediaType === FileType.VIDEO);
         this.isLoadingContent = false;
         await this.updateFeedItems();
       }
+    });
+
+    this.scoutResultsSub = this.scoutSearchService.results$.subscribe(async posts => {
+      if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+        this.videoPosts = posts;
+        this.isLoadingContent = this.isScoutSearchLoading && posts.length === 0;
+        await this.updateFeedItems();
+      }
+    });
+
+    this.scoutLoadingSub = this.scoutSearchService.loading$.subscribe(loading => {
+      this.isScoutSearchLoading = loading;
+      if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+        this.isLoadingContent = loading && this.videoPosts.length === 0;
+      }
+    });
+
+    this.scoutHasMoreSub = this.scoutSearchService.hasMore$.subscribe(hasMore => {
+      this.scoutSearchHasMore = hasMore;
+    });
+
+    this.scoutFilterCountSub = this.scoutSearchService.activeCount$.subscribe(count => {
+      this.activeFilterCount = count;
+    });
+
+    this.scoutFilterChipsSub = this.scoutSearchService.activeChips$.subscribe(chips => {
+      this.activeFilterChips = chips;
     });
 
     this.threadsSub = this.chatService.threads$.subscribe(threads => {
@@ -193,9 +254,6 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.refreshCurrentTab();
-  }
-
-  ngAfterViewInit(): void {
   }
 
   private async updateFeedItems() {
@@ -228,6 +286,11 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
     }
+    this.scoutResultsSub?.unsubscribe();
+    this.scoutLoadingSub?.unsubscribe();
+    this.scoutHasMoreSub?.unsubscribe();
+    this.scoutFilterCountSub?.unsubscribe();
+    this.scoutFilterChipsSub?.unsubscribe();
   }
 
   ionViewWillEnter(): void {
@@ -273,7 +336,16 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     this.isLoadingContent = true;
     if (this.selectedTab === 'vitrine') {
-      this.tabLoadSub = this.postService.refreshHomePosts().subscribe();
+      if (this.hasActiveScoutFilters) {
+        this.videoPosts = this.scoutSearchService.currentResults;
+        this.isLoadingContent = this.isScoutSearchLoading && this.videoPosts.length === 0;
+        await this.updateFeedItems();
+        if (this.videoPosts.length === 0 && !this.isScoutSearchLoading) {
+          this.scoutSearchService.reload();
+        }
+      } else {
+        this.tabLoadSub = this.postService.refreshHomePosts().subscribe();
+      }
     } else {
       this.favoritesNextCursor = null;
       this.tabLoadSub = this.postService.getFavoritePosts(10).subscribe({
@@ -313,6 +385,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     return this.allVideoCards.filter(card => card.favorito);
   }
 
+  get hasActiveScoutFilters(): boolean {
+    return this.activeFilterCount > 0;
+  }
+
   shouldShowConversationAction(card: FavoriteAthleteVideoCard): boolean {
     return card.inviteStatus === 'ACCEPTED' || this.subscriptionService.canSendInvites();
   }
@@ -327,6 +403,10 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     action.subscribe({
       next: async () => {
+        if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+          this.scoutSearchService.updatePostFavoriteState(postId, !isCurrentlyFavorite);
+          this.videoPosts = this.scoutSearchService.currentResults;
+        }
         if (isCurrentlyFavorite && this.selectedTab === 'favoritos') {
           this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
         }
@@ -358,6 +438,9 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
         const post = this.videoPosts.find(p => p.id === card.postId);
         if (post) {
           post.inviteStatus = 'PENDING';
+        }
+        if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+          this.scoutSearchService.updatePostInviteState(card.postId, 'PENDING');
         }
       }
     });
@@ -544,22 +627,73 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
     return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
   }
 
+  async openScoutFilters(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: ScoutFilterModalComponent,
+      componentProps: {
+        filters: this.scoutSearchService.currentFilters
+      },
+      breakpoints: [0, 0.55, 0.9, 1],
+      initialBreakpoint: 0.9,
+      backdropBreakpoint: 0.55,
+      canDismiss: true,
+      handle: true,
+      cssClass: 'scout-filter-modal-sheet'
+    });
+
+    await modal.present();
+    const result = await modal.onDidDismiss<ScoutVideoFilters>();
+
+    if (result.role === 'apply' && result.data) {
+      this.applyScoutFilters(result.data);
+    }
+  }
+
+  applyScoutFilters(filters: ScoutVideoFilters): void {
+    this.scoutSearchService.applyFilters(filters);
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
+    }
+
+    if (!this.scoutSearchService.hasActiveFilters) {
+      this.refreshCurrentTab();
+    }
+  }
+
+  removeScoutFilter(chip: ScoutVideoFilterChip): void {
+    const nextFilters = removeScoutVideoFilter(this.scoutSearchService.currentFilters, chip.id);
+    this.applyScoutFilters(nextFilters);
+  }
+
+  clearScoutFilters(): void {
+    this.scoutSearchService.clearFilters();
+    if (this.infiniteScroll) {
+      this.infiniteScroll.disabled = false;
+    }
+    this.refreshCurrentTab();
+  }
+
   refreshPosts(event: any): void {
     if (this.tabLoadSub) {
       this.tabLoadSub.unsubscribe();
     }
 
     if (this.selectedTab === 'vitrine') {
-      this.tabLoadSub = this.postService.refreshHomePosts().subscribe({
-        next: async () => {
-          this.finalizeLoad(event);
-          if (this.infiniteScroll) {
-            this.infiniteScroll.disabled = false;
-          }
-          await this.updateFeedItems();
-        },
-        error: () => this.finalizeLoad(event)
-      });
+      if (this.hasActiveScoutFilters) {
+        this.scoutSearchService.reload();
+        this.completeWhenScoutSearchSettles(event);
+      } else {
+        this.tabLoadSub = this.postService.refreshHomePosts().subscribe({
+          next: async () => {
+            this.finalizeLoad(event);
+            if (this.infiniteScroll) {
+              this.infiniteScroll.disabled = false;
+            }
+            await this.updateFeedItems();
+          },
+          error: () => this.finalizeLoad(event)
+        });
+      }
     } else {
       this.favoritesNextCursor = null;
       this.tabLoadSub = this.postService.getFavoritePosts(10).subscribe({
@@ -580,13 +714,18 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   loadMorePosts(event: any): void {
     if (this.selectedTab === 'vitrine') {
-      this.tabLoadSub = this.postService.loadHomePosts().subscribe({
-        next: async (res) => {
-          this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
-          await this.updateFeedItems();
-        },
-        error: () => this.finalizeLoad(event)
-      });
+      if (this.hasActiveScoutFilters) {
+        this.scoutSearchService.loadMore();
+        this.completeWhenScoutSearchSettles(event);
+      } else {
+        this.tabLoadSub = this.postService.loadHomePosts().subscribe({
+          next: async (res) => {
+            this.finalizeLoad(event, res && res.posts && res.posts.length === 0);
+            await this.updateFeedItems();
+          },
+          error: () => this.finalizeLoad(event)
+        });
+      }
     } else if (this.selectedTab === 'favoritos' && this.favoritesNextCursor) {
       this.tabLoadSub = this.postService.getFavoritePosts(10, this.favoritesNextCursor).subscribe({
         next: async (response) => {
@@ -613,5 +752,14 @@ export class ScoutHomePage implements OnInit, OnDestroy, AfterViewInit {
         event.target.disabled = true;
       }
     }
+  }
+
+  private completeWhenScoutSearchSettles(event: any): void {
+    this.scoutSearchService.loading$.pipe(
+      filter(loading => !loading),
+      take(1)
+    ).subscribe(() => {
+      this.finalizeLoad(event, !this.scoutSearchHasMore);
+    });
   }
 }

@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
-import { Profile } from '../models/profile.model';
+import { AthleteGender, Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -50,6 +50,8 @@ import { BlockService } from '../services/block.service';
   ],
 })
 export class ProfilePlayerPage implements OnInit {
+  readonly allPositionsValue = '__ALL_POSITIONS__';
+
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
@@ -57,6 +59,7 @@ export class ProfilePlayerPage implements OnInit {
   isUploadingPhoto = false;
   selectedSegment: 'images' | 'videos' = 'videos';
   draftProfile: Partial<Profile> = {};
+  draftPositions: string[] = [];
   isLoading = false;
 
   // Video management
@@ -71,6 +74,10 @@ export class ProfilePlayerPage implements OnInit {
     { label: 'Destro', value: 'RIGHT' },
     { label: 'Canhoto', value: 'LEFT' },
     { label: 'Ambidestro', value: 'BOTH' }
+  ];
+  readonly genderOptions: { label: string; value: AthleteGender }[] = [
+    { label: 'Masculino', value: 'MALE' },
+    { label: 'Feminino', value: 'FEMALE' }
   ];
 
   private profileService = inject(ProfileService);
@@ -351,9 +358,10 @@ export class ProfilePlayerPage implements OnInit {
     }
 
     this.isLoading = true;
+    const selectedPositions = this.draftPositions.filter(position => position !== this.allPositionsValue);
     const updateData: Partial<Profile> = {
       bio: (this.draftProfile.bio || '').trim(),
-      position: (this.draftProfile.position || '').trim(),
+      position: selectedPositions.join(', '),
       height: (this.draftProfile.height || '').trim(),
       weight: (this.draftProfile.weight || '').trim(),
       dominantFoot: this.draftProfile.dominantFoot,
@@ -389,6 +397,17 @@ export class ProfilePlayerPage implements OnInit {
 
     this.draftProfile[field] = finalValue;
     event.target.value = finalValue;
+  }
+
+  onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
+    const values = event.detail.value ?? [];
+
+    if (values.includes(this.allPositionsValue)) {
+      this.draftPositions = [...this.positionOptions];
+      return;
+    }
+
+    this.draftPositions = values;
   }
 
   async loadMoreUserPosts(event: any) {
@@ -475,6 +494,11 @@ export class ProfilePlayerPage implements OnInit {
   getDominantFootLabel(foot: string | undefined): string {
     const option = this.footOptions.find(o => o.value === foot);
     return option ? option.label : (foot ?? '');
+  }
+
+  getGenderLabel(gender: AthleteGender | string | null | undefined): string {
+    const option = this.genderOptions.find(o => o.value === gender);
+    return option ? option.label : (gender ?? '');
   }
 
   openVideo(post: Post) {
@@ -592,9 +616,11 @@ export class ProfilePlayerPage implements OnInit {
   private syncDraftProfile(): void {
     if (!this.profile) {
       this.draftProfile = {};
+      this.draftPositions = [];
       return;
     }
 
+    this.draftPositions = this.parseProfilePositions(this.profile.position);
     this.draftProfile = {
       fullName: this.profile.fullName,
       bio: this.profile.bio ?? '',
@@ -602,11 +628,18 @@ export class ProfilePlayerPage implements OnInit {
       height: this.profile.height ?? '',
       weight: this.profile.weight ?? '',
       dominantFoot: this.profile.dominantFoot,
+      gender: this.profile.gender ?? null,
       careerHistory: this.profile.careerHistory ?? '',
       cidade: this.profile.cidade ?? '',
       estado: this.profile.estado ?? '',
       pais: this.profile.pais ?? '',
     };
   }
-}
 
+  private parseProfilePositions(position: string | null | undefined): string[] {
+    return (position ?? '')
+      .split(',')
+      .map(value => value.trim())
+      .filter(value => this.positionOptions.includes(value as typeof this.positionOptions[number]));
+  }
+}
