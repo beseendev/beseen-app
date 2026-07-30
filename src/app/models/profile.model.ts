@@ -16,7 +16,7 @@ export interface Profile {
   documentNumber?: string;
   phoneNumber?: string;
 
-  position?: string;
+  positions?: string[];
   height?: string;
   weight?: string;
   careerHistory?: string;
@@ -52,7 +52,7 @@ export interface ProfilePlayerCreationRequest {
   estado: string;
   pais: string;
   bio?: string;
-  position?: string;
+  positions?: string[];
   height?: string;
   weight?: string;
   careerHistory?: string;
@@ -108,7 +108,7 @@ export interface ProfileResponse {
   documentNumber?: string;
   phoneNumber?: string;
 
-  position?: string;
+  positions?: string[];
   height?: string;
   weight?: string;
   careerHistory?: string;

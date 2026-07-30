@@ -39,7 +39,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Lucas Ferreira',
     fullName: 'Lucas Ferreira',
     role: 'JOGADOR',
-    position: 'Meia',
+    positions: ['Meia'],
     dominantFoot: 'RIGHT',
     gender: 'MALE',
     cidade: 'Florianopolis',
@@ -51,7 +51,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Mariana Souza',
     fullName: 'Mariana Souza',
     role: 'JOGADOR',
-    position: 'Atacante',
+    positions: ['Atacante'],
     dominantFoot: 'LEFT',
     gender: 'FEMALE',
     cidade: 'Curitiba',
@@ -63,7 +63,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Rafael Lima',
     fullName: 'Rafael Lima',
     role: 'JOGADOR',
-    position: 'Zagueiro',
+    positions: ['Zagueiro'],
     dominantFoot: 'BOTH',
     gender: 'MALE',
     cidade: 'Sao Paulo',
@@ -75,7 +75,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Ana Martins',
     fullName: 'Ana Martins',
     role: 'JOGADOR',
-    position: 'Ponta',
+    positions: ['Ponta'],
     dominantFoot: 'RIGHT',
     gender: 'FEMALE',
     cidade: 'Joinville',
@@ -87,7 +87,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Pedro Henrique',
     fullName: 'Pedro Henrique',
     role: 'JOGADOR',
-    position: 'Goleiro',
+    positions: ['Goleiro'],
     dominantFoot: 'LEFT',
     gender: 'MALE',
     cidade: 'Porto Alegre',
@@ -99,7 +99,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     name: 'Beatriz Nunes',
     fullName: 'Beatriz Nunes',
     role: 'JOGADOR',
-    position: 'Volante',
+    positions: ['Volante'],
     dominantFoot: 'BOTH',
     gender: 'FEMALE',
     cidade: 'Belo Horizonte',
@@ -182,7 +182,7 @@ export class ScoutAthleteSearchPage implements OnInit {
         athlete.cidade
       ].some(value => this.normalizeSearchValue(value).includes(query));
 
-      const matchesPosition = !this.filters.position || athlete.position === this.filters.position;
+      const matchesPosition = !this.filters.position || (athlete.positions ?? []).includes(this.filters.position);
       const matchesDominantFoot = !this.filters.dominantFoot || athlete.dominantFoot === this.filters.dominantFoot;
       const matchesGender = !this.filters.gender || athlete.gender === this.filters.gender;
 

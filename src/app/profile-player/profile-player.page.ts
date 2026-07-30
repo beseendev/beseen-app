@@ -50,8 +50,6 @@ import { BlockService } from '../services/block.service';
   ],
 })
 export class ProfilePlayerPage implements OnInit {
-  readonly allPositionsValue = '__ALL_POSITIONS__';
-
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
@@ -358,13 +356,13 @@ export class ProfilePlayerPage implements OnInit {
     }
 
     this.isLoading = true;
-    const selectedPositions = this.draftPositions.filter(position => position !== this.allPositionsValue);
     const updateData: Partial<Profile> = {
       bio: (this.draftProfile.bio || '').trim(),
-      position: selectedPositions.join(', '),
+      positions: this.draftPositions,
       height: (this.draftProfile.height || '').trim(),
       weight: (this.draftProfile.weight || '').trim(),
       dominantFoot: this.draftProfile.dominantFoot,
+      gender: this.draftProfile.gender,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
       cidade: (this.draftProfile.cidade || '').trim(),
       estado: this.draftProfile.estado,
@@ -400,14 +398,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
-    const values = event.detail.value ?? [];
-
-    if (values.includes(this.allPositionsValue)) {
-      this.draftPositions = [...this.positionOptions];
-      return;
-    }
-
-    this.draftPositions = values;
+    this.draftPositions = event.detail.value ?? [];
   }
 
   async loadMoreUserPosts(event: any) {
@@ -620,11 +611,11 @@ export class ProfilePlayerPage implements OnInit {
       return;
     }
 
-    this.draftPositions = this.parseProfilePositions(this.profile.position);
+    this.draftPositions = [...(this.profile.positions ?? [])];
     this.draftProfile = {
       fullName: this.profile.fullName,
       bio: this.profile.bio ?? '',
-      position: this.profile.position ?? '',
+      positions: this.profile.positions ?? [],
       height: this.profile.height ?? '',
       weight: this.profile.weight ?? '',
       dominantFoot: this.profile.dominantFoot,
@@ -634,12 +625,5 @@ export class ProfilePlayerPage implements OnInit {
       estado: this.profile.estado ?? '',
       pais: this.profile.pais ?? '',
     };
-  }
-
-  private parseProfilePositions(position: string | null | undefined): string[] {
-    return (position ?? '')
-      .split(',')
-      .map(value => value.trim())
-      .filter(value => this.positionOptions.includes(value as typeof this.positionOptions[number]));
   }
 }

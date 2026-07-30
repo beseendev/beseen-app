@@ -64,9 +64,7 @@
               formControlName="position"
               placeholder="Selecione suas posições"
               multiple="true"
-              interface="alert"
-              (ionChange)="onPlayerPositionSelectionChange($event)">
-              <ion-select-option [value]="allPositionsValue">Todos</ion-select-option>
+              interface="alert">
               <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
             </ion-select>
           </ion-item>

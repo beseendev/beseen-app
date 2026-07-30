@@ -48,8 +48,6 @@ import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profil
   ]
 })
 export class CreateProfilePlayerPage implements OnInit, OnDestroy {
-  readonly allPositionsValue = '__ALL_POSITIONS__';
-
   profileForm!: FormGroup;
   isRoleFromToken = false;
   isLoading = false;
@@ -240,18 +238,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     event.target.value = finalValue;
   }
 
-  onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
-    const values = event.detail.value ?? [];
-    const positionControl = this.profileForm.get('position');
-
-    if (values.includes(this.allPositionsValue)) {
-      positionControl?.setValue([...this.positionOptions], { emitEvent: false });
-      return;
-    }
-
-    positionControl?.setValue(values, { emitEvent: false });
-  }
-
   private onlyDigits(input: string): string {
     return (input ?? '').replace(/\D+/g, '');
   }
@@ -310,19 +296,15 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     this.isLoading = true;
     const formValue = this.profileForm.getRawValue();
     const formattedDate = this.formatDate(formValue.dateOfBirth);
-    const selectedPositions = Array.isArray(formValue.position)
-      ? formValue.position.filter((position: string) => position !== this.allPositionsValue)
-      : [];
+    const { position, ...restFormValue } = formValue;
     const requestData = {
-      ...formValue,
-      position: selectedPositions.join(', '),
+      ...restFormValue,
+      positions: Array.isArray(position) ? position : [],
       dateOfBirth: formattedDate,
       cidade: formValue.cidade?.trim(),
       pais: formValue.pais?.trim()
     };
-    const { gender: _gender, ...backendRequestData } = requestData;
-
-    const profileCreation$ = this.profileService.createPlayerProfile(backendRequestData as ProfilePlayerCreationRequest);
+    const profileCreation$ = this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest);
 
     profileCreation$.pipe(
       switchMap(() => this.handleImageUpload(this.selectedImageFile!)),

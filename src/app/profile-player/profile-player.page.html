@@ -184,16 +184,15 @@
             placeholder="Selecione suas posições"
             multiple="true"
             interface="alert">
-            <ion-select-option [value]="allPositionsValue">Todos</ion-select-option>
             <ion-select-option *ngFor="let option of positionOptions" [value]="option">{{ option }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ng-template #readPosition>
-          <ion-item *ngIf="profile.position">
+          <ion-item *ngIf="profile.positions?.length">
             <ion-icon slot="start" name="body-outline"></ion-icon>
             <ion-label>
               <h3>Posicao</h3>
-              <p>{{ profile.position }}</p>
+              <p>{{ profile.positions?.join(', ') }}</p>
             </ion-label>
           </ion-item>
         </ng-template>

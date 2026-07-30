@@ -83,7 +83,7 @@
 
           <div class="athlete-card-copy">
             <strong>{{ athlete.fullName || athlete.name }}</strong>
-            <span>{{ athlete.position || 'Posição não informada' }} • {{ getDominantFootLabel(athlete.dominantFoot) }} • {{ getGenderLabel(athlete.gender) }}</span>
+            <span>{{ athlete.positions && athlete.positions.length ? athlete.positions.join(', ') : 'Posição não informada' }} • {{ getDominantFootLabel(athlete.dominantFoot) }} • {{ getGenderLabel(athlete.gender) }}</span>
             <p *ngIf="athlete.cidade || athlete.estado">
               <ion-icon name="location-outline"></ion-icon>
               {{ athlete.cidade || 'Cidade' }}{{ athlete.estado ? ', ' + athlete.estado : '' }}
