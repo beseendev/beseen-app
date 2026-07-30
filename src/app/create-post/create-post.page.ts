@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,7 +7,8 @@ import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOut
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
 import { CreatePostFormState } from '../models/post-creation.model';
-import { SKILL_CATALOG } from '../models/skill.model';
+import { Skill } from '../models/skill.model';
+import { SkillService } from '../services/skill.service';
 import { SkillSelectorComponent } from '../components/skill-selector/skill-selector.component';
 
 @Component({
@@ -22,7 +23,7 @@ import { SkillSelectorComponent } from '../components/skill-selector/skill-selec
     SkillSelectorComponent
   ]
 })
-export class CreatePostPage {
+export class CreatePostPage implements OnInit {
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
   selectedMedia: File | null = null;
   selectedMediaUrl: string | null = null;
@@ -31,7 +32,7 @@ export class CreatePostPage {
     caption: '',
     selectedSkillIds: []
   };
-  readonly availableSkills = SKILL_CATALOG;
+  availableSkills: Skill[] = [];
   fileError: string | null = null;
   isSubmitting = false;
 
@@ -39,9 +40,17 @@ export class CreatePostPage {
   private uploadPostService = inject(UploadPostService);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
+  private skillService = inject(SkillService);
 
   constructor() {
     addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline, alertCircleOutline });
+  }
+
+  ngOnInit(): void {
+    this.skillService.getSkills().subscribe({
+      next: skills => this.availableSkills = skills,
+      error: err => console.error('Error loading skills', err)
+    });
   }
 
   get caption(): string {

@@ -14,7 +14,7 @@ import {
   DominantFoot
 } from '../../../models/scout-search.model';
 import { BR_STATE_OPTIONS, SCOUT_POSITION_OPTIONS } from '../../../models/scout-profile.model';
-import { SKILL_CATALOG } from '../../../models/skill.model';
+import { Skill } from '../../../models/skill.model';
 
 @Component({
   selector: 'app-scout-filter-modal',
@@ -28,6 +28,8 @@ export class ScoutFilterModalComponent {
     this.draftFilters = this.cloneFilters(value);
     this.validation = { valid: true };
   }
+
+  @Input() skills: readonly Skill[] = [];
 
   draftFilters: ScoutVideoFilters = normalizeScoutVideoFilters(null);
   validation: ScoutVideoFilterValidation = { valid: true };
@@ -43,7 +45,6 @@ export class ScoutFilterModalComponent {
   ];
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
   readonly stateOptions = BR_STATE_OPTIONS;
-  readonly skills = SKILL_CATALOG;
 
   private readonly modalController = inject(ModalController);
 

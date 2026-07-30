@@ -4,7 +4,8 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { Post, UserInfo } from '../models/post.model';
 import { FileType } from '../models/upload.model';
-import { SKILL_CATALOG, Skill } from '../models/skill.model';
+import { Skill } from '../models/skill.model';
+import { SkillService } from './skill.service';
 import {
   ScoutVideoFilterChip,
   ScoutVideoFilters,
@@ -69,7 +70,9 @@ type ScoutPostUserInfo = UserInfo & {
 })
 export class ScoutSearchService {
   private readonly apiService = inject(ApiService);
+  private readonly skillService = inject(SkillService);
   private readonly pageSize = 10;
+  private skills: readonly Skill[] = [];
 
   private readonly filtersSubject = new BehaviorSubject<ScoutVideoFilters>(normalizeScoutVideoFilters(null));
   readonly filters$ = this.filtersSubject.asObservable();
@@ -93,6 +96,16 @@ export class ScoutSearchService {
   private nextCursor: string | null = null;
   private currentRequestId = 0;
   private activeRequestSub?: Subscription;
+
+  constructor() {
+    this.skillService.getSkills().subscribe({
+      next: skills => {
+        this.skills = skills;
+        this.updateFilterSummary(this.currentFilters);
+      },
+      error: err => console.error('Error loading skills', err)
+    });
+  }
 
   get currentFilters(): ScoutVideoFilters {
     return this.filtersSubject.value;
@@ -216,8 +229,8 @@ export class ScoutSearchService {
   }
 
   private updateFilterSummary(filters: ScoutVideoFilters): void {
-    this.activeCountSubject.next(countActiveScoutVideoFilters(filters, SKILL_CATALOG));
-    this.activeChipsSubject.next(getScoutVideoFilterChips(filters, SKILL_CATALOG));
+    this.activeCountSubject.next(countActiveScoutVideoFilters(filters, this.skills));
+    this.activeChipsSubject.next(getScoutVideoFilterChips(filters, this.skills));
   }
 
   private mapPostResponseToPost(postResponse: ScoutPostResponseDto): Post {

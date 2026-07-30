@@ -4,7 +4,13 @@ import {
   removeScoutVideoFilter,
   validateScoutVideoFilters
 } from './scout-search.model';
-import { SKILL_CATALOG } from './skill.model';
+import { Skill } from './skill.model';
+
+const TEST_SKILLS: readonly Skill[] = [
+  { id: 'DRIBBLING', code: 'DRIBBLING', name: 'Drible', type: 'OFFENSIVE' },
+  { id: 'FINISHING', code: 'FINISHING', name: 'Finalização', type: 'OFFENSIVE' },
+  { id: 'PRESSING', code: 'PRESSING', name: 'Pressão', type: 'DEFENSIVE' }
+];
 
 describe('Scout video filters helpers', () => {
   it('counts range filters as one chip each', () => {
@@ -14,7 +20,7 @@ describe('Scout video filters helpers', () => {
       maxAge: 20,
       minHeight: 1.7,
       maxHeight: 1.85
-    }, SKILL_CATALOG);
+    }, TEST_SKILLS);
 
     expect(count).toBe(3);
   });
@@ -50,7 +56,7 @@ describe('Scout video filters helpers', () => {
   it('builds skill chips using presentation labels', () => {
     const chips = getScoutVideoFilterChips({
       offensiveSkillIds: ['DRIBBLING']
-    }, SKILL_CATALOG);
+    }, TEST_SKILLS);
 
     expect(chips).toEqual([{ id: 'skill:DRIBBLING', label: 'Drible' }]);
   });

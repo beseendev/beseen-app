@@ -44,6 +44,7 @@ import { environment } from "../../environments/environment";
 import { ModalStateService } from '../services/modal-state.service';
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
 import { ScoutSearchService } from '../services/scout-search.service';
+import { SkillService } from '../services/skill.service';
 import { ScoutFilterModalComponent } from './components/scout-filter-modal/scout-filter-modal.component';
 import {
   ScoutVideoFilterChip,
@@ -106,6 +107,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly subscriptionService = inject(SubscriptionService);
   private readonly modalService = inject(ModalStateService);
   private readonly scoutSearchService = inject(ScoutSearchService);
+  private readonly skillService = inject(SkillService);
   private readonly modalController = inject(ModalController);
   private readonly alertController = inject(AlertController);
   public readonly popoverController = inject(PopoverController);
@@ -628,10 +630,13 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async openScoutFilters(): Promise<void> {
+    const skills = await firstValueFrom(this.skillService.getSkills());
+
     const modal = await this.modalController.create({
       component: ScoutFilterModalComponent,
       componentProps: {
-        filters: this.scoutSearchService.currentFilters
+        filters: this.scoutSearchService.currentFilters,
+        skills
       },
       breakpoints: [0, 0.55, 0.9, 1],
       initialBreakpoint: 0.9,

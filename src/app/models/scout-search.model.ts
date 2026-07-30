@@ -174,7 +174,7 @@ function normalizeText(value: string | null | undefined): string | null {
 }
 
 function normalizeStringArray(values: string[] | null | undefined): string[] {
-  return Array.from(new Set((values ?? []).map(value => value.trim()).filter(Boolean)));
+  return Array.from(new Set((values ?? []).map(value => String(value ?? '').trim()).filter(Boolean)));
 }
 
 function normalizeNumber(value: number | string | null | undefined): number | null {
