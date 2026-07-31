@@ -245,20 +245,21 @@
               <ion-item *ngIf="isEditing; else readHeight">
                 <ion-icon slot="start" name="resize-outline"></ion-icon>
                 <ion-input
-                  label="Altura"
+                  label="Altura (m)"
                   labelPlacement="stacked"
-                  [(ngModel)]="draftProfile.height"
+                  [(ngModel)]="heightInput"
                   placeholder="Ex: 1.80"
                   inputmode="decimal"
+                  maxlength="4"
                   (ionInput)="onNumericInput($event, 'height')">
                 </ion-input>
               </ion-item>
               <ng-template #readHeight>
-                <ion-item *ngIf="profile.height">
+                <ion-item *ngIf="profile.height != null">
                   <ion-icon slot="start" name="resize-outline"></ion-icon>
                   <ion-label>
                     <h3>Altura</h3>
-                    <p>{{ profile.height }}</p>
+                    <p>{{ profile.height | number:'1.2-2' }} m</p>
                   </ion-label>
                 </ion-item>
               </ng-template>
@@ -268,20 +269,21 @@
               <ion-item *ngIf="isEditing; else readWeight">
                 <ion-icon slot="start" name="scale-outline"></ion-icon>
                 <ion-input
-                  label="Peso"
+                  label="Peso (kg)"
                   labelPlacement="stacked"
-                  [(ngModel)]="draftProfile.weight"
-                  placeholder="Ex: 75.5"
+                  [(ngModel)]="weightInput"
+                  placeholder="Ex: 75.50"
                   inputmode="decimal"
+                  maxlength="6"
                   (ionInput)="onNumericInput($event, 'weight')">
                 </ion-input>
               </ion-item>
               <ng-template #readWeight>
-                <ion-item *ngIf="profile.weight">
+                <ion-item *ngIf="profile.weight != null">
                   <ion-icon slot="start" name="scale-outline"></ion-icon>
                   <ion-label>
                     <h3>Peso</h3>
-                    <p>{{ profile.weight }}</p>
+                    <p>{{ profile.weight | number:'1.2-2' }} kg</p>
                   </ion-label>
                 </ion-item>
               </ng-template>

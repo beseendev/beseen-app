@@ -17,8 +17,8 @@ export interface Profile {
   phoneNumber?: string;
 
   positions?: string[];
-  height?: string;
-  weight?: string;
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
@@ -53,8 +53,8 @@ export interface ProfilePlayerCreationRequest {
   pais: string;
   bio?: string;
   positions?: string[];
-  height?: string;
-  weight?: string;
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
@@ -109,8 +109,8 @@ export interface ProfileResponse {
   phoneNumber?: string;
 
   positions?: string[];
-  height?: string;
-  weight?: string;
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;

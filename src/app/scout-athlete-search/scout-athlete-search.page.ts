@@ -44,7 +44,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'MALE',
     cidade: 'Florianopolis',
     estado: 'SC',
-    height: '1.74'
+    height: 1.74
   },
   {
     id: 9002,
@@ -56,7 +56,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'FEMALE',
     cidade: 'Curitiba',
     estado: 'PR',
-    height: '1.68'
+    height: 1.68
   },
   {
     id: 9003,
@@ -68,7 +68,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'MALE',
     cidade: 'Sao Paulo',
     estado: 'SP',
-    height: '1.86'
+    height: 1.86
   },
   {
     id: 9004,
@@ -80,7 +80,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'FEMALE',
     cidade: 'Joinville',
     estado: 'SC',
-    height: '1.63'
+    height: 1.63
   },
   {
     id: 9005,
@@ -92,7 +92,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'MALE',
     cidade: 'Porto Alegre',
     estado: 'RS',
-    height: '1.91'
+    height: 1.91
   },
   {
     id: 9006,
@@ -104,7 +104,7 @@ const MOCK_ATHLETES: ProfileResponse[] = [
     gender: 'FEMALE',
     cidade: 'Belo Horizonte',
     estado: 'MG',
-    height: '1.70'
+    height: 1.70
   }
 ];
 

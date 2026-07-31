@@ -58,6 +58,8 @@ export class ProfilePlayerPage implements OnInit {
   selectedSegment: 'images' | 'videos' = 'videos';
   draftProfile: Partial<Profile> = {};
   draftPositions: string[] = [];
+  heightInput = '';
+  weightInput = '';
   isLoading = false;
 
   // Video management
@@ -359,8 +361,8 @@ export class ProfilePlayerPage implements OnInit {
     const updateData: Partial<Profile> = {
       bio: (this.draftProfile.bio || '').trim(),
       positions: this.draftPositions,
-      height: (this.draftProfile.height || '').trim(),
-      weight: (this.draftProfile.weight || '').trim(),
+      height: this.toNumberOrUndefined(this.heightInput),
+      weight: this.toNumberOrUndefined(this.weightInput),
       dominantFoot: this.draftProfile.dominantFoot,
       gender: this.draftProfile.gender,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
@@ -388,13 +390,42 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   onNumericInput(event: any, field: 'height' | 'weight') {
-    const rawValue = event.target.value || '';
-    const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-    const parts = cleaned.split('.');
-    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
+    const finalValue = this.maskDecimalInput(event.target.value, field);
 
-    this.draftProfile[field] = finalValue;
+    if (field === 'height') {
+      this.heightInput = finalValue;
+    } else {
+      this.weightInput = finalValue;
+    }
+
     event.target.value = finalValue;
+  }
+
+  private maskDecimalInput(rawValue: string, field: 'height' | 'weight'): string {
+    const cleaned = (rawValue || '').replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const firstDotIndex = cleaned.indexOf('.');
+    const withSingleDot = firstDotIndex === -1
+      ? cleaned
+      : cleaned.slice(0, firstDotIndex + 1) + cleaned.slice(firstDotIndex + 1).replace(/\./g, '');
+
+    const [integerPart, decimalPart] = withSingleDot.split('.');
+    const maxIntegerDigits = field === 'height' ? 1 : 3;
+    const limitedInteger = (integerPart || '').slice(0, maxIntegerDigits);
+
+    if (decimalPart === undefined) {
+      return limitedInteger;
+    }
+
+    return `${limitedInteger}.${decimalPart.slice(0, 2)}`;
+  }
+
+  private toNumberOrUndefined(value: string | null | undefined): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
 
   onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
@@ -608,16 +639,18 @@ export class ProfilePlayerPage implements OnInit {
     if (!this.profile) {
       this.draftProfile = {};
       this.draftPositions = [];
+      this.heightInput = '';
+      this.weightInput = '';
       return;
     }
 
     this.draftPositions = [...(this.profile.positions ?? [])];
+    this.heightInput = this.profile.height != null ? this.profile.height.toFixed(2) : '';
+    this.weightInput = this.profile.weight != null ? this.profile.weight.toFixed(2) : '';
     this.draftProfile = {
       fullName: this.profile.fullName,
       bio: this.profile.bio ?? '',
       positions: this.profile.positions ?? [],
-      height: this.profile.height ?? '',
-      weight: this.profile.weight ?? '',
       dominantFoot: this.profile.dominantFoot,
       gender: this.profile.gender ?? null,
       careerHistory: this.profile.careerHistory ?? '',

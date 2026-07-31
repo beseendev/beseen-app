@@ -75,28 +75,34 @@
           <ion-item class="input-field" color="none">
             <ion-icon name="resize-outline" slot="start"></ion-icon>
             <ion-input
-              label="Altura"
+              label="Altura (m)"
               labelPlacement="stacked"
               formControlName="height"
               placeholder="Ex: 1.80"
               inputmode="decimal"
               (ionInput)="onNumericInput($event, 'height')"
-              maxlength="10">
+              maxlength="4">
             </ion-input>
           </ion-item>
+          <div *ngIf="profileForm.get('height')?.invalid && profileForm.get('height')?.touched" class="error-text">
+            Informe a altura no formato 1.80.
+          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
             <ion-input
-              label="Peso"
+              label="Peso (kg)"
               labelPlacement="stacked"
               formControlName="weight"
-              placeholder="Ex: 75.5"
+              placeholder="Ex: 75.50"
               inputmode="decimal"
               (ionInput)="onNumericInput($event, 'weight')"
-              maxlength="10">
+              maxlength="6">
             </ion-input>
           </ion-item>
+          <div *ngIf="profileForm.get('weight')?.invalid && profileForm.get('weight')?.touched" class="error-text">
+            Informe o peso no formato 75.50.
+          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="body-outline" slot="start"></ion-icon>
