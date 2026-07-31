@@ -23,7 +23,7 @@
         placeholder="Nome ou cidade"
         enterkeyhint="search"
         (ionInput)="onSearchInput($event)"
-        (ionClear)="applyFilters()">
+        (ionClear)="onSearchClear()">
       </ion-searchbar>
 
       <div class="filter-grid">
@@ -32,7 +32,7 @@
           labelPlacement="stacked"
           interface="action-sheet"
           [(ngModel)]="filters.position"
-          (ionChange)="applyFilters()">
+          (ionChange)="onFilterChange()">
           <ion-select-option value="">Todas</ion-select-option>
           <ion-select-option *ngFor="let position of positionOptions" [value]="position">{{ position }}</ion-select-option>
         </ion-select>
@@ -42,7 +42,7 @@
           labelPlacement="stacked"
           interface="action-sheet"
           [(ngModel)]="filters.dominantFoot"
-          (ionChange)="applyFilters()">
+          (ionChange)="onFilterChange()">
           <ion-select-option value="">Todos</ion-select-option>
           <ion-select-option *ngFor="let option of dominantFootOptions" [value]="option.value">{{ option.label }}</ion-select-option>
         </ion-select>
@@ -52,7 +52,7 @@
           labelPlacement="stacked"
           interface="action-sheet"
           [(ngModel)]="filters.gender"
-          (ionChange)="applyFilters()">
+          (ionChange)="onFilterChange()">
           <ion-select-option value="">Todos</ion-select-option>
           <ion-select-option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</ion-select-option>
         </ion-select>
@@ -67,23 +67,32 @@
     <section class="results-section">
       <div class="results-header">
         <strong>{{ athletes.length }} atleta{{ athletes.length === 1 ? '' : 's' }}</strong>
-        <span>Dados temporários para validar a interface.</span>
       </div>
 
-      <div class="athlete-list" *ngIf="athletes.length > 0">
+      <div class="loading-state" *ngIf="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <div class="empty-card be-surface" *ngIf="!loading && errorMessage">
+        <ion-icon name="search-outline"></ion-icon>
+        <strong>{{ errorMessage }}</strong>
+        <ion-button fill="outline" class="empty-clear-button" (click)="search()">Tentar novamente</ion-button>
+      </div>
+
+      <div class="athlete-list" *ngIf="!loading && !errorMessage && athletes.length > 0">
         <button
           type="button"
           class="athlete-card be-surface"
           *ngFor="let athlete of athletes; trackBy: trackByAthleteId"
           (click)="openAthleteProfile(athlete)">
           <ion-avatar class="athlete-avatar">
-            <img *ngIf="athlete.urlProfileImage" [src]="athlete.urlProfileImage" [alt]="athlete.fullName || athlete.name">
+            <img *ngIf="athlete.urlProfileImage" [src]="athlete.urlProfileImage" [alt]="athlete.fullName">
             <ion-icon *ngIf="!athlete.urlProfileImage" name="person-circle-outline"></ion-icon>
           </ion-avatar>
 
           <div class="athlete-card-copy">
-            <strong>{{ athlete.fullName || athlete.name }}</strong>
-            <span>{{ athlete.positions && athlete.positions.length ? athlete.positions.join(', ') : 'Posição não informada' }} • {{ getDominantFootLabel(athlete.dominantFoot) }} • {{ getGenderLabel(athlete.gender) }}</span>
+            <strong>{{ athlete.fullName }}</strong>
+            <span>{{ athlete.position || 'Posição não informada' }} • {{ getDominantFootLabel(athlete.dominantFoot) }} • {{ getGenderLabel(athlete.gender) }}</span>
             <p *ngIf="athlete.cidade || athlete.estado">
               <ion-icon name="location-outline"></ion-icon>
               {{ athlete.cidade || 'Cidade' }}{{ athlete.estado ? ', ' + athlete.estado : '' }}
@@ -92,12 +101,16 @@
         </button>
       </div>
 
-      <div class="empty-card be-surface" *ngIf="athletes.length === 0">
+      <div class="empty-card be-surface" *ngIf="!loading && !errorMessage && athletes.length === 0">
         <ion-icon name="search-outline"></ion-icon>
         <strong>Nenhum atleta encontrado</strong>
         <p>Tente alterar ou limpar os filtros.</p>
         <ion-button fill="outline" class="empty-clear-button" *ngIf="hasActiveFilters" (click)="clearFilters()">Limpar filtros</ion-button>
       </div>
     </section>
+
+    <ion-infinite-scroll [disabled]="!hasMore || loading" (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
 </ion-content>

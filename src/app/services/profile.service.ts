@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import {map, tap} from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ToastController } from '@ionic/angular/standalone';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import {
+  AthleteSearchParams,
+  AthleteSearchResult,
   PageResponse,
   Profile,
   ProfilePlayerCreationRequest, ProfileResponse,
@@ -69,17 +70,27 @@ export class ProfileService {
     toast.present();
   }
 
-  searchProfiles(query: string, page: number = 0, size: number = 20): Observable<ProfileResponse[]> {
+  searchAthletes(searchParams: AthleteSearchParams): Observable<PageResponse<AthleteSearchResult>> {
     let params = new HttpParams()
-      .set('filter', query)
-      .set('page', page.toString())
-      .set('size', size.toString());
+      .set('page', String(searchParams.page ?? 0))
+      .set('size', String(searchParams.size ?? 20));
 
-    return this.apiService.get<PageResponse<ProfileResponse>>(
+    if (searchParams.filter) {
+      params = params.set('filter', searchParams.filter);
+    }
+    if (searchParams.position) {
+      params = params.set('position', searchParams.position);
+    }
+    if (searchParams.dominantFoot) {
+      params = params.set('dominantFoot', searchParams.dominantFoot);
+    }
+    if (searchParams.gender) {
+      params = params.set('gender', searchParams.gender);
+    }
+
+    return this.apiService.get<PageResponse<AthleteSearchResult>>(
       `${this.profileEndpoint}/search`,
       { params }
-    ).pipe(
-      map(response => response.content)
     );
   }
 }
