@@ -1,0 +1,31 @@
+<div class="skill-selector">
+  <section class="skill-group" *ngIf="offensiveSkills.length > 0">
+    <h3>Habilidades ofensivas</h3>
+    <div class="skill-list">
+      <button
+        type="button"
+        class="skill-chip"
+        *ngFor="let skill of offensiveSkills; trackBy: trackBySkillId"
+        [class.selected]="isSelected(skill.id)"
+        [attr.aria-pressed]="isSelected(skill.id)"
+        (click)="toggleSkill(skill)">
+        {{ skill.name }}
+      </button>
+    </div>
+  </section>
+
+  <section class="skill-group" *ngIf="defensiveSkills.length > 0">
+    <h3>Habilidades defensivas</h3>
+    <div class="skill-list">
+      <button
+        type="button"
+        class="skill-chip"
+        *ngFor="let skill of defensiveSkills; trackBy: trackBySkillId"
+        [class.selected]="isSelected(skill.id)"
+        [attr.aria-pressed]="isSelected(skill.id)"
+        (click)="toggleSkill(skill)">
+        {{ skill.name }}
+      </button>
+    </div>
+  </section>
+</div>

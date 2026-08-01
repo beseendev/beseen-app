@@ -6,6 +6,10 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline, closeOutline, flashOutline, footballOutline, imageOutline, starOutline, alertCircleOutline } from 'ionicons/icons';
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { UploadPostService } from '../services/upload-post.service';
+import { CreatePostFormState } from '../models/post-creation.model';
+import { Skill } from '../models/skill.model';
+import { SkillService } from '../services/skill.service';
+import { SkillSelectorComponent } from '../components/skill-selector/skill-selector.component';
 
 @Component({
   selector: 'app-create-post',
@@ -15,7 +19,8 @@ import { UploadPostService } from '../services/upload-post.service';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter
+    IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonContent, IonTitle, IonTextarea, IonFooter,
+    SkillSelectorComponent
   ]
 })
 export class CreatePostPage implements OnInit {
@@ -23,7 +28,11 @@ export class CreatePostPage implements OnInit {
   selectedMedia: File | null = null;
   selectedMediaUrl: string | null = null;
   selectedMediaDuration: number | null = null;
-  caption: string = '';
+  postFormState: CreatePostFormState = {
+    caption: '',
+    selectedSkillIds: []
+  };
+  availableSkills: Skill[] = [];
   fileError: string | null = null;
   isSubmitting = false;
 
@@ -31,12 +40,35 @@ export class CreatePostPage implements OnInit {
   private uploadPostService = inject(UploadPostService);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
+  private skillService = inject(SkillService);
 
   constructor() {
     addIcons({ arrowBackOutline, imageOutline, footballOutline, closeOutline, starOutline, flashOutline, alertCircleOutline });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.skillService.getSkills().subscribe({
+      next: skills => this.availableSkills = skills,
+      error: err => console.error('Error loading skills', err)
+    });
+  }
+
+  get caption(): string {
+    return this.postFormState.caption;
+  }
+
+  set caption(value: string) {
+    this.postFormState = {
+      ...this.postFormState,
+      caption: value
+    };
+  }
+
+  onSelectedSkillIdsChange(selectedSkillIds: string[]): void {
+    this.postFormState = {
+      ...this.postFormState,
+      selectedSkillIds
+    };
   }
 
   goBack() {
@@ -103,6 +135,7 @@ export class CreatePostPage implements OnInit {
     this.selectedMedia = null;
     this.selectedMediaUrl = null;
     this.selectedMediaDuration = null;
+    this.onSelectedSkillIdsChange([]);
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
@@ -143,7 +176,8 @@ export class CreatePostPage implements OnInit {
     this.uploadPostService.uploadAndCreatePost(
       this.selectedMedia,
       this.caption,
-      this.selectedMediaDuration ?? undefined
+      this.selectedMediaDuration ?? undefined,
+      this.postFormState.selectedSkillIds.map(id => Number(id))
     ).subscribe({
       next: async (post) => {
         await loading.dismiss();

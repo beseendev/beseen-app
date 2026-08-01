@@ -30,7 +30,7 @@ import { Router } from '@angular/router';
 import { catchError, finalize, switchMap, tap, filter } from 'rxjs/operators';
 import { EMPTY, of, Subscription } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ProfilePlayerCreationRequest } from '../models/profile.model';
+import { AthleteGender, ProfilePlayerCreationRequest } from '../models/profile.model';
 import { ActivatedRoute } from '@angular/router';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
 
@@ -69,6 +69,10 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     { label: 'Destro', value: 'RIGHT' },
     { label: 'Canhoto', value: 'LEFT' },
     { label: 'Ambidestro', value: 'BOTH' }
+  ];
+  readonly genderOptions: { label: string; value: AthleteGender }[] = [
+    { label: 'Masculino', value: 'MALE' },
+    { label: 'Feminino', value: 'FEMALE' }
   ];
 
   private fb = inject(FormBuilder);
@@ -164,10 +168,11 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private updateFormFields(role: string | null): void {
     if (role === 'JOGADOR') {
       this.profileForm.addControl('bio', this.fb.control('', [Validators.maxLength(500)]));
-      this.profileForm.addControl('position', this.fb.control('', [Validators.required]));
-      this.profileForm.addControl('height', this.fb.control('', [Validators.required]));
-      this.profileForm.addControl('weight', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('position', this.fb.control<string[]>([], [Validators.required]));
+      this.profileForm.addControl('height', this.fb.control('', [Validators.required, Validators.pattern(/^\d(\.\d{1,2})?$/)]));
+      this.profileForm.addControl('weight', this.fb.control('', [Validators.required, Validators.pattern(/^\d{1,3}(\.\d{1,2})?$/)]));
       this.profileForm.addControl('dominantFoot', this.fb.control('', [Validators.required]));
+      this.profileForm.addControl('gender', this.fb.control<AthleteGender | null>(null));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
   }
@@ -223,14 +228,37 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     }
   }
 
-  onNumericInput(event: any, controlName: string) {
-    const rawValue = event.target.value || '';
-    const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-    const parts = cleaned.split('.');
-    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
-
+  onNumericInput(event: any, controlName: 'height' | 'weight') {
+    const finalValue = this.maskDecimalInput(event.target.value, controlName);
     this.profileForm.get(controlName)?.setValue(finalValue, { emitEvent: false });
     event.target.value = finalValue;
+  }
+
+  private maskDecimalInput(rawValue: string, field: 'height' | 'weight'): string {
+    const cleaned = (rawValue || '').replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const firstDotIndex = cleaned.indexOf('.');
+    const withSingleDot = firstDotIndex === -1
+      ? cleaned
+      : cleaned.slice(0, firstDotIndex + 1) + cleaned.slice(firstDotIndex + 1).replace(/\./g, '');
+
+    const [integerPart, decimalPart] = withSingleDot.split('.');
+    const maxIntegerDigits = field === 'height' ? 1 : 3;
+    const limitedInteger = (integerPart || '').slice(0, maxIntegerDigits);
+
+    if (decimalPart === undefined) {
+      return limitedInteger;
+    }
+
+    return `${limitedInteger}.${decimalPart.slice(0, 2)}`;
+  }
+
+  private toNumberOrUndefined(value: string | null | undefined): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
 
   private onlyDigits(input: string): string {
@@ -291,13 +319,16 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     this.isLoading = true;
     const formValue = this.profileForm.getRawValue();
     const formattedDate = this.formatDate(formValue.dateOfBirth);
+    const { position, ...restFormValue } = formValue;
     const requestData = {
-      ...formValue,
+      ...restFormValue,
+      positions: Array.isArray(position) ? position : [],
       dateOfBirth: formattedDate,
       cidade: formValue.cidade?.trim(),
-      pais: formValue.pais?.trim()
+      pais: formValue.pais?.trim(),
+      height: this.toNumberOrUndefined(formValue.height),
+      weight: this.toNumberOrUndefined(formValue.weight)
     };
-
     const profileCreation$ = this.profileService.createPlayerProfile(requestData as ProfilePlayerCreationRequest);
 
     profileCreation$.pipe(

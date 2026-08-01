@@ -76,6 +76,11 @@ export const routes: Routes = [
     canActivate: [authGuard, profileGuard, subscriptionGuard]
   },
   {
+    path: 'scout-athlete-search',
+    loadComponent: () => import('./scout-athlete-search/scout-athlete-search.page').then(m => m.ScoutAthleteSearchPage),
+    canActivate: [authGuard, profileGuard, subscriptionGuard]
+  },
+  {
     path: 'suporte',
     loadComponent: () => import('./support/support.page').then(m => m.SupportPage),
     canActivate: [authGuard]

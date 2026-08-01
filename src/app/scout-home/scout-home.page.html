@@ -3,6 +3,14 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <div slot="fixed" class="scout-action-bar" aria-hidden="true"></div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="scout-search-fab">
+    <ion-fab-button (click)="goToAthleteSearch()" class="search-fab-button" aria-label="Buscar atletas">
+      <ion-icon name="search" aria-hidden="true"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <div class="scout-home-container">
     <div class="hero-block">
       <div class="hero-topline">
@@ -101,6 +109,32 @@
       </button>
     </nav>
 
+    <section class="vitrine-filter-panel section" *ngIf="selectedTab === 'vitrine'">
+      <div class="filter-action-row">
+        <ion-button fill="outline" class="filter-btn" (click)="openScoutFilters()" aria-label="Abrir filtros da vitrine">
+          <ion-icon slot="start" name="funnel-outline"></ion-icon>
+          Filtros
+          <ion-badge *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</ion-badge>
+        </ion-button>
+
+        <ion-button fill="clear" class="clear-filter-btn" *ngIf="hasActiveScoutFilters" (click)="clearScoutFilters()">
+          Limpar filtros
+        </ion-button>
+      </div>
+
+      <div class="active-filter-chips" *ngIf="activeFilterChips.length > 0" aria-label="Filtros ativos">
+        <button
+          type="button"
+          class="active-filter-chip"
+          *ngFor="let chip of activeFilterChips"
+          (click)="removeScoutFilter(chip)"
+          [attr.aria-label]="'Remover filtro ' + chip.label">
+          <span>{{ chip.label }}</span>
+          <span aria-hidden="true">x</span>
+        </button>
+      </div>
+    </section>
+
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
       <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
         <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
@@ -176,6 +210,12 @@
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
         </ng-container>
+      </div>
+
+      <div class="filtered-empty-state" *ngIf="hasActiveScoutFilters && feedItems.length === 0 && !isScoutSearchLoading">
+        <h2>Nenhum vídeo encontrado</h2>
+        <p>Tente alterar ou remover alguns filtros.</p>
+        <ion-button fill="outline" (click)="clearScoutFilters()">Limpar filtros</ion-button>
       </div>
     </section>
 

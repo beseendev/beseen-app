@@ -1,14 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
-import { Profile } from '../models/profile.model';
+import { AthleteGender, Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -53,10 +53,15 @@ export class ProfilePlayerPage implements OnInit {
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
+  isScoutViewer = false;
   isEditing = false;
   isUploadingPhoto = false;
+  isSendingInvite = false;
   selectedSegment: 'images' | 'videos' = 'videos';
   draftProfile: Partial<Profile> = {};
+  draftPositions: string[] = [];
+  heightInput = '';
+  weightInput = '';
   isLoading = false;
 
   // Video management
@@ -72,6 +77,10 @@ export class ProfilePlayerPage implements OnInit {
     { label: 'Canhoto', value: 'LEFT' },
     { label: 'Ambidestro', value: 'BOTH' }
   ];
+  readonly genderOptions: { label: string; value: AthleteGender }[] = [
+    { label: 'Masculino', value: 'MALE' },
+    { label: 'Feminino', value: 'FEMALE' }
+  ];
 
   private profileService = inject(ProfileService);
   private blockService = inject(BlockService);
@@ -82,6 +91,7 @@ export class ProfilePlayerPage implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private actionSheetCtrl = inject(ActionSheetController);
   private alertCtrl = inject(AlertController);
+  private toastController = inject(ToastController);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
   private selectedSegmentSubject = new BehaviorSubject<'images' | 'videos'>('videos');
@@ -98,7 +108,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -116,6 +126,9 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   ngOnInit() {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    this.isScoutViewer = decodedToken?.role === 'CLUBE';
+
     this.activatedRoute.paramMap.pipe(
       switchMap(params => {
         this.profileId = params.get('userId');
@@ -179,25 +192,67 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   async openProfileOptions() {
+    const buttons: any[] = [];
+
+    if (this.isScoutViewer && !this.isBlockedByMe) {
+      buttons.push({
+        text: 'Convidar para conversar',
+        icon: chatbubbleOutline,
+        handler: () => {
+          this.sendInviteToPlayer();
+        }
+      });
+    }
+
+    buttons.push(
+      {
+        text: 'Bloquear usuário',
+        role: 'destructive',
+        icon: banOutline,
+        handler: () => {
+          this.confirmBlock();
+        }
+      },
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        icon: closeOutline
+      }
+    );
+
     const actionSheet = await this.actionSheetCtrl.create({
       cssClass: 'be-action-sheet',
-      buttons: [
-        {
-          text: 'Bloquear usuário',
-          role: 'destructive',
-          icon: banOutline,
-          handler: () => {
-            this.confirmBlock();
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: closeOutline
-        }
-      ]
+      buttons
     });
     await actionSheet.present();
+  }
+
+  private sendInviteToPlayer(): void {
+    if (!this.profileId || this.isSendingInvite) {
+      return;
+    }
+
+    this.isSendingInvite = true;
+    this.postService.sendInviteToProfile(this.profileId).pipe(
+      finalize(() => this.isSendingInvite = false)
+    ).subscribe({
+      next: () => {
+        this.showToast('Convite enviado com sucesso!', 'success');
+      },
+      error: (err) => {
+        console.error('Error sending invite to profile', err);
+      }
+    });
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 4000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   async confirmBlock() {
@@ -353,10 +408,11 @@ export class ProfilePlayerPage implements OnInit {
     this.isLoading = true;
     const updateData: Partial<Profile> = {
       bio: (this.draftProfile.bio || '').trim(),
-      position: (this.draftProfile.position || '').trim(),
-      height: (this.draftProfile.height || '').trim(),
-      weight: (this.draftProfile.weight || '').trim(),
+      positions: this.draftPositions,
+      height: this.toNumberOrUndefined(this.heightInput),
+      weight: this.toNumberOrUndefined(this.weightInput),
       dominantFoot: this.draftProfile.dominantFoot,
+      gender: this.draftProfile.gender,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
       cidade: (this.draftProfile.cidade || '').trim(),
       estado: this.draftProfile.estado,
@@ -382,13 +438,46 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   onNumericInput(event: any, field: 'height' | 'weight') {
-    const rawValue = event.target.value || '';
-    const cleaned = rawValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-    const parts = cleaned.split('.');
-    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleaned;
+    const finalValue = this.maskDecimalInput(event.target.value, field);
 
-    this.draftProfile[field] = finalValue;
+    if (field === 'height') {
+      this.heightInput = finalValue;
+    } else {
+      this.weightInput = finalValue;
+    }
+
     event.target.value = finalValue;
+  }
+
+  private maskDecimalInput(rawValue: string, field: 'height' | 'weight'): string {
+    const cleaned = (rawValue || '').replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+    const firstDotIndex = cleaned.indexOf('.');
+    const withSingleDot = firstDotIndex === -1
+      ? cleaned
+      : cleaned.slice(0, firstDotIndex + 1) + cleaned.slice(firstDotIndex + 1).replace(/\./g, '');
+
+    const [integerPart, decimalPart] = withSingleDot.split('.');
+    const maxIntegerDigits = field === 'height' ? 1 : 3;
+    const limitedInteger = (integerPart || '').slice(0, maxIntegerDigits);
+
+    if (decimalPart === undefined) {
+      return limitedInteger;
+    }
+
+    return `${limitedInteger}.${decimalPart.slice(0, 2)}`;
+  }
+
+  private toNumberOrUndefined(value: string | null | undefined): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+
+  onPlayerPositionSelectionChange(event: CustomEvent<{ value: string[] }>): void {
+    this.draftPositions = event.detail.value ?? [];
   }
 
   async loadMoreUserPosts(event: any) {
@@ -475,6 +564,11 @@ export class ProfilePlayerPage implements OnInit {
   getDominantFootLabel(foot: string | undefined): string {
     const option = this.footOptions.find(o => o.value === foot);
     return option ? option.label : (foot ?? '');
+  }
+
+  getGenderLabel(gender: AthleteGender | string | null | undefined): string {
+    const option = this.genderOptions.find(o => o.value === gender);
+    return option ? option.label : (gender ?? '');
   }
 
   openVideo(post: Post) {
@@ -592,16 +686,21 @@ export class ProfilePlayerPage implements OnInit {
   private syncDraftProfile(): void {
     if (!this.profile) {
       this.draftProfile = {};
+      this.draftPositions = [];
+      this.heightInput = '';
+      this.weightInput = '';
       return;
     }
 
+    this.draftPositions = [...(this.profile.positions ?? [])];
+    this.heightInput = this.profile.height != null ? this.profile.height.toFixed(2) : '';
+    this.weightInput = this.profile.weight != null ? this.profile.weight.toFixed(2) : '';
     this.draftProfile = {
       fullName: this.profile.fullName,
       bio: this.profile.bio ?? '',
-      position: this.profile.position ?? '',
-      height: this.profile.height ?? '',
-      weight: this.profile.weight ?? '',
+      positions: this.profile.positions ?? [],
       dominantFoot: this.profile.dominantFoot,
+      gender: this.profile.gender ?? null,
       careerHistory: this.profile.careerHistory ?? '',
       cidade: this.profile.cidade ?? '',
       estado: this.profile.estado ?? '',
@@ -609,4 +708,3 @@ export class ProfilePlayerPage implements OnInit {
     };
   }
 }
-

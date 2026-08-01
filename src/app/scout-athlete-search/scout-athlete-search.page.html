@@ -1,0 +1,116 @@
+<ion-content [fullscreen]="true" class="athlete-search-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="athlete-search-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Buscar atletas</span>
+    </div>
+
+    <section class="hero-block">
+      <p class="be-eyebrow">Scouting</p>
+      <h1>Pesquisa de atletas</h1>
+      <p class="hero-copy">Encontre jogadores e abra o perfil público para analisar vídeos e informações.</p>
+    </section>
+
+    <section class="search-panel be-surface">
+      <ion-searchbar
+        [value]="filters.query"
+        placeholder="Nome ou cidade"
+        enterkeyhint="search"
+        (ionInput)="onSearchInput($event)"
+        (ionClear)="onSearchClear()">
+      </ion-searchbar>
+
+      <div class="filter-grid">
+        <ion-select
+          label="Posição"
+          labelPlacement="stacked"
+          interface="action-sheet"
+          [(ngModel)]="filters.position"
+          (ionChange)="onFilterChange()">
+          <ion-select-option value="">Todas</ion-select-option>
+          <ion-select-option *ngFor="let position of positionOptions" [value]="position">{{ position }}</ion-select-option>
+        </ion-select>
+
+        <ion-select
+          label="Pé dominante"
+          labelPlacement="stacked"
+          interface="action-sheet"
+          [(ngModel)]="filters.dominantFoot"
+          (ionChange)="onFilterChange()">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option *ngFor="let option of dominantFootOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+        </ion-select>
+
+        <ion-select
+          label="Gênero"
+          labelPlacement="stacked"
+          interface="action-sheet"
+          [(ngModel)]="filters.gender"
+          (ionChange)="onFilterChange()">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option *ngFor="let option of genderOptions" [value]="option.value">{{ option.label }}</ion-select-option>
+        </ion-select>
+      </div>
+
+      <ion-button fill="clear" class="clear-button" *ngIf="hasActiveFilters" (click)="clearFilters()">
+        <ion-icon slot="start" name="close-outline"></ion-icon>
+        Limpar filtros
+      </ion-button>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <strong>{{ athletes.length }} atleta{{ athletes.length === 1 ? '' : 's' }}</strong>
+      </div>
+
+      <div class="loading-state" *ngIf="loading">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <div class="empty-card be-surface" *ngIf="!loading && errorMessage">
+        <ion-icon name="search-outline"></ion-icon>
+        <strong>{{ errorMessage }}</strong>
+        <ion-button fill="outline" class="empty-clear-button" (click)="search()">Tentar novamente</ion-button>
+      </div>
+
+      <div class="athlete-list" *ngIf="!loading && !errorMessage && athletes.length > 0">
+        <button
+          type="button"
+          class="athlete-card be-surface"
+          *ngFor="let athlete of athletes; trackBy: trackByAthleteId"
+          (click)="openAthleteProfile(athlete)">
+          <ion-avatar class="athlete-avatar">
+            <img *ngIf="athlete.urlProfileImage" [src]="athlete.urlProfileImage" [alt]="athlete.fullName">
+            <ion-icon *ngIf="!athlete.urlProfileImage" name="person-circle-outline"></ion-icon>
+          </ion-avatar>
+
+          <div class="athlete-card-copy">
+            <strong>{{ athlete.fullName }}</strong>
+            <span>{{ athlete.position || 'Posição não informada' }} • {{ getDominantFootLabel(athlete.dominantFoot) }} • {{ getGenderLabel(athlete.gender) }}</span>
+            <p *ngIf="athlete.cidade || athlete.estado">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ athlete.cidade || 'Cidade' }}{{ athlete.estado ? ', ' + athlete.estado : '' }}
+            </p>
+          </div>
+        </button>
+      </div>
+
+      <div class="empty-card be-surface" *ngIf="!loading && !errorMessage && athletes.length === 0">
+        <ion-icon name="search-outline"></ion-icon>
+        <strong>Nenhum atleta encontrado</strong>
+        <p>Tente alterar ou limpar os filtros.</p>
+        <ion-button fill="outline" class="empty-clear-button" *ngIf="hasActiveFilters" (click)="clearFilters()">Limpar filtros</ion-button>
+      </div>
+    </section>
+
+    <ion-infinite-scroll [disabled]="!hasMore || loading" (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

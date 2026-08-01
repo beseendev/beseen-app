@@ -17,7 +17,7 @@ export class UploadPostService {
 
   constructor() { }
 
-  uploadAndCreatePost(file: File, caption: string, duration?: number): Observable<Post> {
+  uploadAndCreatePost(file: File, caption: string, duration?: number, skillIds: number[] = []): Observable<Post> {
     const fileType = file.type.startsWith('image/') ? FileType.IMAGE : FileType.VIDEO;
     let currentFileId: number;
 
@@ -34,7 +34,8 @@ export class UploadPostService {
       )),
       switchMap(uploadResponse => this.createPostRecord({
         fileId: uploadResponse.fileId,
-        caption: caption
+        caption: caption,
+        skillIds: skillIds
       })),
       switchMap(createdPost => this.updateBackendFileStatus(currentFileId, StatusFile.SENT).pipe( // Use currentFileId (number)
         map(() => createdPost)

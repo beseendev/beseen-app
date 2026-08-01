@@ -7,7 +7,7 @@
   width: 100%;
   max-width: 460px;
   margin: 0 auto;
-  padding: calc(28px + env(safe-area-inset-top, 0px)) 24px 40px;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 24px calc(66px + env(safe-area-inset-bottom, 0px));
   color: var(--be-color-text-1)
 }
 
@@ -213,6 +213,71 @@
   background: rgba(var(--ion-color-primary-rgb), .16)
 }
 
+.vitrine-filter-panel {
+  margin-top: -4px;
+}
+
+.filter-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.filter-btn {
+  --border-color: rgba(var(--ion-color-primary-rgb), .48);
+  --color: var(--be-color-brand-500);
+  --border-radius: 12px;
+  position: relative;
+  min-height: 42px;
+  text-transform: none;
+  font-weight: 800;
+
+  ion-badge {
+    margin-left: 8px;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.clear-filter-btn {
+  --color: var(--be-color-text-2);
+  min-height: 42px;
+  text-transform: none;
+  font-weight: 700;
+}
+
+.active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.active-filter-chip {
+  min-height: 34px;
+  border: 1px solid rgba(34, 197, 94, .38);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, .12);
+  color: var(--be-color-text-1);
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.active-filter-chip:focus-visible {
+  outline: 2px solid rgba(34, 197, 94, .62);
+  outline-offset: 2px;
+}
+
 .content-section {
   margin-bottom: 24px;
 }
@@ -233,12 +298,74 @@
   height: auto;
 }
 
+.filtered-empty-state {
+  background: var(--be-color-surface-1);
+  border: 1px solid var(--be-color-line);
+  border-radius: 16px;
+  box-shadow: var(--be-shadow-card);
+  padding: 24px 18px;
+  text-align: center;
+
+  h2 {
+    margin: 0 0 8px;
+    color: var(--be-color-text-1);
+    font-size: 1.12rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0 0 16px;
+    color: var(--be-color-text-3);
+    line-height: 1.4;
+  }
+
+  ion-button {
+    --border-color: rgba(var(--ion-color-primary-rgb), .48);
+    --color: var(--be-color-brand-500);
+    text-transform: none;
+    font-weight: 800;
+  }
+}
+
+.scout-action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(45px + env(safe-area-inset-bottom, 0px));
+  background: rgba(7, 22, 39, .82);
+  border-top: 1px solid rgba(148, 163, 184, .16);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.scout-search-fab {
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  z-index: 10000;
+}
+
+.search-fab-button {
+  width: 33px;
+  height: 33px;
+  --background: var(--be-color-brand-500);
+  --color: #052e16;
+  --box-shadow: 0 12px 28px rgba(2, 6, 23, .36);
+  --border-radius: 999px;
+
+  ion-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    color: #052e16;
+  }
+}
+
 .scout-home-content .be-tiktok-overlay {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  padding-bottom: calc(58px + env(safe-area-inset-bottom));
 }
 
 .scout-home-content .be-tiktok-actions {
-  bottom: calc(32px + env(safe-area-inset-bottom));
+  bottom: calc(52px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 600px) {

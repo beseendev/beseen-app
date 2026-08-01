@@ -256,6 +256,35 @@
   }
 }
 
+.skills-card {
+  background: #1e293b;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.3);
+  padding: 16px;
+  animation: mediaFadeIn 0.35s ease;
+}
+
+.skills-header {
+  margin-bottom: 16px;
+
+  strong {
+    display: block;
+    color: #f8fafc;
+    font-size: 0.96rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+}
+
 .caption-card {
   background: #1e293b;
   border-radius: 12px;

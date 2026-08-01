@@ -1,5 +1,7 @@
 import { ScoutAgeCategory, ScoutPosition, ScoutTypeOption } from './scout-profile.model';
 
+export type AthleteGender = 'MALE' | 'FEMALE';
+
 export interface Profile {
   id: string;
   name: string;
@@ -14,11 +16,12 @@ export interface Profile {
   documentNumber?: string;
   phoneNumber?: string;
 
-  position?: string;
-  height?: string;
-  weight?: string;
+  positions?: string[];
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 
   tipoOlheiro?: ScoutTypeOption;
   tipoOlheiroOutroTexto?: string | null;
@@ -49,11 +52,12 @@ export interface ProfilePlayerCreationRequest {
   estado: string;
   pais: string;
   bio?: string;
-  position?: string;
-  height?: string;
-  weight?: string;
+  positions?: string[];
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 }
 
 export interface ProfileScoutCreationRequest {
@@ -92,6 +96,27 @@ export interface PageResponse<T> {
   empty: boolean;
 }
 
+export interface AthleteSearchResult {
+  id: number;
+  fullName: string;
+  urlProfileImage?: string | null;
+  position?: ScoutPosition | null;
+  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH' | null;
+  gender?: AthleteGender | null;
+  cidade?: string | null;
+  estado?: string | null;
+}
+
+export interface AthleteSearchParams {
+  filter?: string;
+  /** Nome do enum PlayerPosition no backend (ex.: 'GOLEIRO'), não o rótulo em português. */
+  position?: string;
+  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender;
+  page?: number;
+  size?: number;
+}
+
 export interface ProfileResponse {
   id: number;
   name: string;
@@ -104,11 +129,12 @@ export interface ProfileResponse {
   documentNumber?: string;
   phoneNumber?: string;
 
-  position?: string;
-  height?: string;
-  weight?: string;
+  positions?: string[];
+  height?: number;
+  weight?: number;
   careerHistory?: string;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
+  gender?: AthleteGender | null;
 
   tipoOlheiro?: string;
   tipoOlheiroOutroTexto?: string;
