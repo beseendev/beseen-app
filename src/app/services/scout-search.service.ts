@@ -22,7 +22,12 @@ interface ScoutPostPageResponseDto {
 
 interface ScoutPostResponseDto {
   id: number;
-  user: ScoutPostUserDto;
+  user: {
+    id?: number;
+    username: string;
+    urlPerfil?: string;
+    position?: string;
+  };
   mediaUrl: string;
   mediaType: FileType;
   caption: string;
@@ -34,36 +39,7 @@ interface ScoutPostResponseDto {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
   scoutId?: number | null;
   athleteId?: number | null;
-  skills?: Skill[] | null;
 }
-
-interface ScoutPostUserDto {
-  id?: number;
-  username: string;
-  urlPerfil?: string;
-  position?: string;
-  posicao?: string;
-  cargoOuFuncao?: string;
-  modality?: string;
-  modalidade?: string;
-  region?: string;
-  cidade?: string;
-  estado?: string;
-  dateOfBirth?: string;
-  height?: string;
-  dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
-  gender?: 'MALE' | 'FEMALE' | null;
-}
-
-type ScoutPostUserInfo = UserInfo & {
-  posicao?: string;
-  cargoOuFuncao?: string;
-  modality?: string;
-  modalidade?: string;
-  region?: string;
-  cidade?: string;
-  estado?: string;
-};
 
 @Injectable({
   providedIn: 'root'
@@ -92,7 +68,6 @@ export class ScoutSearchService {
   private readonly activeChipsSubject = new BehaviorSubject<ScoutVideoFilterChip[]>([]);
   readonly activeChips$ = this.activeChipsSubject.asObservable();
 
-  private currentPage = 0;
   private nextCursor: string | null = null;
   private currentRequestId = 0;
   private activeRequestSub?: Subscription;
@@ -176,7 +151,6 @@ export class ScoutSearchService {
 
     if (reset) {
       this.activeRequestSub?.unsubscribe();
-      this.currentPage = 0;
       this.nextCursor = null;
       this.loadingSubject.next(true);
       this.resultsSubject.next([]);
@@ -185,27 +159,18 @@ export class ScoutSearchService {
       this.loadingSubject.next(true);
     }
 
-    // Temporary fallback until the backend exposes the scouting search endpoint.
-    // This request intentionally does not use PostService.homePosts$ and does not
-    // write filtered results into the shared home feed.
-    let params = new HttpParams().set('limit', this.pageSize.toString());
-    if (this.nextCursor && !reset) {
-      params = params.set('cursor', this.nextCursor);
-    }
+    const params = this.buildSearchParams(filters, reset ? null : this.nextCursor);
 
-    this.activeRequestSub = this.apiService.get<ScoutPostPageResponseDto>('/posts', { params }).subscribe({
+    this.activeRequestSub = this.apiService.get<ScoutPostPageResponseDto>('/posts/search', { params }).subscribe({
       next: response => {
         if (requestId !== this.currentRequestId) return;
 
-        const filteredDtos = response.items
-          .filter(post => post.mediaType === FileType.VIDEO)
-          .filter(post => this.matchesTemporaryFallbackFilters(post, filters));
-        const mappedPosts = filteredDtos.map(post => this.mapPostResponseToPost(post));
+        const videosOnly = response.items.filter(post => post.mediaType === FileType.VIDEO);
+        const mappedPosts = videosOnly.map(post => this.mapPostResponseToPost(post));
         const current = reset ? [] : this.resultsSubject.value;
 
         this.resultsSubject.next([...current, ...mappedPosts]);
         this.nextCursor = response.nextCursor;
-        this.currentPage++;
         this.hasMoreSubject.next(!!response.nextCursor);
         this.loadingSubject.next(false);
       },
@@ -218,10 +183,55 @@ export class ScoutSearchService {
     });
   }
 
+  private buildSearchParams(filters: ScoutVideoFilters, cursor: string | null): HttpParams {
+    let params = new HttpParams().set('limit', this.pageSize.toString());
+
+    if (cursor) {
+      params = params.set('cursor', cursor);
+    }
+    if (filters.gender) {
+      params = params.set('gender', filters.gender);
+    }
+    if (filters.minAge != null) {
+      params = params.set('minAge', String(filters.minAge));
+    }
+    if (filters.maxAge != null) {
+      params = params.set('maxAge', String(filters.maxAge));
+    }
+    if (filters.dominantFoot) {
+      params = params.set('dominantFoot', filters.dominantFoot);
+    }
+    for (const position of filters.positions ?? []) {
+      params = params.append('positions', position);
+    }
+    if (filters.estado) {
+      params = params.set('estado', filters.estado);
+    }
+    if (filters.cidade) {
+      params = params.set('cidade', filters.cidade);
+    }
+    if (filters.minHeight != null) {
+      params = params.set('minHeight', String(filters.minHeight));
+    }
+    if (filters.maxHeight != null) {
+      params = params.set('maxHeight', String(filters.maxHeight));
+    }
+    for (const skillId of filters.offensiveSkillIds ?? []) {
+      params = params.append('offensiveSkillIds', skillId);
+    }
+    for (const skillId of filters.defensiveSkillIds ?? []) {
+      params = params.append('defensiveSkillIds', skillId);
+    }
+    if (filters.skillMatchMode) {
+      params = params.set('skillMatchMode', filters.skillMatchMode);
+    }
+
+    return params;
+  }
+
   private resetSearchState(): void {
     this.activeRequestSub?.unsubscribe();
     this.currentRequestId++;
-    this.currentPage = 0;
     this.nextCursor = null;
     this.resultsSubject.next([]);
     this.loadingSubject.next(false);
@@ -234,18 +244,11 @@ export class ScoutSearchService {
   }
 
   private mapPostResponseToPost(postResponse: ScoutPostResponseDto): Post {
-    const user: ScoutPostUserInfo = {
+    const user: UserInfo = {
       id: String(postResponse.user.id || postResponse.athleteId || ''),
       username: postResponse.user.username,
       urlPerfil: postResponse.user.urlPerfil,
-      position: postResponse.user.position || postResponse.position,
-      posicao: postResponse.user.posicao,
-      cargoOuFuncao: postResponse.user.cargoOuFuncao,
-      modality: postResponse.user.modality,
-      modalidade: postResponse.user.modalidade,
-      region: postResponse.user.region,
-      cidade: postResponse.user.cidade,
-      estado: postResponse.user.estado
+      position: postResponse.user.position || postResponse.position
     };
 
     return {
@@ -261,89 +264,7 @@ export class ScoutSearchService {
       position: postResponse.position || postResponse.user.position,
       inviteStatus: postResponse.inviteStatus,
       scoutId: postResponse.scoutId,
-      athleteId: postResponse.athleteId,
-      skills: postResponse.skills ?? null
+      athleteId: postResponse.athleteId
     };
-  }
-
-  private matchesTemporaryFallbackFilters(post: ScoutPostResponseDto, filters: ScoutVideoFilters): boolean {
-    const normalized = normalizeScoutVideoFilters(filters);
-
-    if (normalized.gender && post.user.gender !== normalized.gender) return false;
-
-    const age = this.calculateAge(post.user.dateOfBirth);
-    if (normalized.minAge != null && (age == null || age < normalized.minAge)) return false;
-    if (normalized.maxAge != null && (age == null || age > normalized.maxAge)) return false;
-
-    if (normalized.dominantFoot && post.user.dominantFoot !== normalized.dominantFoot) return false;
-
-    const position = post.user.position || post.position || post.user.posicao || post.user.cargoOuFuncao;
-    if ((normalized.positions ?? []).length > 0 && (!position || !normalized.positions?.includes(position))) return false;
-
-    const height = this.parseHeight(post.user.height);
-    if (normalized.minHeight != null && (height == null || height < normalized.minHeight)) return false;
-    if (normalized.maxHeight != null && (height == null || height > normalized.maxHeight)) return false;
-
-    if (normalized.estado && post.user.estado !== normalized.estado) return false;
-
-    if (normalized.cidade) {
-      const cidade = (post.user.cidade || post.user.region || '').toLocaleLowerCase();
-      if (!cidade.includes(normalized.cidade.toLocaleLowerCase())) return false;
-    }
-
-    return this.matchesSkills(post.skills ?? [], normalized);
-  }
-
-  private matchesSkills(skills: readonly Skill[], filters: ScoutVideoFilters): boolean {
-    const selectedSkillIds = [
-      ...(filters.offensiveSkillIds ?? []),
-      ...(filters.defensiveSkillIds ?? [])
-    ];
-
-    if (selectedSkillIds.length === 0) return true;
-
-    const postSkillIds = new Set<string>();
-    for (const skill of skills) {
-      postSkillIds.add(skill.id);
-      postSkillIds.add(skill.code);
-    }
-
-    if (filters.skillMatchMode === 'ALL') {
-      return selectedSkillIds.every(skillId => postSkillIds.has(skillId));
-    }
-
-    return selectedSkillIds.some(skillId => postSkillIds.has(skillId));
-  }
-
-  private calculateAge(dateOfBirth: string | null | undefined): number | null {
-    const birthDate = this.parseDate(dateOfBirth);
-    if (!birthDate) return null;
-
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    return age >= 0 ? age : null;
-  }
-
-  private parseDate(value: string | null | undefined): Date | null {
-    if (!value) return null;
-
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-      const [day, month, year] = value.split('/').map(Number);
-      return new Date(year, month - 1, day);
-    }
-
-    const parsed = new Date(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  }
-
-  private parseHeight(value: string | null | undefined): number | null {
-    if (!value) return null;
-    const parsed = Number(value.replace(',', '.').replace(/[^0-9.]/g, ''));
-    return Number.isFinite(parsed) ? parsed : null;
   }
 }
