@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
@@ -53,8 +53,10 @@ export class ProfilePlayerPage implements OnInit {
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
+  isScoutViewer = false;
   isEditing = false;
   isUploadingPhoto = false;
+  isSendingInvite = false;
   selectedSegment: 'images' | 'videos' = 'videos';
   draftProfile: Partial<Profile> = {};
   draftPositions: string[] = [];
@@ -89,6 +91,7 @@ export class ProfilePlayerPage implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private actionSheetCtrl = inject(ActionSheetController);
   private alertCtrl = inject(AlertController);
+  private toastController = inject(ToastController);
 
   private userPostsSubject = new BehaviorSubject<Post[]>([]);
   private selectedSegmentSubject = new BehaviorSubject<'images' | 'videos'>('videos');
@@ -105,7 +108,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -123,6 +126,9 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   ngOnInit() {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    this.isScoutViewer = decodedToken?.role === 'CLUBE';
+
     this.activatedRoute.paramMap.pipe(
       switchMap(params => {
         this.profileId = params.get('userId');
@@ -186,25 +192,67 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   async openProfileOptions() {
+    const buttons: any[] = [];
+
+    if (this.isScoutViewer && !this.isBlockedByMe) {
+      buttons.push({
+        text: 'Convidar para conversar',
+        icon: chatbubbleOutline,
+        handler: () => {
+          this.sendInviteToPlayer();
+        }
+      });
+    }
+
+    buttons.push(
+      {
+        text: 'Bloquear usuário',
+        role: 'destructive',
+        icon: banOutline,
+        handler: () => {
+          this.confirmBlock();
+        }
+      },
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        icon: closeOutline
+      }
+    );
+
     const actionSheet = await this.actionSheetCtrl.create({
       cssClass: 'be-action-sheet',
-      buttons: [
-        {
-          text: 'Bloquear usuário',
-          role: 'destructive',
-          icon: banOutline,
-          handler: () => {
-            this.confirmBlock();
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: closeOutline
-        }
-      ]
+      buttons
     });
     await actionSheet.present();
+  }
+
+  private sendInviteToPlayer(): void {
+    if (!this.profileId || this.isSendingInvite) {
+      return;
+    }
+
+    this.isSendingInvite = true;
+    this.postService.sendInviteToProfile(this.profileId).pipe(
+      finalize(() => this.isSendingInvite = false)
+    ).subscribe({
+      next: () => {
+        this.showToast('Convite enviado com sucesso!', 'success');
+      },
+      error: (err) => {
+        console.error('Error sending invite to profile', err);
+      }
+    });
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 4000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   async confirmBlock() {

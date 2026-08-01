@@ -191,6 +191,10 @@ export class PostService {
     );
   }
 
+  sendInviteToProfile(profileId: string | number): Observable<void> {
+    return this.apiService.post<void>(`/invites/profile/${profileId}`, {});
+  }
+
   acceptInvite(inviteId: number): Observable<InviteResponse> {
     return this.apiService.patch<InviteResponse>(`/invites/${inviteId}/accept`, {});
   }
