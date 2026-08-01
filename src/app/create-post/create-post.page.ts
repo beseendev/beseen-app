@@ -176,7 +176,8 @@ export class CreatePostPage implements OnInit {
     this.uploadPostService.uploadAndCreatePost(
       this.selectedMedia,
       this.caption,
-      this.selectedMediaDuration ?? undefined
+      this.selectedMediaDuration ?? undefined,
+      this.postFormState.selectedSkillIds.map(id => Number(id))
     ).subscribe({
       next: async (post) => {
         await loading.dismiss();
