@@ -39,6 +39,7 @@ import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.componen
 import { ChatSheetComponent } from '../components/chat-sheet/chat-sheet.component';
 import { ScoutFavoritesTabComponent } from './components/scout-favorites-tab/scout-favorites-tab.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
+import { BannerCarouselComponent } from '../components/banner-carousel/banner-carousel.component';
 import { ApiService } from "../services/api.service";
 import { environment } from "../../environments/environment";
 import { ModalStateService } from '../services/modal-state.service';
@@ -59,7 +60,7 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;

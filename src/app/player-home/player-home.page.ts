@@ -61,6 +61,7 @@ import { ProfileDrawerComponent } from './components/profile-drawer/profile-draw
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
+import { BannerCarouselComponent } from '../components/banner-carousel/banner-carousel.component';
 import { environment } from '../../environments/environment';
 import {IonicModule} from "@ionic/angular";
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
@@ -125,6 +126,7 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonInfiniteScrollContent,
     ProfileDrawerComponent,
     AdCardComponent,
+    BannerCarouselComponent,
     ViewportVideoPlayerDirective
   ],
 })

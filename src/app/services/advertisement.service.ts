@@ -12,4 +12,8 @@ export class AdvertisementService {
   getRandomAdvertisement(): Observable<Advertisement> {
     return this.apiService.get<Advertisement>('/v1/advertisements/random');
   }
+
+  getActiveBanners(): Observable<Advertisement[]> {
+    return this.apiService.get<Advertisement[]>('/v1/advertisements/banners');
+  }
 }
