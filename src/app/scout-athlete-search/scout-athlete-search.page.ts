@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
-  IonAvatar,
   IonButton,
   IonContent,
   IonIcon,
@@ -17,13 +16,14 @@ import {
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, closeOutline, locationOutline, personCircleOutline, searchOutline } from 'ionicons/icons';
+import { arrowBackOutline, closeOutline, locationOutline, searchOutline } from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
-import { AthleteGender, AthleteSearchParams, AthleteSearchResult } from '../models/profile.model';
+import { AthleteGender, AthleteSearchParams, AthleteSearchResult, Profile } from '../models/profile.model';
 import { SCOUT_POSITION_OPTIONS, ScoutPosition } from '../models/scout-profile.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ProfileService } from '../services/profile.service';
+import { PlayerCardComponent } from '../components/player-card/player-card.component';
 
 type DominantFoot = NonNullable<AthleteSearchResult['dominantFoot']>;
 
@@ -62,7 +62,6 @@ interface DominantFootOption {
   imports: [
     CommonModule,
     FormsModule,
-    IonAvatar,
     IonButton,
     IonContent,
     IonIcon,
@@ -73,7 +72,8 @@ interface DominantFootOption {
     IonSearchbar,
     IonSelect,
     IonSelectOption,
-    IonSpinner
+    IonSpinner,
+    PlayerCardComponent
   ]
 })
 export class ScoutAthleteSearchPage implements OnInit, OnDestroy {
@@ -107,7 +107,7 @@ export class ScoutAthleteSearchPage implements OnInit, OnDestroy {
   private currentPage = 0;
 
   constructor() {
-    addIcons({ arrowBackOutline, closeOutline, locationOutline, personCircleOutline, searchOutline });
+    addIcons({ arrowBackOutline, closeOutline, locationOutline, searchOutline });
   }
 
   ngOnInit(): void {
@@ -214,6 +214,20 @@ export class ScoutAthleteSearchPage implements OnInit, OnDestroy {
 
   trackByAthleteId(_: number, athlete: AthleteSearchResult): number {
     return athlete.id;
+  }
+
+  toPlayerCardProfile(athlete: AthleteSearchResult): Partial<Profile> {
+    return {
+      name: athlete.fullName,
+      urlProfileImage: athlete.urlProfileImage,
+      positions: athlete.position ? [athlete.position] : undefined,
+      dominantFoot: athlete.dominantFoot ?? undefined,
+      gender: athlete.gender,
+      ata: athlete.ata ?? undefined,
+      def: athlete.def ?? undefined,
+      hab: athlete.hab ?? undefined,
+      forca: athlete.forca ?? undefined
+    };
   }
 
   get hasActiveFilters(): boolean {

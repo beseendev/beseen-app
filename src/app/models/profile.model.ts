@@ -23,6 +23,12 @@ export interface Profile {
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
 
+  /** Atributos do jogador (0-100), calculados a partir das avaliações. */
+  ata?: number;
+  def?: number;
+  hab?: number;
+  forca?: number;
+
   tipoOlheiro?: ScoutTypeOption;
   tipoOlheiroOutroTexto?: string | null;
   organizacaoOuClube?: string | null;
@@ -85,6 +91,22 @@ export interface ProfileScoutCreationRequest {
   oQueBuscaNoBeSeen?: string | null;
 }
 
+/** Avaliação dos atributos (0-99) de um jogador enviada por outro perfil. */
+export interface PlayerEvaluationRequest {
+  ata: number;
+  def: number;
+  hab: number;
+  forca: number;
+}
+
+/** Média atualizada dos atributos do jogador após uma avaliação. */
+export interface PlayerAttributesResponse {
+  ata: number;
+  def: number;
+  hab: number;
+  forca: number;
+}
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
@@ -105,6 +127,10 @@ export interface AthleteSearchResult {
   gender?: AthleteGender | null;
   cidade?: string | null;
   estado?: string | null;
+  ata?: number | null;
+  def?: number | null;
+  hab?: number | null;
+  forca?: number | null;
 }
 
 export interface AthleteSearchParams {

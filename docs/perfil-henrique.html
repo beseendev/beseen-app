@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Perfil Jogador(a)</title>
+<style>
+  /* ============================================================
+     PALETA DO APP (azul-marinho + verde do print)
+     ============================================================ */
+  :root{
+    --fundo:        #0c1626;   /* fundo geral azul-marinho escuro */
+    --painel:       #16273e;   /* cards/painéis da lista */
+    --painel-borda: #22385a;
+    --verde:        #2ecc71;   /* verde de destaque dos ícones */
+    --verde-claro:  #7bf0ae;
+    --verde-escuro: #14833f;
+    --texto:        #f2f6fb;
+    --texto-suave:  #8fa3bd;
+
+    /* formato do escudo: topo reto, ponta embaixo */
+    --escudo: polygon(0% 0%, 100% 0%, 100% 78%, 50% 100%, 0% 78%);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  body{
+    min-height:100vh;
+    background: var(--fundo);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--texto);
+    display:flex;
+    justify-content:center;
+  }
+
+  .tela{
+    width:100%;
+    max-width: 430px;
+    padding: 18px 18px 40px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 8px 2px 22px;
+  }
+  .header .titulo{
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .icone-btn{
+    background:none; border:none; color: var(--texto);
+    font-size: 1.3rem; cursor:pointer; width:34px;
+  }
+
+  /* ---------- CARD ESCUDO ---------- */
+  .card-area{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 26px;
+  }
+  .card{
+    position:relative;
+    width: 290px;
+    aspect-ratio: 300 / 430;
+    filter: drop-shadow(0 16px 34px rgba(0,0,0,.6))
+            drop-shadow(0 0 24px rgba(46,204,113,.22));
+    transition: transform .35s ease;
+  }
+  .card:hover{ transform: translateY(-5px) scale(1.015); }
+
+  /* borda verde */
+  .card::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(160deg,
+      var(--verde-claro) 0%,
+      var(--verde) 30%,
+      var(--verde-escuro) 75%,
+      var(--verde) 100%);
+    clip-path: var(--escudo);
+  }
+
+  .card-inner{
+    position:absolute; inset:6px;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(46,204,113,.14) 0%, transparent 55%),
+      linear-gradient(178deg, #1b3050 0%, #0e1b30 70%);
+    clip-path: var(--escudo);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .card-inner::after{
+    content:"";
+    position:absolute; top:-60%; left:-80%;
+    width:60%; height:220%;
+    background: linear-gradient(75deg, transparent, rgba(123,240,174,.09), transparent);
+    transform: rotate(8deg);
+    transition: left .6s ease;
+    pointer-events:none;
+  }
+  .card:hover .card-inner::after{ left:130%; }
+
+  .topo{
+    display:flex;
+    width:100%;
+    height: 56%;
+  }
+  .coluna{
+    width: 27%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top: 15px;
+    gap:5px;
+  }
+  .idade{
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--verde-claro);
+    text-shadow: 0 2px 6px rgba(0,0,0,.6);
+    line-height:1;
+  }
+  .idade-rotulo{
+    font-size:.55rem;
+    font-weight:700;
+    letter-spacing:.16em;
+    color: var(--texto-suave);
+    margin-top:-2px;
+  }
+  .posicao{
+    font-size:.8rem;
+    font-weight:700;
+    letter-spacing:.12em;
+    color: var(--verde);
+  }
+  .divisor{
+    width:26px; height:1.5px;
+    background: linear-gradient(90deg, transparent, var(--verde), transparent);
+    margin:2px 0;
+  }
+  .bandeira{ width:26px; border-radius:3px; box-shadow:0 1px 4px rgba(0,0,0,.5); }
+
+  .marca{
+    margin-top:auto;
+    margin-bottom: 14px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size:.7rem;
+    font-weight:700;
+    letter-spacing:.35em;
+    color: var(--verde);
+    opacity:.7;
+    text-transform: lowercase;
+  }
+
+  .foto{
+    width: 73%;
+    height: 100%;
+    overflow:hidden;
+    background:#122238;
+    box-shadow: -4px 0 14px rgba(0,0,0,.45);
+    border-bottom-left-radius: 8px;
+  }
+  .foto img{ width:100%; height:100%; object-fit:cover; object-position: top; display:block; }
+
+  .base{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top: 12px;
+  }
+  .nome{
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing:.06em;
+    color: var(--texto);
+    text-shadow: 0 2px 8px rgba(0,0,0,.7);
+    text-transform: uppercase;
+  }
+  .nome-linha{
+    width: 58%;
+    height:1.5px;
+    margin-top:6px;
+    background: linear-gradient(90deg, transparent, var(--verde), transparent);
+  }
+  .infos{
+    margin-top: 10px;
+    display:flex;
+    gap: 20px;
+  }
+  .info{ text-align:center; }
+  .info .rotulo{
+    font-size:.6rem;
+    font-weight:700;
+    letter-spacing:.14em;
+    color: var(--texto-suave);
+  }
+  .info .valor{
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--texto);
+    line-height:1.2;
+  }
+  .chip{
+    margin-top: 10px;
+    font-size:.66rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    color: #06240f;
+    background: linear-gradient(180deg, var(--verde-claro), var(--verde));
+    padding: 4px 14px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+    text-transform: uppercase;
+  }
+  .medalhao{
+    position:absolute;
+    bottom: 3.5%;
+    left:50%;
+    transform: translateX(-50%);
+    width: 38px; height: 38px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--verde-claro), var(--verde) 55%, var(--verde-escuro));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 0 0 2.5px #0e1b30, 0 0 14px rgba(46,204,113,.45);
+    z-index:3;
+    font-size: 1rem;
+  }
+
+  /* ---------- LISTA DE INFORMAÇÕES ---------- */
+  .lista{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+  .item{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    background: var(--painel);
+    border: 1px solid var(--painel-borda);
+    border-radius: 14px;
+    padding: 18px 16px;
+  }
+  .item svg{
+    width: 26px; height: 26px;
+    stroke: var(--verde);
+    fill:none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink:0;
+  }
+  .item .rotulo{
+    font-size:.85rem;
+    font-weight:700;
+    color: var(--texto-suave);
+    margin-bottom: 3px;
+  }
+  .item .valor{
+    font-size: 1.05rem;
+    color: var(--texto);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .card-inner::after{ transition:none; }
+    .card:hover{ transform:none; }
+  }
+</style>
+</head>
+<body>
+<div class="tela">
+
+  <!-- HEADER -->
+  <div class="header">
+    <button class="icone-btn" aria-label="Voltar">&#8592;</button>
+    <div class="titulo">Perfil Jogador(a)</div>
+    <button class="icone-btn" aria-label="Mais opções">&#8943;</button>
+  </div>
+
+  <!-- CARD ESCUDO NO LUGAR DA FOTO/NOME -->
+  <div class="card-area">
+    <div class="card">
+      <div class="card-inner">
+
+        <div class="topo">
+          <div class="coluna">
+            <div class="idade">8</div>
+            <div class="idade-rotulo">ANOS</div>
+            <div class="posicao">VOL</div>
+            <div class="divisor"></div>
+            <svg class="bandeira" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+              <rect width="28" height="20" rx="2" fill="#009c3b"/>
+              <polygon points="14,3 25,10 14,17 3,10" fill="#ffdf00"/>
+              <circle cx="14" cy="10" r="3.6" fill="#002776"/>
+            </svg>
+            <div class="marca">seuapp</div>
+          </div>
+
+          <div class="foto">
+            <!-- TROQUE o src pela foto do Henrique -->
+            <img src="https://placehold.co/400x460/122238/2ecc71?text=FOTO" alt="Foto do jogador" />
+          </div>
+        </div>
+
+        <div class="base">
+          <div class="nome">Henrique</div>
+          <div class="nome-linha"></div>
+
+          <div class="infos">
+            <div class="info"><div class="rotulo">POSIÇÃO</div><div class="valor">Volante</div></div>
+            <div class="info"><div class="rotulo">CIDADE</div><div class="valor">Criciúma</div></div>
+            <div class="info"><div class="rotulo">UF</div><div class="valor">SC</div></div>
+          </div>
+
+          <div class="chip">Jogador</div>
+        </div>
+
+        <div class="medalhao">⚽</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA (igual ao print) -->
+  <div class="lista">
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+      <div><div class="rotulo">Funcao</div><div class="valor">JOGADOR</div></div>
+    </div>
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+      <div><div class="rotulo">Data de nascimento</div><div class="valor">2018-01-09</div></div>
+    </div>
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <div><div class="rotulo">Cidade</div><div class="valor">criciuma</div></div>
+    </div>
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+      <div><div class="rotulo">Estado</div><div class="valor">SC</div></div>
+    </div>
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg>
+      <div><div class="rotulo">País</div><div class="valor">Brasil</div></div>
+    </div>
+
+    <div class="item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M4 10c5 2 11 2 16 0M12 12v4M12 16l-4 5M12 16l4 5"/></svg>
+      <div><div class="rotulo">Posicao</div><div class="valor">Volante</div></div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

@@ -159,24 +159,13 @@
   align-items: center;
 }
 
-.player-profile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  background: var(--be-color-surface-1);
-  border: 1px solid rgba(var(--ion-color-primary-rgb), .24)
-}
-
-.player-profile-avatar img, .avatar-shell img {
+.avatar-shell img {
   width: 100%;
   height: 100%;
   object-fit: cover
 }
 
-.player-profile-avatar ion-icon, .avatar-shell ion-icon {
+.avatar-shell ion-icon {
   font-size: 2rem;
   color: var(--be-color-text-2)
 }

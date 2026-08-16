@@ -71,115 +71,10 @@
   text-transform: uppercase
 }
 
-.profile-card {
-  margin-top: 0
-}
-
-.profile-card-head {
+.player-card-section {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 16px;
-  background: var(--be-color-surface-1);
-  border: 1px solid var(--be-color-line);
-  box-shadow: var(--be-shadow-card)
-}
-
-.profile-identity {
-  display: flex;
-  align-items: center;
-  gap: 14px
-}
-
-.profile-avatar {
-  position: relative;
-  width: 72px;
-  height: 72px;
-  border: 2px solid var(--be-color-brand-500);
-  background: var(--be-color-surface-2);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.avatar-upload-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 5;
-
-  ion-spinner {
-    --color: var(--be-color-brand-500);
-  }
-}
-
-.change-photo-btn {
-  --color: var(--be-color-brand-500);
-  --padding-start: 4px;
-  --padding-end: 0;
-  height: auto;
-  margin-top: 4px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: none;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover
-}
-
-.profile-avatar ion-icon {
-  font-size: 4.25rem;
-  color: var(--be-color-text-2)
-}
-
-.profile-copy span {
-  display: block;
-  color: var(--be-color-text-3);
-  font-size: .76rem;
-  margin-bottom: 4px
-}
-
-.profile-copy strong {
-  display: block;
-  font-size: 1rem
-}
-
-.profile-copy p {
-  margin: 4px 0 0;
-  color: var(--be-color-text-3);
-  font-size: .82rem
-}
-
-.profile-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px
-}
-
-.profile-action-btn {
-  --border-color: rgba(var(--ion-color-primary-rgb), .45);
-  --color: var(--be-color-brand-500);
-  text-transform: none;
-  font-weight: 600
-}
-
-.secondary-action {
-  --color: var(--be-color-text-2)
-}
-
-.cancel-btn {
-  --color: var(--be-color-danger)
+  margin-bottom: 8px;
 }
 
 ion-list, ion-grid {
@@ -494,6 +389,109 @@ ion-item {
       }
     }
   }
+}
+
+/* ---------- MODAL AVALIAÇÃO (ATA/DEF/HAB/FOR) ---------- */
+.evaluation-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.evaluation-modal-container {
+  width: 100%;
+  max-width: 420px;
+  background: var(--be-color-surface-1);
+  border: 1px solid var(--be-color-line);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, .4);
+}
+
+.evaluation-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+
+  ion-icon {
+    font-size: 1.3rem;
+    color: var(--be-color-brand-500);
+  }
+
+  h3 {
+    flex: 1;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--be-color-text-1);
+  }
+
+  .close-modal-btn-inline {
+    --color: var(--be-color-text-2);
+    --padding-start: 0;
+    --padding-end: 0;
+    margin: 0;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.evaluation-modal-subtitle {
+  margin: 0 0 16px;
+  color: var(--be-color-text-3);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
+.evaluation-field {
+  margin-bottom: 6px;
+}
+
+.evaluation-field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--be-color-text-3);
+  }
+
+  strong {
+    font-size: .95rem;
+    font-weight: 800;
+    color: var(--be-color-brand-500);
+  }
+}
+
+.evaluation-field ion-range {
+  --bar-background: var(--be-color-surface-2);
+  --bar-background-active: var(--be-color-brand-500);
+  --knob-background: var(--be-color-brand-500);
+  --bar-height: 6px;
+  padding: 0;
+}
+
+.evaluation-submit-btn {
+  margin-top: 14px;
+  --background: var(--be-color-brand-500);
+  --background-hover: var(--be-color-brand-600);
+  --background-activated: var(--be-color-brand-700);
+  --border-radius: 12px;
+  font-weight: 700;
+  text-transform: none;
 }
 
 /* Bloqueio de usuário */

@@ -85,10 +85,7 @@
           class="athlete-card be-surface"
           *ngFor="let athlete of athletes; trackBy: trackByAthleteId"
           (click)="openAthleteProfile(athlete)">
-          <ion-avatar class="athlete-avatar">
-            <img *ngIf="athlete.urlProfileImage" [src]="athlete.urlProfileImage" [alt]="athlete.fullName">
-            <ion-icon *ngIf="!athlete.urlProfileImage" name="person-circle-outline"></ion-icon>
-          </ion-avatar>
+          <app-player-card class="athlete-avatar" [profile]="toPlayerCardProfile(athlete)" size="small"></app-player-card>
 
           <div class="athlete-card-copy">
             <strong>{{ athlete.fullName }}</strong>
