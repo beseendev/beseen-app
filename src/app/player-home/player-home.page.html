@@ -125,6 +125,8 @@
       </button>
     </nav>
 
+    <app-banner-carousel class="section"></app-banner-carousel>
+
     <section class="section tab-panel" [class.active]="activeTab === 'ranking'" *ngIf="activeTab === 'ranking'">
       <div class="video-stack be-tiktok-container" *ngIf="rankingVideosWithAds.length > 0">
         <ng-container *ngFor="let item of rankingVideosWithAds; trackBy: trackByFeedItem">

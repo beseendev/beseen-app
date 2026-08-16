@@ -1,0 +1,48 @@
+<section class="banner-carousel-section be-fade-in">
+  <p class="eyebrow">{{ title }}</p>
+
+  <div class="banner-track skeleton-track" *ngIf="isLoading">
+    <div class="banner-card skeleton-card"></div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="banner-track" #track (scroll)="onTrackScroll()" *ngIf="banners.length > 0; else placeholderCard">
+      <article
+        class="banner-card"
+        *ngFor="let banner of banners; trackBy: trackByBanner"
+        (click)="goToSite(banner)">
+        <img *ngIf="banner.imageLink" [src]="banner.imageLink" [alt]="banner.companyName" class="banner-image" />
+
+        <span class="banner-badge banner-badge--pinned">Fundadora</span>
+
+        <div class="banner-overlay">
+          <div class="banner-info">
+            <h3>{{ banner.companyName }}</h3>
+            <p *ngIf="banner.description">{{ banner.description }}</p>
+          </div>
+          <span class="banner-cta" *ngIf="banner.ctaText">
+            {{ banner.ctaText }}
+            <ion-icon name="open-outline"></ion-icon>
+          </span>
+        </div>
+      </article>
+    </div>
+
+    <div class="banner-dots" *ngIf="banners.length > 1">
+      <span *ngFor="let banner of banners; let i = index" class="dot" [class.active]="i === activeIndex"></span>
+    </div>
+  </ng-container>
+
+  <ng-template #placeholderCard>
+    <article class="banner-card placeholder-card">
+      <div class="placeholder-copy">
+        <span class="banner-badge">Fundadora Beseen</span>
+        <h3>Sua empresa aqui</h3>
+        <p>Apoiamos o futuro do esporte. Acreditamos em talento, educação e transformação.</p>
+      </div>
+      <div class="placeholder-badge" aria-hidden="true">
+        <span>B</span>
+      </div>
+    </article>
+  </ng-template>
+</section>
