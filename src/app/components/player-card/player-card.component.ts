@@ -34,7 +34,7 @@ const DOMINANT_FOOT_LABELS: Record<string, string> = {
 })
 export class PlayerCardComponent implements OnChanges, OnDestroy {
   @Input() profile: Partial<Profile> | null | undefined = null;
-  @Input() size: 'full' | 'small' = 'full';
+  @Input() size: 'full' | 'small' | 'xsmall' = 'full';
   @Input() shortName = false;
   @Input() editable = false;
   @Input() uploading = false;

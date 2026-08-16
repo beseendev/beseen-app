@@ -271,6 +271,10 @@
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .45));
 }
 
+.player-card--xsmall {
+  width: 48px;
+}
+
 .player-card--small.player-card::before,
 .player-card--small .player-card-inner {
   clip-path: polygon(0% 0%, 100% 0%, 100% 82%, 50% 100%, 0% 82%);

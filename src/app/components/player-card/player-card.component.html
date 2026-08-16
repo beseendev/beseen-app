@@ -1,12 +1,13 @@
 <div
   class="player-card"
-  [class.player-card--small]="size === 'small'"
+  [class.player-card--small]="size === 'small' || size === 'xsmall'"
+  [class.player-card--xsmall]="size === 'xsmall'"
   [class.is-active]="isPressed"
   (click)="onCardClick()"
 >
   <div class="player-card-inner">
 
-    <ng-container *ngIf="size !== 'small'">
+    <ng-container *ngIf="size === 'full'">
       <div class="player-card-top">
         <div class="player-card-col">
           <ng-container *ngIf="age !== null">
@@ -65,7 +66,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="size === 'small'">
+    <ng-container *ngIf="size !== 'full'">
       <div class="player-card-photo player-card-photo--full" [class.is-editing]="editable" (click)="onPhotoClick()">
         <img *ngIf="photoUrl" [src]="photoUrl" alt="Foto do jogador" (error)="onImageError()" />
         <ion-icon *ngIf="!photoUrl" name="person-circle-outline"></ion-icon>

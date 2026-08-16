@@ -470,6 +470,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
           counterpartName: thread.counterpartName,
           counterpartAvatarUrl: thread.counterpartAvatar,
           counterpartProfileId: thread.counterpartProfileId ?? null,
+          counterpartRole: thread.counterpartRole ?? null,
           counterpartBlocked: thread.counterpartBlocked ?? false,
           status: thread.status,
           isPlayer: false
@@ -481,6 +482,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         canDismiss: true
       });
       await modal.present();
+
+      const { data } = await modal.onDidDismiss();
+      if (data?.action === 'viewProfile' && data.profileId) {
+        this.router.navigate([data.route, data.profileId]);
+      }
     } else {
       this.openChatInbox();
     }
@@ -606,6 +612,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       handle: true
     });
     await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data?.action === 'viewProfile' && data.profileId) {
+      this.router.navigate([data.route, data.profileId]);
+    }
   }
 
   private toVideoCard(post: Post): FavoriteAthleteVideoCard {

@@ -1,20 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
-import { IonAvatar, IonButton, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { personCircleOutline } from 'ionicons/icons';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { IonButton } from '@ionic/angular/standalone';
 import { AuthService, JwtPayload } from '../../../services/auth.service';
+import { PlayerCardComponent } from '../../../components/player-card/player-card.component';
 
 @Component({
   selector: 'app-profile-drawer',
   templateUrl: './profile-drawer.component.html',
   styleUrls: ['./profile-drawer.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonAvatar, IonButton, IonIcon],
+  imports: [CommonModule, IonButton, PlayerCardComponent],
 })
-export class ProfileDrawerComponent implements OnChanges {
+export class ProfileDrawerComponent {
   @Input() profile: any | null = null;
-  avatarLoadFailed = false;
   private authService = inject(AuthService);
 
   @Output() myVideos = new EventEmitter<void>();
@@ -24,31 +22,14 @@ export class ProfileDrawerComponent implements OnChanges {
   @Output() signOut = new EventEmitter<void>();
   @Output() deleteAccount = new EventEmitter<void>();
 
-  constructor() {
-    addIcons({ personCircleOutline });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['profile']) {
-      this.avatarLoadFailed = false;
-    }
-  }
-
   get displayName(): string {
-    return this.profile?.fullName || this.profile?.name || 'Atleta';
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    return decodedToken?.name || 'Clube';
   }
 
   get displayPosition(): string {
     const decodedToken = this.authService.getDecodedToken<JwtPayload>();
     return decodedToken?.position || this.profile?.position || 'Posição não definida';
-  }
-
-  get avatarUrl(): string | null {
-    if (this.avatarLoadFailed) {
-      return null;
-    }
-
-    return this.profile?.urlPerfil || null;
   }
 
   onMyVideos(): void {
@@ -73,9 +54,5 @@ export class ProfileDrawerComponent implements OnChanges {
 
   onDeleteAccount(): void {
     this.deleteAccount.emit();
-  }
-
-  onAvatarError(): void {
-    this.avatarLoadFailed = true;
   }
 }

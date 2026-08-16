@@ -661,6 +661,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data?.action === 'viewProfile' && data.profileId) {
+      this.router.navigate([data.route, data.profileId]);
+    }
   }
 
   async openInvitesSheet(postId?: string): Promise<void> {

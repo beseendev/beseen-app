@@ -7,13 +7,15 @@ import { closeOutline, personCircleOutline } from 'ionicons/icons';
 import { ChatThreadSummaryDTO } from '../../models/chat.models';
 import { ChatService } from '../../services/chat.service';
 import { ChatSheetComponent } from '../chat-sheet/chat-sheet.component';
+import { Profile } from '../../models/profile.model';
+import { PlayerCardComponent } from '../player-card/player-card.component';
 
 @Component({
   selector: 'app-chat-inbox',
   templateUrl: './chat-inbox.component.html',
   styleUrls: ['./chat-inbox.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule, PlayerCardComponent]
 })
 export class ChatInboxComponent implements OnInit {
   @Input() isPlayer = false;
@@ -79,7 +81,12 @@ export class ChatInboxComponent implements OnInit {
         counterpartName: thread.counterpartName,
         counterpartAvatarUrl: thread.counterpartAvatar,
         counterpartProfileId: thread.counterpartProfileId ?? null,
+        counterpartRole: thread.counterpartRole ?? null,
         counterpartBlocked: thread.counterpartBlocked ?? false,
+        counterpartAta: thread.counterpartAta ?? null,
+        counterpartDef: thread.counterpartDef ?? null,
+        counterpartHab: thread.counterpartHab ?? null,
+        counterpartForca: thread.counterpartForca ?? null,
         status: thread.status,
         isPlayer: this.isPlayer
       },
@@ -91,9 +98,33 @@ export class ChatInboxComponent implements OnInit {
     });
 
     await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data?.action === 'viewProfile') {
+      await this.modalController.dismiss(data);
+    }
   }
 
   trackByThread(_: number, thread: ChatThreadSummaryDTO): string {
     return String(thread.inviteId);
+  }
+
+  /** Usa a role real do contato (retornada pela API) e só cai para `isPlayer` quando ela não está disponível. */
+  isCounterpartPlayer(thread: ChatThreadSummaryDTO): boolean {
+    if (thread.counterpartRole) {
+      return thread.counterpartRole === 'JOGADOR';
+    }
+    return !this.isPlayer;
+  }
+
+  toPlayerCardProfile(thread: ChatThreadSummaryDTO): Partial<Profile> {
+    return {
+      name: thread.counterpartName,
+      urlProfileImage: thread.counterpartAvatar,
+      ata: thread.counterpartAta ?? undefined,
+      def: thread.counterpartDef ?? undefined,
+      hab: thread.counterpartHab ?? undefined,
+      forca: thread.counterpartForca ?? undefined
+    };
   }
 }

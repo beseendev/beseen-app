@@ -495,6 +495,7 @@ export class ProfilePlayerPage implements OnInit {
     };
 
     this.profileService.updatePlayerProfile(updateData).pipe(
+      switchMap(() => this.authService.refreshToken()),
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: () => {
