@@ -55,6 +55,9 @@
               </h3>
             </button>
             <p class="showcase-description" [class.single-line]="shouldShowConversationAction(item.video)" *ngIf="item.video.destaque">{{ item.video.destaque }}</p>
+            <div class="matched-skills" *ngIf="item.video.matchedSkills && item.video.matchedSkills.length > 0">
+              <span class="matched-skill-chip" *ngFor="let skill of item.video.matchedSkills">{{ skill.name }}</span>
+            </div>
             <p class="meta-line" *ngIf="item.video.modalidade || item.video.localidade">
                 <span *ngIf="item.video.modalidade">{{ item.video.modalidade }}</span>
                 <span *ngIf="item.video.modalidade && item.video.localidade"> • </span>

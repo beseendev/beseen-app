@@ -1,3 +1,5 @@
+import { Skill } from './skill.model';
+
 export type InviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 export interface ProfileSummaryResponse {
@@ -97,4 +99,6 @@ export interface FavoriteAthleteVideoCard {
   likes?: number;
   inviteStatus?: InviteStatus | null;
   isInviting?: boolean;
+  /** Habilidades do vídeo que batem com o filtro de habilidades atualmente ativo (vazio quando não há filtro). */
+  matchedSkills?: Skill[];
 }

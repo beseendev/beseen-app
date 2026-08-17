@@ -488,6 +488,27 @@
   font-size: .9rem
 }
 
+.matched-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 6px;
+}
+
+.matched-skill-chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, .18);
+  border: 1px solid rgba(34, 197, 94, .5);
+  color: var(--be-color-brand-500);
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  backdrop-filter: blur(3px);
+}
+
 .video-player-state.loading {
   position: absolute;
   top: 0;

@@ -39,6 +39,8 @@ interface ScoutPostResponseDto {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
   scoutId?: number | null;
   athleteId?: number | null;
+  /** O backend envia `id` como número; trata-se como Skill (mesmo padrão usado em SkillService). */
+  skills?: Skill[];
 }
 
 @Injectable({
@@ -264,7 +266,8 @@ export class ScoutSearchService {
       position: postResponse.position || postResponse.user.position,
       inviteStatus: postResponse.inviteStatus,
       scoutId: postResponse.scoutId,
-      athleteId: postResponse.athleteId
+      athleteId: postResponse.athleteId,
+      skills: (postResponse.skills ?? []).map(skill => ({ ...skill, id: String(skill.id) }))
     };
   }
 }

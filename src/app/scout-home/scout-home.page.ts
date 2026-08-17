@@ -26,6 +26,7 @@ import {
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
+import { Skill } from '../models/skill.model';
 import { Advertisement } from '../models/advertisement.model';
 import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
@@ -633,8 +634,28 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       destaque: post.caption,
       favorito: post.isLiked,
       likes: post.likesCount,
-      inviteStatus: post.inviteStatus
+      inviteStatus: post.inviteStatus,
+      matchedSkills: this.getMatchedSkills(post.skills)
     };
+  }
+
+  /** Habilidades do vídeo que batem com o filtro de habilidades atualmente ativo (para exibir o marcador na vitrine). */
+  private getMatchedSkills(videoSkills?: Skill[]): Skill[] {
+    if (!videoSkills || videoSkills.length === 0) {
+      return [];
+    }
+
+    const filters = this.scoutSearchService.currentFilters;
+    const selectedSkillIds = new Set([
+      ...(filters.offensiveSkillIds ?? []),
+      ...(filters.defensiveSkillIds ?? [])
+    ]);
+
+    if (selectedSkillIds.size === 0) {
+      return [];
+    }
+
+    return videoSkills.filter(skill => selectedSkillIds.has(skill.id));
   }
 
   trackByVideoCard(_: number, item: ScoutFeedItem): string {
