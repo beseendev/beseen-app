@@ -55,10 +55,7 @@
           </ng-container>
 
           <ng-template #playerProfileLoaded>
-            <div class="player-profile-avatar">
-              <img *ngIf="hasAvatar()" [src]="userProfile?.urlPerfil" alt="Avatar do jogador" (error)="onAvatarImageError()" />
-              <ion-icon *ngIf="!hasAvatar()" name="person-circle-outline"></ion-icon>
-            </div>
+            <app-player-card class="player-profile-avatar" [profile]="userProfile" size="small"></app-player-card>
 
             <div class="player-profile-copy">
               <span class="player-profile-label" *ngIf="userRole === 'JOGADOR'">Perfil jogador(a)</span>

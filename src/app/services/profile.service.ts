@@ -7,6 +7,8 @@ import {
   AthleteSearchParams,
   AthleteSearchResult,
   PageResponse,
+  PlayerAttributesResponse,
+  PlayerEvaluationRequest,
   Profile,
   ProfilePlayerCreationRequest, ProfileResponse,
   ProfileScoutCreationRequest
@@ -41,6 +43,10 @@ export class ProfileService {
   getProfile(profileId?: string): Observable<Profile> {
     const endpoint = profileId ? `${this.profileEndpoint}/player/full-profile/${profileId}` : `${this.profileEndpoint}/me/full-profile`;
     return this.apiService.get<Profile>(endpoint);
+  }
+
+  evaluatePlayer(profileId: string, data: PlayerEvaluationRequest): Observable<PlayerAttributesResponse> {
+    return this.apiService.post<PlayerAttributesResponse>(`${this.profileEndpoint}/player/${profileId}/evaluation`, data);
   }
 
   getPresignedUrl(data: UploadRequest): Observable<UploadResponse> {

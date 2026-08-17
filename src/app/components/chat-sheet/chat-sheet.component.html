@@ -1,16 +1,35 @@
 <ion-header class="ion-no-border chat-sheet-header">
   <div class="sheet-header-container">
-    <div class="counterparty-head">
-      <div class="avatar-shell">
-        <img *ngIf="counterpartAvatarUrl" [src]="counterpartAvatarUrl" [alt]="counterpartName">
-        <ion-icon *ngIf="!counterpartAvatarUrl" name="person-circle-outline"></ion-icon>
-      </div>
+    <div
+      class="counterparty-head"
+      *ngIf="isCounterpartPlayer; else scoutCounterpart"
+      [class.clickable]="!!counterpartProfileId"
+      role="button"
+      tabindex="0"
+      [attr.aria-label]="'Ver perfil de ' + counterpartName"
+      (click)="goToCounterpartProfile()"
+      (keydown.enter)="goToCounterpartProfile()">
+      <app-player-card class="player-profile-avatar" [profile]="toPlayerCardProfile()" size="xsmall"></app-player-card>
 
       <div>
         <strong>{{ counterpartName }}</strong>
         <span class="status-badge" [class.liberado]="status === 'ACCEPTED'">{{ statusLabel }}</span>
       </div>
     </div>
+
+    <ng-template #scoutCounterpart>
+      <div class="counterparty-head">
+        <div class="avatar-shell">
+          <img *ngIf="counterpartAvatarUrl" [src]="counterpartAvatarUrl" [alt]="counterpartName">
+          <ion-icon *ngIf="!counterpartAvatarUrl" name="person-circle-outline"></ion-icon>
+        </div>
+
+        <div>
+          <strong>{{ counterpartName }}</strong>
+          <span class="status-badge" [class.liberado]="status === 'ACCEPTED'">{{ statusLabel }}</span>
+        </div>
+      </div>
+    </ng-template>
 
     <div class="header-actions">
       <ion-button fill="clear" class="options-btn" *ngIf="canBlock" (click)="openChatOptions()" aria-label="Mais opções">

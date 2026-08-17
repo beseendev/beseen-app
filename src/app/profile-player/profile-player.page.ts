@@ -1,14 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, IonRange, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline, statsChartOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
-import { AthleteGender, Profile } from '../models/profile.model';
+import { AthleteGender, PlayerEvaluationRequest, Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -18,6 +18,7 @@ import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profil
 import { environment } from '../../environments/environment';
 import {SubscriptionService} from "../services/subscription.service";
 import { BlockService } from '../services/block.service';
+import { PlayerCardComponent } from '../components/player-card/player-card.component';
 
 @Component({
   selector: 'app-profile-player',
@@ -46,7 +47,9 @@ import { BlockService } from '../services/block.service';
     IonTextarea,
     IonSelect,
     IonSelectOption,
-    IonSpinner
+    IonSpinner,
+    IonRange,
+    PlayerCardComponent
   ],
 })
 export class ProfilePlayerPage implements OnInit {
@@ -68,6 +71,11 @@ export class ProfilePlayerPage implements OnInit {
   selectedVideo: Post | null = null;
   isVideoModalOpen = false;
   loadedVideos: { [key: string]: boolean } = {};
+
+  // Avaliação de atributos (ATA/DEF/HAB/FOR)
+  isEvaluationModalOpen = false;
+  isSubmittingEvaluation = false;
+  evaluationForm: PlayerEvaluationRequest = { ata: 50, def: 50, hab: 50, forca: 50 };
 
   private readonly DEFAULT_POST_LIMIT = 12;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
@@ -108,7 +116,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline, statsChartOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -194,31 +202,59 @@ export class ProfilePlayerPage implements OnInit {
   async openProfileOptions() {
     const buttons: any[] = [];
 
-    if (this.isScoutViewer && !this.isBlockedByMe) {
-      buttons.push({
-        text: 'Convidar para conversar',
-        icon: chatbubbleOutline,
-        handler: () => {
-          this.sendInviteToPlayer();
+    if (this.isMyProfile) {
+      buttons.push(
+        {
+          text: 'Editar perfil',
+          icon: createOutline,
+          handler: () => {
+            this.startEditing();
+          }
+        },
+        {
+          text: 'Suporte',
+          icon: helpCircleOutline,
+          handler: () => {
+            this.openSupport();
+          }
         }
-      });
-    }
+      );
+    } else {
+      if (this.isScoutViewer && !this.isBlockedByMe) {
+        buttons.push({
+          text: 'Convidar para conversar',
+          icon: chatbubbleOutline,
+          handler: () => {
+            this.sendInviteToPlayer();
+          }
+        });
+      }
 
-    buttons.push(
-      {
+      if (!this.isBlockedByMe) {
+        buttons.push({
+          text: 'Avaliar jogador',
+          icon: statsChartOutline,
+          handler: () => {
+            this.openEvaluationModal();
+          }
+        });
+      }
+
+      buttons.push({
         text: 'Bloquear usuário',
         role: 'destructive',
         icon: banOutline,
         handler: () => {
           this.confirmBlock();
         }
-      },
-      {
-        text: 'Cancelar',
-        role: 'cancel',
-        icon: closeOutline
-      }
-    );
+      });
+    }
+
+    buttons.push({
+      text: 'Cancelar',
+      role: 'cancel',
+      icon: closeOutline
+    });
 
     const actionSheet = await this.actionSheetCtrl.create({
       cssClass: 'be-action-sheet',
@@ -241,6 +277,45 @@ export class ProfilePlayerPage implements OnInit {
       },
       error: (err) => {
         console.error('Error sending invite to profile', err);
+      }
+    });
+  }
+
+  openEvaluationModal(): void {
+    if (!this.profileId || this.isMyProfile) {
+      return;
+    }
+
+    this.evaluationForm = { ata: 50, def: 50, hab: 50, forca: 50 };
+    this.isEvaluationModalOpen = true;
+  }
+
+  closeEvaluationModal(): void {
+    this.isEvaluationModalOpen = false;
+  }
+
+  submitEvaluation(): void {
+    if (!this.profileId || this.isSubmittingEvaluation) {
+      return;
+    }
+
+    this.isSubmittingEvaluation = true;
+    this.profileService.evaluatePlayer(this.profileId, this.evaluationForm).pipe(
+      finalize(() => this.isSubmittingEvaluation = false)
+    ).subscribe({
+      next: (attributes) => {
+        if (this.profile) {
+          this.profile.ata = attributes.ata;
+          this.profile.def = attributes.def;
+          this.profile.hab = attributes.hab;
+          this.profile.forca = attributes.forca;
+        }
+        this.isEvaluationModalOpen = false;
+        this.showToast('Avaliação enviada com sucesso!', 'success');
+      },
+      error: (err) => {
+        console.error('Error evaluating player', err);
+        this.showToast('Não foi possível enviar sua avaliação.', 'danger');
       }
     });
   }
@@ -420,6 +495,7 @@ export class ProfilePlayerPage implements OnInit {
     };
 
     this.profileService.updatePlayerProfile(updateData).pipe(
+      switchMap(() => this.authService.refreshToken()),
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: () => {

@@ -26,6 +26,14 @@
   gap: 12px;
 }
 
+.counterparty-head.clickable {
+  cursor: pointer;
+}
+
+.player-profile-avatar {
+  flex-shrink: 0;
+}
+
 .avatar-shell {
   width: 44px;
   height: 44px;
@@ -36,6 +44,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .avatar-shell img {

@@ -8,20 +8,27 @@ import { ChatMessageResponse, InviteStatus } from '../../models/player-chat.mode
 import { ChatService } from '../../services/chat.service';
 import { PostService } from '../../services/post.service';
 import { BlockService } from '../../services/block.service';
+import { Profile } from '../../models/profile.model';
+import { PlayerCardComponent } from '../player-card/player-card.component';
 
 @Component({
   selector: 'app-chat-sheet',
   templateUrl: './chat-sheet.component.html',
   styleUrls: ['./chat-sheet.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, PlayerCardComponent]
 })
 export class ChatSheetComponent implements OnInit, AfterViewChecked {
   @Input() threadId?: number | null;
   @Input({ required: true }) counterpartName!: string;
   @Input() counterpartAvatarUrl?: string | null;
   @Input() counterpartProfileId?: string | number | null;
+  @Input() counterpartRole?: string | null;
   @Input() counterpartBlocked = false;
+  @Input() counterpartAta?: number | null;
+  @Input() counterpartDef?: number | null;
+  @Input() counterpartHab?: number | null;
+  @Input() counterpartForca?: number | null;
   @Input() inviteId?: number;
   @Input() status: InviteStatus = 'PENDING';
   @Input() isPlayer = false;
@@ -61,6 +68,14 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
       this.loadMessages();
     }
     this.shouldScrollToBottom = true;
+  }
+
+  /** Usa a role real do contato (retornada pela API) e só cai para `isPlayer` quando ela não está disponível. */
+  get isCounterpartPlayer(): boolean {
+    if (this.counterpartRole) {
+      return this.counterpartRole === 'JOGADOR';
+    }
+    return !this.isPlayer;
   }
 
   get canBlock(): boolean {
@@ -182,6 +197,17 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  toPlayerCardProfile(): Partial<Profile> {
+    return {
+      name: this.counterpartName,
+      urlProfileImage: this.counterpartAvatarUrl,
+      ata: this.counterpartAta ?? undefined,
+      def: this.counterpartDef ?? undefined,
+      hab: this.counterpartHab ?? undefined,
+      forca: this.counterpartForca ?? undefined
+    };
+  }
+
   get statusLabel(): string {
     if (this.status === 'ACCEPTED') return 'Liberado';
     return this.isPlayer ? 'Convite recebido' : 'Aguardando Atleta';
@@ -189,6 +215,15 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
 
   async close(): Promise<void> {
     await this.modalController.dismiss();
+  }
+
+  async goToCounterpartProfile(): Promise<void> {
+    if (!this.counterpartProfileId) {
+      return;
+    }
+
+    const route = this.isCounterpartPlayer ? '/profile-player' : '/profile-scout';
+    await this.modalController.dismiss({ action: 'viewProfile', route, profileId: this.counterpartProfileId });
   }
 
   async acceptInvite(): Promise<void> {

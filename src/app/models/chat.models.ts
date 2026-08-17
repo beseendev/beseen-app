@@ -1,3 +1,5 @@
+import { Skill } from './skill.model';
+
 export type InviteStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 export interface ProfileSummaryResponse {
@@ -30,6 +32,7 @@ export interface ChatThreadSummaryDTO {
   inviteId: number;
   chatThreadId: number | null;
   counterpartProfileId?: string | number | null;
+  counterpartRole?: string | null;
   counterpartName: string;
   counterpartAvatar: string | null;
   lastMessage: string | null;
@@ -38,6 +41,10 @@ export interface ChatThreadSummaryDTO {
   unreadCount: number;
   /** Indica se o usuário logado bloqueou o outro participante (retornado pelo backend). */
   counterpartBlocked?: boolean;
+  counterpartAta?: number | null;
+  counterpartDef?: number | null;
+  counterpartHab?: number | null;
+  counterpartForca?: number | null;
 }
 
 export interface ChatThreadPageResponse {
@@ -92,4 +99,6 @@ export interface FavoriteAthleteVideoCard {
   likes?: number;
   inviteStatus?: InviteStatus | null;
   isInviting?: boolean;
+  /** Habilidades do vídeo que batem com o filtro de habilidades atualmente ativo (vazio quando não há filtro). */
+  matchedSkills?: Skill[];
 }

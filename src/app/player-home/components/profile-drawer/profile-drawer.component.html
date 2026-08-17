@@ -1,12 +1,13 @@
 <section class="profile-drawer">
   <header class="profile-head">
-    <ion-avatar class="drawer-avatar">
-      <img *ngIf="avatarUrl" [src]="avatarUrl" [alt]="displayName" (error)="onAvatarError()" />
-      <ion-icon *ngIf="!avatarUrl" name="person-circle-outline"></ion-icon>
-    </ion-avatar>
+    <div class="profile-head-row">
+      <app-player-card class="player-profile-avatar" [profile]="profile" size="small"></app-player-card>
 
-    <h2>{{ displayName }}</h2>
-    <p>{{ displayPosition }}</p>
+      <div class="profile-head-copy">
+        <h2>{{ displayName }}</h2>
+        <p>{{ displayPosition }}</p>
+      </div>
+    </div>
     <div class="about">
     </div>
   </header>

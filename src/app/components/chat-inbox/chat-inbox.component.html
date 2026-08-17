@@ -21,10 +21,18 @@
 
     <div class="thread-list" *ngIf="threads.length > 0">
       <button type="button" class="thread-row" *ngFor="let thread of threads; trackBy: trackByThread" (click)="openThread(thread)">
-        <div class="avatar-shell">
-          <img *ngIf="thread.counterpartAvatar" [src]="thread.counterpartAvatar" [alt]="thread.counterpartName">
-          <ion-icon *ngIf="!thread.counterpartAvatar" name="person-circle-outline"></ion-icon>
-        </div>
+        <app-player-card
+          *ngIf="isCounterpartPlayer(thread); else scoutAvatar"
+          class="player-profile-avatar"
+          [profile]="toPlayerCardProfile(thread)"
+          size="xsmall">
+        </app-player-card>
+        <ng-template #scoutAvatar>
+          <div class="avatar-shell">
+            <img *ngIf="thread.counterpartAvatar" [src]="thread.counterpartAvatar" [alt]="thread.counterpartName">
+            <ion-icon *ngIf="!thread.counterpartAvatar" name="person-circle-outline"></ion-icon>
+          </div>
+        </ng-template>
 
         <div class="thread-copy">
           <strong>{{ thread.counterpartName }}</strong>

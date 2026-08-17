@@ -126,6 +126,7 @@ export class InvitesSheetComponent implements OnInit {
         counterpartName: invite.scoutProfile.fullName,
         counterpartAvatarUrl: invite.scoutProfile.urlProfileImage,
         counterpartProfileId: invite.scoutProfile.id,
+        counterpartRole: 'CLUBE',
         status: 'ACCEPTED',
         isPlayer: true
       },

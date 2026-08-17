@@ -5,12 +5,21 @@
 
   <div class="player-profile-container" *ngIf="profile; else loadingState">
     <div class="top-bar">
-      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+      <ion-button fill="clear" class="back-button" *ngIf="!isEditing" (click)="goBack()" aria-label="Voltar">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
+      <ion-button fill="clear" class="back-button" *ngIf="isEditing" [disabled]="isLoading" (click)="cancelEditing()" aria-label="Cancelar edição">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+
       <span class="top-bar-title">Perfil Jogador(a)</span>
-      <ion-button fill="clear" class="options-button" *ngIf="!isMyProfile" (click)="openProfileOptions()" aria-label="Mais opções">
+
+      <ion-button fill="clear" class="options-button" *ngIf="!isEditing" (click)="openProfileOptions()" aria-label="Mais opções">
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="options-button" *ngIf="isEditing" [disabled]="isLoading" (click)="saveProfileEdits()" aria-label="Salvar edição">
+        <ion-icon *ngIf="!isLoading" slot="icon-only" name="checkmark-outline"></ion-icon>
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
       </ion-button>
     </div>
 
@@ -38,61 +47,15 @@
     </section>
 
     <ng-container *ngIf="!isBlockedByMe">
-    <section class="section-card profile-card">
-      <div class="profile-card-head">
-        <div class="profile-identity">
-          <ion-avatar class="profile-avatar">
-            <img *ngIf="profile.urlProfileImage" [src]="profile.urlProfileImage" alt="Foto do perfil" />
-            <ion-icon *ngIf="!profile.urlProfileImage" name="person-circle-outline"></ion-icon>
-
-            <!-- Feedback visual discreto apenas durante o upload -->
-            <div class="avatar-upload-overlay" *ngIf="isUploadingPhoto">
-              <ion-spinner name="crescent"></ion-spinner>
-            </div>
-          </ion-avatar>
-
-          <div class="profile-copy">
-            <ng-container *ngIf="!isEditing">
-              <span>Perfil do jogador</span>
-              <strong>{{ hasFullAccess ? profile.name : profile.name.split(' ')[0] }}</strong>
-              <p>{{ getDisplayRole(profile.role) }}</p>
-            </ng-container>
-
-            <ng-container *ngIf="isEditing">
-              <strong>{{ profile.name }}</strong>
-              <ion-button fill="clear" size="small" class="change-photo-btn" (click)="changeProfilePhoto()" [disabled]="isUploadingPhoto">
-                <ion-icon slot="start" name="image-outline" *ngIf="!isUploadingPhoto"></ion-icon>
-                {{ isUploadingPhoto ? 'Enviando...' : 'Alterar foto de perfil' }}
-              </ion-button>
-            </ng-container>
-          </div>
-        </div>
-
-        <div class="profile-actions" *ngIf="isMyProfile">
-          <ng-container *ngIf="!isEditing; else editActions">
-            <ion-button fill="outline" class="profile-action-btn" (click)="startEditing()">
-              <ion-icon slot="start" name="create-outline"></ion-icon>
-              Editar perfil
-            </ion-button>
-          </ng-container>
-
-          <ng-template #editActions>
-            <ion-button fill="outline" class="profile-action-btn save-btn" (click)="saveProfileEdits()" [disabled]="isLoading">
-              <ion-icon *ngIf="!isLoading" slot="start" name="checkmark-outline"></ion-icon>
-              <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
-              {{ isLoading ? 'Salvando...' : 'Salvar' }}
-            </ion-button>
-            <ion-button fill="clear" class="profile-action-btn cancel-btn" (click)="cancelEditing()" [disabled]="isLoading">
-              <ion-icon slot="start" name="close-outline"></ion-icon>
-              Cancelar
-            </ion-button>
-          </ng-template>
-          <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
-            <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-            Suporte
-          </ion-button>
-        </div>
-      </div>
+    <section class="player-card-section">
+      <app-player-card
+        [profile]="profile"
+        [shortName]="!hasFullAccess"
+        [editable]="isEditing"
+        [uploading]="isUploadingPhoto"
+        (photoClick)="changeProfilePhoto()"
+        (cardClick)="openProfileOptions()">
+      </app-player-card>
     </section>
 
     <section class="section-card">
@@ -428,5 +391,56 @@
         Remover vídeo
       </ion-button>
     </div>
+  </div>
+</div>
+
+<div class="evaluation-modal-overlay" *ngIf="isEvaluationModalOpen" (click)="closeEvaluationModal()">
+  <div class="evaluation-modal-container" (click)="$event.stopPropagation()">
+    <div class="evaluation-modal-header">
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      <h3>Avaliar jogador</h3>
+      <ion-button fill="clear" class="close-modal-btn-inline" (click)="closeEvaluationModal()" aria-label="Fechar">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <p class="evaluation-modal-subtitle">Dê uma nota de 0 a 99 para cada atributo de {{ profile?.name?.split(' ')?.[0] }}.</p>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>ATA</span>
+        <strong>{{ evaluationForm.ata }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="evaluationForm.ata"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>DEF</span>
+        <strong>{{ evaluationForm.def }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="evaluationForm.def"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>HAB</span>
+        <strong>{{ evaluationForm.hab }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="evaluationForm.hab"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>FOR</span>
+        <strong>{{ evaluationForm.forca }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="evaluationForm.forca"></ion-range>
+    </div>
+
+    <ion-button expand="block" class="evaluation-submit-btn" [disabled]="isSubmittingEvaluation" (click)="submitEvaluation()">
+      <ion-spinner *ngIf="isSubmittingEvaluation" name="crescent" slot="start"></ion-spinner>
+      {{ isSubmittingEvaluation ? 'Enviando...' : 'Enviar avaliação' }}
+    </ion-button>
   </div>
 </div>

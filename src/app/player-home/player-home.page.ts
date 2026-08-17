@@ -62,6 +62,7 @@ import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.componen
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { BannerCarouselComponent } from '../components/banner-carousel/banner-carousel.component';
+import { PlayerCardComponent } from '../components/player-card/player-card.component';
 import { environment } from '../../environments/environment';
 import {IonicModule} from "@ionic/angular";
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
@@ -127,6 +128,7 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     ProfileDrawerComponent,
     AdCardComponent,
     BannerCarouselComponent,
+    PlayerCardComponent,
     ViewportVideoPlayerDirective
   ],
 })
@@ -135,7 +137,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   userProfile: any | null = null;
-  avatarLoadFailed = false;
   isLoading = true;
   userRole: string | null = null;
   activeTab: ArenaTab = 'new';
@@ -327,7 +328,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         }
 
         this.userProfile = profile;
-        this.avatarLoadFailed = false;
         this.isLoading = false;
       },
       error: (err) => {
@@ -490,10 +490,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   goToCreatePost(): void {
     this.router.navigateByUrl('/create-post');
-  }
-
-  onAvatarImageError(): void {
-    this.avatarLoadFailed = true;
   }
 
   onDrawerMyVideos(): void {
@@ -665,6 +661,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data?.action === 'viewProfile' && data.profileId) {
+      this.router.navigate([data.route, data.profileId]);
+    }
   }
 
   async openInvitesSheet(postId?: string): Promise<void> {
@@ -708,10 +709,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     await toast.present();
-  }
-
-  hasAvatar(): boolean {
-    return !!this.userProfile?.urlPerfil && !this.avatarLoadFailed;
   }
 
   private normalizeAvatarUrl(rawUrl: string | null): string | null {

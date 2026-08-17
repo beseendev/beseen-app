@@ -71,6 +71,10 @@
   text-align: left;
 }
 
+.player-profile-avatar {
+  flex-shrink: 0;
+}
+
 .avatar-shell {
   width: 48px;
   height: 48px;
