@@ -3,7 +3,7 @@
 }
 
 .profile-drawer {
-  padding: 30px 24px 26px;
+  padding: calc(30px + env(safe-area-inset-top)) 24px 26px;
   color: #f2f8ff;
 }
 

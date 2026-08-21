@@ -368,6 +368,19 @@
   bottom: calc(52px + env(safe-area-inset-bottom));
 }
 
+.voting-tag {
+  background: rgba(var(--ion-color-primary-rgb), 0.55);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+
+  &:active {
+    transform: scale(0.96);
+    background: rgba(var(--ion-color-primary-rgb), 0.75);
+  }
+}
+
 @media (min-width: 600px) {
   .video-list.be-tiktok-container {
     --tiktok-height: min(820px, 100svh);

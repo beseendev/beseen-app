@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, IonRange, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline, statsChartOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
 import { PostService } from '../services/post.service';
-import { AthleteGender, PlayerEvaluationRequest, Profile } from '../models/profile.model';
+import { AthleteGender, PlayerAttributesResponse, Profile } from '../models/profile.model';
 import { Post } from '../models/post.model';
 import { FileType } from '../models/upload.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -19,6 +19,7 @@ import { environment } from '../../environments/environment';
 import {SubscriptionService} from "../services/subscription.service";
 import { BlockService } from '../services/block.service';
 import { PlayerCardComponent } from '../components/player-card/player-card.component';
+import { PlayerEvaluationModalComponent } from '../components/player-evaluation-modal/player-evaluation-modal.component';
 
 @Component({
   selector: 'app-profile-player',
@@ -48,11 +49,12 @@ import { PlayerCardComponent } from '../components/player-card/player-card.compo
     IonSelect,
     IonSelectOption,
     IonSpinner,
-    IonRange,
-    PlayerCardComponent
+    PlayerCardComponent,
+    PlayerEvaluationModalComponent
   ],
 })
 export class ProfilePlayerPage implements OnInit {
+  @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
@@ -71,11 +73,6 @@ export class ProfilePlayerPage implements OnInit {
   selectedVideo: Post | null = null;
   isVideoModalOpen = false;
   loadedVideos: { [key: string]: boolean } = {};
-
-  // Avaliação de atributos (ATA/DEF/HAB/FOR)
-  isEvaluationModalOpen = false;
-  isSubmittingEvaluation = false;
-  evaluationForm: PlayerEvaluationRequest = { ata: 50, def: 50, hab: 50, forca: 50 };
 
   private readonly DEFAULT_POST_LIMIT = 12;
   readonly positionOptions = SCOUT_POSITION_OPTIONS;
@@ -286,38 +283,16 @@ export class ProfilePlayerPage implements OnInit {
       return;
     }
 
-    this.evaluationForm = { ata: 50, def: 50, hab: 50, forca: 50 };
-    this.isEvaluationModalOpen = true;
+    this.evaluationModal.open(this.profileId, this.profile?.name);
   }
 
-  closeEvaluationModal(): void {
-    this.isEvaluationModalOpen = false;
-  }
-
-  submitEvaluation(): void {
-    if (!this.profileId || this.isSubmittingEvaluation) {
-      return;
+  onPlayerEvaluated(event: { profileId: string; attributes: PlayerAttributesResponse }): void {
+    if (this.profile && String(this.profileId) === String(event.profileId)) {
+      this.profile.ata = event.attributes.ata;
+      this.profile.def = event.attributes.def;
+      this.profile.hab = event.attributes.hab;
+      this.profile.forca = event.attributes.forca;
     }
-
-    this.isSubmittingEvaluation = true;
-    this.profileService.evaluatePlayer(this.profileId, this.evaluationForm).pipe(
-      finalize(() => this.isSubmittingEvaluation = false)
-    ).subscribe({
-      next: (attributes) => {
-        if (this.profile) {
-          this.profile.ata = attributes.ata;
-          this.profile.def = attributes.def;
-          this.profile.hab = attributes.hab;
-          this.profile.forca = attributes.forca;
-        }
-        this.isEvaluationModalOpen = false;
-        this.showToast('Avaliação enviada com sucesso!', 'success');
-      },
-      error: (err) => {
-        console.error('Error evaluating player', err);
-        this.showToast('Não foi possível enviar sua avaliação.', 'danger');
-      }
-    });
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success'): Promise<void> {

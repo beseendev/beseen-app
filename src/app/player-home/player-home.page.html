@@ -183,7 +183,14 @@
                   <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
                   <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
                </div>
-               <span class="status-tag" style="background: rgba(var(--ion-color-primary-rgb), 0.5); color: white; border: none;">Ranking</span>
+               <button
+                type="button"
+                class="status-tag voting-tag"
+                *ngIf="!isOwnVideo(item.video)"
+                (click)="openEvaluation(item.video, $event)"
+                [attr.aria-label]="'Avaliar ' + item.video.athleteName">
+                 Avaliar
+               </button>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -250,7 +257,14 @@
                   <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
                   <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
                </div>
-               <span class="status-tag" style="background: rgba(var(--ion-color-secondary-rgb), 0.5); color: white; border: none;">Novo</span>
+               <button
+                type="button"
+                class="status-tag voting-tag"
+                *ngIf="!isOwnVideo(item.video)"
+                (click)="openEvaluation(item.video, $event)"
+                [attr.aria-label]="'Avaliar ' + item.video.athleteName">
+                 Avaliar
+               </button>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -263,3 +277,5 @@
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais jogadas..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
+
+<app-player-evaluation-modal #evaluationModal></app-player-evaluation-modal>

@@ -63,6 +63,7 @@ import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { BannerCarouselComponent } from '../components/banner-carousel/banner-carousel.component';
 import { PlayerCardComponent } from '../components/player-card/player-card.component';
+import { PlayerEvaluationModalComponent } from '../components/player-evaluation-modal/player-evaluation-modal.component';
 import { environment } from '../../environments/environment';
 import {IonicModule} from "@ionic/angular";
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
@@ -129,12 +130,14 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     AdCardComponent,
     BannerCarouselComponent,
     PlayerCardComponent,
-    ViewportVideoPlayerDirective
+    ViewportVideoPlayerDirective,
+    PlayerEvaluationModalComponent
   ],
 })
 export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+  @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
 
   userProfile: any | null = null;
   isLoading = true;
@@ -233,6 +236,15 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       ]
     });
     await alert.present();
+  }
+
+  openEvaluation(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    this.evaluationModal.open(video.athleteId, video.athleteName);
+  }
+
+  isOwnVideo(video: PlayerShowcaseVideo): boolean {
+    return !!this.userProfile?.id && String(video.athleteId) === String(this.userProfile.id);
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

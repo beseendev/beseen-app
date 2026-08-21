@@ -211,6 +211,14 @@
                 <ion-icon [name]="item.video.favorito ? 'star' : 'star-outline'"></ion-icon>
               </ion-button>
 
+               <button
+                type="button"
+                class="status-tag voting-tag"
+                (click)="openEvaluation(item.video, $event)"
+                [attr.aria-label]="'Avaliar ' + item.video.athleteName">
+                 Avaliar
+               </button>
+
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -270,3 +278,5 @@
     </ion-infinite-scroll>
   </div>
 </ion-content>
+
+<app-player-evaluation-modal #evaluationModal></app-player-evaluation-modal>
