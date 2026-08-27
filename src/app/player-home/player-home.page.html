@@ -138,7 +138,8 @@
               playsinline
               controlsList="nodownload nopictureinpicture"
               preload="metadata"
-              class="be-tiktok-video">
+              class="be-tiktok-video"
+              [class.is-horizontal]="rankingPlayer.isHorizontal">
             </video>
 
             <div class="video-player-state loading" *ngIf="rankingPlayer.isLoading && !rankingPlayer.hasError && !rankingPlayer.showTapGate">
@@ -179,18 +180,9 @@
             </div>
 
             <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
                </div>
-               <button
-                type="button"
-                class="status-tag voting-tag"
-                *ngIf="!isOwnVideo(item.video)"
-                (click)="openEvaluation(item.video, $event)"
-                [attr.aria-label]="'Avaliar ' + item.video.athleteName">
-                 Avaliar
-               </button>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -212,7 +204,8 @@
               playsinline
               controlsList="nodownload nopictureinpicture"
               preload="metadata"
-              class="be-tiktok-video">
+              class="be-tiktok-video"
+              [class.is-horizontal]="newPlayer.isHorizontal">
             </video>
 
             <div class="video-player-state loading" *ngIf="newPlayer.isLoading && !newPlayer.hasError && !newPlayer.showTapGate">
@@ -253,18 +246,9 @@
             </div>
 
             <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar" (click)="openAthleteProfile(item.video)">
-                  <img *ngIf="item.video.athleteAvatarUrl" [src]="item.video.athleteAvatarUrl" [alt]="item.video.athleteName">
-                  <ion-icon *ngIf="!item.video.athleteAvatarUrl" name="person-circle-outline" style="font-size: 40px; color: white;"></ion-icon>
+               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
                </div>
-               <button
-                type="button"
-                class="status-tag voting-tag"
-                *ngIf="!isOwnVideo(item.video)"
-                (click)="openEvaluation(item.video, $event)"
-                [attr.aria-label]="'Avaliar ' + item.video.athleteName">
-                 Avaliar
-               </button>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

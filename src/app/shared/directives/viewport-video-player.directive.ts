@@ -26,6 +26,7 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   isPaused = true;
   isMuted = true;
   showPulse = false;
+  isHorizontal = false;
 
   constructor(private readonly elementRef: ElementRef<HTMLVideoElement>) {}
 
@@ -106,6 +107,14 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   onReady(): void {
     this.isLoading = false;
     this.hasError = false;
+  }
+
+  @HostListener('loadedmetadata')
+  onLoadedMetadata(): void {
+    const { videoWidth, videoHeight } = this.video;
+    if (videoWidth > 0 && videoHeight > 0) {
+      this.isHorizontal = videoWidth > videoHeight;
+    }
   }
 
   @HostListener('waiting')

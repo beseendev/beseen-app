@@ -87,6 +87,7 @@ export class ChatInboxComponent implements OnInit {
         counterpartDef: thread.counterpartDef ?? null,
         counterpartHab: thread.counterpartHab ?? null,
         counterpartForca: thread.counterpartForca ?? null,
+        counterpartPositions: thread.counterpartPositions ?? null,
         status: thread.status,
         isPlayer: this.isPlayer
       },
@@ -124,7 +125,8 @@ export class ChatInboxComponent implements OnInit {
       ata: thread.counterpartAta ?? undefined,
       def: thread.counterpartDef ?? undefined,
       hab: thread.counterpartHab ?? undefined,
-      forca: thread.counterpartForca ?? undefined
+      forca: thread.counterpartForca ?? undefined,
+      positions: thread.counterpartPositions ?? undefined
     };
   }
 }

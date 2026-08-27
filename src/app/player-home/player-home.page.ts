@@ -57,6 +57,7 @@ import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
 import { Advertisement } from '../models/advertisement.model';
 import { FileType } from '../models/upload.model';
+import { Profile } from '../models/profile.model';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
@@ -245,6 +246,14 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   isOwnVideo(video: PlayerShowcaseVideo): boolean {
     return !!this.userProfile?.id && String(video.athleteId) === String(this.userProfile.id);
+  }
+
+  toPlayerCardProfile(video: PlayerShowcaseVideo): Partial<Profile> {
+    return {
+      name: video.athleteName,
+      urlProfileImage: video.athleteAvatarUrl,
+      positions: video.position ? [video.position] : undefined
+    };
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

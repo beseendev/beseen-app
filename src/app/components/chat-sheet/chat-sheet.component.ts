@@ -29,6 +29,7 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
   @Input() counterpartDef?: number | null;
   @Input() counterpartHab?: number | null;
   @Input() counterpartForca?: number | null;
+  @Input() counterpartPositions?: string[] | null;
   @Input() inviteId?: number;
   @Input() status: InviteStatus = 'PENDING';
   @Input() isPlayer = false;
@@ -204,7 +205,8 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
       ata: this.counterpartAta ?? undefined,
       def: this.counterpartDef ?? undefined,
       hab: this.counterpartHab ?? undefined,
-      forca: this.counterpartForca ?? undefined
+      forca: this.counterpartForca ?? undefined,
+      positions: this.counterpartPositions ?? undefined
     };
   }
 
