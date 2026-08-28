@@ -33,6 +33,29 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { AthleteGender, ProfilePlayerCreationRequest } from '../models/profile.model';
 import { ActivatedRoute } from '@angular/router';
 import { SCOUT_POSITION_OPTIONS, BR_STATE_OPTIONS } from '../models/scout-profile.model';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+function validDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) {
+      return null;
+    }
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return { invalidDate: true };
+    }
+
+    const [, yearStr, monthStr, dayStr] = match;
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+    const date = new Date(year, month - 1, day);
+    const isValid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    return isValid ? null : { invalidDate: true };
+  };
+}
 
 @Component({
   selector: 'app-create-profile-player',
@@ -136,7 +159,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     this.profileForm = this.fb.group({
       documentNumber: ['', [Validators.required, Validators.minLength(11)]],
       phoneNumber: ['', [Validators.required, Validators.minLength(10)]],
-      dateOfBirth: [null, [Validators.required]],
+      dateOfBirth: [null, [Validators.required, validDateValidator()]],
       cidade: ['', [Validators.required]],
       estado: ['', [Validators.required]],
       pais: ['Brasil', [Validators.required]],
@@ -216,6 +239,10 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
     } else {
       this.profileForm.get('dateOfBirth')?.setValue(null, { emitEvent: false });
     }
+  }
+
+  onDateBlur(): void {
+    this.profileForm.get('dateOfBirth')?.markAsTouched();
   }
 
   onDateSelected(event: any): void {

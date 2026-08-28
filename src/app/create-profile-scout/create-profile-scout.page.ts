@@ -54,6 +54,28 @@ function requiredTrueValidator(): ValidatorFn {
   };
 }
 
+function validDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) {
+      return null;
+    }
+
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return { invalidDate: true };
+    }
+
+    const [, yearStr, monthStr, dayStr] = match;
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+    const date = new Date(year, month - 1, day);
+    const isValid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    return isValid ? null : { invalidDate: true };
+  };
+}
+
 function optionalUrlValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = (control.value ?? '').toString().trim();
@@ -119,7 +141,7 @@ export class CreateProfileScoutPage implements OnInit {
       tipoOlheiroOutroTexto: [''],
       organizacaoOuClube: [''],
       cargoOuFuncao: [''],
-      dateOfBirth: [null, [Validators.required]],
+      dateOfBirth: [null, [Validators.required, validDateValidator()]],
       telefoneWhatsapp: ['', [Validators.required, Validators.minLength(10)]],
       cidade: ['', [Validators.required]],
       estado: ['', [Validators.required]],
@@ -177,6 +199,10 @@ export class CreateProfileScoutPage implements OnInit {
     } else {
       this.profileForm.get('dateOfBirth')?.setValue(null, { emitEvent: false });
     }
+  }
+
+  onDateBlur(): void {
+    this.profileForm.get('dateOfBirth')?.markAsTouched();
   }
 
   onDateSelected(event: any): void {
