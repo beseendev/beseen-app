@@ -1,5 +1,11 @@
-<section class="banner-carousel-section be-fade-in">
-  <p class="eyebrow">{{ title }}</p>
+<section class="banner-carousel-section be-fade-in" *ngIf="isLoading || banners.length > 0">
+  <div class="banner-carousel-header">
+    <p class="eyebrow">{{ title }}</p>
+    <button type="button" class="see-all-link" *ngIf="banners.length > 0" (click)="goToAllFounders()">
+      Ver todas
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
 
   <div class="banner-track skeleton-track" *ngIf="isLoading">
     <div class="banner-card skeleton-card"></div>
@@ -12,8 +18,7 @@
       (scroll)="onTrackScroll()"
       (pointerdown)="onUserInteractionStart()"
       (pointerup)="onUserInteractionEnd()"
-      (pointercancel)="onUserInteractionEnd()"
-      *ngIf="banners.length > 0; else placeholderCard">
+      (pointercancel)="onUserInteractionEnd()">
       <article
         class="banner-card"
         *ngFor="let banner of banners; trackBy: trackByBanner"
@@ -39,17 +44,4 @@
       <span *ngFor="let banner of banners; let i = index" class="dot" [class.active]="i === activeIndex"></span>
     </div>
   </ng-container>
-
-  <ng-template #placeholderCard>
-    <article class="banner-card placeholder-card">
-      <div class="placeholder-copy">
-        <span class="banner-badge">Fundadora Beseen</span>
-        <h3>Sua empresa aqui</h3>
-        <p>Apoiamos o futuro do esporte. Acreditamos em talento, educação e transformação.</p>
-      </div>
-      <div class="placeholder-badge" aria-hidden="true">
-        <span>B</span>
-      </div>
-    </article>
-  </ng-template>
 </section>

@@ -1,8 +1,9 @@
 import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { openOutline } from 'ionicons/icons';
+import { openOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Advertisement } from '../../models/advertisement.model';
 import { AdvertisementService } from '../../services/advertisement.service';
 
@@ -22,6 +23,7 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
 
   private readonly adService = inject(AdvertisementService);
   private readonly zone = inject(NgZone);
+  private readonly router = inject(Router);
 
   banners: Advertisement[] = [];
   isLoading = true;
@@ -30,7 +32,7 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
   private autoplayTimer?: ReturnType<typeof setInterval>;
 
   constructor() {
-    addIcons({ openOutline });
+    addIcons({ openOutline, chevronForwardOutline });
   }
 
   ngOnInit(): void {
@@ -56,6 +58,10 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
     if (banner.siteLink) {
       window.open(banner.siteLink, '_blank');
     }
+  }
+
+  goToAllFounders(): void {
+    this.router.navigateByUrl('/empresas-fundadoras');
   }
 
   onTrackScroll(): void {
