@@ -41,20 +41,16 @@
 
         <div class="player-card-stats">
           <div class="player-card-stat">
-            <div class="player-card-stat-label">ATA</div>
-            <div class="player-card-stat-value">{{ profile?.ata ?? '-' }}</div>
+            <div class="player-card-stat-label">ALT</div>
+            <div class="player-card-stat-value">{{ heightDisplay }}</div>
           </div>
           <div class="player-card-stat">
-            <div class="player-card-stat-label">DEF</div>
-            <div class="player-card-stat-value">{{ profile?.def ?? '-' }}</div>
+            <div class="player-card-stat-label">PES</div>
+            <div class="player-card-stat-value">{{ weightDisplay }}</div>
           </div>
           <div class="player-card-stat">
-            <div class="player-card-stat-label">HAB</div>
-            <div class="player-card-stat-value">{{ profile?.hab ?? '-' }}</div>
-          </div>
-          <div class="player-card-stat">
-            <div class="player-card-stat-label">FOR</div>
-            <div class="player-card-stat-value">{{ profile?.forca ?? '-' }}</div>
+            <div class="player-card-stat-label">UF</div>
+            <div class="player-card-stat-value">{{ estadoDisplay }}</div>
           </div>
         </div>
 
@@ -79,7 +75,7 @@
 
       <div class="player-card-strip"></div>
 
-      <div class="player-card-ovr" *ngIf="overallRating !== null">{{ overallRating }}</div>
+      <div class="player-card-ovr" *ngIf="positionAbbreviation">{{ positionAbbreviation }}</div>
     </ng-container>
 
   </div>

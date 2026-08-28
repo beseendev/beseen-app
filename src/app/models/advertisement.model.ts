@@ -8,6 +8,8 @@ export interface Advertisement {
   videoLink?: string;
   thumbnailLink: string | null;
   imageLink?: string | null;
+  /** Logo quadrado/compacto da empresa, usado na listagem simples de fundadoras. */
+  logoLink?: string | null;
   ctaText: string;
   description: string;
   active: boolean;

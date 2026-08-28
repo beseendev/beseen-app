@@ -45,6 +45,7 @@ export interface ChatThreadSummaryDTO {
   counterpartDef?: number | null;
   counterpartHab?: number | null;
   counterpartForca?: number | null;
+  counterpartPositions?: string[] | null;
 }
 
 export interface ChatThreadPageResponse {

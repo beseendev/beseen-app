@@ -239,6 +239,19 @@
   border: 1px solid rgba(148, 163, 184, .12)
 }
 
+.voting-tag {
+  background: rgba(var(--ion-color-primary-rgb), 0.55);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+
+  &:active {
+    transform: scale(0.96);
+    background: rgba(var(--ion-color-primary-rgb), 0.75);
+  }
+}
+
 .arena-tabs {
   display: flex;
   gap: 8px;

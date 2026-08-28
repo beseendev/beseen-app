@@ -1,0 +1,50 @@
+<div class="evaluation-modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="evaluation-modal-container" (click)="$event.stopPropagation()">
+    <div class="evaluation-modal-header">
+      <ion-icon name="stats-chart-outline"></ion-icon>
+      <h3>Avaliar jogador</h3>
+      <ion-button fill="clear" class="close-modal-btn-inline" (click)="close()" aria-label="Fechar">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <p class="evaluation-modal-subtitle">Dê uma nota de 0 a 99 para cada atributo de {{ athleteName?.split(' ')?.[0] || 'jogador' }}.</p>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>ATA</span>
+        <strong>{{ form.ata }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="form.ata"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>DEF</span>
+        <strong>{{ form.def }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="form.def"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>HAB</span>
+        <strong>{{ form.hab }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="form.hab"></ion-range>
+    </div>
+
+    <div class="evaluation-field">
+      <div class="evaluation-field-label">
+        <span>FOR</span>
+        <strong>{{ form.forca }}</strong>
+      </div>
+      <ion-range min="0" max="99" [(ngModel)]="form.forca"></ion-range>
+    </div>
+
+    <ion-button expand="block" class="evaluation-submit-btn" [disabled]="isSubmitting" (click)="submit()">
+      <ion-spinner *ngIf="isSubmitting" name="crescent" slot="start"></ion-spinner>
+      {{ isSubmitting ? 'Enviando...' : 'Enviar avaliação' }}
+    </ion-button>
+  </div>
+</div>

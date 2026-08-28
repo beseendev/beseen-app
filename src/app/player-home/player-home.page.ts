@@ -57,12 +57,14 @@ import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
 import { Advertisement } from '../models/advertisement.model';
 import { FileType } from '../models/upload.model';
+import { Profile } from '../models/profile.model';
 import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
 import { BannerCarouselComponent } from '../components/banner-carousel/banner-carousel.component';
 import { PlayerCardComponent } from '../components/player-card/player-card.component';
+import { PlayerEvaluationModalComponent } from '../components/player-evaluation-modal/player-evaluation-modal.component';
 import { environment } from '../../environments/environment';
 import {IonicModule} from "@ionic/angular";
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
@@ -129,12 +131,14 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     AdCardComponent,
     BannerCarouselComponent,
     PlayerCardComponent,
-    ViewportVideoPlayerDirective
+    ViewportVideoPlayerDirective,
+    PlayerEvaluationModalComponent
   ],
 })
 export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+  @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
 
   userProfile: any | null = null;
   isLoading = true;
@@ -233,6 +237,23 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       ]
     });
     await alert.present();
+  }
+
+  openEvaluation(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    this.evaluationModal.open(video.athleteId, video.athleteName);
+  }
+
+  isOwnVideo(video: PlayerShowcaseVideo): boolean {
+    return !!this.userProfile?.id && String(video.athleteId) === String(this.userProfile.id);
+  }
+
+  toPlayerCardProfile(video: PlayerShowcaseVideo): Partial<Profile> {
+    return {
+      name: video.athleteName,
+      urlProfileImage: video.athleteAvatarUrl,
+      positions: video.position ? [video.position] : undefined
+    };
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

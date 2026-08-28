@@ -90,4 +90,9 @@ export const routes: Routes = [
     loadComponent: () => import('./blocked-users/blocked-users.page').then(m => m.BlockedUsersPage),
     canActivate: [authGuard]
   },
+  {
+    path: 'empresas-fundadoras',
+    loadComponent: () => import('./founders/founders.page').then(m => m.FoundersPage),
+    canActivate: [authGuard]
+  },
 ];

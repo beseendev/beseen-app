@@ -22,7 +22,9 @@ const DOMINANT_FOOT_LABELS: Record<string, string> = {
 };
 
 /**
- * Card estilo FIFA para exibir o perfil de um jogador (idade, posição, foto, nome e atributos ATA/DEF/HAB/FOR).
+ * Card estilo FIFA para exibir o perfil de um jogador (idade, posição, foto, nome e dados básicos
+ * como altura/peso/cidade/estado). A avaliação de atributos (ATA/DEF/HAB/FOR) está desativada por
+ * enquanto — ver player-evaluation-modal.
  * Aceita dados parciais para poder ser usado em telas que só têm acesso a um resumo do perfil (ex.: foto).
  */
 @Component({
@@ -138,16 +140,18 @@ export class PlayerCardComponent implements OnChanges, OnDestroy {
     return POSITION_ABBREVIATIONS[position] ?? position.slice(0, 3).toUpperCase();
   }
 
-  /** Média dos atributos (ATA/DEF/HAB/FOR), exibida como "OVR" no cantinho do card pequeno. */
-  get overallRating(): number | null {
-    const stats = [this.profile?.ata, this.profile?.def, this.profile?.hab, this.profile?.forca]
-      .filter((value): value is number => typeof value === 'number');
+  /** Estatísticas do jogador (avaliação estilo FIFA) ficam em segundo plano por enquanto;
+   *  no lugar mostramos dados básicos do perfil que já existem independente de avaliação. */
+  get heightDisplay(): string {
+    return typeof this.profile?.height === 'number' ? `${Math.round(this.profile.height * 100)}` : '-';
+  }
 
-    if (!stats.length) {
-      return null;
-    }
+  get weightDisplay(): string {
+    return typeof this.profile?.weight === 'number' ? `${Math.round(this.profile.weight)}` : '-';
+  }
 
-    return Math.round(stats.reduce((sum, value) => sum + value, 0) / stats.length);
+  get estadoDisplay(): string {
+    return this.profile?.estado || '-';
   }
 
   onPhotoClick(): void {

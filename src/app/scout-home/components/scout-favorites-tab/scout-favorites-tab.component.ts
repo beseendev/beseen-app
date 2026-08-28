@@ -6,9 +6,11 @@ import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline, flagOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
+import { Profile } from '../../../models/profile.model';
 import { ChatService } from '../../../services/chat.service';
 import { ScoutFeedItem } from '../../scout-home.page';
 import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
+import { PlayerCardComponent } from '../../../components/player-card/player-card.component';
 import { SubscriptionService } from "../../../services/subscription.service";
 import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewport-video-player.directive';
 
@@ -17,7 +19,7 @@ import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewpor
   templateUrl: './scout-favorites-tab.component.html',
   styleUrls: ['./scout-favorites-tab.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, AdCardComponent, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonicModule, AdCardComponent, PlayerCardComponent, ViewportVideoPlayerDirective]
 })
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
@@ -116,6 +118,14 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       return;
     }
     this.router.navigate(['/profile-player', card.athleteId]);
+  }
+
+  toPlayerCardProfile(card: FavoriteAthleteVideoCard): Partial<Profile> {
+    return {
+      name: card.athleteName,
+      urlProfileImage: card.athleteAvatarUrl,
+      positions: card.position ? [card.position] : undefined
+    };
   }
 
   shouldShowConversationAction(card: FavoriteAthleteVideoCard): boolean {

@@ -26,6 +26,7 @@ import {
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
+import { Profile } from '../models/profile.model';
 import { Skill } from '../models/skill.model';
 import { Advertisement } from '../models/advertisement.model';
 import { ScoutProfile } from '../models/scout-profile.model';
@@ -48,6 +49,8 @@ import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-vide
 import { ScoutSearchService } from '../services/scout-search.service';
 import { SkillService } from '../services/skill.service';
 import { ScoutFilterModalComponent } from './components/scout-filter-modal/scout-filter-modal.component';
+import { PlayerEvaluationModalComponent } from '../components/player-evaluation-modal/player-evaluation-modal.component';
+import { PlayerCardComponent } from '../components/player-card/player-card.component';
 import {
   ScoutVideoFilterChip,
   ScoutVideoFilters,
@@ -61,10 +64,11 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective, PlayerEvaluationModalComponent, PlayerCardComponent]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
+  @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
 
   videoPosts: Post[] = [];
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
@@ -146,6 +150,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       searchOutline
 
     });
+  }
+
+  openEvaluation(card: FavoriteAthleteVideoCard, event: Event): void {
+    event.stopPropagation();
+    this.evaluationModal.open(card.athleteId, card.athleteName);
   }
 
   async reportVideo(card: FavoriteAthleteVideoCard) {
@@ -592,6 +601,14 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         return;
     }
     this.router.navigate(['/profile-player', card.athleteId]);
+  }
+
+  toPlayerCardProfile(card: FavoriteAthleteVideoCard): Partial<Profile> {
+    return {
+      name: card.athleteName,
+      urlProfileImage: card.athleteAvatarUrl,
+      positions: card.position ? [card.position] : undefined
+    };
   }
 
   async openChatInbox(): Promise<void> {

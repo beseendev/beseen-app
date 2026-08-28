@@ -1,0 +1,47 @@
+<ion-content [fullscreen]="true" class="founders-content">
+  <div class="founders-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Empresas fundadoras</span>
+    </div>
+
+    <section class="hero-block">
+      <h1>Nossas fundadoras</h1>
+      <p class="hero-copy">Empresas que apoiam o futuro do esporte e acreditam em talento, educação e transformação.</p>
+    </section>
+
+    <div class="founders-list" *ngIf="!isLoading && banners.length > 0">
+      <article
+        class="founder-item be-surface"
+        [class.is-active]="pressedBannerId === banner.id"
+        *ngFor="let banner of banners; trackBy: trackByBanner"
+        (click)="onCardTap(banner)">
+        <div class="founder-logo">
+          <img *ngIf="banner.logoLink" [src]="banner.logoLink" [alt]="banner.companyName" />
+          <span *ngIf="!banner.logoLink" class="founder-logo-fallback">{{ getInitial(banner.companyName) }}</span>
+        </div>
+
+        <div class="founder-copy">
+          <strong>{{ banner.companyName }}</strong>
+          <p *ngIf="banner.description">{{ banner.description }}</p>
+        </div>
+
+        <ion-icon name="open-outline" class="founder-open-icon" *ngIf="banner.siteLink"></ion-icon>
+      </article>
+    </div>
+
+    <div class="empty-card be-surface" *ngIf="!isLoading && banners.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="ribbon-outline"></ion-icon>
+      </div>
+      <strong>Nenhuma empresa fundadora no momento</strong>
+      <p>Assim que novas parceiras entrarem, elas aparecerão aqui.</p>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  </div>
+</ion-content>
