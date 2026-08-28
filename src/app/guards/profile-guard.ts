@@ -10,7 +10,6 @@ export const profileGuard: CanActivateFn = (route, state) => {
 
   return authService.currentUser.pipe(
     take(1),
-    switchMap(user => user ? of(user) : authService.getCurrentUser()),
     map((user: User | null) => {
       if (!user) return true;
       if (user.hasProfile) return true;
@@ -25,7 +24,6 @@ export const profileGuard: CanActivateFn = (route, state) => {
       } else {
         return router.createUrlTree(['/profile-selection']);
       }
-    }),
-    catchError(() => of(router.createUrlTree(['/login'])))
+    })
   );
 };
