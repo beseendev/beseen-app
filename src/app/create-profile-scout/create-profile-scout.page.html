@@ -79,6 +79,7 @@
               [placeholder]="isTipoClubeSelected ? 'Data de fundação da organização' : 'DD/MM/AAAA'"
               [value]="dateOfBirthDisplayValue"
               (ionInput)="onDateInput($event)"
+              (ionBlur)="onDateBlur()"
               maxlength="10"
               autocomplete="off">
             </ion-input>
@@ -97,6 +98,9 @@
               </ng-template>
             </ion-modal>
           </ion-item>
+          <div class="error-text" *ngIf="hasError('dateOfBirth')">
+            {{ isTipoClubeSelected ? 'Data de fundação inválida.' : 'Data de nascimento inválida.' }}
+          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="logo-whatsapp" slot="start"></ion-icon>

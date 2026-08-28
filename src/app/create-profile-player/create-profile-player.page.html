@@ -192,17 +192,18 @@
               labelPlacement="stacked"
               class="date-input"
               placeholder="DD/MM/AAAA" 
-              [value]="dateOfBirthDisplayValue" 
-              (ionInput)="onDateInput($event)" 
+              [value]="dateOfBirthDisplayValue"
+              (ionInput)="onDateInput($event)"
+              (ionBlur)="onDateBlur()"
               maxlength="10"
               autocomplete="off">
             </ion-input>
             <ion-modal trigger="open-date-picker-player" [keepContentsMounted]="true" class="be-date-modal">
               <ng-template>
-                <ion-datetime 
-                  presentation="date" 
+                <ion-datetime
+                  presentation="date"
                   preferWheel="true"
-                  [value]="profileForm.get('dateOfBirth')?.value" 
+                  [value]="profileForm.get('dateOfBirth')?.value"
                   (ionChange)="onDateSelected($event)"
                   [showDefaultButtons]="true"
                   doneText="Confirmar"
@@ -211,6 +212,9 @@
               </ng-template>
             </ion-modal>
           </ion-item>
+          <div *ngIf="profileForm.get('dateOfBirth')?.invalid && profileForm.get('dateOfBirth')?.touched" class="error-text">
+            Data de nascimento inválida.
+          </div>
 
           <ion-item class="input-field" color="none">
             <ion-icon name="location-outline" slot="start"></ion-icon>
