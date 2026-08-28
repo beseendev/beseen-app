@@ -1,7 +1,8 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService, JwtPayload, User } from '../services/auth.service';
-import { map, take } from 'rxjs/operators';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export const profileGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
@@ -9,6 +10,7 @@ export const profileGuard: CanActivateFn = (route, state) => {
 
   return authService.currentUser.pipe(
     take(1),
+    switchMap(user => user ? of(user) : authService.getCurrentUser()),
     map((user: User | null) => {
       if (!user) return true;
       if (user.hasProfile) return true;
@@ -23,6 +25,7 @@ export const profileGuard: CanActivateFn = (route, state) => {
       } else {
         return router.createUrlTree(['/profile-selection']);
       }
-    })
+    }),
+    catchError(() => of(router.createUrlTree(['/login'])))
   );
 };
