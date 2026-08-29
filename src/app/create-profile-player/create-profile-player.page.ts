@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonContent,
@@ -104,7 +104,6 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private toastController = inject(ToastController);
   private route = inject(ActivatedRoute);
-  private location = inject(Location);
 
   constructor() {
     addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline });
@@ -307,7 +306,8 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.location.back();
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   async selectProfileImage() {

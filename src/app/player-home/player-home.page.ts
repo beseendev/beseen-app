@@ -338,6 +338,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   ionViewWillEnter(): void {
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
+        if (profile && profile.hasProfile === false) {
+          this.redirectToCreateProfile();
+          return;
+        }
+
         if (profile && profile.urlPefil) {
           profile.urlPerfil = profile.urlPefil;
           delete profile.urlPefil;
@@ -359,6 +364,20 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.postService.shouldLoadInitialHomePosts()) {
       this.postService.loadHomePosts(11).subscribe();
+    }
+  }
+
+  private redirectToCreateProfile(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const role = decodedToken?.role;
+
+    if (role === 'CLUBE') {
+      this.router.navigateByUrl('/create-profile-scout', { replaceUrl: true });
+    } else if (role === 'JOGADOR') {
+      this.router.navigateByUrl('/create-profile-player', { replaceUrl: true });
+    } else {
+      this.authService.logout();
+      this.router.navigate(['/login']);
     }
   }
 

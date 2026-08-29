@@ -1,4 +1,4 @@
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import {
   AbstractControl,
@@ -118,7 +118,6 @@ export class CreateProfileScoutPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly toastController = inject(ToastController);
   private readonly alertController = inject(AlertController);
-  private readonly location = inject(Location);
   private readonly router = inject(Router);
   profileImageUrl: string | null = null;
 
@@ -439,7 +438,8 @@ export class CreateProfileScoutPage implements OnInit {
   }
 
   goBack(): void {
-    this.location.back();
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
