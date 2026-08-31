@@ -36,7 +36,7 @@
           </ion-button>
           <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
             <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-            <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
+            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
           </ion-button>
         </div>
       </div>

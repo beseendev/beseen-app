@@ -78,10 +78,12 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   avatarLoadFailed = false;
   isLoading = true;
   activeChatCount = 0;
+  chatUnreadCount = 0;
   private favoritesNextCursor: string | null = null;
 
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
+  private threadsUnreadCountSub?: Subscription;
   private tabLoadSub?: Subscription;
 
   feedItems: ScoutFeedItem[] = [];
@@ -262,8 +264,13 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       this.activeChatCount = threads.length;
     });
 
+    this.threadsUnreadCountSub = this.chatService.threadsUnreadCount$.subscribe(count => {
+      this.chatUnreadCount = count;
+    });
+
     if (this.subscriptionService.canAccessChat()) {
       this.chatService.loadThreads().subscribe();
+      this.chatService.refreshThreadsUnreadCount().subscribe();
     }
 
     this.refreshCurrentTab();
@@ -299,6 +306,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
     }
+    this.threadsUnreadCountSub?.unsubscribe();
     this.scoutResultsSub?.unsubscribe();
     this.scoutLoadingSub?.unsubscribe();
     this.scoutHasMoreSub?.unsubscribe();

@@ -155,7 +155,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   newVideosWithAds: PlayerFeedItem[] = [];
 
   private rankingCurrentPage = 0;
-  activeChatCount = 0;
+  chatUnreadCount = 0;
   pendingInvitesCount = 0;
 
   private threadsSubscription!: Subscription;
@@ -281,8 +281,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.chatService.activeChatsCount$.subscribe(count => {
-      this.activeChatCount = count;
+    this.chatService.threadsUnreadCount$.subscribe(count => {
+      this.chatUnreadCount = count;
     });
 
     this.chatService.pendingInvitesCount$.subscribe(count => {
@@ -291,6 +291,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     this.chatService.loadThreads().subscribe();
     this.chatService.refreshInviteCount().subscribe();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
 
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
