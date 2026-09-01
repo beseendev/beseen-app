@@ -36,4 +36,9 @@ export class NotificationService {
   registerDeviceToken(token: string, platform: 'ios' | 'android'): Observable<void> {
     return this.apiService.post<void>('/notification/device-token', { token, platform });
   }
+
+  /** Atualiza o contador local a partir do payload de um push recebido em foreground, sem bater na API. */
+  setUnreadCount(count: number): void {
+    this.unreadCountSubject.next(count);
+  }
 }

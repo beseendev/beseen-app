@@ -1,0 +1,41 @@
+name: Regenerar Provisioning Profile iOS (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  regenerate-profile:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Instalar Gems
+        run: |
+          cd ios/App
+          bundle install
+
+      - name: Setup SSH (para match repo)
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+
+      - name: Force SSH for Git
+        run: |
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+      - name: Regenerar Provisioning Profile (App Store)
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPSTORE_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER }}
+          APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+        run: |
+          cd ios/App
+          bundle exec fastlane regenerate_appstore_profile

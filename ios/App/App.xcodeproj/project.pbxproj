@@ -136,6 +136,9 @@
 							com.apple.AppleSignIn = {
 								enabled = 1;
 							};
+							com.apple.Push = {
+								enabled = 1;
+							};
 						};
 					};
 				};

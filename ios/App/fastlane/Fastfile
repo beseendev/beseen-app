@@ -37,4 +37,25 @@ platform :ios do
       skip_waiting_for_build_processing: true
     )
   end
+
+  desc "Uso único/manual: regenera o provisioning profile da App Store no repo de certificados (match), incluindo capabilities novas (ex: Push Notifications) recém-habilitadas no Apple Developer Portal. Rodar via workflow_dispatch, nunca no deploy normal."
+  lane :regenerate_appstore_profile do
+    setup_ci
+
+    app_store_connect_api_key(
+      key_id: ENV["APPSTORE_KEY_ID"],
+      issuer_id: ENV["APPSTORE_ISSUER_ID"],
+      key_content: ENV["APPSTORE_PRIVATE_KEY"],
+      is_key_content_base64: false
+    )
+
+    match(
+      type: "appstore",
+      readonly: false,
+      force: true,
+      git_url: "git@github.com:beseendev/ios-certificates.git",
+      app_identifier: "com.beseen.app.official",
+      verbose: true
+    )
+  end
 end

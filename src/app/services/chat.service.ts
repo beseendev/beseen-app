@@ -52,6 +52,11 @@ export class ChatService {
     );
   }
 
+  /** Atualiza o contador local a partir do payload de um push recebido em foreground, sem bater na API. */
+  setThreadsUnreadCount(count: number): void {
+    this.threadsUnreadCountSubject.next(count);
+  }
+
   clearThreads(): void {
     this.threadsSubject.next([]);
     this.isLoadingSubject.next(false);
