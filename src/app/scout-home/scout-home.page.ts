@@ -23,6 +23,7 @@ import {
   funnelOutline,
   search,
   searchOutline,
+  notificationsOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -35,6 +36,7 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
+import { NotificationService } from '../services/notification.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { SubscriptionService } from '../services/subscription.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
@@ -79,11 +81,13 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   isLoading = true;
   activeChatCount = 0;
   chatUnreadCount = 0;
+  unreadNotificationsCount = 0;
   private favoritesNextCursor: string | null = null;
 
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
   private threadsUnreadCountSub?: Subscription;
+  private unreadNotificationsSub?: Subscription;
   private tabLoadSub?: Subscription;
 
   feedItems: ScoutFeedItem[] = [];
@@ -110,6 +114,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   private readonly postService = inject(PostService);
   private readonly chatService = inject(ChatService);
+  private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
   private readonly adService = inject(AdvertisementService);
   private readonly subscriptionService = inject(SubscriptionService);
@@ -149,7 +154,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       closeOutline,
       funnelOutline,
       search,
-      searchOutline
+      searchOutline,
+      notificationsOutline
 
     });
   }
@@ -268,6 +274,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       this.chatUnreadCount = count;
     });
 
+    this.unreadNotificationsSub = this.notificationService.unreadCount$.subscribe(count => {
+      this.unreadNotificationsCount = count;
+    });
+    this.notificationService.refreshUnreadCount().subscribe();
+
     if (this.subscriptionService.canAccessChat()) {
       this.chatService.loadThreads().subscribe();
       this.chatService.refreshThreadsUnreadCount().subscribe();
@@ -307,6 +318,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       this.threadsSub.unsubscribe();
     }
     this.threadsUnreadCountSub?.unsubscribe();
+    this.unreadNotificationsSub?.unsubscribe();
     this.scoutResultsSub?.unsubscribe();
     this.scoutLoadingSub?.unsubscribe();
     this.scoutHasMoreSub?.unsubscribe();
@@ -636,6 +648,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       urlProfileImage: card.athleteAvatarUrl,
       positions: card.position ? [card.position] : undefined
     };
+  }
+
+  goToNotifications(): void {
+    this.router.navigate(['/notificacoes']);
   }
 
   async openChatInbox(): Promise<void> {

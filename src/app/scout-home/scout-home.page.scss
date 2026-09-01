@@ -49,17 +49,23 @@
   line-height: 1.45
 }
 
-.chat-inbox-btn {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-inbox-btn, .notifications-btn {
   position: relative;
   --color: var(--be-color-text-2);
   overflow: visible
 }
 
-.chat-inbox-btn::part(native) {
+.chat-inbox-btn::part(native), .notifications-btn::part(native) {
   overflow: visible
 }
 
-.chat-inbox-btn ion-badge {
+.chat-inbox-btn ion-badge, .notifications-btn ion-badge {
   position: absolute;
   top: 2px;
   right: 2px;

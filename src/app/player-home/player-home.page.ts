@@ -43,7 +43,8 @@ import {
   mailOutline,
   flagOutline,
   banOutline,
-  trashOutline
+  trashOutline,
+  notificationsOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -52,6 +53,7 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
+import { NotificationService } from '../services/notification.service';
 import { PostService } from '../services/post.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
@@ -157,6 +159,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private rankingCurrentPage = 0;
   chatUnreadCount = 0;
   pendingInvitesCount = 0;
+  unreadNotificationsCount = 0;
 
   private threadsSubscription!: Subscription;
   private tabLoadSub?: Subscription;
@@ -168,6 +171,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private adService = inject(AdvertisementService);
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
+  private notificationService = inject(NotificationService);
   private modalController = inject(ModalController);
   private alertController = inject(AlertController);
   public popoverController = inject(PopoverController);
@@ -192,7 +196,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       mailOutline,
       flagOutline,
       banOutline,
-      trashOutline
+      trashOutline,
+      notificationsOutline
     });
   }
 
@@ -280,6 +285,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/suporte']);
   }
 
+  goToNotifications() {
+    this.router.navigate(['/notificacoes']);
+  }
+
   ngOnInit(): void {
     this.chatService.threadsUnreadCount$.subscribe(count => {
       this.chatUnreadCount = count;
@@ -289,9 +298,14 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.pendingInvitesCount = count;
     });
 
+    this.notificationService.unreadCount$.subscribe(count => {
+      this.unreadNotificationsCount = count;
+    });
+
     this.chatService.loadThreads().subscribe();
     this.chatService.refreshInviteCount().subscribe();
     this.chatService.refreshThreadsUnreadCount().subscribe();
+    this.notificationService.refreshUnreadCount().subscribe();
 
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
