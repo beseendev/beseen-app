@@ -121,6 +121,7 @@ export class ChatInboxComponent implements OnInit {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
     if (data?.action === 'viewProfile') {
       await this.modalController.dismiss(data);
     }

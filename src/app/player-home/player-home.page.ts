@@ -305,9 +305,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.chatService.loadThreads().subscribe();
-    this.chatService.refreshInviteCount().subscribe();
-    this.chatService.refreshThreadsUnreadCount().subscribe();
-    this.notificationService.refreshUnreadCount().subscribe();
 
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
@@ -353,6 +350,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ionViewWillEnter(): void {
+    this.chatService.refreshInviteCount().subscribe();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
+    this.notificationService.refreshUnreadCount().subscribe();
+
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
         if (profile && profile.hasProfile === false) {
@@ -508,6 +509,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.tabLoadSub) {
       this.tabLoadSub.unsubscribe();
     }
+
+    this.notificationService.refreshUnreadCount().subscribe();
+    this.chatService.refreshInviteCount().subscribe();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
 
     if (this.activeTab === 'ranking') {
       this.loadRankingPosts(true, event);

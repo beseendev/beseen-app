@@ -279,11 +279,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.unreadNotificationsSub = this.notificationService.unreadCount$.subscribe(count => {
       this.unreadNotificationsCount = count;
     });
-    this.notificationService.refreshUnreadCount().subscribe();
 
     if (this.subscriptionService.canAccessChat()) {
       this.chatService.loadThreads().subscribe();
-      this.chatService.refreshThreadsUnreadCount().subscribe();
     }
 
     this.refreshCurrentTab();
@@ -329,6 +327,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter(): void {
+    this.notificationService.refreshUnreadCount().subscribe();
+    if (this.subscriptionService.canAccessChat()) {
+      this.chatService.refreshThreadsUnreadCount().subscribe();
+    }
+
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
         if (profile && profile.hasProfile === false) {
@@ -790,6 +793,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   refreshPosts(event: any): void {
     if (this.tabLoadSub) {
       this.tabLoadSub.unsubscribe();
+    }
+
+    this.notificationService.refreshUnreadCount().subscribe();
+    if (this.subscriptionService.canAccessChat()) {
+      this.chatService.refreshThreadsUnreadCount().subscribe();
     }
 
     if (this.selectedTab === 'vitrine') {

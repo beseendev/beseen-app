@@ -190,6 +190,8 @@ export class ChatSheetComponent implements OnInit, AfterViewChecked {
         );
         this.isLoading = false;
         this.shouldScrollToBottom = true;
+        // O backend marca a thread como lida ao servir as mensagens; atualiza o badge aqui mesmo, sem esperar a tela fechar.
+        this.chatService.refreshThreadsUnreadCount().subscribe();
       },
       error: (err) => {
         console.error('Error loading messages', err);
