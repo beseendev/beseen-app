@@ -37,6 +37,7 @@ import { PostService } from '../services/post.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
 import { NotificationService } from '../services/notification.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { SubscriptionService } from '../services/subscription.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
@@ -115,6 +116,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly postService = inject(PostService);
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
+  private readonly deepLinkService = inject(DeepLinkService);
   private readonly authService = inject(AuthService);
   private readonly adService = inject(AdvertisementService);
   private readonly subscriptionService = inject(SubscriptionService);
@@ -353,6 +355,19 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  ionViewDidEnter(): void {
+    const pending = this.deepLinkService.pending;
+    if (!pending) {
+      return;
+    }
+
+    this.deepLinkService.clearPending();
+
+    if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
+      this.openChatInbox(pending.referenceId);
+    }
   }
 
   private redirectToCreateProfile(): void {
@@ -654,7 +669,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.router.navigate(['/notificacoes']);
   }
 
-  async openChatInbox(): Promise<void> {
+  async openChatInbox(autoOpenThreadId?: number): Promise<void> {
     if (!this.subscriptionService.canAccessChat()) {
         this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'warning');
         this.openPlans();
@@ -664,7 +679,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const modal = await this.modalController.create({
       component: ChatInboxComponent,
       componentProps: {
-        isPlayer: false
+        isPlayer: false,
+        autoOpenThreadId
       },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,

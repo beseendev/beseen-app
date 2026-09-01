@@ -54,6 +54,7 @@ import { ApiService } from '../services/api.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
 import { NotificationService } from '../services/notification.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { PostService } from '../services/post.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
@@ -172,6 +173,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private notificationService = inject(NotificationService);
+  private deepLinkService = inject(DeepLinkService);
   private modalController = inject(ModalController);
   private alertController = inject(AlertController);
   public popoverController = inject(PopoverController);
@@ -379,6 +381,21 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.postService.shouldLoadInitialHomePosts()) {
       this.postService.loadHomePosts(11).subscribe();
+    }
+  }
+
+  ionViewDidEnter(): void {
+    const pending = this.deepLinkService.pending;
+    if (!pending) {
+      return;
+    }
+
+    this.deepLinkService.clearPending();
+
+    if (pending.type === 'INVITE_RECEIVED') {
+      this.openInvitesSheet();
+    } else if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
+      this.openChatInbox(pending.referenceId);
     }
   }
 
@@ -702,11 +719,12 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/profile-player', video.athleteId]);
   }
 
-  async openChatInbox(): Promise<void> {
+  async openChatInbox(autoOpenThreadId?: number): Promise<void> {
     const modal = await this.modalController.create({
       component: ChatInboxComponent,
       componentProps: {
-        isPlayer: true
+        isPlayer: true,
+        autoOpenThreadId
       },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,

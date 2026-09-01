@@ -1,0 +1,51 @@
+<ion-content [fullscreen]="true" class="notifications-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="notifications-container">
+    <div class="top-bar">
+      <ion-button fill="clear" class="back-button" (click)="goBack()" aria-label="Voltar">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <span class="top-bar-title">Notificações</span>
+    </div>
+
+    <div class="notification-list" *ngIf="notifications.length > 0">
+      <button
+        type="button"
+        class="notification-item be-surface"
+        [class.unread]="!notification.isRead"
+        *ngFor="let notification of notifications; trackBy: trackByNotification"
+        (click)="openNotification(notification)">
+        <div class="notification-icon">
+          <ion-icon [name]="iconFor(notification.type)"></ion-icon>
+        </div>
+
+        <div class="notification-copy">
+          <strong>{{ notification.title }}</strong>
+          <p>{{ notification.message }}</p>
+          <span class="notification-time">{{ timeAgo(notification.createdAt) }}</span>
+        </div>
+
+        <span class="unread-dot" *ngIf="!notification.isRead"></span>
+      </button>
+    </div>
+
+    <div class="empty-card be-surface" *ngIf="!isLoading && notifications.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </div>
+      <strong>Nenhuma notificação por aqui</strong>
+      <p>Convites, mensagens e novidades da sua conta vão aparecer nesta tela.</p>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading && notifications.length === 0">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-infinite-scroll [disabled]="!hasMore" (ionInfinite)="loadNotifications($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais notificações..."></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

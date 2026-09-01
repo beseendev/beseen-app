@@ -19,10 +19,12 @@ import { PlayerCardComponent } from '../player-card/player-card.component';
 })
 export class ChatInboxComponent implements OnInit {
   @Input() isPlayer = false;
+  @Input() autoOpenThreadId?: number;
 
   threads: ChatThreadSummaryDTO[] = [];
   isLoading = false;
   hasMore = true;
+  private autoOpenHandled = false;
   private readonly LIMIT = 10;
 
   private readonly modalController = inject(ModalController);
@@ -57,6 +59,8 @@ export class ChatInboxComponent implements OnInit {
         if (event) {
           event.target.complete();
         }
+
+        this.tryAutoOpenThread();
       },
       error: (err) => {
         console.error('Error loading threads', err);
@@ -66,6 +70,22 @@ export class ChatInboxComponent implements OnInit {
         }
       }
     });
+  }
+
+  private tryAutoOpenThread(): void {
+    if (this.autoOpenHandled || !this.autoOpenThreadId) {
+      return;
+    }
+
+    const thread = this.threads.find(t => t.chatThreadId === this.autoOpenThreadId);
+    if (thread) {
+      this.autoOpenHandled = true;
+      this.openThread(thread);
+    } else if (!this.hasMore) {
+      this.autoOpenHandled = true;
+    } else {
+      this.loadThreads();
+    }
   }
 
   async close(): Promise<void> {
