@@ -43,7 +43,8 @@ import {
   mailOutline,
   flagOutline,
   banOutline,
-  trashOutline
+  trashOutline,
+  notificationsOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -52,6 +53,8 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
+import { NotificationService } from '../services/notification.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { PostService } from '../services/post.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { Post } from '../models/post.model';
@@ -155,8 +158,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   newVideosWithAds: PlayerFeedItem[] = [];
 
   private rankingCurrentPage = 0;
-  activeChatCount = 0;
+  chatUnreadCount = 0;
   pendingInvitesCount = 0;
+  unreadNotificationsCount = 0;
 
   private threadsSubscription!: Subscription;
   private tabLoadSub?: Subscription;
@@ -168,6 +172,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private adService = inject(AdvertisementService);
   private menuController = inject(MenuController);
   private chatService = inject(ChatService);
+  private notificationService = inject(NotificationService);
+  private deepLinkService = inject(DeepLinkService);
   private modalController = inject(ModalController);
   private alertController = inject(AlertController);
   public popoverController = inject(PopoverController);
@@ -192,7 +198,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       mailOutline,
       flagOutline,
       banOutline,
-      trashOutline
+      trashOutline,
+      notificationsOutline
     });
   }
 
@@ -280,17 +287,24 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/suporte']);
   }
 
+  goToNotifications() {
+    this.router.navigate(['/notificacoes']);
+  }
+
   ngOnInit(): void {
-    this.chatService.activeChatsCount$.subscribe(count => {
-      this.activeChatCount = count;
+    this.chatService.threadsUnreadCount$.subscribe(count => {
+      this.chatUnreadCount = count;
     });
 
     this.chatService.pendingInvitesCount$.subscribe(count => {
       this.pendingInvitesCount = count;
     });
 
+    this.notificationService.unreadCount$.subscribe(count => {
+      this.unreadNotificationsCount = count;
+    });
+
     this.chatService.loadThreads().subscribe();
-    this.chatService.refreshInviteCount().subscribe();
 
     this.posts$.subscribe(async posts => {
       const videos = posts.filter(p => p.mediaType === FileType.VIDEO);
@@ -336,8 +350,17 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ionViewWillEnter(): void {
+    this.chatService.refreshInviteCount().subscribe();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
+    this.notificationService.refreshUnreadCount().subscribe();
+
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
+        if (profile && profile.hasProfile === false) {
+          this.redirectToCreateProfile();
+          return;
+        }
+
         if (profile && profile.urlPefil) {
           profile.urlPerfil = profile.urlPefil;
           delete profile.urlPefil;
@@ -359,6 +382,35 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.postService.shouldLoadInitialHomePosts()) {
       this.postService.loadHomePosts(11).subscribe();
+    }
+  }
+
+  ionViewDidEnter(): void {
+    const pending = this.deepLinkService.pending;
+    if (!pending) {
+      return;
+    }
+
+    this.deepLinkService.clearPending();
+
+    if (pending.type === 'INVITE_RECEIVED') {
+      this.openInvitesSheet();
+    } else if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
+      this.openChatInbox(pending.referenceId);
+    }
+  }
+
+  private redirectToCreateProfile(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const role = decodedToken?.role;
+
+    if (role === 'CLUBE') {
+      this.router.navigateByUrl('/create-profile-scout', { replaceUrl: true });
+    } else if (role === 'JOGADOR') {
+      this.router.navigateByUrl('/create-profile-player', { replaceUrl: true });
+    } else {
+      this.authService.logout();
+      this.router.navigate(['/login']);
     }
   }
 
@@ -457,6 +509,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.tabLoadSub) {
       this.tabLoadSub.unsubscribe();
     }
+
+    this.notificationService.refreshUnreadCount().subscribe();
+    this.chatService.refreshInviteCount().subscribe();
+    this.chatService.refreshThreadsUnreadCount().subscribe();
 
     if (this.activeTab === 'ranking') {
       this.loadRankingPosts(true, event);
@@ -668,11 +724,12 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/profile-player', video.athleteId]);
   }
 
-  async openChatInbox(): Promise<void> {
+  async openChatInbox(autoOpenThreadId?: number): Promise<void> {
     const modal = await this.modalController.create({
       component: ChatInboxComponent,
       componentProps: {
-        isPlayer: true
+        isPlayer: true,
+        autoOpenThreadId
       },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,

@@ -30,13 +30,13 @@
       <div class="hero-topline">
         <p>Minha Vitrine</p>
         <div class="header-actions">
-          <ion-button fill="clear" class="invites-btn" (click)="openInvitesSheet()" aria-label="Ver convites">
-            <ion-icon slot="icon-only" name="mail-outline"></ion-icon>
-            <ion-badge color="danger" *ngIf="pendingInvitesCount > 0">{{ pendingInvitesCount }}</ion-badge>
+          <ion-button fill="clear" class="notifications-btn" (click)="goToNotifications()" aria-label="Ver notificações">
+            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+            <ion-badge color="danger" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</ion-badge>
           </ion-button>
           <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
             <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-            <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
+            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
           </ion-button>
         </div>
       </div>
@@ -78,6 +78,11 @@
                   <ion-item button (click)="editPlayerProfile(); popoverController.dismiss()">
                     <ion-icon slot="start" name="create-outline"></ion-icon>
                     <ion-label>Editar perfil</ion-label>
+                  </ion-item>
+                  <ion-item button (click)="openInvitesSheet(); popoverController.dismiss()">
+                    <ion-icon slot="start" name="mail-outline"></ion-icon>
+                    <ion-label>Convites</ion-label>
+                    <ion-badge color="danger" slot="end" *ngIf="pendingInvitesCount > 0">{{ pendingInvitesCount }}</ion-badge>
                   </ion-item>
                   <ion-item button (click)="openSupport(); popoverController.dismiss()">
                     <ion-icon slot="start" name="help-circle-outline"></ion-icon>

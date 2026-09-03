@@ -9,16 +9,21 @@
 				"google.com"
 			],
 			"webClientId": "950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com"
+		},
+		"FirebaseCrashlytics": {
+			"enabled": true
 		}
 	},
 	"packageClassList": [
 		"SignInWithApple",
 		"FirebaseAuthenticationPlugin",
+		"FirebaseCrashlyticsPlugin",
+		"FirebaseMessagingPlugin",
 		"AppPlugin",
 		"CAPCameraPlugin",
 		"HapticsPlugin",
 		"KeyboardPlugin",
 		"StatusBarPlugin",
-		"PurchasesPlugin"
+		"BadgePlugin"
 	]
 }

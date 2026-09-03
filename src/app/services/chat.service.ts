@@ -19,6 +19,9 @@ export class ChatService {
   private pendingInvitesCountSubject = new BehaviorSubject<number>(0);
   pendingInvitesCount$ = this.pendingInvitesCountSubject.asObservable();
 
+  private threadsUnreadCountSubject = new BehaviorSubject<number>(0);
+  threadsUnreadCount$ = this.threadsUnreadCountSubject.asObservable();
+
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
 
@@ -41,6 +44,17 @@ export class ChatService {
     return this.apiService.get<{ count: number }>('/invites/count').pipe(
       tap(res => this.pendingInvitesCountSubject.next(res.count))
     );
+  }
+
+  refreshThreadsUnreadCount(): Observable<{ count: number }> {
+    return this.apiService.get<{ count: number }>('/chat/threads/unread-count').pipe(
+      tap(res => this.threadsUnreadCountSubject.next(res.count))
+    );
+  }
+
+  /** Atualiza o contador local a partir do payload de um push recebido em foreground, sem bater na API. */
+  setThreadsUnreadCount(count: number): void {
+    this.threadsUnreadCountSubject.next(count);
   }
 
   clearThreads(): void {

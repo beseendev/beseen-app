@@ -20,7 +20,7 @@ if [ "$ENV" == "prod" ]; then
     npm run build -- --configuration=production
 else
     echo "📦 Executando Build Angular (Development)..."
-    npm run build
+    npm run build -- --configuration=development
 fi
 
 # --- 3. ANDROID CONFIG ---

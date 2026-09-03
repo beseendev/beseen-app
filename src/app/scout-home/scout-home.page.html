@@ -15,10 +15,16 @@
     <div class="hero-block">
       <div class="hero-topline">
         <p class="eyebrow">Ambiente do Olheiro</p>
-        <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
-          <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-          <ion-badge *ngIf="activeChatCount > 0">{{ activeChatCount }}</ion-badge>
-        </ion-button>
+        <div class="header-actions">
+          <ion-button fill="clear" class="notifications-btn" (click)="goToNotifications()" aria-label="Ver notificações">
+            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+            <ion-badge color="danger" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</ion-badge>
+          </ion-button>
+          <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
+            <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
+            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
+          </ion-button>
+        </div>
       </div>
       <h1>Talentos em destaque</h1>
       <p class="hero-copy">Explore atletas, analise perfis e favorite quem merece acompanhamento.</p>

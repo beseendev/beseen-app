@@ -23,6 +23,7 @@ import {
   funnelOutline,
   search,
   searchOutline,
+  notificationsOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -35,6 +36,8 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
+import { NotificationService } from '../services/notification.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { AdvertisementService } from '../services/advertisement.service';
 import { SubscriptionService } from '../services/subscription.service';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
@@ -78,10 +81,14 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   avatarLoadFailed = false;
   isLoading = true;
   activeChatCount = 0;
+  chatUnreadCount = 0;
+  unreadNotificationsCount = 0;
   private favoritesNextCursor: string | null = null;
 
   private homePostsSub!: Subscription;
   private threadsSub!: Subscription;
+  private threadsUnreadCountSub?: Subscription;
+  private unreadNotificationsSub?: Subscription;
   private tabLoadSub?: Subscription;
 
   feedItems: ScoutFeedItem[] = [];
@@ -108,6 +115,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   private readonly postService = inject(PostService);
   private readonly chatService = inject(ChatService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly deepLinkService = inject(DeepLinkService);
   private readonly authService = inject(AuthService);
   private readonly adService = inject(AdvertisementService);
   private readonly subscriptionService = inject(SubscriptionService);
@@ -147,7 +156,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       closeOutline,
       funnelOutline,
       search,
-      searchOutline
+      searchOutline,
+      notificationsOutline
 
     });
   }
@@ -262,6 +272,14 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       this.activeChatCount = threads.length;
     });
 
+    this.threadsUnreadCountSub = this.chatService.threadsUnreadCount$.subscribe(count => {
+      this.chatUnreadCount = count;
+    });
+
+    this.unreadNotificationsSub = this.notificationService.unreadCount$.subscribe(count => {
+      this.unreadNotificationsCount = count;
+    });
+
     if (this.subscriptionService.canAccessChat()) {
       this.chatService.loadThreads().subscribe();
     }
@@ -299,6 +317,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     if (this.threadsSub) {
       this.threadsSub.unsubscribe();
     }
+    this.threadsUnreadCountSub?.unsubscribe();
+    this.unreadNotificationsSub?.unsubscribe();
     this.scoutResultsSub?.unsubscribe();
     this.scoutLoadingSub?.unsubscribe();
     this.scoutHasMoreSub?.unsubscribe();
@@ -307,8 +327,18 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter(): void {
+    this.notificationService.refreshUnreadCount().subscribe();
+    if (this.subscriptionService.canAccessChat()) {
+      this.chatService.refreshThreadsUnreadCount().subscribe();
+    }
+
     this.apiService.get<any>('/profile/me').subscribe({
       next: (profile) => {
+        if (profile && profile.hasProfile === false) {
+          this.redirectToCreateProfile();
+          return;
+        }
+
         if (profile && profile.urlPefil) {
           profile.urlPerfil = profile.urlPefil;
           delete profile.urlPefil;
@@ -328,6 +358,33 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  ionViewDidEnter(): void {
+    const pending = this.deepLinkService.pending;
+    if (!pending) {
+      return;
+    }
+
+    this.deepLinkService.clearPending();
+
+    if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
+      this.openChatInbox(pending.referenceId);
+    }
+  }
+
+  private redirectToCreateProfile(): void {
+    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
+    const role = decodedToken?.role;
+
+    if (role === 'CLUBE') {
+      this.router.navigateByUrl('/create-profile-scout', { replaceUrl: true });
+    } else if (role === 'JOGADOR') {
+      this.router.navigateByUrl('/create-profile-player', { replaceUrl: true });
+    } else {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
   }
 
   setActiveTab(tab: 'vitrine' | 'favoritos'): void {
@@ -611,7 +668,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     };
   }
 
-  async openChatInbox(): Promise<void> {
+  goToNotifications(): void {
+    this.router.navigate(['/notificacoes']);
+  }
+
+  async openChatInbox(autoOpenThreadId?: number): Promise<void> {
     if (!this.subscriptionService.canAccessChat()) {
         this.showToast('Seu plano atual não permite acessar o chat. Faça um upgrade!', 'warning');
         this.openPlans();
@@ -621,7 +682,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const modal = await this.modalController.create({
       component: ChatInboxComponent,
       componentProps: {
-        isPlayer: false
+        isPlayer: false,
+        autoOpenThreadId
       },
       breakpoints: [0, 0.45, 0.8, 0.95],
       initialBreakpoint: 0.8,
@@ -731,6 +793,11 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   refreshPosts(event: any): void {
     if (this.tabLoadSub) {
       this.tabLoadSub.unsubscribe();
+    }
+
+    this.notificationService.refreshUnreadCount().subscribe();
+    if (this.subscriptionService.canAccessChat()) {
+      this.chatService.refreshThreadsUnreadCount().subscribe();
     }
 
     if (this.selectedTab === 'vitrine') {

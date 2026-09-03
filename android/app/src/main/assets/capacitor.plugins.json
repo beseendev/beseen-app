@@ -12,6 +12,10 @@
 		"classpath": "io.capawesome.capacitorjs.plugins.firebase.crashlytics.FirebaseCrashlyticsPlugin"
 	},
 	{
+		"pkg": "@capacitor-firebase/messaging",
+		"classpath": "io.capawesome.capacitorjs.plugins.firebase.messaging.FirebaseMessagingPlugin"
+	},
+	{
 		"pkg": "@capacitor/app",
 		"classpath": "com.capacitorjs.plugins.app.AppPlugin"
 	},
@@ -30,5 +34,9 @@
 	{
 		"pkg": "@capacitor/status-bar",
 		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
+	},
+	{
+		"pkg": "@capawesome/capacitor-badge",
+		"classpath": "io.capawesome.capacitorjs.plugins.badge.BadgePlugin"
 	}
 ]
