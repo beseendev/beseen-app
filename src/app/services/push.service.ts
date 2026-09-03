@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseMessaging, Importance, Visibility } from '@capacitor-firebase/messaging';
 import type { NotificationActionPerformedEvent, NotificationReceivedEvent } from '@capacitor-firebase/messaging';
@@ -17,6 +17,33 @@ export class PushService {
   private readonly notificationService = inject(NotificationService);
   private readonly chatService = inject(ChatService);
   private readonly deepLinkService = inject(DeepLinkService);
+  private readonly ngZone = inject(NgZone);
+
+  private listenersAttached = false;
+  constructor() {
+    if (Capacitor.isNativePlatform()) {
+      this.attachListeners();
+    }
+  }
+
+  private attachListeners(): void {
+    if (this.listenersAttached) {
+      return;
+    }
+    this.listenersAttached = true;
+
+    FirebaseMessaging.addListener('tokenReceived', () => {
+      this.registerToken();
+    });
+
+    FirebaseMessaging.addListener('notificationReceived', event => {
+      this.ngZone.run(() => this.handleForegroundNotification(event));
+    });
+
+    FirebaseMessaging.addListener('notificationActionPerformed', event => {
+      this.ngZone.run(() => this.handleNotificationTap(event));
+    });
+  }
 
   private initialized = false;
   async initialize(): Promise<void> {
@@ -24,6 +51,8 @@ export class PushService {
       return;
     }
     this.initialized = true;
+
+    this.attachListeners();
 
     this.notificationService.unreadCount$.subscribe(count => {
       Badge.set({ count }).catch(err => console.error('Error setting app badge', err));
@@ -40,18 +69,6 @@ export class PushService {
       }
 
       await this.registerToken();
-
-      FirebaseMessaging.addListener('tokenReceived', () => {
-        this.registerToken();
-      });
-
-      FirebaseMessaging.addListener('notificationReceived', event => {
-        this.handleForegroundNotification(event);
-      });
-
-      FirebaseMessaging.addListener('notificationActionPerformed', event => {
-        this.handleNotificationTap(event);
-      });
     } catch (err) {
       console.error('Error initializing push notifications', err);
     }
