@@ -1,8 +1,6 @@
 name: CI/CD BeSeen
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
