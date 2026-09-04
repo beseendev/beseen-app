@@ -358,7 +358,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				INFOPLIST_FILE = App/Info.plist;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -372,7 +372,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				CODE_SIGN_STYLE = Manual;
         DEVELOPMENT_TEAM = HJR4R6DQV4;
-        CURRENT_PROJECT_VERSION = 37;
+        CURRENT_PROJECT_VERSION = 38;
         INFOPLIST_FILE = App/Info.plist;
 			};
 			name = Debug;
@@ -383,7 +383,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 37;
+				CURRENT_PROJECT_VERSION = 38;
 				INFOPLIST_FILE = App/Info.plist;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -396,7 +396,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				CODE_SIGN_STYLE = Manual;
         DEVELOPMENT_TEAM = HJR4R6DQV4;
-        CURRENT_PROJECT_VERSION = 37;
+        CURRENT_PROJECT_VERSION = 38;
         INFOPLIST_FILE = App/Info.plist;
 			};
 			name = Release;

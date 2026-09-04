@@ -39,20 +39,23 @@
       ESQUECEU A SENHA?
     </ion-button>
 
-    <ng-container *ngIf="!isIos">
-      <div class="divider-text">
-        <span class="line"></span>
-        <span class="text">Ou faça login com</span>
-        <span class="line"></span>
-      </div>
+    <div class="divider-text">
+      <span class="line"></span>
+      <span class="text">Ou faça login com</span>
+      <span class="line"></span>
+    </div>
 
-      <div class="social-actions">
-        <button type="button" class="social-btn social-btn-google" aria-label="Google" [disabled]="isGoogleLoading" (click)="signInWithGoogle()">
-          <ion-spinner *ngIf="isGoogleLoading" name="crescent"></ion-spinner>
-          <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
-        </button>
-      </div>
-    </ng-container>
+    <div class="social-actions">
+      <button type="button" class="social-btn social-btn-google" aria-label="Google" [disabled]="isGoogleLoading" (click)="signInWithGoogle()">
+        <ion-spinner *ngIf="isGoogleLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isGoogleLoading" name="logo-google"></ion-icon>
+      </button>
+
+      <button type="button" class="social-btn social-btn-apple" aria-label="Apple" *ngIf="isIos" [disabled]="isAppleLoading" (click)="signInWithApple()">
+        <ion-spinner *ngIf="isAppleLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isAppleLoading" name="logo-apple"></ion-icon>
+      </button>
+    </div>
 
     <div class="signup-prompt">
       <span class="signup-text">Não tem uma conta?</span>
