@@ -37,6 +37,7 @@
     "@capacitor/status-bar": "^6.0.0",
     "@capawesome/capacitor-badge": "^6.0.0",
     "@ionic/angular": "^8.0.0",
+    "eruda": "^3.4.3",
     "firebase": "^11.10.0",
     "googleapis": "^171.4.0",
     "ionicons": "^7.0.0",

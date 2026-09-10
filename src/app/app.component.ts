@@ -8,6 +8,7 @@ import { AuthService, JwtPayload, User } from './services/auth.service';
 import { SubscriptionService } from './services/subscription.service';
 import { ModalStateService } from './services/modal-state.service';
 import { PushService } from './services/push.service';
+import { DebugConsoleService } from './services/debug-console.service';
 import {
   logOutOutline,
   personCircleOutline,
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
   private subscriptionService = inject(SubscriptionService);
   private modalService = inject(ModalStateService);
   private pushService = inject(PushService);
+  private debugConsole = inject(DebugConsoleService);
   private router = inject(Router);
 
   constructor() {
@@ -80,6 +82,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.debugConsole.initIfEnabled();
     if (Capacitor.isNativePlatform()) {
       FirebaseCrashlytics.setEnabled({ enabled: true });
     }
