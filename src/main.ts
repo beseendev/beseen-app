@@ -2,10 +2,11 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, getApp } from 'firebase/app';
+import { getAuth, initializeAuth, indexedDBLocalPersistence } from 'firebase/auth';
 import { provideFirebaseApp } from '@angular/fire/app';
 import { provideAuth } from '@angular/fire/auth';
+import { Capacitor } from '@capacitor/core';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -19,6 +20,10 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
+    provideAuth(() =>
+      Capacitor.isNativePlatform()
+        ? initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })
+        : getAuth()
+    ),
   ],
 });

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, AlertController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService, User, JwtPayload } from '../services/auth.service';
+import { DebugConsoleService } from '../services/debug-console.service';
 import { Auth, GoogleAuthProvider, OAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
@@ -57,7 +58,8 @@ export class LoginPage implements AfterViewInit {
     private toastController: ToastController,
     private alertController: AlertController,
     private auth: Auth,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private debugConsole: DebugConsoleService
   ) {
     addIcons({
       personOutline,
@@ -77,6 +79,10 @@ export class LoginPage implements AfterViewInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  onBrandTap() {
+    this.debugConsole.registerTap();
   }
 
   ngAfterViewInit(): void {
@@ -125,7 +131,7 @@ export class LoginPage implements AfterViewInit {
     } catch (error) {
       this.isGoogleLoading = false;
       if (Capacitor.isNativePlatform()) {
-        await FirebaseCrashlytics.log({ message: 'Erro crítico no fluxo de login Google: ' + JSON.stringify(error) });
+        await FirebaseCrashlytics.recordException({ message: 'Erro no fluxo de login Google: ' + this.describeError(error) });
       }
       console.error('Erro no plugin de login com Google:', error);
       this.showToast('Erro ao iniciar o login com Google.', 'danger');
@@ -178,11 +184,18 @@ export class LoginPage implements AfterViewInit {
     } catch (error) {
       this.isAppleLoading = false;
       if (Capacitor.isNativePlatform()) {
-        await FirebaseCrashlytics.log({ message: 'Erro crítico no fluxo de login Apple: ' + JSON.stringify(error) });
+        await FirebaseCrashlytics.recordException({ message: 'Erro no fluxo de login Apple: ' + this.describeError(error) });
       }
       console.error('Erro no login com Apple:', error);
       this.showToast('Erro ao iniciar o login com Apple.', 'danger');
     }
+  }
+
+  private describeError(error: unknown): string {
+    if (error instanceof Error) {
+      return `${error.name}: ${error.message}`;
+    }
+    return JSON.stringify(error);
   }
 
   private handlePostLogin(idToken: string) {
