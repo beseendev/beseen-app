@@ -40,6 +40,8 @@ export interface JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
+  private decodedTokenSource: string | null = null;
+  private decodedTokenCache: unknown = null;
   private authState = new BehaviorSubject<boolean>(this.hasToken());
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser: Observable<User | null> = this.currentUserSubject.asObservable();
@@ -289,22 +291,24 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    const token = localStorage.getItem('access_token');
-    console.log('AuthService: Lendo access_token do LS. Valor:', token ? 'Token presente' : 'Nulo');
-    return token;
+    return localStorage.getItem('access_token');
   }
 
   getDecodedToken<T>(): T | null {
     const token = this.getAccessToken();
-    if (token) {
+    if (!token) {
+      return null;
+    }
+    if (token !== this.decodedTokenSource) {
+      this.decodedTokenSource = token;
       try {
-        return jwtDecode<T>(token);
+        this.decodedTokenCache = jwtDecode<T>(token);
       } catch (error) {
         console.error('Failed to decode token:', error);
-        return null;
+        this.decodedTokenCache = null;
       }
     }
-    return null;
+    return this.decodedTokenCache as T | null;
   }
 
   getRefreshToken(): string | null {

@@ -164,6 +164,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   private threadsSubscription!: Subscription;
   private tabLoadSub?: Subscription;
+  private deepLinkSub?: Subscription;
 
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
@@ -386,18 +387,29 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ionViewDidEnter(): void {
-    const pending = this.deepLinkService.pending;
-    if (!pending) {
-      return;
-    }
+    this.deepLinkSub?.unsubscribe();
+    this.deepLinkSub = this.deepLinkService.pending$.subscribe(async pending => {
+      if (!pending) {
+        return;
+      }
 
-    this.deepLinkService.clearPending();
+      this.deepLinkService.clearPending();
 
-    if (pending.type === 'INVITE_RECEIVED') {
-      this.openInvitesSheet();
-    } else if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
-      this.openChatInbox(pending.referenceId);
-    }
+      const topModal = await this.modalController.getTop();
+      if (topModal) {
+        await topModal.dismiss();
+      }
+
+      if (pending.type === 'INVITE_RECEIVED') {
+        this.openInvitesSheet();
+      } else if (pending.type === 'CHAT_MESSAGE' && pending.referenceId) {
+        this.openChatInbox(pending.referenceId);
+      }
+    });
+  }
+
+  ionViewWillLeave(): void {
+    this.deepLinkSub?.unsubscribe();
   }
 
   private redirectToCreateProfile(): void {
