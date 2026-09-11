@@ -6,6 +6,7 @@ import { Badge } from '@capawesome/capacitor-badge';
 import { NotificationService } from './notification.service';
 import { ChatService } from './chat.service';
 import { DeepLinkService } from './deep-link.service';
+import { AuthService } from './auth.service';
 import { NotificationType } from '../models/notification.models';
 
 @Injectable({
@@ -17,6 +18,7 @@ export class PushService {
   private readonly notificationService = inject(NotificationService);
   private readonly chatService = inject(ChatService);
   private readonly deepLinkService = inject(DeepLinkService);
+  private readonly authService = inject(AuthService);
   private readonly ngZone = inject(NgZone);
 
   private listenersAttached = false;
@@ -89,6 +91,9 @@ export class PushService {
   }
 
   private async registerToken(): Promise<void> {
+    if (!this.authService.getAccessToken()) {
+      return;
+    }
     try {
       const { token } = await FirebaseMessaging.getToken();
       const platform = Capacitor.getPlatform() as 'ios' | 'android';
