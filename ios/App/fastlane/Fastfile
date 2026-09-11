@@ -33,6 +33,12 @@ platform :ios do
       }
     )
 
+    upload_symbols_to_crashlytics(
+      dsym_path: lane_context[SharedValues::DSYM_OUTPUT_PATH],
+      gsp_path: "./App/GoogleService-Info.plist",
+      binary_path: "./Pods/FirebaseCrashlytics/upload-symbols"
+    )
+
     upload_to_testflight(
       skip_waiting_for_build_processing: true
     )
