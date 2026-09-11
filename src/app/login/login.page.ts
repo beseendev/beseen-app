@@ -159,12 +159,19 @@ export class LoginPage implements AfterViewInit {
           idToken: res.response.identityToken
         });
 
-        const userCredential = await signInWithCredential(this.auth, credential);
-        const idToken = await userCredential.user.getIdToken(true);
+        // A Apple só envia o nome na primeira autorização; guardamos localmente para reenviar se o cadastro falhar antes de chegar na API
+        const appleNameKey = `apple_name_${res.response.user}`;
         let fullName = '';
         if (res.response.givenName) {
           fullName = `${res.response.givenName} ${res.response.familyName || ''}`.trim();
-        } else if (userCredential.user.displayName) {
+          try { localStorage.setItem(appleNameKey, fullName); } catch {}
+        } else {
+          try { fullName = localStorage.getItem(appleNameKey) || ''; } catch {}
+        }
+
+        const userCredential = await signInWithCredential(this.auth, credential);
+        const idToken = await userCredential.user.getIdToken(true);
+        if (!fullName && userCredential.user.displayName) {
           fullName = userCredential.user.displayName;
         }
 
