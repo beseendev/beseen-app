@@ -100,9 +100,8 @@
         </div>
 
         <div class="be-tiktok-actions">
-           <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
-              <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
-           </div>
+           <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+              <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card></button>
            
            <ion-button
             fill="clear"

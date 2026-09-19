@@ -12,61 +12,9 @@
   </ion-content>
 </ion-menu>
 
-<ion-content [fullscreen]="true" id="main-content" class="arena-content">
-  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <div slot="fixed" class="player-action-bar" aria-hidden="true"></div>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="player-post-fab">
-    <ion-fab-button (click)="goToCreatePost()" class="post-fab-button" aria-label="Publicar">
-      <ion-icon name="star-outline" aria-hidden="true"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-  <div class="arena-shell">
-    <header class="arena-hero section">
-      <div class="hero-topline">
-        <p>Minha Vitrine</p>
-        <div class="header-actions">
-          <ion-button fill="clear" class="notifications-btn" (click)="goToNotifications()" aria-label="Ver notificações">
-            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-            <ion-badge color="danger" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</ion-badge>
-          </ion-button>
-          <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
-            <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
-          </ion-button>
-        </div>
-      </div>
-    </header>
-
-    <section class="player-profile-card">
-      <div class="player-profile-head">
-        <div class="player-profile-id">
-          <ng-container *ngIf="isLoading; else playerProfileLoaded">
-            <div class="be-skeleton-avatar"></div>
-            <div class="be-skeleton-copy">
-              <ion-skeleton-text animated style="width: 92px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 156px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 88px;"></ion-skeleton-text>
-            </div>
-          </ng-container>
-
-          <ng-template #playerProfileLoaded>
-            <app-player-card class="player-profile-avatar" [profile]="userProfile" size="small"></app-player-card>
-
-            <div class="player-profile-copy">
-              <span class="player-profile-label" *ngIf="userRole === 'JOGADOR'">Perfil jogador(a)</span>
-              <span class="player-profile-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
-              <strong>{{userName}}</strong>
-              <p>{{ userPosition }}</p>
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="player-profile-actions" *ngIf="!isLoading">
+<ion-header class="ion-no-border">
+  <app-social-header [notificationsCount]="unreadNotificationsCount" [messagesCount]="chatUnreadCount"
+    (notifications)="goToNotifications()" (messages)="openChatInbox()">
           <div class="menu-actions">
             <ion-button fill="clear" id="player-options-trigger" class="menu-btn" aria-label="Opções">
               <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -104,97 +52,14 @@
               </ng-template>
             </ion-popover>
           </div>
-        </div>
-      </div>
-    </section>
+  </app-social-header>
+</ion-header>
+<ion-content [fullscreen]="false" id="main-content" class="arena-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    <nav class="arena-tabs section" aria-label="Conteúdo da Arena">
-      <button
-        type="button"
-        class="tab-btn"
-        [class.active]="activeTab === 'new'"
-        (click)="setActiveTab('new')"
-      >
-        Novos
-      </button>
-      <button
-        type="button"
-        class="tab-btn"
-        [class.active]="activeTab === 'ranking'"
-        (click)="setActiveTab('ranking')"
-      >
-        Ranking
-      </button>
-    </nav>
-
-    <app-banner-carousel class="section"></app-banner-carousel>
-
-    <section class="section tab-panel" [class.active]="activeTab === 'ranking'" *ngIf="activeTab === 'ranking'">
-      <div class="video-stack be-tiktok-container" *ngIf="rankingVideosWithAds.length > 0">
-        <ng-container *ngFor="let item of rankingVideosWithAds; trackBy: trackByFeedItem">
-          <article class="be-tiktok-card be-fade-in" *ngIf="item.type === 'video'">
-            <video
-              #vRanking
-              #rankingPlayer="appViewportVideoPlayer"
-              appViewportVideoPlayer
-              [src]="item.video.mediaUrl + '#t=0.001'"
-              muted
-              loop
-              playsinline
-              controlsList="nodownload nopictureinpicture"
-              preload="metadata"
-              class="be-tiktok-video"
-              [class.is-horizontal]="rankingPlayer.isHorizontal">
-            </video>
-
-            <div class="video-player-state loading" *ngIf="rankingPlayer.isLoading && !rankingPlayer.hasError && !rankingPlayer.showTapGate">
-              <ion-spinner name="crescent"></ion-spinner>
-            </div>
-            <div class="video-player-state pulse" *ngIf="rankingPlayer.showPulse">
-              <ion-icon [name]="rankingPlayer.isPaused ? 'play' : 'pause'"></ion-icon>
-            </div>
-            <div class="video-player-state tap-gate" *ngIf="rankingPlayer.showTapGate">
-              <span>Toque para assistir</span>
-            </div>
-            <div class="video-player-error" *ngIf="rankingPlayer.hasError">
-              <strong>Video indisponivel</strong>
-              <ion-button size="small" fill="solid" (click)="rankingPlayer.retry($event)">Tentar novamente</ion-button>
-            </div>
-
-            <ion-button fill="clear" class="video-mute-btn" (click)="rankingPlayer.toggleMute($event)" [attr.aria-label]="rankingPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
-              <ion-icon [name]="rankingPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
-            </ion-button>
-
-            <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
-              <ion-icon name="flag-outline"></ion-icon>
-            </ion-button>
-
-            <div class="be-tiktok-overlay">
-              <div class="be-tiktok-info">
-                <button type="button" class="profile-link" (click)="openAthleteProfile(item.video)">
-                  <h3 class="athlete-heading">
-                    <span class="athlete-first-name">{{ item.video.athleteName.split(' ')[0] }}</span>
-                    <span class="athlete-position" *ngIf="item.video.position">- {{ item.video.position }}</span>
-                  </h3>
-                </button>
-                <p class="showcase-description">{{ item.video.description }}</p>
-                <p class="meta-line" *ngIf="item.video.modality">
-                    <span *ngIf="item.video.modality">{{ item.video.modality }}</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
-                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
-               </div>
-            </div>
-          </article>
-          <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
-        </ng-container>
-      </div>
-    </section>
-
+  <div class="arena-shell">
     <section class="section tab-panel" [class.active]="activeTab === 'new'" *ngIf="activeTab === 'new'">
       <div class="video-stack be-tiktok-container" *ngIf="newVideosWithAds.length > 0">
         <ng-container *ngFor="let item of newVideosWithAds; trackBy: trackByFeedItem">
@@ -251,15 +116,15 @@
             </div>
 
             <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
-                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
-               </div>
+               <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card></button>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
         </ng-container>
       </div>
     </section>
+    <app-banner-carousel class="section"></app-banner-carousel>
   </div>
 
   <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">

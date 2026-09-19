@@ -1,56 +1,6 @@
-<ion-content [fullscreen]="true" class="scout-home-content">
-  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <div slot="fixed" class="scout-action-bar" aria-hidden="true"></div>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="scout-search-fab">
-    <ion-fab-button (click)="goToAthleteSearch()" class="search-fab-button" aria-label="Buscar atletas">
-      <ion-icon name="search" aria-hidden="true"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-  <div class="scout-home-container">
-    <div class="hero-block">
-      <div class="hero-topline">
-        <p class="eyebrow">Ambiente do Olheiro</p>
-        <div class="header-actions">
-          <ion-button fill="clear" class="notifications-btn" (click)="goToNotifications()" aria-label="Ver notificações">
-            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-            <ion-badge color="danger" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</ion-badge>
-          </ion-button>
-          <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
-            <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
-          </ion-button>
-        </div>
-      </div>
-      <h1>Talentos em destaque</h1>
-      <p class="hero-copy">Explore atletas, analise perfis e favorite quem merece acompanhamento.</p>
-    </div>
-
-    <section class="profile-card section surface">
-      <div class="profile-card-head" *ngIf="!isLoadingContent; else scoutProfileSkeleton">
-        <div class="profile-card-id">
-          <div class="avatar-shell profile-avatar">
-            <img *ngIf="userProfile?.urlPerfil" [src]="userProfile?.urlPerfil" alt="Perfil do olheiro">
-            <ion-icon *ngIf="!userProfile?.urlPerfil" name="person-circle-outline"></ion-icon>
-          </div>
-          <div class="profile-copy">
-            <span class="summary-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
-            <span class="summary-label" *ngIf="userRole === 'JOGADOR'">Perfil do jogador</span>
-            <strong>{{ userName }}</strong>
-            <p>
-              {{ scoutType || 'Tipo não informado' }}
-              <span *ngIf="scoutProfile?.cidade || scoutProfile?.estado">
-                • {{ scoutProfile?.cidade || 'Cidade' }}{{ scoutProfile?.estado ? ', ' + scoutProfile?.estado : '' }}
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <div class="profile-card-actions">
+<ion-header class="ion-no-border">
+  <app-social-header [notificationsCount]="unreadNotificationsCount" [messagesCount]="chatUnreadCount"
+    (notifications)="goToNotifications()" (messages)="openChatInbox()">
           <div class="menu-actions">
             <ion-button fill="clear" id="scout-options-trigger" class="menu-btn" aria-label="Opções">
               <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -89,34 +39,14 @@
               </ng-template>
             </ion-popover>
           </div>
-        </div>
-      </div>
+  </app-social-header>
+</ion-header>
+<ion-content [fullscreen]="false" class="scout-home-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-      <ng-template #scoutProfileSkeleton>
-        <div class="profile-card-head">
-          <div class="profile-card-id">
-            <div class="be-skeleton-avatar"></div>
-            <div class="be-skeleton-copy">
-              <ion-skeleton-text animated style="width: 90px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 170px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 120px;"></ion-skeleton-text>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </section>
-
-    <nav class="arena-tabs section" aria-label="Conteúdo do olheiro">
-      <button type="button" class="tab-btn" [class.active]="selectedTab === 'vitrine'" (click)="setActiveTab('vitrine')">
-        Videos na vitrine
-      </button>
-      <button type="button" class="tab-btn" [class.active]="selectedTab === 'favoritos'" (click)="setActiveTab('favoritos')">
-        Favoritos
-      </button>
-    </nav>
-
-    <app-banner-carousel class="section"></app-banner-carousel>
-
+  <div class="scout-home-container">
     <section class="vitrine-filter-panel section" *ngIf="selectedTab === 'vitrine'">
       <div class="filter-action-row">
         <ion-button fill="outline" class="filter-btn" (click)="openScoutFilters()" aria-label="Abrir filtros da vitrine">
@@ -204,9 +134,8 @@
             </div>
 
             <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
-                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
-               </div>
+               <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card></button>
 
                <ion-button
                 fill="clear"
@@ -271,8 +200,12 @@
       </div>
     </section>
 
+    <app-banner-carousel class="section"></app-banner-carousel>
+
     <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
+      <app-banner-carousel class="section"></app-banner-carousel>
+
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
     </ion-infinite-scroll>
   </div>
 </ion-content>

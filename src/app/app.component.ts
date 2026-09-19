@@ -1,3 +1,4 @@
+import { BottomNavigationComponent } from './components/bottom-navigation/bottom-navigation.component';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
@@ -32,9 +33,10 @@ import {
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, BottomNavigationComponent],
 })
 export class AppComponent implements OnInit {
+  socialNavigationVisible = false;
   private authService = inject(AuthService);
   private subscriptionService = inject(SubscriptionService);
   private modalService = inject(ModalStateService);

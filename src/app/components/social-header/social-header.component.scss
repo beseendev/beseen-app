@@ -1,0 +1,9 @@
+:host { display: block; background: var(--be-color-bg); padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--be-color-line); }
+.social-header { height: var(--be-social-header-height); max-width: 680px; margin: auto; display: flex; align-items: center; justify-content: space-between; padding: 0 12px 0 18px; }
+.wordmark { font-size: 25px; font-weight: 800; letter-spacing: -1.2px; color: var(--be-color-text-1); }
+.wordmark span { color: var(--be-color-brand-500); }
+.actions { display: flex; align-items: center; }
+button { width: 48px; height: 48px; display: grid; place-items: center; border: 0; background: transparent; color: var(--be-color-text-1); position: relative; cursor: pointer; }
+ion-icon { font-size: 23px; }
+.badge { position: absolute; top: 3px; right: 2px; min-width: 16px; border-radius: 20px; padding: 2px 4px; background: var(--be-color-danger); color: var(--be-color-text-1); font-size: 10px; }
+button:focus-visible { outline: 2px solid var(--be-color-brand-500); outline-offset: -3px; border-radius: 10px; }

@@ -1,3 +1,4 @@
+import { SocialHeaderComponent } from '../components/social-header/social-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewChild, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {
@@ -6,8 +7,6 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonHeader,
   IonIcon,
   IonInfiniteScroll,
@@ -20,7 +19,6 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonSpinner,
-  IonSkeletonText,
   IonTitle,
   MenuController,
   ModalController,
@@ -112,14 +110,13 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
   styleUrls: ['./player-home.page.scss'],
   standalone: true,
   imports: [
+    SocialHeaderComponent,
+    IonHeader,
     CommonModule,
     IonButton,
     IonIcon,
     IonContent,
-    IonFab,
-    IonFabButton,
     IonSpinner,
-    IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
     IonMenu,

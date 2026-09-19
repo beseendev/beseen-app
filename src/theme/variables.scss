@@ -4,6 +4,8 @@
  */
 
 :root {
+  --be-navigation-height: 66px;
+  --be-social-header-height: 56px;
   --ion-font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
 
   /* Brand */
@@ -12,10 +14,10 @@
   --be-color-brand-700: #15803d;
 
   /* Neutrals / Surfaces */
-  --be-color-bg: #0f172a;
-  --be-color-bg-elevated: #101b31;
-  --be-color-surface-1: #162033;
-  --be-color-surface-2: #1e293b;
+  --be-color-bg: #101212;
+  --be-color-bg-elevated: #171a19;
+  --be-color-surface-1: #191d1b;
+  --be-color-surface-2: #222724;
   --be-color-media-bg: #000000;
   --be-color-line: rgba(148, 163, 184, 0.16);
 

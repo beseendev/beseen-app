@@ -299,7 +299,7 @@
 }
 
 .video-list.be-tiktok-container {
-  --tiktok-height: 100svh;
+  --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   width: 100%;
   height: auto;
 }
@@ -333,46 +333,9 @@
   }
 }
 
-.scout-action-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: calc(45px + env(safe-area-inset-bottom, 0px));
-  background: rgba(7, 22, 39, .82);
-  border-top: 1px solid rgba(148, 163, 184, .16);
-  z-index: 9999;
-  pointer-events: none;
-}
 
-.scout-search-fab {
-  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-  z-index: 10000;
-}
 
-.search-fab-button {
-  width: 33px;
-  height: 33px;
-  --background: var(--be-color-brand-500);
-  --color: #052e16;
-  --box-shadow: 0 12px 28px rgba(2, 6, 23, .36);
-  --border-radius: 999px;
 
-  ion-icon {
-    width: 17px;
-    height: 17px;
-    font-size: 17px;
-    color: #052e16;
-  }
-}
-
-.scout-home-content .be-tiktok-overlay {
-  padding-bottom: calc(58px + env(safe-area-inset-bottom));
-}
-
-.scout-home-content .be-tiktok-actions {
-  bottom: calc(52px + env(safe-area-inset-bottom));
-}
 
 .voting-tag {
   background: rgba(var(--ion-color-primary-rgb), 0.55);
@@ -389,7 +352,7 @@
 
 @media (min-width: 600px) {
   .video-list.be-tiktok-container {
-    --tiktok-height: min(820px, 100svh);
+    --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -540,3 +503,15 @@
   justify-content: center;
   align-items: center;
 }
+
+/* Compact social home; safe areas belong to header/navigation, not this shell. */
+.scout-home-container { padding: 0; max-width: 680px; }
+.section { margin: 0; }
+.video-stack.be-tiktok-container, .video-list.be-tiktok-container { margin-top: 0; border-radius: 0; }
+.be-tiktok-card { border-radius: 0; }
+.menu-btn { margin: 0; --padding-start: 8px; --padding-end: 8px; }
+.vitrine-filter-panel { padding: 4px 12px; margin: 0; border: 0; border-radius: 0; }
+.filter-action-row { justify-content: flex-end; }
+.filter-btn { margin: 0; --border-width: 0; }
+.active-filter-chips { margin-top: 4px; }
+.content-section { margin: 0; }

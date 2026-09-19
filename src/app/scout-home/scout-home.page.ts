@@ -1,3 +1,7 @@
+import { ActivatedRoute } from '@angular/router';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SocialHeaderComponent } from '../components/social-header/social-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
 import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
@@ -67,13 +71,15 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective, PlayerEvaluationModalComponent, PlayerCardComponent]
+  imports: [SocialHeaderComponent, CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective, PlayerEvaluationModalComponent, PlayerCardComponent]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
   @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
 
   videoPosts: Post[] = [];
+  private navigationRoute = inject(ActivatedRoute);
+  private navigationDestroy = inject(DestroyRef);
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
@@ -228,6 +234,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.selectedTab = this.navigationRoute.snapshot.queryParamMap.get('tab') === 'favoritos' ? 'favoritos' : 'vitrine';
+    this.navigationRoute.queryParamMap.pipe(takeUntilDestroyed(this.navigationDestroy)).subscribe(params => {
+      this.setActiveTab(params.get('tab') === 'favoritos' ? 'favoritos' : 'vitrine');
+    });
     this.userRole = this.authService.getDecodedToken<JwtPayload>()?.role || null;
 
     this.authService.userRole$.subscribe(role => {

@@ -1,3 +1,4 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-router-outlet [style.bottom]="socialNavigationVisible ? 'calc(var(--be-navigation-height) + env(safe-area-inset-bottom, 0px))' : '0px'"></ion-router-outlet>
+  <app-bottom-navigation (visibilityChange)="socialNavigationVisible = $event"></app-bottom-navigation>
 </ion-app>

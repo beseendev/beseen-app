@@ -1,0 +1,13 @@
+:host { position: absolute; inset: auto 0 0; z-index: 10; }
+.bottom-navigation { background: var(--be-color-bg-elevated); border-top: 1px solid var(--be-color-line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.navigation-items { height: var(--be-navigation-height); max-width: 680px; margin: auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+button { position: relative; border: 0; background: transparent; color: var(--be-color-text-3); min-width: 48px; min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: inherit; font-size: 11px; font-weight: 500; cursor: pointer; transition: color 160ms ease; }
+ion-icon { font-size: 23px; }
+.selected { color: var(--be-color-brand-500); font-weight: 700; }
+.selected::before { content: ''; position: absolute; top: 0; width: 24px; height: 3px; border-radius: 0 0 3px 3px; background: currentColor; }
+.publish-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-top: -7px; border-radius: 12px; background: var(--be-color-brand-500); color: var(--ion-color-primary-contrast); }
+.publish > span:last-child { color: var(--be-color-text-1); }
+.icon-wrap { position: relative; height: 23px; }
+.badge { position: absolute; left: 16px; top: -5px; background: var(--be-color-danger); color: var(--be-color-text-1); padding: 2px 4px; border-radius: 20px; font-size: 10px; }
+button:focus-visible { outline: 2px solid var(--be-color-brand-500); outline-offset: -4px; border-radius: 10px; }
+@media (prefers-reduced-motion: reduce) { button { transition: none; } }
