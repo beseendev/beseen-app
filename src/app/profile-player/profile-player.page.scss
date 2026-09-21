@@ -452,3 +452,11 @@ ion-item {
     font-weight: 700;
   }
 }
+
+/* Profile actions stay in their own row, including on narrow screens. */
+.top-bar { padding-top: env(safe-area-inset-top, 0px); gap: 8px; }
+.top-bar .back-button, .top-bar .options-button { margin-top: 0; min-width: 48px; min-height: 48px; flex-shrink: 0; }
+.top-bar-title { margin-top: 0; min-width: 0; overflow-wrap: anywhere; }
+.page-title, .profile-copy { min-width: 0; overflow-wrap: anywhere; }
+.edit-profile-button { min-height: 48px; --color: var(--be-color-brand-500); --border-color: var(--be-color-brand-500); }
+ion-button:focus-within { outline: 2px solid var(--be-color-brand-500); border-radius: 12px; }

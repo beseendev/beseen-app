@@ -13,8 +13,9 @@
       </ion-button>
 
       <span class="top-bar-title">Perfil Jogador(a)</span>
+      <app-profile-settings *ngIf="isMyProfile && !isEditing" accountType="player"></app-profile-settings>
 
-      <ion-button fill="clear" class="options-button" *ngIf="!isEditing" (click)="openProfileOptions()" aria-label="Mais opções">
+      <ion-button fill="clear" class="options-button" *ngIf="!isMyProfile && !isEditing" (click)="openProfileOptions()" aria-label="Mais opções">
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
       </ion-button>
       <ion-button fill="clear" class="options-button" *ngIf="isEditing" [disabled]="isLoading" (click)="saveProfileEdits()" aria-label="Salvar edição">
@@ -56,6 +57,9 @@
         (photoClick)="changeProfilePhoto()"
         (cardClick)="openProfileOptions()">
       </app-player-card>
+      <ion-button *ngIf="isMyProfile && !isEditing" fill="outline" class="edit-profile-button" (click)="startEditing()">
+        <ion-icon slot="start" name="create-outline" aria-hidden="true"></ion-icon>Editar perfil
+      </ion-button>
     </section>
 
     <section class="section-card">

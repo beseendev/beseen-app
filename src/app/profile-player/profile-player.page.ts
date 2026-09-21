@@ -1,3 +1,4 @@
+import { ProfileSettingsComponent } from '../components/profile-settings/profile-settings.component';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +27,7 @@ import { PlayerEvaluationModalComponent } from '../components/player-evaluation-
   templateUrl: './profile-player.page.html',
   styleUrls: ['./profile-player.page.scss'],
   standalone: true,
-  imports: [
+  imports: [ProfileSettingsComponent,
     CommonModule,
     FormsModule,
     IonButton,
@@ -200,22 +201,7 @@ export class ProfilePlayerPage implements OnInit {
     const buttons: any[] = [];
 
     if (this.isMyProfile) {
-      buttons.push(
-        {
-          text: 'Editar perfil',
-          icon: createOutline,
-          handler: () => {
-            this.startEditing();
-          }
-        },
-        {
-          text: 'Suporte',
-          icon: helpCircleOutline,
-          handler: () => {
-            this.openSupport();
-          }
-        }
-      );
+      return;
     } else {
       if (this.isScoutViewer && !this.isBlockedByMe) {
         buttons.push({

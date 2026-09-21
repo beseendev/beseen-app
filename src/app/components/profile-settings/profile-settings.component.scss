@@ -1,0 +1,10 @@
+:host { display: block; flex: 0 0 48px; margin-left: auto; }
+ion-button { width: 48px; height: 48px; margin: 0; --color: var(--be-color-text-2); }
+ion-button:focus-within { outline: 2px solid var(--be-color-brand-500); border-radius: 12px; }
+ion-popover { --background: var(--be-color-bg-elevated); --width: min(300px, calc(100vw - 32px)); }
+ion-list, ion-item { --background: var(--be-color-bg-elevated); background: var(--be-color-bg-elevated); color: var(--be-color-text-1); }
+ion-item { --min-height: 48px; }
+ion-item ion-icon { color: var(--be-color-text-2); }
+h2 { font-size: 16px; margin: 16px; }
+.delete-account-item { margin-top: 8px; border-top: 1px solid var(--be-color-text-3); --color: var(--be-color-danger); color: var(--be-color-danger); }
+.delete-account-item ion-icon { color: var(--be-color-danger); }

@@ -14,15 +14,15 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonPopover,
-  IonMenu,
+
+
   IonRefresher,
   IonRefresherContent,
   IonSpinner,
   IonTitle,
-  MenuController,
+
   ModalController,
-  PopoverController,
+
   ToastController,
   AlertController,
   ActionSheetController
@@ -59,7 +59,6 @@ import { Post } from '../models/post.model';
 import { Advertisement } from '../models/advertisement.model';
 import { FileType } from '../models/upload.model';
 import { Profile } from '../models/profile.model';
-import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
@@ -119,15 +118,12 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonSpinner,
     IonRefresher,
     IonRefresherContent,
-    IonMenu,
     IonBadge,
     IonList,
     IonItem,
     IonLabel,
-    IonPopover,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    ProfileDrawerComponent,
     AdCardComponent,
     BannerCarouselComponent,
     PlayerCardComponent,
@@ -168,13 +164,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private router = inject(Router);
   private postService = inject(PostService);
   private adService = inject(AdvertisementService);
-  private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private notificationService = inject(NotificationService);
   private deepLinkService = inject(DeepLinkService);
   private modalController = inject(ModalController);
   private alertController = inject(AlertController);
-  public popoverController = inject(PopoverController);
   private toastController = inject(ToastController);
   private actionSheetController = inject(ActionSheetController);
   private profileService = inject(ProfileService);
@@ -576,122 +570,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   goToCreatePost(): void {
     this.router.navigateByUrl('/create-post');
-  }
-
-  onDrawerMyVideos(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  onDrawerInvites(): void {
-    this.menuController.close('profileMenu');
-    this.openInvitesSheet();
-  }
-
-  onDrawerEditProfile(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  onDrawerBlockedUsers(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/usuarios-bloqueados');
-  }
-
-  openBlockedUsers(): void {
-    this.router.navigateByUrl('/usuarios-bloqueados');
-  }
-
-  onDrawerSignOut(): void {
-    this.menuController.close('profileMenu');
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  onDrawerDeleteAccount(): void {
-    this.menuController.close('profileMenu');
-    this.openDeleteAccountOptions();
-  }
-
-  editPlayerProfile(): void {
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  async openDeleteAccountOptions() {
-    const actionSheet = await this.actionSheetController.create({
-      cssClass: 'be-action-sheet',
-      buttons: [
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          icon: trashOutline,
-          handler: () => {
-            this.confirmDeleteAccount();
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: closeOutline
-        }
-      ]
-    });
-    await actionSheet.present();
-  }
-
-  async confirmDeleteAccount() {
-    const alert = await this.alertController.create({
-      header: 'Excluir sua conta?',
-      message: 'Esta ação é permanente. Sua conta, vídeos, conversas e todos os seus dados serão removidos em um processamento que pode levar algum tempo para ser concluído.',
-      cssClass: 'be-alert-confirm',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          handler: () => {
-            this.deleteAccount();
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  private deleteAccount(): void {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    const userId = decodedToken?.userId;
-
-    if (!userId) {
-      this.showToast('Não foi possível identificar sua conta. Tente novamente.', 'danger');
-      return;
-    }
-
-    this.profileService.requestAccountDeletion(userId).subscribe({
-      next: async () => {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        const toast = await this.toastController.create({
-          message: 'Recebemos sua solicitação. Sua conta e todos os seus dados serão excluídos em breve. Obrigado por ter feito parte da nossa comunidade!',
-          duration: 6000,
-          color: 'success',
-          position: 'bottom'
-        });
-        await toast.present();
-      },
-      error: (err) => {
-        console.error('Error requesting account deletion', err);
-        this.showToast('Não foi possível processar a exclusão da conta. Tente novamente mais tarde.', 'danger');
-      }
-    });
   }
 
   trackByFeedItem(index: number, item: PlayerFeedItem): string {
