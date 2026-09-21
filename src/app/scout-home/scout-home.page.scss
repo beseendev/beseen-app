@@ -299,7 +299,7 @@
 }
 
 .video-list.be-tiktok-container {
-  --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - var(--be-filter-panel-height, 0px) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   width: 100%;
   height: auto;
 }
@@ -352,7 +352,7 @@
 
 @media (min-width: 600px) {
   .video-list.be-tiktok-container {
-    --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - var(--be-filter-panel-height, 0px) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -515,3 +515,22 @@
 .filter-btn { margin: 0; --border-width: 0; }
 .active-filter-chips { margin-top: 4px; }
 .content-section { margin: 0; }
+
+/* Keep filters outside the scroll-snapping video content. */
+ion-header .vitrine-filter-panel {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 12px;
+  background: var(--be-color-bg);
+}
+ion-header .filter-action-row { height: 56px; }
+ion-header .filter-btn, ion-header .clear-filter-btn { margin: 0; min-height: 48px; }
+ion-header .active-filter-chips {
+  height: 44px;
+  margin: 0;
+  padding-bottom: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+ion-header .active-filter-chip { flex-shrink: 0; white-space: nowrap; }

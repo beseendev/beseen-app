@@ -40,13 +40,6 @@
             </ion-popover>
           </div>
   </app-social-header>
-</ion-header>
-<ion-content [fullscreen]="false" class="scout-home-content">
-  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <div class="scout-home-container">
     <section class="vitrine-filter-panel section" *ngIf="selectedTab === 'vitrine'">
       <div class="filter-action-row">
         <ion-button fill="outline" class="filter-btn" (click)="openScoutFilters()" aria-label="Abrir filtros da vitrine">
@@ -72,6 +65,15 @@
         </button>
       </div>
     </section>
+</ion-header>
+<ion-content [fullscreen]="false" class="scout-home-content"
+  [style.--be-filter-panel-height]="selectedTab === 'vitrine' ? (activeFilterChips.length > 0 ? '100px' : '56px') : '0px'">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="scout-home-container">
+
 
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
       <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
