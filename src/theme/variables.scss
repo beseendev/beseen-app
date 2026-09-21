@@ -18,7 +18,7 @@
   --be-color-bg-elevated: #101b31;
   --be-color-surface-1: #162033;
   --be-color-surface-2: #1e293b;
-  --be-color-media-bg: #000000;
+  --be-color-media-bg: var(--be-color-bg);
   --be-color-line: rgba(148, 163, 184, 0.16);
 
   /* Text */

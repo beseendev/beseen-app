@@ -318,7 +318,7 @@
   border-radius: 0;
   overflow: hidden;
   aspect-ratio: 16/9;
-  background: #000
+  background: var(--be-color-media-bg)
 }
 
 .video-overlay {
@@ -370,7 +370,7 @@
   --tiktok-height: calc(100svh - var(--be-social-header-height) - var(--be-navigation-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   width: 100%;
   height: auto;
-  background: #000;
+  background: var(--be-color-media-bg);
   border-radius: 20px;
   margin-top: 16px;
 }
@@ -390,7 +390,7 @@
     border-radius: 16px;
     display: block !important;
     overflow: visible;
-    background: #000;
+    background: var(--be-color-media-bg);
   }
 
   .be-tiktok-card {
