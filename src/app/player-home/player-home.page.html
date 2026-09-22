@@ -188,6 +188,26 @@
                <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
                   <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
                </div>
+
+               <div class="action-with-count" *ngIf="!isOwnVideo(item.video); else ownVideoLikes">
+                 <ion-button
+                  fill="clear"
+                  class="favorite-btn like-btn"
+                  [class.active]="item.video.isLiked"
+                  [disabled]="item.video.isLiking"
+                  (click)="toggleLike(item.video, $event)"
+                  [attr.aria-label]="(item.video.isLiked ? 'Remover curtida do vídeo de ' : 'Curtir vídeo de ') + item.video.athleteName">
+                  <ion-icon [name]="item.video.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+                </ion-button>
+                <span class="action-count">{{ formatLikesLabel(item.video.likes) }}</span>
+               </div>
+
+               <ng-template #ownVideoLikes>
+                 <div class="action-with-count is-static" [attr.aria-label]="formatLikesLabel(item.video.likes) + ' curtidas'">
+                   <ion-icon name="heart" class="static-like-icon"></ion-icon>
+                   <span class="action-count">{{ formatLikesLabel(item.video.likes) }}</span>
+                 </div>
+               </ng-template>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
@@ -254,6 +274,26 @@
                <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
                   <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
                </div>
+
+               <div class="action-with-count" *ngIf="!isOwnVideo(item.video); else ownVideoLikes">
+                 <ion-button
+                  fill="clear"
+                  class="favorite-btn like-btn"
+                  [class.active]="item.video.isLiked"
+                  [disabled]="item.video.isLiking"
+                  (click)="toggleLike(item.video, $event)"
+                  [attr.aria-label]="(item.video.isLiked ? 'Remover curtida do vídeo de ' : 'Curtir vídeo de ') + item.video.athleteName">
+                  <ion-icon [name]="item.video.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+                </ion-button>
+                <span class="action-count">{{ formatLikesLabel(item.video.likes) }}</span>
+               </div>
+
+               <ng-template #ownVideoLikes>
+                 <div class="action-with-count is-static" [attr.aria-label]="formatLikesLabel(item.video.likes) + ' curtidas'">
+                   <ion-icon name="heart" class="static-like-icon"></ion-icon>
+                   <span class="action-count">{{ formatLikesLabel(item.video.likes) }}</span>
+                 </div>
+               </ng-template>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

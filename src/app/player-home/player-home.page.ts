@@ -44,7 +44,9 @@ import {
   flagOutline,
   banOutline,
   trashOutline,
-  notificationsOutline
+  notificationsOutline,
+  heart,
+  heartOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -95,6 +97,8 @@ interface PlayerShowcaseVideo {
   region?: string;
   description: string;
   likes: number;
+  isLiked: boolean;
+  isLiking?: boolean;
   createdAt: string;
   scoutId: string;
   scoutName?: string;
@@ -200,7 +204,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       flagOutline,
       banOutline,
       trashOutline,
-      notificationsOutline
+      notificationsOutline,
+      heart,
+      heartOutline
     });
   }
 
@@ -254,6 +260,54 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
 
   isOwnVideo(video: PlayerShowcaseVideo): boolean {
     return !!this.userProfile?.id && String(video.athleteId) === String(this.userProfile.id);
+  }
+
+  formatLikesLabel(likes: number): string {
+    return this.formatLikes(likes || 0);
+  }
+
+  toggleLike(video: PlayerShowcaseVideo, event?: Event): void {
+    event?.stopPropagation();
+
+    if (video.isLiking) {
+      return;
+    }
+
+    const wasLiked = video.isLiked;
+    const previousLikes = video.likes;
+    const nextLikes = wasLiked ? Math.max(0, previousLikes - 1) : previousLikes + 1;
+
+    this.applyLikeState(video.id, !wasLiked, nextLikes, true);
+
+    const request = wasLiked
+      ? this.postService.unlikePost(video.id)
+      : this.postService.likePost(video.id);
+
+    request.subscribe({
+      next: () => this.applyLikeState(video.id, !wasLiked, nextLikes, false),
+      error: (err) => {
+        console.error('Error toggling like', err);
+        this.applyLikeState(video.id, wasLiked, previousLikes, false);
+        this.showToast(`Não foi possível ${wasLiked ? 'remover a curtida' : 'curtir o vídeo'}. Tente novamente.`, 'danger');
+      }
+    });
+  }
+
+  /** Mantém o mesmo vídeo sincronizado nas abas Novos, Ranking e no destaque. */
+  private applyLikeState(videoId: string, isLiked: boolean, likes: number, isLiking: boolean): void {
+    const apply = (video: PlayerShowcaseVideo | null) => {
+      if (video && video.id === videoId) {
+        video.isLiked = isLiked;
+        video.likes = likes;
+        video.isLiking = isLiking;
+      }
+    };
+
+    this.rankingVideos.forEach(apply);
+    this.newVideos.forEach(apply);
+    apply(this.featuredVideo);
+    this.rankingVideosWithAds.forEach(item => item.type === 'video' && apply(item.video));
+    this.newVideosWithAds.forEach(item => item.type === 'video' && apply(item.video));
   }
 
   toPlayerCardProfile(video: PlayerShowcaseVideo): Partial<Profile> {
@@ -332,13 +386,21 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  private adSlotCache = new Map<number, Advertisement>();
+
   private async interleaveAds(videos: PlayerShowcaseVideo[]): Promise<PlayerFeedItem[]> {
     const result: PlayerFeedItem[] = [];
     for (let i = 0; i < videos.length; i++) {
       result.push({ type: 'video', video: videos[i] });
       if ((i + 1) % 9 === 0) {
         try {
-          const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
+          let ad = this.adSlotCache.get(i);
+          if (!ad) {
+            ad = await firstValueFrom(this.adService.getRandomAdvertisement());
+            if (ad) {
+              this.adSlotCache.set(i, ad);
+            }
+          }
           if (ad) {
             result.push({ type: 'ad', ad });
           }
@@ -569,6 +631,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,
+      isLiked: post.isLiked,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),
       hasInvite: !!post.inviteStatus,

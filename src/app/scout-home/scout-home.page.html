@@ -208,14 +208,17 @@
                   <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
                </div>
 
-               <ion-button
-                fill="clear"
-                class="favorite-btn"
-                [class.active]="item.video.favorito"
-                (click)="toggleFavoriteFromCard(item.video)"
-                [attr.aria-label]="(item.video.favorito ? 'Remover do Radar ' : 'Adicionar ao Radar ') + item.video.athleteName">
-                <ion-icon [name]="item.video.favorito ? 'star' : 'star-outline'"></ion-icon>
-              </ion-button>
+               <div class="action-with-count">
+                 <ion-button
+                  fill="clear"
+                  class="favorite-btn"
+                  [class.active]="item.video.favorito"
+                  (click)="toggleFavoriteFromCard(item.video)"
+                  [attr.aria-label]="(item.video.favorito ? 'Remover do Radar ' : 'Adicionar ao Radar ') + item.video.athleteName">
+                  <ion-icon [name]="item.video.favorito ? 'star' : 'star-outline'"></ion-icon>
+                </ion-button>
+                <span class="action-count">{{ item.video.likes || 0 }}</span>
+               </div>
 
             </div>
           </article>

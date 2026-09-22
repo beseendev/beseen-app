@@ -347,6 +347,10 @@
             <div class="play-overlay" *ngIf="loadedVideos[post.id]">
               <ion-icon name="play-outline"></ion-icon>
             </div>
+            <div class="video-likes-badge">
+              <ion-icon name="heart"></ion-icon>
+              <span>{{ post.likesCount || 0 }}</span>
+            </div>
             <ion-button fill="clear" class="options-btn" *ngIf="isEditing" (click)="openVideoOptions($event, post)">
               <ion-icon name="ellipsis-vertical-outline" slot="icon-only"></ion-icon>
             </ion-button>
@@ -386,6 +390,22 @@
 
     <div class="video-modal-info">
       <p class="video-caption">{{ selectedVideo.caption }}</p>
+
+      <div class="video-like-row">
+        <ion-button
+          fill="clear"
+          class="video-like-btn"
+          [class.active]="selectedVideo.isLiked"
+          [disabled]="isLikingVideo"
+          *ngIf="!isMyProfile"
+          (click)="toggleLikeSelectedVideo($event)"
+          [attr.aria-label]="selectedVideo.isLiked ? 'Remover curtida' : 'Curtir vídeo'">
+          <ion-icon [name]="selectedVideo.isLiked ? 'heart' : 'heart-outline'" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-icon name="heart" class="video-like-static" *ngIf="isMyProfile"></ion-icon>
+        <span class="video-like-count">{{ selectedVideo.likesCount || 0 }} {{ selectedVideo.likesCount === 1 ? 'curtida' : 'curtidas' }}</span>
+      </div>
+
       <ion-button fill="outline" color="danger" *ngIf="isEditing" (click)="deleteVideo(selectedVideo)">
         <ion-icon name="trash-outline" slot="start"></ion-icon>
         Remover vídeo

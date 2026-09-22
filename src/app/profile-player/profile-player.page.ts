@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline, heart, heartOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
@@ -113,7 +113,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline });
+    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline, heart, heartOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -615,6 +615,53 @@ export class ProfilePlayerPage implements OnInit {
   openVideo(post: Post) {
     this.selectedVideo = post;
     this.isVideoModalOpen = true;
+  }
+
+  isLikingVideo = false;
+
+  toggleLikeSelectedVideo(event?: Event): void {
+    event?.stopPropagation();
+
+    const post = this.selectedVideo;
+    if (!post || this.isLikingVideo || this.isMyProfile) {
+      return;
+    }
+
+    const wasLiked = post.isLiked;
+    const previousLikes = post.likesCount;
+    const nextLikes = wasLiked ? Math.max(0, previousLikes - 1) : previousLikes + 1;
+
+    this.isLikingVideo = true;
+    this.applyLikeToPost(post.id, !wasLiked, nextLikes);
+
+    const request = wasLiked
+      ? this.postService.unlikePost(post.id)
+      : this.postService.likePost(post.id);
+
+    request.pipe(finalize(() => (this.isLikingVideo = false))).subscribe({
+      error: async (err) => {
+        console.error('Error toggling like', err);
+        this.applyLikeToPost(post.id, wasLiked, previousLikes);
+        const toast = await this.toastController.create({
+          message: `Não foi possível ${wasLiked ? 'remover a curtida' : 'curtir o vídeo'}. Tente novamente.`,
+          duration: 2500,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
+      }
+    });
+  }
+
+  private applyLikeToPost(postId: string, isLiked: boolean, likesCount: number): void {
+    const posts = this.userPostsSubject.getValue().map(p =>
+      p.id === postId ? { ...p, isLiked, likesCount } : p
+    );
+    this.userPostsSubject.next(posts);
+
+    if (this.selectedVideo?.id === postId) {
+      this.selectedVideo = { ...this.selectedVideo, isLiked, likesCount };
+    }
   }
 
   onVideoLoaded(postId: string) {
