@@ -26,6 +26,7 @@ interface PostResponseDto {
   likesCount: number;
   commentsCount: number;
   isLiked: boolean;
+  isFavorited: boolean;
   createdAt: string;
   position?: string;
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
@@ -60,6 +61,7 @@ export class PostService {
       likesCount: postResponse.likesCount,
       commentsCount: postResponse.commentsCount,
       isLiked: postResponse.isLiked,
+      isFavorited: postResponse.isFavorited,
       createdAt: postResponse.createdAt,
       position: postResponse.position || postResponse.user.position,
       inviteStatus: postResponse.inviteStatus,
@@ -179,6 +181,20 @@ export class PostService {
     );
   }
 
+  /** Favorita um post (perfil CLUBE). Independente de curtidas — usa a tabela/endpoint próprio de favoritos. */
+  favoritePost(postId: string): Observable<void> {
+    return this.apiService.post<void>(`/posts/${postId}/favorite`, {}).pipe(
+      tap(() => this.updatePostFavoritedInSubjects(postId, true))
+    );
+  }
+
+  /** Remove o favorito de um post (perfil CLUBE). Independente de curtidas. */
+  unfavoritePost(postId: string): Observable<void> {
+    return this.apiService.delete<void>(`/posts/${postId}/favorite`).pipe(
+      tap(() => this.updatePostFavoritedInSubjects(postId, false))
+    );
+  }
+
   sendInvite(postId: string): Observable<void> {
     return this.apiService.post<void>(`/invites/post/${postId}`, {}).pipe(
       tap(() => {
@@ -246,6 +262,20 @@ export class PostService {
       const currentPosts = subject.getValue();
       const updatedPosts = currentPosts.map(post =>
         post.id === postId ? { ...post, isLiked: newLikedStatus, likesCount: newLikesCount } : post
+      );
+      subject.next(updatedPosts);
+    };
+
+    updateSubject(this.homePosts);
+    updateSubject(this.userPostsSubject);
+  }
+
+  /** Atualiza somente o estado de favorito (sem tocar em curtidas/likesCount). */
+  private updatePostFavoritedInSubjects(postId: string, isFavorited: boolean) {
+    const updateSubject = (subject: BehaviorSubject<Post[]>) => {
+      const currentPosts = subject.getValue();
+      const updatedPosts = currentPosts.map(post =>
+        post.id === postId ? { ...post, isFavorited } : post
       );
       subject.next(updatedPosts);
     };

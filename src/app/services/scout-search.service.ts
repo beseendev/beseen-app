@@ -34,6 +34,7 @@ interface ScoutPostResponseDto {
   likesCount: number;
   commentsCount: number;
   isLiked: boolean;
+  isFavorited: boolean;
   createdAt: string;
   position?: string;
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
@@ -127,16 +128,10 @@ export class ScoutSearchService {
     this.searchVideos(this.currentFilters, false);
   }
 
-  updatePostFavoriteState(postId: string, isLiked: boolean): void {
-    const updated = this.resultsSubject.value.map(post => {
-      if (post.id !== postId) return post;
-      const likesDelta = isLiked && !post.isLiked ? 1 : !isLiked && post.isLiked ? -1 : 0;
-      return {
-        ...post,
-        isLiked,
-        likesCount: Math.max(0, post.likesCount + likesDelta)
-      };
-    });
+  updatePostFavoriteState(postId: string, isFavorited: boolean): void {
+    const updated = this.resultsSubject.value.map(post =>
+      post.id === postId ? { ...post, isFavorited } : post
+    );
 
     this.resultsSubject.next(updated);
   }
@@ -262,6 +257,7 @@ export class ScoutSearchService {
       likesCount: postResponse.likesCount,
       commentsCount: postResponse.commentsCount,
       isLiked: postResponse.isLiked,
+      isFavorited: postResponse.isFavorited,
       createdAt: postResponse.createdAt,
       position: postResponse.position || postResponse.user.position,
       inviteStatus: postResponse.inviteStatus,

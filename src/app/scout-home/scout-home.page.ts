@@ -499,8 +499,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const postId = card.postId;
 
     const action = isCurrentlyFavorite
-      ? this.postService.unlikePost(postId)
-      : this.postService.likePost(postId);
+      ? this.postService.unfavoritePost(postId)
+      : this.postService.favoritePost(postId);
 
     action.subscribe({
       next: async () => {
@@ -661,7 +661,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao,
       localidade: (post.user as any).region,
       destaque: post.caption,
-      favorito: post.isLiked,
+      favorito: post.isFavorited,
       likes: post.likesCount,
       inviteStatus: post.inviteStatus,
       matchedSkills: this.getMatchedSkills(post.skills)
