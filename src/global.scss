@@ -473,10 +473,9 @@ ion-segment-button {
   --color: #fff;
   --padding-start: 0;
   --padding-end: 0;
-  --background: rgba(2, 6, 23, 0.22);
-  --background-hover: rgba(2, 6, 23, 0.34);
-  --background-activated: rgba(2, 6, 23, 0.46);
-  --border-radius: 999px;
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
   position: absolute;
   top: calc(82px + env(safe-area-inset-top));
   right: 18px;
@@ -493,20 +492,22 @@ ion-segment-button {
   color: #fff;
 }
 
+.video-mute-btn.is-unmuted ion-icon {
+  color: var(--be-color-brand-500);
+}
+
 .video-mute-btn::part(native) {
   min-width: 48px;
   min-height: 48px;
-  backdrop-filter: blur(8px);
 }
 
 .video-report-btn {
   --color: #fff;
   --padding-start: 0;
   --padding-end: 0;
-  --background: rgba(2, 6, 23, 0.22);
-  --background-hover: rgba(2, 6, 23, 0.34);
-  --background-activated: rgba(2, 6, 23, 0.46);
-  --border-radius: 999px;
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
   position: absolute;
   top: calc(142px + env(safe-area-inset-top));
   right: 18px;
@@ -526,7 +527,6 @@ ion-segment-button {
 .video-report-btn::part(native) {
   min-width: 48px;
   min-height: 48px;
-  backdrop-filter: blur(8px);
 }
 
 .status-tag {
@@ -962,7 +962,6 @@ button.be-tiktok-avatar { cursor: pointer; color: inherit; padding: 0; backgroun
 .scout-home-content .section-heading { padding: 12px 18px; margin: 0; }
 .scout-home-content .section-heading .eyebrow { display: none; }
 .scout-home-content .section-heading h2 { margin: 0; font-size: 16px; }
-.arena-content app-banner-carousel, .scout-home-content app-banner-carousel { display: block; background: var(--be-color-bg); }
 @media (min-width: 700px) {
   .arena-content .video-stack.be-tiktok-container, .scout-home-content .video-list.be-tiktok-container { max-width: 520px; margin-inline: auto; }
 }

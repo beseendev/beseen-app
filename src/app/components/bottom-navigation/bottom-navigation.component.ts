@@ -7,6 +7,7 @@ import { home, homeOutline, add, mailOutline, search, searchOutline, star, starO
 import { Subscription, filter } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
+import { HomeScrollService } from '../../services/home-scroll.service';
 import { InvitesSheetComponent } from '../../player-home/components/invites-sheet/invites-sheet.component';
 
 @Component({
@@ -21,6 +22,7 @@ export class BottomNavigationComponent implements OnDestroy {
   private auth = inject(AuthService);
   private modalController = inject(ModalController);
   readonly chat = inject(ChatService);
+  private homeScroll = inject(HomeScrollService);
   private subscriptions = new Subscription();
   role: string | null = null;
   visible = false;
@@ -59,6 +61,10 @@ export class BottomNavigationComponent implements OnDestroy {
   }
 
   navigate(destination: string): void {
+    if (destination === 'home' && this.active === 'home') {
+      this.homeScroll.requestScrollToTop();
+      return;
+    }
     if (destination === 'favorites') {
       void this.router.navigate(['/scout-home'], { queryParams: { tab: 'favoritos' } });
     } else {

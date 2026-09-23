@@ -5,7 +5,8 @@ button { position: relative; border: 0; background: transparent; color: var(--be
 ion-icon { font-size: 23px; }
 .selected { color: var(--be-color-brand-500); font-weight: 700; }
 .selected::before { content: ''; position: absolute; top: 0; width: 24px; height: 3px; border-radius: 0 0 3px 3px; background: currentColor; }
-.publish-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-top: -7px; border-radius: 12px; background: var(--be-color-brand-500); color: var(--ion-color-primary-contrast); }
+.publish-icon { display: flex; align-items: center; justify-content: center; width: 23px; height: 23px; margin-bottom: 3px; border-radius: 7px; background: var(--be-color-brand-500); color: var(--ion-color-primary-contrast); }
+.publish-icon ion-icon { font-size: 17px; }
 .publish > span:last-child { color: var(--be-color-text-1); }
 .icon-wrap { position: relative; height: 23px; }
 .badge { position: absolute; left: 16px; top: -5px; background: var(--be-color-danger); color: var(--be-color-text-1); padding: 2px 4px; border-radius: 20px; font-size: 10px; }

@@ -36,7 +36,6 @@
 
   <div class="scout-home-container">
 
-
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
       <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
         <ng-container *ngFor="let item of feedItems; trackBy: trackByVideoCard">
@@ -69,8 +68,8 @@
               <ion-button size="small" fill="solid" (click)="vitrinePlayer.retry($event)">Tentar novamente</ion-button>
             </div>
 
-            <ion-button fill="clear" class="video-mute-btn" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
-              <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            <ion-button fill="clear" class="video-mute-btn" [class.is-unmuted]="!vitrinePlayer.isMuted" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
             </ion-button>
 
             <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
@@ -113,6 +112,7 @@
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
+          <app-banner-carousel *ngIf="item.type === 'banner'"></app-banner-carousel>
         </ng-container>
       </div>
 
@@ -164,12 +164,8 @@
       </div>
     </section>
 
-    <app-banner-carousel class="section"></app-banner-carousel>
-
     <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">
-      <app-banner-carousel class="section"></app-banner-carousel>
-
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Carregando mais atletas..."></ion-infinite-scroll-content>
     </ion-infinite-scroll>
   </div>
 </ion-content>

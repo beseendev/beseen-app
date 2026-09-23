@@ -1,20 +1,25 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { settingsOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline } from 'ionicons/icons';
+import { settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../../services/auth.service';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
   selector: 'app-profile-settings',
   standalone: true,
-  imports: [IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel],
+  imports: [CommonModule, IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel],
   templateUrl: './profile-settings.component.html',
   styleUrls: ['./profile-settings.component.scss']
 })
 export class ProfileSettingsComponent {
   @Input() accountType: 'player' | 'scout' = 'player';
+  /** Exibe o item "Editar perfil" no topo do menu (emite (editProfile) ao ser selecionado). */
+  @Input() showEditProfile = false;
+  @Output() editProfile = new EventEmitter<void>();
+  @ViewChild('settings') private settingsPopover!: IonPopover;
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
@@ -23,7 +28,12 @@ export class ProfileSettingsComponent {
   private readonly toastController = inject(ToastController);
 
   constructor() {
-    addIcons({ settingsOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline });
+    addIcons({ settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline });
+  }
+
+  /** Abre o menu de configurações programaticamente (ex.: ao clicar no card do perfil). */
+  present(): void {
+    void this.settingsPopover?.present();
   }
 
   navigate(path: string): void {

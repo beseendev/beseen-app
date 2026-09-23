@@ -4,7 +4,7 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline, flagOutline } from 'ionicons/icons';
+import { locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { Profile } from '../../../models/profile.model';
 import { ChatService } from '../../../services/chat.service';
@@ -13,13 +13,14 @@ import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
 import { PlayerCardComponent } from '../../../components/player-card/player-card.component';
 import { SubscriptionService } from "../../../services/subscription.service";
 import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewport-video-player.directive';
+import { BannerCarouselComponent } from '../../../components/banner-carousel/banner-carousel.component';
 
 @Component({
   selector: 'app-scout-favorites-tab',
   templateUrl: './scout-favorites-tab.component.html',
   styleUrls: ['./scout-favorites-tab.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, AdCardComponent, PlayerCardComponent, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonicModule, AdCardComponent, PlayerCardComponent, ViewportVideoPlayerDirective, BannerCarouselComponent]
 })
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
@@ -42,8 +43,8 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       locationOutline,
       star,
       starOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
+      volumeHigh,
+      volumeMute,
       flagOutline
     });
   }
@@ -133,6 +134,8 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   trackByCard(_: number, item: ScoutFeedItem): string {
-    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.postId;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 }

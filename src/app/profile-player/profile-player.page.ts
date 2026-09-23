@@ -56,6 +56,7 @@ import { PlayerEvaluationModalComponent } from '../components/player-evaluation-
 })
 export class ProfilePlayerPage implements OnInit {
   @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
+  @ViewChild('profileSettings') profileSettings?: ProfileSettingsComponent;
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
@@ -201,6 +202,7 @@ export class ProfilePlayerPage implements OnInit {
     const buttons: any[] = [];
 
     if (this.isMyProfile) {
+      this.profileSettings?.present();
       return;
     } else {
       if (this.isScoutViewer && !this.isBlockedByMe) {

@@ -1,5 +1,5 @@
 <div class="social-header">
-  <span class="wordmark" aria-label="BeSeen">Be<span>Seen</span></span>
+  <button type="button" class="wordmark" (click)="onLogoClick()" aria-label="BeSeen, voltar ao topo">Be<span>Seen</span></button>
   <div class="actions">
     <button type="button" (click)="notifications.emit()" [attr.aria-label]="'Notificações, ' + notificationsCount + ' não lidas'"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon><span class="badge" *ngIf="notificationsCount > 0">{{ notificationsCount }}</span></button>
     <button type="button" (click)="messages.emit()" [attr.aria-label]="'Mensagens, ' + messagesCount + ' não lidas'" aria-haspopup="dialog"><ion-icon name="chatbubble-ellipses-outline" aria-hidden="true"></ion-icon><span class="badge" *ngIf="messagesCount > 0">{{ messagesCount }}</span></button>

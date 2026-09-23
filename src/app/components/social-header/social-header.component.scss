@@ -1,6 +1,6 @@
 :host { display: block; background: var(--be-color-bg); padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--be-color-line); }
 .social-header { height: var(--be-social-header-height); max-width: 680px; margin: auto; display: flex; align-items: center; justify-content: space-between; padding: 0 12px 0 18px; }
-.wordmark { font-size: 25px; font-weight: 800; letter-spacing: -1.2px; color: var(--be-color-text-1); }
+.wordmark { width: auto; height: auto; display: inline-block; font: inherit; font-size: 25px; font-weight: 800; letter-spacing: -1.2px; color: var(--be-color-text-1); border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer; }
 .wordmark span { color: var(--be-color-brand-500); }
 .actions { display: flex; align-items: center; }
 button { width: 48px; height: 48px; display: grid; place-items: center; border: 0; background: transparent; color: var(--be-color-text-1); position: relative; cursor: pointer; }

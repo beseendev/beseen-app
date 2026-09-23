@@ -36,8 +36,8 @@ import {
   personCircleOutline,
   starOutline,
   menuOutline,
-  volumeHighOutline,
-  volumeMuteOutline,
+  volumeHigh,
+  volumeMute,
   mailOutline,
   flagOutline,
   banOutline,
@@ -48,6 +48,7 @@ import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthService, JwtPayload } from '../services/auth.service';
+import { HomeScrollService } from '../services/home-scroll.service';
 import { ApiService } from '../services/api.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
@@ -101,7 +102,7 @@ interface PlayerShowcaseVideo {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
 }
 
-export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { type: 'ad', ad: Advertisement };
+export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { type: 'ad', ad: Advertisement } | { type: 'banner' };
 
 @Component({
   selector: 'app-player-home',
@@ -172,6 +173,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private toastController = inject(ToastController);
   private actionSheetController = inject(ActionSheetController);
   private profileService = inject(ProfileService);
+  private homeScrollService = inject(HomeScrollService);
+  private homeScrollSubscription?: Subscription;
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
@@ -185,8 +188,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       personCircleOutline,
       starOutline,
       helpCircleOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
+      volumeHigh,
+      volumeMute,
       mailOutline,
       flagOutline,
       banOutline,
@@ -284,6 +287,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.homeScrollSubscription = this.homeScrollService.onScrollToTop.subscribe(() => {
+      void this.content?.scrollToTop(300);
+    });
+
     this.chatService.threadsUnreadCount$.subscribe(count => {
       this.chatUnreadCount = count;
     });
@@ -327,6 +334,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     const result: PlayerFeedItem[] = [];
     for (let i = 0; i < videos.length; i++) {
       result.push({ type: 'video', video: videos[i] });
+      if (i === 1) {
+        // Carrossel de banners (fundadoras/parceiros) logo depois do segundo vídeo.
+        result.push({ type: 'banner' });
+      }
       if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
@@ -573,7 +584,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   trackByFeedItem(index: number, item: PlayerFeedItem): string {
-    return item.type === 'video' ? item.video.id : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.id;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 
   trackByVideoId(index: number, video: PlayerShowcaseVideo): string {
@@ -772,5 +785,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.threadsSubscription) {
       this.threadsSubscription.unsubscribe();
     }
+    this.homeScrollSubscription?.unsubscribe();
   }
 }

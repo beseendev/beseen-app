@@ -41,8 +41,8 @@
               <ion-button size="small" fill="solid" (click)="newPlayer.retry($event)">Tentar novamente</ion-button>
             </div>
 
-            <ion-button fill="clear" class="video-mute-btn" (click)="newPlayer.toggleMute($event)" [attr.aria-label]="newPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
-              <ion-icon [name]="newPlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            <ion-button fill="clear" class="video-mute-btn" [class.is-unmuted]="!newPlayer.isMuted" (click)="newPlayer.toggleMute($event)" [attr.aria-label]="newPlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="newPlayer.isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
             </ion-button>
 
             <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
@@ -70,10 +70,10 @@
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
+          <app-banner-carousel *ngIf="item.type === 'banner'"></app-banner-carousel>
         </ng-container>
       </div>
     </section>
-    <app-banner-carousel class="section"></app-banner-carousel>
   </div>
 
   <ion-infinite-scroll (ionInfinite)="loadMorePosts($event)">

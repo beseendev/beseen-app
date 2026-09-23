@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SocialHeaderComponent } from '../components/social-header/social-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
-import { IonicModule, ModalController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
+import { IonicModule, IonContent, ModalController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { filter, finalize, take } from 'rxjs/operators';
@@ -19,8 +19,8 @@ import {
   locationOutline,
   cardOutline,
   helpCircleOutline,
-  volumeHighOutline,
-  volumeMuteOutline, flagOutline,
+  volumeHigh,
+  volumeMute, flagOutline,
   banOutline,
   trashOutline,
   closeOutline,
@@ -37,6 +37,7 @@ import { Advertisement } from '../models/advertisement.model';
 import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
+import { HomeScrollService } from '../services/home-scroll.service';
 import { PostService } from '../services/post.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
@@ -64,7 +65,7 @@ import {
   removeScoutVideoFilter
 } from '../models/scout-search.model';
 
-export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
+export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement } | { type: 'banner' };
 
 @Component({
   selector: 'app-scout-home',
@@ -76,10 +77,12 @@ export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } |
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
   @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
+  @ViewChild(IonContent) content!: IonContent;
 
   videoPosts: Post[] = [];
   private navigationRoute = inject(ActivatedRoute);
   private navigationDestroy = inject(DestroyRef);
+  private homeScrollService = inject(HomeScrollService);
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
@@ -154,8 +157,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       locationOutline,
       cardOutline,
       helpCircleOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
+      volumeHigh,
+      volumeMute,
       flagOutline,
       banOutline,
       trashOutline,
@@ -237,6 +240,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.navigationRoute.queryParamMap.pipe(takeUntilDestroyed(this.navigationDestroy)).subscribe(params => {
       this.setActiveTab(params.get('tab') === 'favoritos' ? 'favoritos' : 'vitrine');
     });
+    this.homeScrollService.onScrollToTop.pipe(takeUntilDestroyed(this.navigationDestroy)).subscribe(() => {
+      void this.content?.scrollToTop(300);
+    });
     this.userRole = this.authService.getDecodedToken<JwtPayload>()?.role || null;
 
     this.authService.userRole$.subscribe(role => {
@@ -306,6 +312,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const result: ScoutFeedItem[] = [];
     for (let i = 0; i < cards.length; i++) {
       result.push({ type: 'video', video: cards[i] });
+      if (i === 1) {
+        // Carrossel de banners (fundadoras/parceiros) logo depois do segundo vídeo.
+        result.push({ type: 'banner' });
+      }
       if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
@@ -678,7 +688,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   trackByVideoCard(_: number, item: ScoutFeedItem): string {
-    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.postId;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 
   async openScoutFilters(): Promise<void> {

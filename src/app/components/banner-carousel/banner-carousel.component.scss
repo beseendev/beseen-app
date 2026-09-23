@@ -2,7 +2,22 @@
   display: block;
 }
 
+// Usado como mais um "slide" do feed vertical (igual vídeo/anúncio): ocupa a tela
+// inteira e é um ponto de parada obrigatório do scroll-snap, em vez de um cartão
+// pequeno que sobra encaixado por cima do próximo vídeo.
 .banner-carousel-section {
+  height: var(--tiktok-height);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 24px;
+  background: var(--be-color-media-bg);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  scroll-margin-top: env(safe-area-inset-top, 0px);
+
   .eyebrow {
     margin: 0;
     color: var(--be-color-brand-500);
