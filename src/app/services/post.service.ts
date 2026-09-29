@@ -98,6 +98,12 @@ export class PostService {
     );
   }
 
+  getMyPostById(postId: string): Observable<Post> {
+    return this.apiService.get<PostResponseDto>(`/posts/my-posts/${postId}`).pipe(
+      map(postDto => this.mapPostResponseToPost(postDto))
+    );
+  }
+
   updatePostCaption(postId: string, caption: string): Observable<Post> {
     return this.apiService.patch<PostResponseDto>(`/posts/${postId}`, { caption }).pipe(
       map(postDto => this.mapPostResponseToPost(postDto))

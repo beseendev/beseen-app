@@ -51,6 +51,11 @@ export const routes: Routes = [
     canActivate: [authGuard, subscriptionGuard]
   },
   {
+    path: 'post/:id',
+    loadComponent: () => import('./post-viewer/post-viewer.page').then(m => m.PostViewerPage),
+    canActivate: [authGuard, subscriptionGuard]
+  },
+  {
     path: 'create-post',
     loadComponent: () => import('./create-post/create-post.page').then(m => m.CreatePostPage),
     canActivate: [authGuard, subscriptionGuard]

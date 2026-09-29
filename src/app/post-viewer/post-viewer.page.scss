@@ -1,0 +1,70 @@
+.post-viewer-content {
+  --background: var(--be-color-media-bg);
+}
+
+.post-viewer-back {
+  --color: #fff;
+  --padding-start: 0;
+  --padding-end: 0;
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  left: 12px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.48));
+}
+
+.post-viewer-card {
+  --tiktok-height: 100%;
+  height: 100%;
+  min-height: 300px;
+  border-radius: 0;
+  margin: 0 auto;
+  max-width: 520px;
+  background: var(--be-color-media-bg);
+}
+
+.post-viewer-card .video-mute-btn {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.post-viewer-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-viewer-card .video-report-btn {
+  top: calc(62px + env(safe-area-inset-top, 0px));
+}
+
+.post-viewer-card .be-tiktok-overlay {
+  padding: 70px 76px 24px 18px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.76));
+}
+
+.post-viewer-card .be-tiktok-actions {
+  bottom: 24px;
+  right: 14px;
+}
+
+.profile-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+button.be-tiktok-avatar {
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  min-width: 48px;
+  min-height: 48px;
+}
