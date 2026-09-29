@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonButton, IonContent, IonIcon, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -19,11 +19,13 @@ import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-vide
   standalone: true,
   imports: [CommonModule, IonButton, IonContent, IonIcon, IonSpinner, PlayerCardComponent, ViewportVideoPlayerDirective]
 })
-export class PostViewerPage implements OnInit {
+export class PostViewerPage implements OnInit, OnDestroy {
   post: Post | null = null;
   isLoading = true;
   // my-posts só devolve posts do próprio usuário; o endpoint público do compartilhamento deve mudar isso
   isMine = true;
+  showLikeBurst = false;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -79,6 +81,33 @@ export class PostViewerPage implements OnInit {
         post.likesCount = previousLikes;
         console.error('Error toggling like', err);
       }
+    });
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.likeBurstTimeout);
+  }
+
+  onDoubleTapLike(): void {
+    const post = this.post;
+    if (post && !post.isLiked) {
+      post.isLiked = true;
+      post.likesCount = post.likesCount + 1;
+
+      this.postService.likePost(post.id).subscribe({
+        error: err => {
+          post.isLiked = false;
+          post.likesCount = Math.max(0, post.likesCount - 1);
+          console.error('Error liking video on double tap', err);
+        }
+      });
+    }
+
+    this.showLikeBurst = false;
+    clearTimeout(this.likeBurstTimeout);
+    setTimeout(() => {
+      this.showLikeBurst = true;
+      this.likeBurstTimeout = setTimeout(() => (this.showLikeBurst = false), 700);
     });
   }
 

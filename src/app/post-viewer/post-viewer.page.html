@@ -18,7 +18,8 @@
       controlsList="nodownload nopictureinpicture"
       preload="metadata"
       class="be-tiktok-video"
-      [class.is-horizontal]="player.isHorizontal">
+      [class.is-horizontal]="player.isHorizontal"
+      (doubleTap)="onDoubleTapLike()">
     </video>
 
     <div class="video-player-state loading" *ngIf="player.isLoading && !player.hasError && !player.showTapGate">
@@ -26,6 +27,9 @@
     </div>
     <div class="video-player-state pulse" *ngIf="player.showPulse">
       <ion-icon [name]="player.isPaused ? 'play' : 'pause'"></ion-icon>
+    </div>
+    <div class="like-burst" *ngIf="showLikeBurst">
+      <ion-icon name="heart"></ion-icon>
     </div>
     <div class="video-player-state tap-gate" *ngIf="player.showTapGate">
       <span>Toque para assistir</span>
