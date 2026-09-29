@@ -136,6 +136,21 @@ export class ScoutSearchService {
     this.resultsSubject.next(updated);
   }
 
+  /** Atualiza somente o estado de curtida (sem tocar em favoritos). */
+  updatePostLikeState(postId: string, isLiked: boolean): void {
+    const updated = this.resultsSubject.value.map(post => {
+      if (post.id !== postId) return post;
+      const likesDelta = isLiked && !post.isLiked ? 1 : !isLiked && post.isLiked ? -1 : 0;
+      return {
+        ...post,
+        isLiked,
+        likesCount: Math.max(0, post.likesCount + likesDelta)
+      };
+    });
+
+    this.resultsSubject.next(updated);
+  }
+
   updatePostInviteState(postId: string, inviteStatus: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null): void {
     const updated = this.resultsSubject.value.map(post =>
       post.id === postId ? { ...post, inviteStatus } : post

@@ -97,6 +97,7 @@ export interface FavoriteAthleteVideoCard {
   localidade: string;
   destaque: string;
   favorito: boolean;
+  isLiked: boolean;
   likes?: number;
   inviteStatus?: InviteStatus | null;
   isInviting?: boolean;

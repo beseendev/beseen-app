@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ViewChild, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {
   IonAvatar,
-  IonBadge,
   IonButton,
   IonButtons,
   IonContent,
@@ -11,11 +10,6 @@ import {
   IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonItem,
-  IonLabel,
-  IonList,
-
-
   IonRefresher,
   IonRefresherContent,
   IonSpinner,
@@ -42,7 +36,9 @@ import {
   flagOutline,
   banOutline,
   trashOutline,
-  notificationsOutline
+  notificationsOutline,
+  heart,
+  heartOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -93,6 +89,7 @@ interface PlayerShowcaseVideo {
   region?: string;
   description: string;
   likes: number;
+  isLiked: boolean;
   createdAt: string;
   scoutId: string;
   scoutName?: string;
@@ -119,10 +116,6 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
     IonSpinner,
     IonRefresher,
     IonRefresherContent,
-    IonBadge,
-    IonList,
-    IonItem,
-    IonLabel,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     AdCardComponent,
@@ -194,7 +187,28 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       flagOutline,
       banOutline,
       trashOutline,
-      notificationsOutline
+      notificationsOutline,
+      heart,
+      heartOutline
+    });
+  }
+
+  toggleLike(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+
+    const previousIsLiked = video.isLiked;
+    const previousLikes = video.likes;
+
+    video.isLiked = !video.isLiked;
+    video.likes = video.isLiked ? previousLikes + 1 : Math.max(0, previousLikes - 1);
+
+    const action = previousIsLiked ? this.postService.unlikePost(video.id) : this.postService.likePost(video.id);
+    action.subscribe({
+      error: (err) => {
+        video.isLiked = previousIsLiked;
+        video.likes = previousLikes;
+        console.error('Error toggling like', err);
+      }
     });
   }
 
@@ -571,6 +585,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,
+      isLiked: post.isLiked,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),
       hasInvite: !!post.inviteStatus,

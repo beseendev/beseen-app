@@ -4,7 +4,7 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline } from 'ionicons/icons';
+import { locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline, heart, heartOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { Profile } from '../../../models/profile.model';
 import { ChatService } from '../../../services/chat.service';
@@ -25,6 +25,7 @@ import { BannerCarouselComponent } from '../../../components/banner-carousel/ban
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() likeToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() reportRequested = new EventEmitter<FavoriteAthleteVideoCard>();
@@ -45,7 +46,9 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
       starOutline,
       volumeHigh,
       volumeMute,
-      flagOutline
+      flagOutline,
+      heart,
+      heartOutline
     });
   }
 
@@ -102,6 +105,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   toggleFavorite(card: FavoriteAthleteVideoCard): void {
     this.favoriteToggled.emit(card);
+  }
+
+  toggleLike(card: FavoriteAthleteVideoCard): void {
+    this.likeToggled.emit(card);
   }
 
   report(card: FavoriteAthleteVideoCard): void {

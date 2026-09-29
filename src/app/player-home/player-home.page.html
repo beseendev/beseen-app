@@ -67,6 +67,18 @@
             <div class="be-tiktok-actions">
                <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
                   <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card></button>
+
+               <div class="like-action">
+                 <ion-button
+                  fill="clear"
+                  class="like-btn"
+                  [class.active]="item.video.isLiked"
+                  (click)="toggleLike(item.video, $event)"
+                  [attr.aria-label]="(item.video.isLiked ? 'Descurtir video de ' : 'Curtir video de ') + item.video.athleteName">
+                  <ion-icon [name]="item.video.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+                </ion-button>
+                <span class="like-count">{{ item.video.likes }}</span>
+               </div>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

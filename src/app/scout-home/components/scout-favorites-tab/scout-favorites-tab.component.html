@@ -111,6 +111,18 @@
             <ion-icon name="star"></ion-icon>
           </ion-button>
 
+           <div class="like-action">
+             <ion-button
+              fill="clear"
+              class="like-btn"
+              [class.active]="item.video.isLiked"
+              (click)="toggleLike(item.video)"
+              [attr.aria-label]="(item.video.isLiked ? 'Descurtir video de ' : 'Curtir video de ') + item.video.athleteName">
+              <ion-icon [name]="item.video.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+            </ion-button>
+            <span class="like-count">{{ item.video.likes || 0 }}</span>
+           </div>
+
         </div>
       </article>
       <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

@@ -28,6 +28,8 @@ import {
   search,
   searchOutline,
   notificationsOutline,
+  heart,
+  heartOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -166,7 +168,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       funnelOutline,
       search,
       searchOutline,
-      notificationsOutline
+      notificationsOutline,
+      heart,
+      heartOutline
 
     });
   }
@@ -517,6 +521,24 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     });
   }
 
+  async toggleLike(card: FavoriteAthleteVideoCard): Promise<void> {
+    const isCurrentlyLiked = card.isLiked;
+    const postId = card.postId;
+
+    const action = isCurrentlyLiked ? this.postService.unlikePost(postId) : this.postService.likePost(postId);
+
+    action.subscribe({
+      next: async () => {
+        if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+          this.scoutSearchService.updatePostLikeState(postId, !isCurrentlyLiked);
+          this.videoPosts = this.scoutSearchService.currentResults;
+        }
+        await this.updateFeedItems();
+      },
+      error: (err) => console.error('Error toggling like', err)
+    });
+  }
+
   sendInvite(card: FavoriteAthleteVideoCard): void {
     if (!this.subscriptionService.canSendInvites()) {
         this.showToast('Seu plano atual não permite enviar convites. Faça um upgrade!', 'warning');
@@ -662,6 +684,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       localidade: (post.user as any).region,
       destaque: post.caption,
       favorito: post.isFavorited,
+      isLiked: post.isLiked,
       likes: post.likesCount,
       inviteStatus: post.inviteStatus,
       matchedSkills: this.getMatchedSkills(post.skills)
