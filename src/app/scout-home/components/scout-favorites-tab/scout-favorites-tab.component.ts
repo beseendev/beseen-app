@@ -26,6 +26,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
   @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() likeToggled = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() doubleTapLike = new EventEmitter<FavoriteAthleteVideoCard>();
+
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() reportRequested = new EventEmitter<FavoriteAthleteVideoCard>();
@@ -93,6 +97,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
     if (this.videoObserver) {
       this.videoObserver.disconnect();
     }
+    clearTimeout(this.likeBurstTimeout);
   }
 
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {
@@ -109,6 +114,23 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   toggleLike(card: FavoriteAthleteVideoCard): void {
     this.likeToggled.emit(card);
+  }
+
+  onDoubleTap(card: FavoriteAthleteVideoCard): void {
+    this.doubleTapLike.emit(card);
+    this.showLikeBurst(card.postId);
+  }
+
+  private showLikeBurst(postId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = postId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
+    });
   }
 
   report(card: FavoriteAthleteVideoCard): void {

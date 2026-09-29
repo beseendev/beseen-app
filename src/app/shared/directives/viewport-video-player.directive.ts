@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
@@ -15,9 +15,14 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
   private static gestureUnlockRegistered = false;
   private static gestureUnlocked = false;
   private static firstInstanceClaimed = false;
+  private static readonly DOUBLE_TAP_WINDOW_MS = 300;
+
+  @Output() doubleTap = new EventEmitter<void>();
 
   private observer?: IntersectionObserver;
   private pulseTimer?: ReturnType<typeof setTimeout>;
+  private pendingTapTimer?: ReturnType<typeof setTimeout>;
+  private lastTapAt = 0;
   private isActive = false;
   private isFirstInstance = false;
 
@@ -83,16 +88,41 @@ export class ViewportVideoPlayerDirective implements OnInit, OnDestroy {
     if (this.pulseTimer) {
       clearTimeout(this.pulseTimer);
     }
+
+    if (this.pendingTapTimer) {
+      clearTimeout(this.pendingTapTimer);
+    }
   }
 
   @HostListener('click', ['$event'])
-  togglePlayback(event?: Event): void {
+  onTap(event?: Event): void {
     event?.stopPropagation();
 
     if (this.hasError) {
       return;
     }
 
+    const now = Date.now();
+    const isDoubleTap = now - this.lastTapAt < ViewportVideoPlayerDirective.DOUBLE_TAP_WINDOW_MS;
+    this.lastTapAt = 0;
+
+    if (isDoubleTap) {
+      if (this.pendingTapTimer) {
+        clearTimeout(this.pendingTapTimer);
+        this.pendingTapTimer = undefined;
+      }
+      this.doubleTap.emit();
+      return;
+    }
+
+    this.lastTapAt = now;
+    this.pendingTapTimer = setTimeout(() => {
+      this.pendingTapTimer = undefined;
+      this.togglePlayback();
+    }, ViewportVideoPlayerDirective.DOUBLE_TAP_WINDOW_MS);
+  }
+
+  private togglePlayback(): void {
     if (this.video.paused) {
       this.play();
     } else {

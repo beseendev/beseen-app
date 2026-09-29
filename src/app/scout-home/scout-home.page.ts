@@ -82,6 +82,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content!: IonContent;
 
   videoPosts: Post[] = [];
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
   private navigationRoute = inject(ActivatedRoute);
   private navigationDestroy = inject(DestroyRef);
   private homeScrollService = inject(HomeScrollService);
@@ -348,6 +350,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.scoutHasMoreSub?.unsubscribe();
     this.scoutFilterCountSub?.unsubscribe();
     this.scoutFilterChipsSub?.unsubscribe();
+    clearTimeout(this.likeBurstTimeout);
   }
 
   ionViewWillEnter(): void {
@@ -536,6 +539,42 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         await this.updateFeedItems();
       },
       error: (err) => console.error('Error toggling like', err)
+    });
+  }
+
+  onDoubleTapLike(card: FavoriteAthleteVideoCard): void {
+    if (!card.isLiked) {
+      card.isLiked = true;
+      card.likes = (card.likes ?? 0) + 1;
+      const postId = card.postId;
+
+      this.postService.likePost(postId).subscribe({
+        next: () => {
+          if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+            this.scoutSearchService.updatePostLikeState(postId, true);
+            this.videoPosts = this.scoutSearchService.currentResults;
+          }
+        },
+        error: (err) => {
+          card.isLiked = false;
+          card.likes = Math.max(0, (card.likes ?? 1) - 1);
+          console.error('Error liking video on double tap', err);
+        }
+      });
+    }
+
+    this.showLikeBurst(card.postId);
+  }
+
+  private showLikeBurst(postId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = postId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
     });
   }
 

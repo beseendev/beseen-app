@@ -51,7 +51,8 @@
               controlsList="nodownload nopictureinpicture"
               preload="metadata"
               class="be-tiktok-video"
-              [class.is-horizontal]="vitrinePlayer.isHorizontal">
+              [class.is-horizontal]="vitrinePlayer.isHorizontal"
+              (doubleTap)="onDoubleTapLike(item.video)">
             </video>
 
             <div class="video-player-state loading" *ngIf="vitrinePlayer.isLoading && !vitrinePlayer.hasError && !vitrinePlayer.showTapGate">
@@ -59,6 +60,9 @@
             </div>
             <div class="video-player-state pulse" *ngIf="vitrinePlayer.showPulse">
               <ion-icon [name]="vitrinePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="like-burst" *ngIf="likeBurstVideoId === item.video.postId">
+              <ion-icon name="heart"></ion-icon>
             </div>
             <div class="video-player-state tap-gate" *ngIf="vitrinePlayer.showTapGate">
               <span>Toque para assistir</span>
@@ -157,6 +161,7 @@
       [items]="feedItems"
       (favoriteToggled)="toggleFavoriteFromCard($event)"
       (likeToggled)="toggleLike($event)"
+      (doubleTapLike)="onDoubleTapLike($event)"
       (inviteRequested)="sendInvite($event)"
       (chatRequested)="openChat($event)"
       (reportRequested)="reportVideo($event)">

@@ -144,6 +144,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   rankingVideosWithAds: PlayerFeedItem[] = [];
   newVideosWithAds: PlayerFeedItem[] = [];
 
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
+
   private rankingCurrentPage = 0;
   chatUnreadCount = 0;
   pendingInvitesCount = 0;
@@ -209,6 +212,35 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
         video.likes = previousLikes;
         console.error('Error toggling like', err);
       }
+    });
+  }
+
+  onDoubleTapLike(video: PlayerShowcaseVideo): void {
+    if (!video.isLiked) {
+      video.isLiked = true;
+      video.likes = video.likes + 1;
+
+      this.postService.likePost(video.id).subscribe({
+        error: (err) => {
+          video.isLiked = false;
+          video.likes = Math.max(0, video.likes - 1);
+          console.error('Error liking video on double tap', err);
+        }
+      });
+    }
+
+    this.showLikeBurst(video.id);
+  }
+
+  private showLikeBurst(videoId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = videoId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
     });
   }
 
@@ -801,5 +833,6 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.threadsSubscription.unsubscribe();
     }
     this.homeScrollSubscription?.unsubscribe();
+    clearTimeout(this.likeBurstTimeout);
   }
 }

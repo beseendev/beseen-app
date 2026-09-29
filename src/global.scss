@@ -227,6 +227,22 @@ ion-segment-button {
   filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.42));
 }
 
+.like-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.like-burst ion-icon {
+  font-size: 110px;
+  color: var(--be-color-brand-500);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.45));
+  animation: beLikeBurst 700ms ease-out both;
+}
+
 .video-player-state.tap-gate {
   background: rgba(2, 6, 23, 0.18);
 }
@@ -599,6 +615,25 @@ ion-segment-button {
   100% {
     opacity: 0;
     transform: scale(1.06);
+  }
+}
+
+@keyframes beLikeBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
   }
 }
 
