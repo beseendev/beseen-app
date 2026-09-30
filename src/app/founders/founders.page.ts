@@ -18,6 +18,7 @@ import { AuthService, JwtPayload } from '../services/auth.service';
 export class FoundersPage implements OnInit, OnDestroy {
   banners: Advertisement[] = [];
   isLoading = true;
+  private readonly becomeFounderUrl = 'https://beseen.app.br/empresas-fundadoras/';
   /** Id do card com o efeito de "toque" ativo no momento (ver onCardTap). */
   pressedBannerId: number | null = null;
 
@@ -63,6 +64,10 @@ export class FoundersPage implements OnInit, OnDestroy {
     if (banner.siteLink) {
       window.open(banner.siteLink, '_blank');
     }
+  }
+
+  openBecomeFounder(): void {
+    window.open(this.becomeFounderUrl, '_blank');
   }
 
   trackByBanner(_: number, banner: Advertisement): number {
