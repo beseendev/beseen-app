@@ -20,6 +20,7 @@ export interface Profile {
   height?: number;
   weight?: number;
   careerHistory?: string;
+  currentClub?: string | null;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
 
@@ -62,6 +63,7 @@ export interface ProfilePlayerCreationRequest {
   height?: number;
   weight?: number;
   careerHistory?: string;
+  currentClub?: string | null;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
 }
@@ -159,6 +161,7 @@ export interface ProfileResponse {
   height?: number;
   weight?: number;
   careerHistory?: string;
+  currentClub?: string | null;
   dominantFoot?: 'RIGHT' | 'LEFT' | 'BOTH';
   gender?: AthleteGender | null;
 

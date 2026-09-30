@@ -59,9 +59,28 @@
       </app-player-card>
     </section>
 
+    <section class="current-club-highlight" *ngIf="!isEditing && profile.currentClub">
+      <ion-icon name="shield-outline"></ion-icon>
+      <div>
+        <span class="current-club-label">Escolinha/clube atual</span>
+        <strong class="current-club-name">{{ profile.currentClub }}</strong>
+      </div>
+    </section>
+
     <section class="section-card">
 
       <ion-list lines="none">
+        <ion-item *ngIf="isEditing && hasFullAccess">
+          <ion-icon slot="start" name="shield-outline"></ion-icon>
+          <ion-input
+            label="Escolinha/clube atual"
+            labelPlacement="stacked"
+            [(ngModel)]="draftProfile.currentClub"
+            maxlength="100"
+            placeholder="Ex: Escolinha Exemplo FC">
+          </ion-input>
+        </ion-item>
+
         <ion-item class="readonly-item">
           <ion-icon slot="start" name="briefcase-outline"></ion-icon>
           <ion-label>
