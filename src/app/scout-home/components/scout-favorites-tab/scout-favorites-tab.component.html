@@ -126,6 +126,12 @@
             </ion-button>
             <span class="like-count">{{ item.video.likes || 0 }}</span>
            </div>
+               <div class="like-action">
+                 <ion-button fill="clear" class="like-btn" (click)="openComments(item.video)" aria-label="Ver comentários">
+                  <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                </ion-button>
+                <span class="like-count">{{ item.video.comments ?? 0 }}</span>
+               </div>
 
         </div>
       </article>

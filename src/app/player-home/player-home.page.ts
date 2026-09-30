@@ -22,6 +22,7 @@ import {
   ActionSheetController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
   closeOutline,
@@ -89,6 +90,7 @@ interface PlayerShowcaseVideo {
   region?: string;
   description: string;
   likes: number;
+  comments: number;
   isLiked: boolean;
   createdAt: string;
   scoutId: string;
@@ -194,6 +196,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       heart,
       heartOutline
     });
+  }
+
+  openComments(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    openCommentsSheet(this.modalController, video.id, video.comments, count => (video.comments = count));
   }
 
   toggleLike(video: PlayerShowcaseVideo, event: Event): void {
@@ -617,6 +624,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,
+      comments: post.commentsCount ?? 0,
       isLiked: post.isLiked,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),

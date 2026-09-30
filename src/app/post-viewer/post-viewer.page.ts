@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
+import { combineLatest } from 'rxjs';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonButton, IonContent, IonIcon, IonSpinner, ToastController } from '@ionic/angular/standalone';
+import { AlertController, IonButton, ModalController, IonContent, IonIcon, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute } from 'ionicons/icons';
+import { arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute } from 'ionicons/icons';
 import { environment } from '../../environments/environment';
+import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import { PlayerCardComponent } from '../components/player-card/player-card.component';
 import { Post } from '../models/post.model';
 import { Profile } from '../models/profile.model';
@@ -33,16 +35,19 @@ export class PostViewerPage implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly toastController = inject(ToastController);
   private readonly alertController = inject(AlertController);
+  private readonly modalController = inject(ModalController);
 
   constructor() {
-    addIcons({ arrowBackOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute });
+    addIcons({ arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute });
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => this.loadPost(params.get('id')));
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, query]) =>
+      this.loadPost(params.get('id'), query.get('comments') === '1')
+    );
   }
 
-  private loadPost(postId: string | null): void {
+  private loadPost(postId: string | null, openCommentsOnLoad = false): void {
     if (!postId) {
       this.handleUnavailable();
       return;
@@ -54,12 +59,23 @@ export class PostViewerPage implements OnInit, OnDestroy {
       next: post => {
         this.post = post;
         this.isLoading = false;
+        if (openCommentsOnLoad) {
+          this.openComments();
+        }
       },
       error: err => {
         console.error('Error loading post', err);
         this.handleUnavailable();
       }
     });
+  }
+
+  openComments(): void {
+    const post = this.post;
+    if (!post) {
+      return;
+    }
+    openCommentsSheet(this.modalController, post.id, post.commentsCount, count => (post.commentsCount = count));
   }
 
   toggleLike(): void {

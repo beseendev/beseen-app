@@ -130,6 +130,8 @@ export class NotificationsPage implements OnInit {
         return 'chatbubble-ellipses-outline';
       case 'POST_LIKED':
         return 'heart-outline';
+      case 'POST_COMMENTED':
+        return 'chatbubble-ellipses-outline';
       case 'NO_VIDEO_POSTED':
         return 'videocam-outline';
       case 'INACTIVITY_REMINDER':

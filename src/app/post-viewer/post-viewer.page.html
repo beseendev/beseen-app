@@ -75,6 +75,13 @@
         </ion-button>
         <span class="like-count">{{ post.likesCount }}</span>
       </div>
+
+      <div class="like-action">
+        <ion-button fill="clear" class="like-btn" (click)="openComments()" aria-label="Ver comentários">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        </ion-button>
+        <span class="like-count">{{ post.commentsCount }}</span>
+      </div>
     </div>
   </article>
 </ion-content>

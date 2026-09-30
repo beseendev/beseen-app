@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { filter, finalize, take } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
+import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
   logOutOutline,
@@ -524,6 +525,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     });
   }
 
+  openComments(card: FavoriteAthleteVideoCard): void {
+    openCommentsSheet(this.modalController, card.postId, card.comments ?? 0, count => (card.comments = count));
+  }
+
   async toggleLike(card: FavoriteAthleteVideoCard): Promise<void> {
     const isCurrentlyLiked = card.isLiked;
     const postId = card.postId;
@@ -725,6 +730,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       favorito: post.isFavorited,
       isLiked: post.isLiked,
       likes: post.likesCount,
+      comments: post.commentsCount ?? 0,
       inviteStatus: post.inviteStatus,
       matchedSkills: this.getMatchedSkills(post.skills)
     };

@@ -1038,3 +1038,11 @@ button.be-tiktok-avatar { cursor: pointer; color: inherit; padding: 0; backgroun
   .arena-content::part(scroll), .scout-home-content::part(scroll) { scroll-behavior: auto; }
   .be-fade-in { animation: none !important; }
 }
+
+/* Sheet de comentários: altura fixa ancorada embaixo (com breakpoints do Ionic o rodapé ficava fora da tela). */
+ion-modal.comments-sheet-modal {
+  --height: 70%;
+  --background: var(--be-color-bg);
+  --border-radius: 16px 16px 0 0;
+  align-items: flex-end;
+}

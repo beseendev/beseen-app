@@ -99,6 +99,7 @@ export interface FavoriteAthleteVideoCard {
   favorito: boolean;
   isLiked: boolean;
   likes?: number;
+  comments?: number;
   inviteStatus?: InviteStatus | null;
   isInviting?: boolean;
   /** Habilidades do vídeo que batem com o filtro de habilidades atualmente ativo (vazio quando não há filtro). */

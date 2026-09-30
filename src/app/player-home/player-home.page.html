@@ -83,6 +83,12 @@
                 </ion-button>
                 <span class="like-count">{{ item.video.likes }}</span>
                </div>
+               <div class="like-action">
+                 <ion-button fill="clear" class="like-btn" (click)="openComments(item.video, $event)" aria-label="Ver comentários">
+                  <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                </ion-button>
+                <span class="like-count">{{ item.video.comments }}</span>
+               </div>
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>

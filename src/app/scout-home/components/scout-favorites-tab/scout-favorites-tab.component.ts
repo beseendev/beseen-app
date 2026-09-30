@@ -4,7 +4,8 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline, heart, heartOutline } from 'ionicons/icons';
+import { openCommentsSheet } from '../../../components/comments-sheet/comments-sheet.component';
+import { chatbubbleEllipsesOutline, locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline, heart, heartOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { Profile } from '../../../models/profile.model';
 import { ChatService } from '../../../services/chat.service';
@@ -45,6 +46,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   constructor() {
     addIcons({
+      chatbubbleEllipsesOutline,
       locationOutline,
       star,
       starOutline,
@@ -110,6 +112,10 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   toggleFavorite(card: FavoriteAthleteVideoCard): void {
     this.favoriteToggled.emit(card);
+  }
+
+  openComments(card: FavoriteAthleteVideoCard): void {
+    openCommentsSheet(this.modalController, card.postId, card.comments ?? 0, count => (card.comments = count));
   }
 
   toggleLike(card: FavoriteAthleteVideoCard): void {

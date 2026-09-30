@@ -34,18 +34,22 @@ export class DeepLinkService {
       this.openPost(referenceId);
       return;
     }
+    if (type === 'POST_COMMENTED' && referenceId) {
+      this.openPost(referenceId, true);
+      return;
+    }
     if (type === 'INVITE_RECEIVED' || type === 'CHAT_MESSAGE') {
       this.pendingSubject.next({ type, referenceId });
     }
     this.navigateHome();
   }
 
-  private async openPost(postId: number): Promise<void> {
+  private async openPost(postId: number, openComments = false): Promise<void> {
     const topModal = await this.modalController.getTop();
     if (topModal) {
       await topModal.dismiss();
     }
-    this.router.navigateByUrl(`/post/${postId}`);
+    this.router.navigate(['/post', postId], openComments ? { queryParams: { comments: 1 } } : {});
   }
 
   private navigateHome(): void {
