@@ -1,0 +1,59 @@
+<ion-header class="comments-header ion-no-border">
+  <ion-toolbar>
+    <ion-title>{{ commentsCount }} {{ commentsCount === 1 ? 'comentário' : 'comentários' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" aria-label="Fechar">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="comments-content">
+  <div class="comments-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div class="comments-state" *ngIf="!isLoading && comments.length === 0">
+    <strong>Nenhum comentário ainda</strong>
+    <span>Seja o primeiro a comentar.</span>
+  </div>
+
+  <ul class="comments-list" *ngIf="comments.length > 0">
+    <li class="comment-item" *ngFor="let comment of comments; trackBy: trackById">
+      <button type="button" class="comment-avatar" (click)="openProfile(comment)" aria-label="Abrir perfil">
+        <img *ngIf="comment.user.urlPerfil; else noAvatar" [src]="comment.user.urlPerfil" alt="" />
+        <ng-template #noAvatar><span>{{ comment.user.username.charAt(0) }}</span></ng-template>
+      </button>
+      <div class="comment-body">
+        <div class="comment-meta">
+          <button type="button" class="comment-author" (click)="openProfile(comment)">{{ comment.user.username }}</button>
+          <span class="comment-time">{{ timeAgo(comment.createdAt) }}</span>
+        </div>
+        <p class="comment-text">{{ comment.content }}</p>
+      </div>
+      <ion-button *ngIf="comment.isMine" fill="clear" size="small" class="comment-delete" (click)="confirmDelete(comment)" aria-label="Excluir comentário">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </li>
+  </ul>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!nextCursorAvailable">
+    <ion-infinite-scroll-content loadingSpinner="crescent"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<ion-footer class="comments-footer">
+  <form class="comment-form" (ngSubmit)="send()">
+    <input
+      class="comment-input"
+      name="draft"
+      [(ngModel)]="draft"
+      maxlength="1000"
+      autocomplete="off"
+      placeholder="Adicione um comentário..." />
+    <ion-button type="submit" fill="clear" class="comment-send" [disabled]="!canSend" aria-label="Enviar comentário">
+      <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+    </ion-button>
+  </form>
+</ion-footer>
