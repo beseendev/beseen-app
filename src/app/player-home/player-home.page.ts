@@ -1,55 +1,53 @@
+import { SocialHeaderComponent } from '../components/social-header/social-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewChild, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {
   IonAvatar,
-  IonBadge,
   IonButton,
   IonButtons,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonHeader,
   IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonPopover,
-  IonMenu,
   IonRefresher,
   IonRefresherContent,
   IonSpinner,
-  IonSkeletonText,
   IonTitle,
-  MenuController,
+
   ModalController,
-  PopoverController,
+
   ToastController,
   AlertController,
   ActionSheetController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { VideoShareService } from '../services/video-share.service';
+import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
+  shareOutline,
   closeOutline,
   createOutline, helpCircleOutline,
   logOutOutline,
   personCircleOutline,
   starOutline,
   menuOutline,
-  volumeHighOutline,
-  volumeMuteOutline,
+  volumeHigh,
+  volumeMute,
   mailOutline,
   flagOutline,
   banOutline,
   trashOutline,
-  notificationsOutline
+  notificationsOutline,
+  heart,
+  heartOutline
 } from 'ionicons/icons';
 import { Observable, Subscription, map, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthService, JwtPayload } from '../services/auth.service';
+import { HomeScrollService } from '../services/home-scroll.service';
 import { ApiService } from '../services/api.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
@@ -61,7 +59,6 @@ import { Post } from '../models/post.model';
 import { Advertisement } from '../models/advertisement.model';
 import { FileType } from '../models/upload.model';
 import { Profile } from '../models/profile.model';
-import { ProfileDrawerComponent } from './components/profile-drawer/profile-drawer.component';
 import { ChatInboxComponent } from '../components/chat-inbox/chat-inbox.component';
 import { InvitesSheetComponent } from './components/invites-sheet/invites-sheet.component';
 import { AdCardComponent } from '../components/ad-card/ad-card.component';
@@ -95,6 +92,8 @@ interface PlayerShowcaseVideo {
   region?: string;
   description: string;
   likes: number;
+  comments: number;
+  isLiked: boolean;
   createdAt: string;
   scoutId: string;
   scoutName?: string;
@@ -104,7 +103,7 @@ interface PlayerShowcaseVideo {
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;
 }
 
-export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { type: 'ad', ad: Advertisement };
+export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { type: 'ad', ad: Advertisement } | { type: 'banner' };
 
 @Component({
   selector: 'app-player-home',
@@ -112,25 +111,17 @@ export type PlayerFeedItem = { type: 'video', video: PlayerShowcaseVideo } | { t
   styleUrls: ['./player-home.page.scss'],
   standalone: true,
   imports: [
+    SocialHeaderComponent,
+    IonHeader,
     CommonModule,
     IonButton,
     IonIcon,
     IonContent,
-    IonFab,
-    IonFabButton,
     IonSpinner,
-    IonSkeletonText,
     IonRefresher,
     IonRefresherContent,
-    IonMenu,
-    IonBadge,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonPopover,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    ProfileDrawerComponent,
     AdCardComponent,
     BannerCarouselComponent,
     PlayerCardComponent,
@@ -157,6 +148,9 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   rankingVideosWithAds: PlayerFeedItem[] = [];
   newVideosWithAds: PlayerFeedItem[] = [];
 
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
+
   private rankingCurrentPage = 0;
   chatUnreadCount = 0;
   pendingInvitesCount = 0;
@@ -171,22 +165,24 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private router = inject(Router);
   private postService = inject(PostService);
   private adService = inject(AdvertisementService);
-  private menuController = inject(MenuController);
   private chatService = inject(ChatService);
   private notificationService = inject(NotificationService);
   private deepLinkService = inject(DeepLinkService);
   private modalController = inject(ModalController);
+  private readonly videoShareService = inject(VideoShareService);
   private alertController = inject(AlertController);
-  public popoverController = inject(PopoverController);
   private toastController = inject(ToastController);
   private actionSheetController = inject(ActionSheetController);
   private profileService = inject(ProfileService);
+  private homeScrollService = inject(HomeScrollService);
+  private homeScrollSubscription?: Subscription;
 
   constructor() {
     this.posts$ = this.postService.homePosts$;
     this.extractRoleFromToken();
 
     addIcons({
+      shareOutline,
       chatbubbleEllipsesOutline,
       closeOutline,
       createOutline,
@@ -194,13 +190,73 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       personCircleOutline,
       starOutline,
       helpCircleOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
+      volumeHigh,
+      volumeMute,
       mailOutline,
       flagOutline,
       banOutline,
       trashOutline,
-      notificationsOutline
+      notificationsOutline,
+      heart,
+      heartOutline
+    });
+  }
+
+  shareVideo(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    this.videoShareService.share(video.id, video.athleteName);
+  }
+
+  openComments(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    openCommentsSheet(this.modalController, video.id, video.comments, count => (video.comments = count));
+  }
+
+  toggleLike(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+
+    const previousIsLiked = video.isLiked;
+    const previousLikes = video.likes;
+
+    video.isLiked = !video.isLiked;
+    video.likes = video.isLiked ? previousLikes + 1 : Math.max(0, previousLikes - 1);
+
+    const action = previousIsLiked ? this.postService.unlikePost(video.id) : this.postService.likePost(video.id);
+    action.subscribe({
+      error: (err) => {
+        video.isLiked = previousIsLiked;
+        video.likes = previousLikes;
+        console.error('Error toggling like', err);
+      }
+    });
+  }
+
+  onDoubleTapLike(video: PlayerShowcaseVideo): void {
+    if (!video.isLiked) {
+      video.isLiked = true;
+      video.likes = video.likes + 1;
+
+      this.postService.likePost(video.id).subscribe({
+        error: (err) => {
+          video.isLiked = false;
+          video.likes = Math.max(0, video.likes - 1);
+          console.error('Error liking video on double tap', err);
+        }
+      });
+    }
+
+    this.showLikeBurst(video.id);
+  }
+
+  private showLikeBurst(videoId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = videoId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
     });
   }
 
@@ -293,6 +349,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.homeScrollSubscription = this.homeScrollService.onScrollToTop.subscribe(() => {
+      void this.content?.scrollToTop(300);
+    });
+
     this.chatService.threadsUnreadCount$.subscribe(count => {
       this.chatUnreadCount = count;
     });
@@ -336,6 +396,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     const result: PlayerFeedItem[] = [];
     for (let i = 0; i < videos.length; i++) {
       result.push({ type: 'video', video: videos[i] });
+      if (i === 1) {
+        // Carrossel de banners (fundadoras/parceiros) logo depois do segundo vídeo.
+        result.push({ type: 'banner' });
+      }
       if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
@@ -569,6 +633,8 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       region: (post.user as any).region || (post.user as any).cidade,
       description: post.caption,
       likes: post.likesCount,
+      comments: post.commentsCount ?? 0,
+      isLiked: post.isLiked,
       createdAt: post.createdAt,
       scoutId: String(post.scoutId || ''),
       hasInvite: !!post.inviteStatus,
@@ -581,124 +647,10 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigateByUrl('/create-post');
   }
 
-  onDrawerMyVideos(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  onDrawerInvites(): void {
-    this.menuController.close('profileMenu');
-    this.openInvitesSheet();
-  }
-
-  onDrawerEditProfile(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  onDrawerBlockedUsers(): void {
-    this.menuController.close('profileMenu');
-    this.router.navigateByUrl('/usuarios-bloqueados');
-  }
-
-  openBlockedUsers(): void {
-    this.router.navigateByUrl('/usuarios-bloqueados');
-  }
-
-  onDrawerSignOut(): void {
-    this.menuController.close('profileMenu');
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  onDrawerDeleteAccount(): void {
-    this.menuController.close('profileMenu');
-    this.openDeleteAccountOptions();
-  }
-
-  editPlayerProfile(): void {
-    this.router.navigateByUrl('/profile-player');
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  async openDeleteAccountOptions() {
-    const actionSheet = await this.actionSheetController.create({
-      cssClass: 'be-action-sheet',
-      buttons: [
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          icon: trashOutline,
-          handler: () => {
-            this.confirmDeleteAccount();
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: closeOutline
-        }
-      ]
-    });
-    await actionSheet.present();
-  }
-
-  async confirmDeleteAccount() {
-    const alert = await this.alertController.create({
-      header: 'Excluir sua conta?',
-      message: 'Esta ação é permanente. Sua conta, vídeos, conversas e todos os seus dados serão removidos em um processamento que pode levar algum tempo para ser concluído.',
-      cssClass: 'be-alert-confirm',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          handler: () => {
-            this.deleteAccount();
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  private deleteAccount(): void {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    const userId = decodedToken?.userId;
-
-    if (!userId) {
-      this.showToast('Não foi possível identificar sua conta. Tente novamente.', 'danger');
-      return;
-    }
-
-    this.profileService.requestAccountDeletion(userId).subscribe({
-      next: async () => {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        const toast = await this.toastController.create({
-          message: 'Recebemos sua solicitação. Sua conta e todos os seus dados serão excluídos em breve. Obrigado por ter feito parte da nossa comunidade!',
-          duration: 6000,
-          color: 'success',
-          position: 'bottom'
-        });
-        await toast.present();
-      },
-      error: (err) => {
-        console.error('Error requesting account deletion', err);
-        this.showToast('Não foi possível processar a exclusão da conta. Tente novamente mais tarde.', 'danger');
-      }
-    });
-  }
-
   trackByFeedItem(index: number, item: PlayerFeedItem): string {
-    return item.type === 'video' ? item.video.id : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.id;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 
   trackByVideoId(index: number, video: PlayerShowcaseVideo): string {
@@ -897,5 +849,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     if (this.threadsSubscription) {
       this.threadsSubscription.unsubscribe();
     }
+    this.homeScrollSubscription?.unsubscribe();
+    clearTimeout(this.likeBurstTimeout);
   }
 }

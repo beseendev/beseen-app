@@ -9,6 +9,7 @@
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
       <span class="top-bar-title">Perfil do Olheiro</span>
+      <app-profile-settings *ngIf="isMyProfile && !isEditing" accountType="scout"></app-profile-settings>
       <ion-button fill="clear" class="options-button" *ngIf="!isMyProfile" (click)="openProfileOptions()" aria-label="Mais opções">
         <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
       </ion-button>
@@ -88,10 +89,7 @@
             </ion-button>
           </ng-template>
 
-          <ion-button fill="clear" class="support-btn" (click)="openSupport()" aria-label="Entrar em contato com o suporte">
-            <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-            Suporte
-          </ion-button>
+
         </div>
       </div>
     </section>

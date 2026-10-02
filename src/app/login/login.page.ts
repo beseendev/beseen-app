@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonItem, IonInput, IonButton, ToastController, AlertController, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService, User, JwtPayload } from '../services/auth.service';
+import { DeepLinkService } from '../services/deep-link.service';
 import { DebugConsoleService } from '../services/debug-console.service';
 import { Auth, GoogleAuthProvider, OAuthProvider, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
@@ -59,7 +60,8 @@ export class LoginPage implements AfterViewInit {
     private alertController: AlertController,
     private auth: Auth,
     private navCtrl: NavController,
-    private debugConsole: DebugConsoleService
+    private debugConsole: DebugConsoleService,
+    private deepLinkService: DeepLinkService
   ) {
     addIcons({
       personOutline,
@@ -211,9 +213,9 @@ export class LoginPage implements AfterViewInit {
       const role = decodedToken?.role;
       if (user && user.hasProfile) {
         if (role === 'CLUBE') {
-          this.navCtrl.navigateRoot('/scout-home');
+          this.navCtrl.navigateRoot(this.deepLinkService.consumePendingShareRoute() ?? '/scout-home');
         } else if (role === 'JOGADOR') {
-          this.navCtrl.navigateRoot('/player-home');
+          this.navCtrl.navigateRoot(this.deepLinkService.consumePendingShareRoute() ?? '/player-home');
         }
       } else {
         this.navCtrl.navigateRoot('/profile-selection', {
@@ -243,9 +245,9 @@ export class LoginPage implements AfterViewInit {
           const role = decodedToken?.role;
           if (user && user.hasProfile) {
             if (role === 'CLUBE') {
-              this.navCtrl.navigateRoot('/scout-home');
+              this.navCtrl.navigateRoot(this.deepLinkService.consumePendingShareRoute() ?? '/scout-home');
             } else if (role === 'JOGADOR') {
-              this.navCtrl.navigateRoot('/player-home');
+              this.navCtrl.navigateRoot(this.deepLinkService.consumePendingShareRoute() ?? '/player-home');
             }
 
           } else {

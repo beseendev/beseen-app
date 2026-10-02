@@ -1,3 +1,4 @@
+import { ProfileSettingsComponent } from '../components/profile-settings/profile-settings.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +22,7 @@ import { BlockService } from '../services/block.service';
   templateUrl: './profile-scout.page.html',
   styleUrls: ['./profile-scout.page.scss'],
   standalone: true,
-  imports: [
+  imports: [ProfileSettingsComponent,
     CommonModule,
     FormsModule,
     IonButton,

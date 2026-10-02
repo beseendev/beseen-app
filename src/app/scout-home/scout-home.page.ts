@@ -1,12 +1,19 @@
+import { ActivatedRoute } from '@angular/router';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SocialHeaderComponent } from '../components/social-header/social-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
-import { IonicModule, ModalController, PopoverController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
+import { IonicModule, IonContent, ModalController, ToastController, IonInfiniteScroll, AlertController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { filter, finalize, take } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
+import { VideoShareService } from '../services/video-share.service';
+import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
+  shareOutline,
   logOutOutline,
   createOutline,
   personCircleOutline,
@@ -15,8 +22,8 @@ import {
   locationOutline,
   cardOutline,
   helpCircleOutline,
-  volumeHighOutline,
-  volumeMuteOutline, flagOutline,
+  volumeHigh,
+  volumeMute, flagOutline,
   banOutline,
   trashOutline,
   closeOutline,
@@ -24,6 +31,8 @@ import {
   search,
   searchOutline,
   notificationsOutline,
+  heart,
+  heartOutline,
 } from 'ionicons/icons';
 import { FavoriteAthleteVideoCard } from '../models/chat.models';
 import { Post } from '../models/post.model';
@@ -33,6 +42,7 @@ import { Advertisement } from '../models/advertisement.model';
 import { ScoutProfile } from '../models/scout-profile.model';
 import { FileType } from '../models/upload.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
+import { HomeScrollService } from '../services/home-scroll.service';
 import { PostService } from '../services/post.service';
 import { ProfileService } from '../services/profile.service';
 import { ChatService } from '../services/chat.service';
@@ -60,20 +70,26 @@ import {
   removeScoutVideoFilter
 } from '../models/scout-search.model';
 
-export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement };
+export type ScoutFeedItem = { type: 'video', video: FavoriteAthleteVideoCard } | { type: 'ad', ad: Advertisement } | { type: 'banner' };
 
 @Component({
   selector: 'app-scout-home',
   templateUrl: './scout-home.page.html',
   styleUrls: ['./scout-home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective, PlayerEvaluationModalComponent, PlayerCardComponent]
+  imports: [SocialHeaderComponent, CommonModule, IonicModule, ScoutFavoritesTabComponent, AdCardComponent, BannerCarouselComponent, ViewportVideoPlayerDirective, PlayerEvaluationModalComponent, PlayerCardComponent]
 })
 export class ScoutHomePage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
   @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
+  @ViewChild(IonContent) content!: IonContent;
 
   videoPosts: Post[] = [];
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
+  private navigationRoute = inject(ActivatedRoute);
+  private navigationDestroy = inject(DestroyRef);
+  private homeScrollService = inject(HomeScrollService);
   selectedTab: 'vitrine' | 'favoritos' = 'vitrine';
   scoutProfile: ScoutProfile | null = null;
   isLoadingContent = true;
@@ -125,8 +141,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly scoutSearchService = inject(ScoutSearchService);
   private readonly skillService = inject(SkillService);
   private readonly modalController = inject(ModalController);
+  private readonly videoShareService = inject(VideoShareService);
   private readonly alertController = inject(AlertController);
-  public readonly popoverController = inject(PopoverController);
   private readonly toastController = inject(ToastController);
   private readonly actionSheetController = inject(ActionSheetController);
   private readonly profileService = inject(ProfileService);
@@ -140,6 +156,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({
+      shareOutline,
       chatbubbleEllipsesOutline,
       logOutOutline,
       createOutline,
@@ -149,8 +166,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       locationOutline,
       cardOutline,
       helpCircleOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
+      volumeHigh,
+      volumeMute,
       flagOutline,
       banOutline,
       trashOutline,
@@ -158,7 +175,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       funnelOutline,
       search,
       searchOutline,
-      notificationsOutline
+      notificationsOutline,
+      heart,
+      heartOutline
 
     });
   }
@@ -228,6 +247,13 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.selectedTab = this.navigationRoute.snapshot.queryParamMap.get('tab') === 'favoritos' ? 'favoritos' : 'vitrine';
+    this.navigationRoute.queryParamMap.pipe(takeUntilDestroyed(this.navigationDestroy)).subscribe(params => {
+      this.setActiveTab(params.get('tab') === 'favoritos' ? 'favoritos' : 'vitrine');
+    });
+    this.homeScrollService.onScrollToTop.pipe(takeUntilDestroyed(this.navigationDestroy)).subscribe(() => {
+      void this.content?.scrollToTop(300);
+    });
     this.userRole = this.authService.getDecodedToken<JwtPayload>()?.role || null;
 
     this.authService.userRole$.subscribe(role => {
@@ -297,6 +323,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const result: ScoutFeedItem[] = [];
     for (let i = 0; i < cards.length; i++) {
       result.push({ type: 'video', video: cards[i] });
+      if (i === 1) {
+        // Carrossel de banners (fundadoras/parceiros) logo depois do segundo vídeo.
+        result.push({ type: 'banner' });
+      }
       if ((i + 1) % 9 === 0) {
         try {
           const ad = await firstValueFrom(this.adService.getRandomAdvertisement());
@@ -325,6 +355,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     this.scoutHasMoreSub?.unsubscribe();
     this.scoutFilterCountSub?.unsubscribe();
     this.scoutFilterChipsSub?.unsubscribe();
+    clearTimeout(this.likeBurstTimeout);
   }
 
   ionViewWillEnter(): void {
@@ -480,8 +511,8 @@ export class ScoutHomePage implements OnInit, OnDestroy {
     const postId = card.postId;
 
     const action = isCurrentlyFavorite
-      ? this.postService.unlikePost(postId)
-      : this.postService.likePost(postId);
+      ? this.postService.unfavoritePost(postId)
+      : this.postService.favoritePost(postId);
 
     action.subscribe({
       next: async () => {
@@ -495,6 +526,68 @@ export class ScoutHomePage implements OnInit, OnDestroy {
         await this.updateFeedItems();
       },
       error: (err) => console.error('Error toggling favorite', err)
+    });
+  }
+
+  shareVideo(card: FavoriteAthleteVideoCard): void {
+    this.videoShareService.share(card.postId, card.athleteName);
+  }
+
+  openComments(card: FavoriteAthleteVideoCard): void {
+    openCommentsSheet(this.modalController, card.postId, card.comments ?? 0, count => (card.comments = count));
+  }
+
+  async toggleLike(card: FavoriteAthleteVideoCard): Promise<void> {
+    const isCurrentlyLiked = card.isLiked;
+    const postId = card.postId;
+
+    const action = isCurrentlyLiked ? this.postService.unlikePost(postId) : this.postService.likePost(postId);
+
+    action.subscribe({
+      next: async () => {
+        if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+          this.scoutSearchService.updatePostLikeState(postId, !isCurrentlyLiked);
+          this.videoPosts = this.scoutSearchService.currentResults;
+        }
+        await this.updateFeedItems();
+      },
+      error: (err) => console.error('Error toggling like', err)
+    });
+  }
+
+  onDoubleTapLike(card: FavoriteAthleteVideoCard): void {
+    if (!card.isLiked) {
+      card.isLiked = true;
+      card.likes = (card.likes ?? 0) + 1;
+      const postId = card.postId;
+
+      this.postService.likePost(postId).subscribe({
+        next: () => {
+          if (this.selectedTab === 'vitrine' && this.hasActiveScoutFilters) {
+            this.scoutSearchService.updatePostLikeState(postId, true);
+            this.videoPosts = this.scoutSearchService.currentResults;
+          }
+        },
+        error: (err) => {
+          card.isLiked = false;
+          card.likes = Math.max(0, (card.likes ?? 1) - 1);
+          console.error('Error liking video on double tap', err);
+        }
+      });
+    }
+
+    this.showLikeBurst(card.postId);
+  }
+
+  private showLikeBurst(postId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = postId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
     });
   }
 
@@ -582,87 +675,6 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
 
-  editScoutProfile(): void {
-    this.router.navigate(['/profile-scout']);
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  async openDeleteAccountOptions() {
-    const actionSheet = await this.actionSheetController.create({
-      cssClass: 'be-action-sheet',
-      buttons: [
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          icon: trashOutline,
-          handler: () => {
-            this.confirmDeleteAccount();
-          }
-        },
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          icon: closeOutline
-        }
-      ]
-    });
-    await actionSheet.present();
-  }
-
-  async confirmDeleteAccount() {
-    const alert = await this.alertController.create({
-      header: 'Excluir sua conta?',
-      message: 'Esta ação é permanente. Sua conta, favoritos, conversas e todos os seus dados serão removidos em um processamento que pode levar algum tempo para ser concluído.',
-      cssClass: 'be-alert-confirm',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Excluir conta',
-          role: 'destructive',
-          handler: () => {
-            this.deleteAccount();
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  private deleteAccount(): void {
-    const decodedToken = this.authService.getDecodedToken<JwtPayload>();
-    const userId = decodedToken?.userId;
-
-    if (!userId) {
-      this.showToast('Não foi possível identificar sua conta. Tente novamente.', 'danger');
-      return;
-    }
-
-    this.profileService.requestAccountDeletion(userId).subscribe({
-      next: async () => {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        const toast = await this.toastController.create({
-          message: 'Recebemos sua solicitação. Sua conta e todos os seus dados serão excluídos em breve. Obrigado por ter feito parte da nossa comunidade!',
-          duration: 6000,
-          color: 'success',
-          position: 'bottom'
-        });
-        await toast.present();
-      },
-      error: (err) => {
-        console.error('Error requesting account deletion', err);
-        this.showToast('Não foi possível processar a exclusão da conta. Tente novamente mais tarde.', 'danger');
-      }
-    });
-  }
-
   openAthleteProfile(card: FavoriteAthleteVideoCard): void {
     if (!this.subscriptionService.canViewProfiles()) {
         this.showToast('Seu plano atual não permite visualizar perfis detalhados. Faça um upgrade!', 'warning');
@@ -723,8 +735,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       position: (post.user as any).position || (post.user as any).posicao || (post.user as any).cargoOuFuncao,
       localidade: (post.user as any).region,
       destaque: post.caption,
-      favorito: post.isLiked,
+      favorito: post.isFavorited,
+      isLiked: post.isLiked,
       likes: post.likesCount,
+      comments: post.commentsCount ?? 0,
       inviteStatus: post.inviteStatus,
       matchedSkills: this.getMatchedSkills(post.skills)
     };
@@ -750,7 +764,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   trackByVideoCard(_: number, item: ScoutFeedItem): string {
-    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.postId;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 
   async openScoutFilters(): Promise<void> {

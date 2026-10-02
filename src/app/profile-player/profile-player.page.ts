@@ -1,9 +1,10 @@
+import { ProfileSettingsComponent } from '../components/profile-settings/profile-settings.component';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, IonContent, IonAvatar, IonLabel, IonGrid, IonRow, IonCol, IonRefresher, IonRefresherContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonList, IonText, IonSegment, IonSegmentButton, IonInput, IonTextarea, IonSelect, IonSelectOption, IonSpinner, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline } from 'ionicons/icons';
+import { shieldOutline, arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ProfileService } from '../services/profile.service';
@@ -26,7 +27,7 @@ import { PlayerEvaluationModalComponent } from '../components/player-evaluation-
   templateUrl: './profile-player.page.html',
   styleUrls: ['./profile-player.page.scss'],
   standalone: true,
-  imports: [
+  imports: [ProfileSettingsComponent,
     CommonModule,
     FormsModule,
     IonButton,
@@ -55,6 +56,7 @@ import { PlayerEvaluationModalComponent } from '../components/player-evaluation-
 })
 export class ProfilePlayerPage implements OnInit {
   @ViewChild('evaluationModal') evaluationModal!: PlayerEvaluationModalComponent;
+  @ViewChild('profileSettings') profileSettings?: ProfileSettingsComponent;
   profileId: string | null = null;
   profile: Profile | null = null;
   isMyProfile = false;
@@ -113,7 +115,7 @@ export class ProfilePlayerPage implements OnInit {
   }
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline });
+    addIcons({ shieldOutline, arrowBackOutline, createOutline, personCircleOutline, briefcaseOutline, calendarOutline, bodyOutline, resizeOutline, scaleOutline, informationCircleOutline, timeOutline, videocamOutline, checkmarkOutline, closeOutline, locationOutline, mapOutline, globeOutline, lockClosedOutline, imageOutline, ellipsisVerticalOutline, ellipsisHorizontal, banOutline, playOutline, trashOutline, chatbubbleOutline, helpCircleOutline });
 
     this.filteredUserPosts$ = combineLatest([
       this.userPostsSubject.asObservable(),
@@ -200,22 +202,8 @@ export class ProfilePlayerPage implements OnInit {
     const buttons: any[] = [];
 
     if (this.isMyProfile) {
-      buttons.push(
-        {
-          text: 'Editar perfil',
-          icon: createOutline,
-          handler: () => {
-            this.startEditing();
-          }
-        },
-        {
-          text: 'Suporte',
-          icon: helpCircleOutline,
-          handler: () => {
-            this.openSupport();
-          }
-        }
-      );
+      this.profileSettings?.present();
+      return;
     } else {
       if (this.isScoutViewer && !this.isBlockedByMe) {
         buttons.push({
@@ -454,6 +442,7 @@ export class ProfilePlayerPage implements OnInit {
       dominantFoot: this.draftProfile.dominantFoot,
       gender: this.draftProfile.gender,
       careerHistory: (this.draftProfile.careerHistory || '').trim(),
+      currentClub: (this.draftProfile.currentClub || '').trim(),
       cidade: (this.draftProfile.cidade || '').trim(),
       estado: this.draftProfile.estado,
       pais: (this.draftProfile.pais || '').trim(),
@@ -743,6 +732,7 @@ export class ProfilePlayerPage implements OnInit {
       dominantFoot: this.profile.dominantFoot,
       gender: this.profile.gender ?? null,
       careerHistory: this.profile.careerHistory ?? '',
+      currentClub: this.profile.currentClub ?? '',
       cidade: this.profile.cidade ?? '',
       estado: this.profile.estado ?? '',
       pais: this.profile.pais ?? '',

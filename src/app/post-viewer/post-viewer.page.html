@@ -1,0 +1,93 @@
+<ion-content [fullscreen]="true" class="post-viewer-content">
+  <ion-button fill="clear" class="post-viewer-back" (click)="goBack()" aria-label="Voltar">
+    <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+  </ion-button>
+
+  <div class="post-viewer-loading" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <article class="be-tiktok-card post-viewer-card" *ngIf="post">
+    <video
+      #player="appViewportVideoPlayer"
+      appViewportVideoPlayer
+      [src]="post.mediaUrl + '#t=0.001'"
+      muted
+      loop
+      playsinline
+      controlsList="nodownload nopictureinpicture"
+      preload="metadata"
+      class="be-tiktok-video"
+      [class.is-horizontal]="player.isHorizontal"
+      (doubleTap)="onDoubleTapLike()">
+    </video>
+
+    <div class="video-player-state loading" *ngIf="player.isLoading && !player.hasError && !player.showTapGate">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+    <div class="video-player-state pulse" *ngIf="player.showPulse">
+      <ion-icon [name]="player.isPaused ? 'play' : 'pause'"></ion-icon>
+    </div>
+    <div class="like-burst" *ngIf="showLikeBurst">
+      <ion-icon name="heart"></ion-icon>
+    </div>
+    <div class="video-player-state tap-gate" *ngIf="player.showTapGate">
+      <span>Toque para assistir</span>
+    </div>
+    <div class="video-player-error" *ngIf="player.hasError">
+      <strong>Video indisponivel</strong>
+      <ion-button size="small" fill="solid" (click)="player.retry($event)">Tentar novamente</ion-button>
+    </div>
+
+    <ion-button fill="clear" class="video-mute-btn" [class.is-unmuted]="!player.isMuted" (click)="player.toggleMute($event)" [attr.aria-label]="player.isMuted ? 'Ativar som' : 'Silenciar video'">
+      <ion-icon [name]="player.isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
+    </ion-button>
+
+    <ion-button *ngIf="!isMine" fill="clear" class="video-report-btn" (click)="reportPost()" aria-label="Denunciar video">
+      <ion-icon name="flag-outline"></ion-icon>
+    </ion-button>
+
+    <div class="be-tiktok-overlay">
+      <div class="be-tiktok-info">
+        <button type="button" class="profile-link" (click)="openAthleteProfile()">
+          <h3 class="athlete-heading">
+            <span class="athlete-first-name">{{ post.user.username.split(' ')[0] }}</span>
+            <span class="athlete-position" *ngIf="playerCardProfile.positions?.[0]">- {{ playerCardProfile.positions?.[0] }}</span>
+          </h3>
+        </button>
+        <p class="showcase-description" *ngIf="post.caption">{{ post.caption }}</p>
+      </div>
+    </div>
+
+    <div class="be-tiktok-actions">
+      <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile()">
+        <app-player-card [profile]="playerCardProfile" size="xsmall"></app-player-card>
+      </button>
+
+      <div class="like-action">
+        <ion-button
+          fill="clear"
+          class="like-btn"
+          [class.active]="post.isLiked"
+          (click)="toggleLike()"
+          [attr.aria-label]="post.isLiked ? 'Descurtir video' : 'Curtir video'">
+          <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+        </ion-button>
+        <span class="like-count">{{ post.likesCount }}</span>
+      </div>
+
+      <div class="like-action">
+        <ion-button fill="clear" class="like-btn" (click)="openComments()" aria-label="Ver comentários">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        </ion-button>
+        <span class="like-count">{{ post.commentsCount }}</span>
+      </div>
+
+      <div class="like-action">
+        <ion-button fill="clear" class="like-btn" (click)="sharePost()" aria-label="Compartilhar video">
+          <ion-icon name="share-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </article>
+</ion-content>

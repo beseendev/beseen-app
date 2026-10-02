@@ -17,6 +17,7 @@ import {
   chatbubbleEllipsesOutline,
   videocamOutline,
   timeOutline,
+  heartOutline,
   notificationsOutline
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
@@ -62,6 +63,7 @@ export class NotificationsPage implements OnInit {
       chatbubbleEllipsesOutline,
       videocamOutline,
       timeOutline,
+      heartOutline,
       notificationsOutline
     });
   }
@@ -125,6 +127,10 @@ export class NotificationsPage implements OnInit {
       case 'INVITE_RECEIVED':
         return 'mail-outline';
       case 'CHAT_MESSAGE':
+        return 'chatbubble-ellipses-outline';
+      case 'POST_LIKED':
+        return 'heart-outline';
+      case 'POST_COMMENTED':
         return 'chatbubble-ellipses-outline';
       case 'NO_VIDEO_POSTED':
         return 'videocam-outline';

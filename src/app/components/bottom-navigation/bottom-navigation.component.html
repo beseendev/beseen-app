@@ -1,0 +1,20 @@
+<nav *ngIf="visible" aria-label="Navegação principal" class="bottom-navigation">
+  <div class="navigation-items">
+    <button type="button" (click)="navigate('home')" [class.selected]="active === 'home'" [attr.aria-current]="active === 'home' ? 'page' : null" aria-label="Início">
+      <ion-icon [name]="active === 'home' ? 'home' : 'home-outline'" aria-hidden="true"></ion-icon><span>Início</span>
+    </button>
+    <ng-container *ngIf="role === 'JOGADOR'; else scoutItems">
+      <button type="button" class="publish" (click)="navigate('publish')" aria-label="Publicar foto ou vídeo">
+        <span class="publish-icon"><ion-icon name="add" aria-hidden="true"></ion-icon></span><span>Publicar</span>
+      </button>
+      <button type="button" (click)="openInvites()" aria-label="Abrir convites" aria-haspopup="dialog">
+        <span class="icon-wrap"><ion-icon name="mail-outline" aria-hidden="true"></ion-icon><span class="badge" *ngIf="chat.pendingInvitesCount$ | async as count">{{ count }}</span></span><span>Convites</span>
+      </button>
+    </ng-container>
+    <ng-template #scoutItems>
+      <button type="button" (click)="navigate('search')" [class.selected]="active === 'search'" [attr.aria-current]="active === 'search' ? 'page' : null" aria-label="Buscar atletas"><ion-icon [name]="active === 'search' ? 'search' : 'search-outline'" aria-hidden="true"></ion-icon><span>Buscar</span></button>
+      <button type="button" (click)="navigate('favorites')" [class.selected]="active === 'favorites'" [attr.aria-current]="active === 'favorites' ? 'page' : null" aria-label="Favoritos"><ion-icon [name]="active === 'favorites' ? 'star' : 'star-outline'" aria-hidden="true"></ion-icon><span>Favoritos</span></button>
+    </ng-template>
+    <button type="button" (click)="navigate('profile')" [class.selected]="active === 'profile'" [attr.aria-current]="active === 'profile' ? 'page' : null" aria-label="Meu perfil"><ion-icon [name]="active === 'profile' ? 'person' : 'person-outline'" aria-hidden="true"></ion-icon><span>Perfil</span></button>
+  </div>
+</nav>

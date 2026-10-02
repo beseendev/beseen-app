@@ -17,6 +17,7 @@ export interface Post {
   likesCount: number;
   commentsCount: number;
   isLiked: boolean;
+  isFavorited: boolean;
   createdAt: string;
   position?: string;
   inviteStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | null;

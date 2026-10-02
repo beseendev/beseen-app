@@ -1,122 +1,7 @@
-<ion-content [fullscreen]="true" class="scout-home-content">
-  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <div slot="fixed" class="scout-action-bar" aria-hidden="true"></div>
-
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="scout-search-fab">
-    <ion-fab-button (click)="goToAthleteSearch()" class="search-fab-button" aria-label="Buscar atletas">
-      <ion-icon name="search" aria-hidden="true"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-  <div class="scout-home-container">
-    <div class="hero-block">
-      <div class="hero-topline">
-        <p class="eyebrow">Ambiente do Olheiro</p>
-        <div class="header-actions">
-          <ion-button fill="clear" class="notifications-btn" (click)="goToNotifications()" aria-label="Ver notificações">
-            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-            <ion-badge color="danger" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</ion-badge>
-          </ion-button>
-          <ion-button fill="clear" class="chat-inbox-btn" (click)="openChatInbox()" aria-label="Abrir central de chats">
-            <ion-icon slot="icon-only" name="chatbubble-ellipses-outline"></ion-icon>
-            <ion-badge *ngIf="chatUnreadCount > 0">{{ chatUnreadCount }}</ion-badge>
-          </ion-button>
-        </div>
-      </div>
-      <h1>Talentos em destaque</h1>
-      <p class="hero-copy">Explore atletas, analise perfis e favorite quem merece acompanhamento.</p>
-    </div>
-
-    <section class="profile-card section surface">
-      <div class="profile-card-head" *ngIf="!isLoadingContent; else scoutProfileSkeleton">
-        <div class="profile-card-id">
-          <div class="avatar-shell profile-avatar">
-            <img *ngIf="userProfile?.urlPerfil" [src]="userProfile?.urlPerfil" alt="Perfil do olheiro">
-            <ion-icon *ngIf="!userProfile?.urlPerfil" name="person-circle-outline"></ion-icon>
-          </div>
-          <div class="profile-copy">
-            <span class="summary-label" *ngIf="userRole === 'CLUBE'">Perfil de olheiro</span>
-            <span class="summary-label" *ngIf="userRole === 'JOGADOR'">Perfil do jogador</span>
-            <strong>{{ userName }}</strong>
-            <p>
-              {{ scoutType || 'Tipo não informado' }}
-              <span *ngIf="scoutProfile?.cidade || scoutProfile?.estado">
-                • {{ scoutProfile?.cidade || 'Cidade' }}{{ scoutProfile?.estado ? ', ' + scoutProfile?.estado : '' }}
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <div class="profile-card-actions">
-          <div class="menu-actions">
-            <ion-button fill="clear" id="scout-options-trigger" class="menu-btn" aria-label="Opções">
-              <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-            </ion-button>
-
-            <ion-popover trigger="scout-options-trigger" triggerAction="click" class="options-popover">
-              <ng-template>
-                <ion-list lines="none">
-                  <ion-item button (click)="editScoutProfile(); popoverController.dismiss()">
-                    <ion-icon slot="start" name="create-outline"></ion-icon>
-                    <ion-label>Editar perfil</ion-label>
-                  </ion-item>
-                  <!-- 
-                  <ion-item button (click)="openPlans(); popoverController.dismiss()">
-                    <ion-icon slot="start" name="card-outline"></ion-icon>
-                    <ion-label>Planos</ion-label>
-                  </ion-item> 
-                  -->
-                  <ion-item button (click)="openSupport(); popoverController.dismiss()">
-                    <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-                    <ion-label>Suporte</ion-label>
-                  </ion-item>
-                  <ion-item button (click)="openBlockedUsers(); popoverController.dismiss()">
-                    <ion-icon slot="start" name="ban-outline"></ion-icon>
-                    <ion-label>Usuários bloqueados</ion-label>
-                  </ion-item>
-                  <ion-item button (click)="logout(); popoverController.dismiss()" class="logout-item">
-                    <ion-icon slot="start" name="log-out-outline"></ion-icon>
-                    <ion-label>Sair</ion-label>
-                  </ion-item>
-                  <ion-item button (click)="openDeleteAccountOptions(); popoverController.dismiss()" class="delete-account-item">
-                    <ion-icon slot="start" name="trash-outline"></ion-icon>
-                    <ion-label>Excluir conta</ion-label>
-                  </ion-item>
-                </ion-list>
-              </ng-template>
-            </ion-popover>
-          </div>
-        </div>
-      </div>
-
-      <ng-template #scoutProfileSkeleton>
-        <div class="profile-card-head">
-          <div class="profile-card-id">
-            <div class="be-skeleton-avatar"></div>
-            <div class="be-skeleton-copy">
-              <ion-skeleton-text animated style="width: 90px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 170px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 120px;"></ion-skeleton-text>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </section>
-
-    <nav class="arena-tabs section" aria-label="Conteúdo do olheiro">
-      <button type="button" class="tab-btn" [class.active]="selectedTab === 'vitrine'" (click)="setActiveTab('vitrine')">
-        Videos na vitrine
-      </button>
-      <button type="button" class="tab-btn" [class.active]="selectedTab === 'favoritos'" (click)="setActiveTab('favoritos')">
-        Favoritos
-      </button>
-    </nav>
-
-    <app-banner-carousel class="section"></app-banner-carousel>
-
+<ion-header class="ion-no-border">
+  <app-social-header [notificationsCount]="unreadNotificationsCount" [messagesCount]="chatUnreadCount"
+    (notifications)="goToNotifications()" (messages)="openChatInbox()">
+  </app-social-header>
     <section class="vitrine-filter-panel section" *ngIf="selectedTab === 'vitrine'">
       <div class="filter-action-row">
         <ion-button fill="outline" class="filter-btn" (click)="openScoutFilters()" aria-label="Abrir filtros da vitrine">
@@ -142,6 +27,14 @@
         </button>
       </div>
     </section>
+</ion-header>
+<ion-content [fullscreen]="false" class="scout-home-content"
+  [style.--be-filter-panel-height]="selectedTab === 'vitrine' ? (activeFilterChips.length > 0 ? '100px' : '56px') : '0px'">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPosts($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="scout-home-container">
 
     <section class="content-section section" *ngIf="selectedTab === 'vitrine' && !isLoadingContent; else scoutVitrineSkeleton">
       <div class="video-list be-tiktok-container" *ngIf="feedItems.length > 0">
@@ -158,7 +51,8 @@
               controlsList="nodownload nopictureinpicture"
               preload="metadata"
               class="be-tiktok-video"
-              [class.is-horizontal]="vitrinePlayer.isHorizontal">
+              [class.is-horizontal]="vitrinePlayer.isHorizontal"
+              (doubleTap)="onDoubleTapLike(item.video)">
             </video>
 
             <div class="video-player-state loading" *ngIf="vitrinePlayer.isLoading && !vitrinePlayer.hasError && !vitrinePlayer.showTapGate">
@@ -166,6 +60,9 @@
             </div>
             <div class="video-player-state pulse" *ngIf="vitrinePlayer.showPulse">
               <ion-icon [name]="vitrinePlayer.isPaused ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <div class="like-burst" *ngIf="likeBurstVideoId === item.video.postId">
+              <ion-icon name="heart"></ion-icon>
             </div>
             <div class="video-player-state tap-gate" *ngIf="vitrinePlayer.showTapGate">
               <span>Toque para assistir</span>
@@ -175,8 +72,8 @@
               <ion-button size="small" fill="solid" (click)="vitrinePlayer.retry($event)">Tentar novamente</ion-button>
             </div>
 
-            <ion-button fill="clear" class="video-mute-btn" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
-              <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute-outline' : 'volume-high-outline'"></ion-icon>
+            <ion-button fill="clear" class="video-mute-btn" [class.is-unmuted]="!vitrinePlayer.isMuted" (click)="vitrinePlayer.toggleMute($event)" [attr.aria-label]="vitrinePlayer.isMuted ? 'Ativar som' : 'Silenciar video'">
+              <ion-icon [name]="vitrinePlayer.isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
             </ion-button>
 
             <ion-button fill="clear" class="video-report-btn" (click)="reportVideo(item.video)" aria-label="Denunciar video">
@@ -204,9 +101,8 @@
             </div>
 
             <div class="be-tiktok-actions">
-               <div class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
-                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card>
-               </div>
+               <button type="button" aria-label="Abrir perfil do atleta" class="be-tiktok-avatar be-tiktok-avatar--card" (click)="openAthleteProfile(item.video)">
+                  <app-player-card [profile]="toPlayerCardProfile(item.video)" size="xsmall"></app-player-card></button>
 
                <ion-button
                 fill="clear"
@@ -217,9 +113,33 @@
                 <ion-icon [name]="item.video.favorito ? 'star' : 'star-outline'"></ion-icon>
               </ion-button>
 
+               <div class="like-action">
+                 <ion-button
+                  fill="clear"
+                  class="like-btn"
+                  [class.active]="item.video.isLiked"
+                  (click)="toggleLike(item.video)"
+                  [attr.aria-label]="(item.video.isLiked ? 'Descurtir video de ' : 'Curtir video de ') + item.video.athleteName">
+                  <ion-icon [name]="item.video.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+                </ion-button>
+                <span class="like-count">{{ item.video.likes || 0 }}</span>
+               </div>
+               <div class="like-action">
+                 <ion-button fill="clear" class="like-btn" (click)="openComments(item.video)" aria-label="Ver comentários">
+                  <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                </ion-button>
+                <span class="like-count">{{ item.video.comments ?? 0 }}</span>
+               </div>
+               <div class="like-action">
+                 <ion-button fill="clear" class="like-btn" (click)="shareVideo(item.video)" aria-label="Compartilhar vídeo">
+                  <ion-icon name="share-outline"></ion-icon>
+                </ion-button>
+               </div>
+
             </div>
           </article>
           <app-ad-card *ngIf="item.type === 'ad'" [ad]="item.ad"></app-ad-card>
+          <app-banner-carousel *ngIf="item.type === 'banner'"></app-banner-carousel>
         </ng-container>
       </div>
 
@@ -251,6 +171,8 @@
       *ngIf="selectedTab === 'favoritos' && !isLoadingContent"
       [items]="feedItems"
       (favoriteToggled)="toggleFavoriteFromCard($event)"
+      (likeToggled)="toggleLike($event)"
+      (doubleTapLike)="onDoubleTapLike($event)"
       (inviteRequested)="sendInvite($event)"
       (chatRequested)="openChat($event)"
       (reportRequested)="reportVideo($event)">

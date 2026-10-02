@@ -4,7 +4,8 @@ import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { locationOutline, star, starOutline, volumeHighOutline, volumeMuteOutline, flagOutline } from 'ionicons/icons';
+import { openCommentsSheet } from '../../../components/comments-sheet/comments-sheet.component';
+import { chatbubbleEllipsesOutline, locationOutline, star, starOutline, volumeHigh, volumeMute, flagOutline, heart, heartOutline } from 'ionicons/icons';
 import { ChatStatus, FavoriteAthleteVideoCard } from '../../../models/chat.models';
 import { Profile } from '../../../models/profile.model';
 import { ChatService } from '../../../services/chat.service';
@@ -13,17 +14,23 @@ import { AdCardComponent } from '../../../components/ad-card/ad-card.component';
 import { PlayerCardComponent } from '../../../components/player-card/player-card.component';
 import { SubscriptionService } from "../../../services/subscription.service";
 import { ViewportVideoPlayerDirective } from '../../../shared/directives/viewport-video-player.directive';
+import { BannerCarouselComponent } from '../../../components/banner-carousel/banner-carousel.component';
 
 @Component({
   selector: 'app-scout-favorites-tab',
   templateUrl: './scout-favorites-tab.component.html',
   styleUrls: ['./scout-favorites-tab.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, AdCardComponent, PlayerCardComponent, ViewportVideoPlayerDirective]
+  imports: [CommonModule, IonicModule, AdCardComponent, PlayerCardComponent, ViewportVideoPlayerDirective, BannerCarouselComponent]
 })
 export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() items: ScoutFeedItem[] = [];
   @Output() favoriteToggled = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() likeToggled = new EventEmitter<FavoriteAthleteVideoCard>();
+  @Output() doubleTapLike = new EventEmitter<FavoriteAthleteVideoCard>();
+
+  likeBurstVideoId: string | null = null;
+  private likeBurstTimeout?: ReturnType<typeof setTimeout>;
   @Output() inviteRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() chatRequested = new EventEmitter<FavoriteAthleteVideoCard>();
   @Output() reportRequested = new EventEmitter<FavoriteAthleteVideoCard>();
@@ -39,12 +46,15 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   constructor() {
     addIcons({
+      chatbubbleEllipsesOutline,
       locationOutline,
       star,
       starOutline,
-      volumeHighOutline,
-      volumeMuteOutline,
-      flagOutline
+      volumeHigh,
+      volumeMute,
+      flagOutline,
+      heart,
+      heartOutline
     });
   }
 
@@ -89,6 +99,7 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
     if (this.videoObserver) {
       this.videoObserver.disconnect();
     }
+    clearTimeout(this.likeBurstTimeout);
   }
 
   async invite(card: FavoriteAthleteVideoCard): Promise<void> {
@@ -101,6 +112,31 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
 
   toggleFavorite(card: FavoriteAthleteVideoCard): void {
     this.favoriteToggled.emit(card);
+  }
+
+  openComments(card: FavoriteAthleteVideoCard): void {
+    openCommentsSheet(this.modalController, card.postId, card.comments ?? 0, count => (card.comments = count));
+  }
+
+  toggleLike(card: FavoriteAthleteVideoCard): void {
+    this.likeToggled.emit(card);
+  }
+
+  onDoubleTap(card: FavoriteAthleteVideoCard): void {
+    this.doubleTapLike.emit(card);
+    this.showLikeBurst(card.postId);
+  }
+
+  private showLikeBurst(postId: string): void {
+    this.likeBurstVideoId = null;
+    clearTimeout(this.likeBurstTimeout);
+
+    setTimeout(() => {
+      this.likeBurstVideoId = postId;
+      this.likeBurstTimeout = setTimeout(() => {
+        this.likeBurstVideoId = null;
+      }, 700);
+    });
   }
 
   report(card: FavoriteAthleteVideoCard): void {
@@ -133,6 +169,8 @@ export class ScoutFavoritesTabComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   trackByCard(_: number, item: ScoutFeedItem): string {
-    return item.type === 'video' ? item.video.postId : `ad-${item.ad.id}`;
+    if (item.type === 'video') return item.video.postId;
+    if (item.type === 'ad') return `ad-${item.ad.id}`;
+    return 'banner';
   }
 }

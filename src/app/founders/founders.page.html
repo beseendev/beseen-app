@@ -10,6 +10,10 @@
     <section class="hero-block">
       <h1>Nossas fundadoras</h1>
       <p class="hero-copy">Empresas que apoiam o futuro do esporte e acreditam em talento, educação e transformação.</p>
+      <ion-button expand="block" class="become-founder-btn" (click)="openBecomeFounder()">
+        Seja uma empresa fundadora
+        <ion-icon slot="end" name="open-outline"></ion-icon>
+      </ion-button>
     </section>
 
     <div class="founders-list" *ngIf="!isLoading && banners.length > 0">

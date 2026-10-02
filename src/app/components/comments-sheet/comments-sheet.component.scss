@@ -1,0 +1,128 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--be-color-text-1);
+  background: var(--be-color-bg);
+}
+
+.comments-header {
+  background: var(--be-color-bg-elevated);
+}
+
+.comments-header ion-toolbar {
+  --background: var(--be-color-bg-elevated);
+  --color: var(--be-color-text-1);
+  --min-height: 48px;
+  ion-title { font-size: 0.95rem; font-weight: 700; text-align: center; }
+}
+
+.comments-content {
+  --background: var(--be-color-bg);
+  --color: var(--be-color-text-1);
+  flex: 1;
+}
+
+.comments-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 48px 16px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.comments-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 16px 16px;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.comment-avatar {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.comment-body { flex: 1; min-width: 0; }
+
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.comment-author {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.comment-time { font-size: 0.72rem; opacity: 0.6; }
+
+.comment-text {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.comment-delete {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  margin: 0;
+  opacity: 0.6;
+}
+
+.comments-footer {
+  background: var(--be-color-bg);
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.comment-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 20px;
+  outline: none;
+  background: var(--be-color-surface-2);
+  color: var(--be-color-text-1);
+  font-size: 16px;
+
+  &::placeholder { color: var(--be-color-text-3); }
+}
+
+.comment-send {
+  --color: var(--be-color-brand-500);
+  margin: 0;
+}

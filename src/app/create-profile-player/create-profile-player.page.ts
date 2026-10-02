@@ -22,7 +22,7 @@ import {
   IonNote
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline } from 'ionicons/icons';
+import { shieldOutline, personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { ProfileService } from '../services/profile.service';
 import { FileType } from '../models/upload.model';
@@ -106,7 +106,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
 
   constructor() {
-    addIcons({ personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline });
+    addIcons({ shieldOutline, personCircleOutline, shieldCheckmarkOutline, calendarOutline, cameraOutline, arrowBackOutline, resizeOutline, barbellOutline, listOutline, documentTextOutline, idCardOutline, callOutline, bodyOutline, locationOutline, mapOutline, globeOutline });
   }
 
   ngOnInit() {
@@ -195,6 +195,7 @@ export class CreateProfilePlayerPage implements OnInit, OnDestroy {
       this.profileForm.addControl('weight', this.fb.control('', [Validators.required, Validators.pattern(/^\d{1,3}(\.\d{1,2})?$/)]));
       this.profileForm.addControl('dominantFoot', this.fb.control('', [Validators.required]));
       this.profileForm.addControl('gender', this.fb.control<AthleteGender | null>(null));
+      this.profileForm.addControl('currentClub', this.fb.control('', [Validators.maxLength(100)]));
       this.profileForm.addControl('careerHistory', this.fb.control('', [Validators.maxLength(1000)]));
     }
   }

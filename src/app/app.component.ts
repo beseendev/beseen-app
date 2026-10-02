@@ -1,7 +1,10 @@
+import { BottomNavigationComponent } from './components/bottom-navigation/bottom-navigation.component';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
+import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { DeepLinkService } from './services/deep-link.service';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { AuthService, JwtPayload, User } from './services/auth.service';
@@ -32,15 +35,17 @@ import {
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, BottomNavigationComponent],
 })
 export class AppComponent implements OnInit {
+  socialNavigationVisible = false;
   private authService = inject(AuthService);
   private subscriptionService = inject(SubscriptionService);
   private modalService = inject(ModalStateService);
   private pushService = inject(PushService);
   private debugConsole = inject(DebugConsoleService);
   private router = inject(Router);
+  private deepLinkService = inject(DeepLinkService);
 
   constructor() {
     addIcons({
@@ -85,6 +90,7 @@ export class AppComponent implements OnInit {
     this.debugConsole.initIfEnabled();
     if (Capacitor.isNativePlatform()) {
       FirebaseCrashlytics.setEnabled({ enabled: true });
+      CapacitorApp.addListener('appUrlOpen', ({ url }) => this.deepLinkService.handleUrl(url));
     }
     this.authService.currentUser.subscribe(user => {
       if (user) {

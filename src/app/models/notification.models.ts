@@ -1,6 +1,8 @@
 export type NotificationType =
   | 'INVITE_RECEIVED'
   | 'CHAT_MESSAGE'
+  | 'POST_LIKED'
+  | 'POST_COMMENTED'
   | 'NO_VIDEO_POSTED'
   | 'INACTIVITY_REMINDER';
 
