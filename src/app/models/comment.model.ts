@@ -10,6 +10,7 @@ export interface CommentResponse {
   content: string;
   createdAt: string;
   isMine: boolean;
+  canDelete: boolean;
 }
 
 export interface CommentPage {

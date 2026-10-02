@@ -32,7 +32,7 @@
         </div>
         <p class="comment-text">{{ comment.content }}</p>
       </div>
-      <ion-button *ngIf="comment.isMine" fill="clear" size="small" class="comment-delete" (click)="confirmDelete(comment)" aria-label="Excluir comentário">
+      <ion-button *ngIf="comment.canDelete" fill="clear" size="small" class="comment-delete" (click)="confirmDelete(comment)" aria-label="Excluir comentário">
         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
       </ion-button>
     </li>

@@ -1,5 +1,5 @@
 import { BottomNavigationComponent } from './components/bottom-navigation/bottom-navigation.component';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
 import { App as CapacitorApp } from '@capacitor/app';
@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
   private debugConsole = inject(DebugConsoleService);
   private router = inject(Router);
   private deepLinkService = inject(DeepLinkService);
+  private ngZone = inject(NgZone);
 
   constructor() {
     addIcons({
@@ -90,7 +91,8 @@ export class AppComponent implements OnInit {
     this.debugConsole.initIfEnabled();
     if (Capacitor.isNativePlatform()) {
       FirebaseCrashlytics.setEnabled({ enabled: true });
-      CapacitorApp.addListener('appUrlOpen', ({ url }) => this.deepLinkService.handleUrl(url));
+      // Callback nativo roda fora da zona do Angular; sem o run() a tela não atualiza após navegar.
+      CapacitorApp.addListener('appUrlOpen', ({ url }) => this.ngZone.run(() => this.deepLinkService.handleUrl(url)));
     }
     this.authService.currentUser.subscribe(user => {
       if (user) {
