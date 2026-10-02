@@ -9,9 +9,11 @@ import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { filter, finalize, take } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
+import { VideoShareService } from '../services/video-share.service';
 import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
+  shareOutline,
   logOutOutline,
   createOutline,
   personCircleOutline,
@@ -139,6 +141,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   private readonly scoutSearchService = inject(ScoutSearchService);
   private readonly skillService = inject(SkillService);
   private readonly modalController = inject(ModalController);
+  private readonly videoShareService = inject(VideoShareService);
   private readonly alertController = inject(AlertController);
   private readonly toastController = inject(ToastController);
   private readonly actionSheetController = inject(ActionSheetController);
@@ -153,6 +156,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({
+      shareOutline,
       chatbubbleEllipsesOutline,
       logOutOutline,
       createOutline,
@@ -523,6 +527,10 @@ export class ScoutHomePage implements OnInit, OnDestroy {
       },
       error: (err) => console.error('Error toggling favorite', err)
     });
+  }
+
+  shareVideo(card: FavoriteAthleteVideoCard): void {
+    this.videoShareService.share(card.postId, card.athleteName);
   }
 
   openComments(card: FavoriteAthleteVideoCard): void {

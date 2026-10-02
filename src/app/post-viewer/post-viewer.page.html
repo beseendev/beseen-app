@@ -82,6 +82,12 @@
         </ion-button>
         <span class="like-count">{{ post.commentsCount }}</span>
       </div>
+
+      <div class="like-action">
+        <ion-button fill="clear" class="like-btn" (click)="sharePost()" aria-label="Compartilhar video">
+          <ion-icon name="share-outline"></ion-icon>
+        </ion-button>
+      </div>
     </div>
   </article>
 </ion-content>

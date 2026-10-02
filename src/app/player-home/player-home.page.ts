@@ -22,9 +22,11 @@ import {
   ActionSheetController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { VideoShareService } from '../services/video-share.service';
 import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import {
   chatbubbleEllipsesOutline,
+  shareOutline,
   closeOutline,
   createOutline, helpCircleOutline,
   logOutOutline,
@@ -167,6 +169,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
   private notificationService = inject(NotificationService);
   private deepLinkService = inject(DeepLinkService);
   private modalController = inject(ModalController);
+  private readonly videoShareService = inject(VideoShareService);
   private alertController = inject(AlertController);
   private toastController = inject(ToastController);
   private actionSheetController = inject(ActionSheetController);
@@ -179,6 +182,7 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.extractRoleFromToken();
 
     addIcons({
+      shareOutline,
       chatbubbleEllipsesOutline,
       closeOutline,
       createOutline,
@@ -196,6 +200,11 @@ export class PlayerHomePage implements OnInit, OnDestroy, AfterViewInit {
       heart,
       heartOutline
     });
+  }
+
+  shareVideo(video: PlayerShowcaseVideo, event: Event): void {
+    event.stopPropagation();
+    this.videoShareService.share(video.id, video.athleteName);
   }
 
   openComments(video: PlayerShowcaseVideo, event: Event): void {

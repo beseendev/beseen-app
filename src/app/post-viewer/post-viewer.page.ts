@@ -4,7 +4,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonButton, ModalController, IonContent, IonIcon, IonSpinner, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute } from 'ionicons/icons';
+import { arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, shareOutline, heart, heartOutline, volumeHigh, volumeMute } from 'ionicons/icons';
 import { environment } from '../../environments/environment';
 import { openCommentsSheet } from '../components/comments-sheet/comments-sheet.component';
 import { PlayerCardComponent } from '../components/player-card/player-card.component';
@@ -12,6 +12,7 @@ import { Post } from '../models/post.model';
 import { Profile } from '../models/profile.model';
 import { AuthService, JwtPayload } from '../services/auth.service';
 import { PostService } from '../services/post.service';
+import { VideoShareService } from '../services/video-share.service';
 import { ViewportVideoPlayerDirective } from '../shared/directives/viewport-video-player.directive';
 
 @Component({
@@ -36,26 +37,30 @@ export class PostViewerPage implements OnInit, OnDestroy {
   private readonly toastController = inject(ToastController);
   private readonly alertController = inject(AlertController);
   private readonly modalController = inject(ModalController);
+  private readonly videoShareService = inject(VideoShareService);
 
   constructor() {
-    addIcons({ arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, heart, heartOutline, volumeHigh, volumeMute });
+    addIcons({ arrowBackOutline, chatbubbleEllipsesOutline, flagOutline, shareOutline, heart, heartOutline, volumeHigh, volumeMute });
   }
 
   ngOnInit(): void {
     combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, query]) =>
-      this.loadPost(params.get('id'), query.get('comments') === '1')
+      this.loadPost(params.get('id'), query.get('comments') === '1', params.get('code'))
     );
   }
 
-  private loadPost(postId: string | null, openCommentsOnLoad = false): void {
-    if (!postId) {
+  private loadPost(postId: string | null, openCommentsOnLoad = false, shareCode: string | null = null): void {
+    if (!postId && !shareCode) {
       this.handleUnavailable();
       return;
     }
 
     this.isLoading = true;
     this.post = null;
-    this.postService.getMyPostById(postId).subscribe({
+    // Link compartilhado (/v/:code) pode ser de outro atleta, então não é "meu" post.
+    this.isMine = !shareCode;
+    const request$ = shareCode ? this.postService.getPostByShareCode(shareCode) : this.postService.getMyPostById(postId!);
+    request$.subscribe({
       next: post => {
         this.post = post;
         this.isLoading = false;
@@ -68,6 +73,12 @@ export class PostViewerPage implements OnInit, OnDestroy {
         this.handleUnavailable();
       }
     });
+  }
+
+  sharePost(): void {
+    if (this.post) {
+      this.videoShareService.share(this.post.id, this.post.user.username);
+    }
   }
 
   openComments(): void {

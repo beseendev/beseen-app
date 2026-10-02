@@ -2,7 +2,9 @@ import { BottomNavigationComponent } from './components/bottom-navigation/bottom
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
+import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { DeepLinkService } from './services/deep-link.service';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { AuthService, JwtPayload, User } from './services/auth.service';
@@ -43,6 +45,7 @@ export class AppComponent implements OnInit {
   private pushService = inject(PushService);
   private debugConsole = inject(DebugConsoleService);
   private router = inject(Router);
+  private deepLinkService = inject(DeepLinkService);
 
   constructor() {
     addIcons({
@@ -87,6 +90,7 @@ export class AppComponent implements OnInit {
     this.debugConsole.initIfEnabled();
     if (Capacitor.isNativePlatform()) {
       FirebaseCrashlytics.setEnabled({ enabled: true });
+      CapacitorApp.addListener('appUrlOpen', ({ url }) => this.deepLinkService.handleUrl(url));
     }
     this.authService.currentUser.subscribe(user => {
       if (user) {

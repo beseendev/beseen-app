@@ -104,6 +104,17 @@ export class PostService {
     );
   }
 
+  /** Gera (ou devolve o já existente) o link curto de compartilhamento do vídeo. */
+  createShareLink(postId: string): Observable<{ code: string; url: string }> {
+    return this.apiService.post<{ code: string; url: string }>(`/posts/${postId}/share-link`, {});
+  }
+
+  getPostByShareCode(code: string): Observable<Post> {
+    return this.apiService.get<PostResponseDto>(`/posts/shared/${encodeURIComponent(code)}`).pipe(
+      map(postDto => this.mapPostResponseToPost(postDto))
+    );
+  }
+
   updatePostCaption(postId: string, caption: string): Observable<Post> {
     return this.apiService.patch<PostResponseDto>(`/posts/${postId}`, { caption }).pipe(
       map(postDto => this.mapPostResponseToPost(postDto))
