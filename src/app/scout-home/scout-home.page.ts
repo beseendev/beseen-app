@@ -1,3 +1,4 @@
+import { ReviewPromptService } from '../services/review-prompt.service';
 import { ActivatedRoute } from '@angular/router';
 import { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -131,6 +132,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
   }
 
   private readonly postService = inject(PostService);
+  private readonly reviewPromptService = inject(ReviewPromptService);
   private readonly chatService = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
   private readonly deepLinkService = inject(DeepLinkService);
@@ -524,6 +526,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
           this.videoPosts = this.videoPosts.filter(p => p.id !== postId);
         }
         await this.updateFeedItems();
+        if (!isCurrentlyFavorite) {
+          void this.reviewPromptService.maybeAsk();
+        }
       },
       error: (err) => console.error('Error toggling favorite', err)
     });
@@ -550,6 +555,9 @@ export class ScoutHomePage implements OnInit, OnDestroy {
           this.videoPosts = this.scoutSearchService.currentResults;
         }
         await this.updateFeedItems();
+        if (!isCurrentlyLiked) {
+          void this.reviewPromptService.maybeAsk();
+        }
       },
       error: (err) => console.error('Error toggling like', err)
     });
@@ -567,6 +575,7 @@ export class ScoutHomePage implements OnInit, OnDestroy {
             this.scoutSearchService.updatePostLikeState(postId, true);
             this.videoPosts = this.scoutSearchService.currentResults;
           }
+          void this.reviewPromptService.maybeAsk();
         },
         error: (err) => {
           card.isLiked = false;

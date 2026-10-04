@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { CommonModule } from '@angular/common';
 import { IonButton, IonIcon, IonPopover, IonList, IonItem, IonLabel, ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline } from 'ionicons/icons';
+import { settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline, starOutline } from 'ionicons/icons';
 import { AuthService, JwtPayload } from '../../services/auth.service';
+import { ReviewPromptService } from '../../services/review-prompt.service';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
@@ -22,13 +24,14 @@ export class ProfileSettingsComponent {
   @ViewChild('settings') private settingsPopover!: IonPopover;
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly reviewPromptService = inject(ReviewPromptService);
   private readonly profileService = inject(ProfileService);
   private readonly actionSheetController = inject(ActionSheetController);
   private readonly alertController = inject(AlertController);
   private readonly toastController = inject(ToastController);
 
   constructor() {
-    addIcons({ settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline });
+    addIcons({ settingsOutline, createOutline, helpCircleOutline, banOutline, logOutOutline, trashOutline, closeOutline, starOutline });
   }
 
   /** Abre o menu de configurações programaticamente (ex.: ao clicar no card do perfil). */
@@ -43,6 +46,12 @@ export class ProfileSettingsComponent {
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const toast = await this.toastController.create({ message, duration: this.accountType === 'player' ? 3000 : 4000, color, position: this.accountType === 'player' ? 'top' : 'bottom' });
     await toast.present();
+  }
+
+  readonly isNative = Capacitor.isNativePlatform();
+
+  rateApp(): void {
+    void this.reviewPromptService.openStoreReview();
   }
 
   logout(): void {

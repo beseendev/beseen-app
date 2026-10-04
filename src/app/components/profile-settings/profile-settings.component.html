@@ -14,6 +14,9 @@
       <ion-item button (click)="navigate('/usuarios-bloqueados')">
         <ion-icon slot="start" name="ban-outline" aria-hidden="true"></ion-icon><ion-label>Usuários bloqueados</ion-label>
       </ion-item>
+      <ion-item button *ngIf="isNative" (click)="rateApp()">
+        <ion-icon slot="start" name="star-outline" aria-hidden="true"></ion-icon><ion-label>Avaliar o app</ion-label>
+      </ion-item>
       <ion-item button (click)="logout()">
         <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon><ion-label>Sair</ion-label>
       </ion-item>

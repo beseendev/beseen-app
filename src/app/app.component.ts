@@ -11,6 +11,8 @@ import { AuthService, JwtPayload, User } from './services/auth.service';
 import { SubscriptionService } from './services/subscription.service';
 import { ModalStateService } from './services/modal-state.service';
 import { PushService } from './services/push.service';
+import { AppVersionService } from './services/app-version.service';
+import { ReviewPromptService } from './services/review-prompt.service';
 import { DebugConsoleService } from './services/debug-console.service';
 import {
   logOutOutline,
@@ -47,6 +49,8 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private deepLinkService = inject(DeepLinkService);
   private ngZone = inject(NgZone);
+  private appVersionService = inject(AppVersionService);
+  private reviewPromptService = inject(ReviewPromptService);
 
   constructor() {
     addIcons({
@@ -89,6 +93,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.debugConsole.initIfEnabled();
+    this.appVersionService.init();
+    this.reviewPromptService.registerOpen();
     if (Capacitor.isNativePlatform()) {
       FirebaseCrashlytics.setEnabled({ enabled: true });
       // Callback nativo roda fora da zona do Angular; sem o run() a tela não atualiza após navegar.
