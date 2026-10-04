@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  iosAppStoreId: '6778471006',
   apiUrl: 'https://api.beseen.app.br/api',
   googleClientId: '950779319104-1l56pob9dmnf2bkln5ap3ah961cemnrq.apps.googleusercontent.com',
   firebase: {

@@ -1,3 +1,4 @@
+import { ReviewPromptService } from '../services/review-prompt.service';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -38,6 +39,7 @@ export class CreatePostPage implements OnInit {
 
   private router = inject(Router);
   private uploadPostService = inject(UploadPostService);
+  private reviewPromptService = inject(ReviewPromptService);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private skillService = inject(SkillService);
@@ -183,6 +185,7 @@ export class CreatePostPage implements OnInit {
         await loading.dismiss();
         this.isSubmitting = false;
         this.router.navigateByUrl('/player-home');
+        void this.reviewPromptService.maybeAsk();
       },
       error: async (err) => {
         await loading.dismiss();
