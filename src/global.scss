@@ -984,6 +984,12 @@ video::-webkit-media-controls-start-playback-button {
     letter-spacing: 0.05em;
   }
 
+  // O Ionic pinta o foco com --ion-color-step-100, que no tema é branco.
+  .alert-button.ion-focused,
+  .alert-tappable.ion-focused {
+    background: rgba(var(--ion-color-primary-rgb), 0.12);
+  }
+
   .alert-button-role-cancel {
     color: var(--be-color-text-3);
   }
