@@ -8,8 +8,8 @@ android {
         applicationId "com.beseen.app.official"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 53
-        versionName "1.2.1" +
+        versionCode 54
+        versionName "1.2.2" +
           ""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
